@@ -1,4 +1,2 @@
 -ignorewarnings
--keep class * {
-    public private *;
-}
+-checkdiscard class kotlin.Metadata

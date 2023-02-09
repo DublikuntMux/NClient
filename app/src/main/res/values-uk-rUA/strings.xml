@@ -87,10 +87,6 @@
     <string name="setting_off_remove_ignored">Галереї з ігнорованими мітками будуть розмиті</string>
     <string name="remove_ignored_galleries">Видалити ігноровані галереї</string>
     <string name="clear_tag_preferences">Очистити параметри тегів</string>
-    <string name="no_updates_found">Оновлення не знайдені</string>
-    <string name="error_retrieving">Помилка під час отримання останньої версії</string>
-    <string name="new_version_found">Знайдена нова версія</string>
-    <string name="update_version_format" formatted="true">Оновити з версії %s до версії %s?\n\nЖурнал змін:\n%s</string>
     <string name="clear_this_list">Очистити цей список?</string>
     <string name="set_minimum_count">Встановити мінімальну кількість</string>
     <string name="sort_by_title">Впорядковувати за назвою</string>
@@ -117,9 +113,6 @@
     <string name="send">Надіслати</string>
     <string name="send_comment">Надіслати коментар…</string>
     <string name="profile_picture">Зображення профілю</string>
-    <string name="github">Github</string>
-    <string name="install">Встановити</string>
-    <string name="download_update_failed">Не вдалося завантажити нову версію</string>
     <string name="copyURL">Копіювати адресу</string>
     <string name="add_bookmark">Додати до закладок</string>
     <string name="manage_bookmarks">Керування закладками</string>
@@ -210,7 +203,6 @@
     <string name="choose_directory">Вибір каталогу</string>
     <string name="bookmark_here">Додати до закладок</string>
     <string name="resume_from_page">Продовжити зі сторінки %d</string>
-    <string name="new_beta_version_found">Знайдена нова бета-версія</string>
     <string name="page_range">Діапазон сторінки:</string>
     <string name="upload_time">Час завантаження:</string>
     <string name="from_page">Від сторінки:</string>
@@ -265,7 +257,6 @@
     <string name="fix_inverted_title">Виправити інвертовані зображення</string>
     <string name="fix_inverted_summary">Увімкніть, якщо зображення відображаються інвертованим кольором (в деяких пристроях може призвести до зміни системної теми до світла, відключення виправить цю проблему)</string>
     <string name="navigation_settings_per_screen">Налаштування навігації на екрані</string>
-    <string name="downloaded_update_at" formatted="true">Завантажене оновлення %s</string>
     <string name="summary_offscreen_limit">Встановити ліміт предзавантаження</string>
     <string name="title_offscreen_limit">Зображення для предзавантаження</string>
     <string name="sort_popoular_month">Популярні за місяць</string>

@@ -87,10 +87,6 @@
     <string name="setting_off_remove_ignored">Les galeries avec des tags ignorés seront floutées</string>
     <string name="remove_ignored_galleries">Supprimer les galeries ignorées</string>
     <string name="clear_tag_preferences">Effacer les préférences de tag</string>
-    <string name="no_updates_found">Pas de mise à jour trouvée</string>
-    <string name="error_retrieving">Erreur lors de la récupération de la dernière version</string>
-    <string name="new_version_found">Nouvelle version trouvée</string>
-    <string name="update_version_format" formatted="true">Mettre à jour depuis la version %s vers la version %s ?\n\nJournal des modifications :\n%s</string>
     <string name="clear_this_list">Effacer cette liste ?</string>
     <string name="set_minimum_count">Définir le nombre minimum</string>
     <string name="sort_by_title">Trier par titre</string>
@@ -117,9 +113,6 @@
     <string name="send">Envoyer</string>
     <string name="send_comment">Envoyer un commentaire…</string>
     <string name="profile_picture">Image de profil</string>
-    <string name="github">GitHub</string>
-    <string name="install">Installer</string>
-    <string name="download_update_failed">Impossible de télécharger la mise à jour</string>
     <string name="copyURL">Copier l\'URL</string>
     <string name="add_bookmark">Ajouter un signet</string>
     <string name="manage_bookmarks">Gérer les signets</string>
@@ -210,7 +203,6 @@
     <string name="choose_directory">Choisir un répertoire</string>
     <string name="bookmark_here">Placer un signet ici</string>
     <string name="resume_from_page">Reprendre à partir de la page %d</string>
-    <string name="new_beta_version_found">Nouvelle version bêta trouvée</string>
     <string name="page_range">Plage de pages :</string>
     <string name="upload_time">Moment de sortie :</string>
     <string name="from_page">Depuis la page :</string>
@@ -265,7 +257,6 @@
     <string name="fix_inverted_title">Corriger les images inversées</string>
     <string name="fix_inverted_summary">Activer si les images sont affichées avec des couleurs inversées (sur certains appareils, cela entraîne le changement du thème de l\'appareil en clair, désactiver le paramètre résoudra cela)</string>
     <string name="navigation_settings_per_screen">Paramètres de navigation par écran</string>
-    <string name="downloaded_update_at" formatted="true">Mise à jour téléchargée dans %s</string>
     <string name="summary_offscreen_limit">Définissez le nombre d\'images à précharger en arrière-plan lors de la lecture d\'une galerie</string>
     <string name="title_offscreen_limit">Nombre d\'images à précharger</string>
     <string name="sort_popoular_month">Populaire ce mois-ci</string>

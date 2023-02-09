@@ -87,10 +87,6 @@
     <string name="setting_off_remove_ignored">Dikkate alınmayan etiket içeren galeriler bulanıklaştırılacak</string>
     <string name="remove_ignored_galleries">Dikkate alınmayan galerileri kaldır</string>
     <string name="clear_tag_preferences">Etiket tercihlerini temizle</string>
-    <string name="no_updates_found">Zaten en son sürümü kullanıyorsunuz!</string>
-    <string name="error_retrieving">Güncelleme bilgileri alınırken bir sorun oluştu</string>
-    <string name="new_version_found">Yeni sürüm bulundu</string>
-    <string name="update_version_format" formatted="true">%s bu sürümden %s bu sürüme güncellensin mi?  Değişim kaydı: %s</string>
     <string name="clear_this_list">Bu listeyi temizle?</string>
     <string name="set_minimum_count">Minimum sayıyı ayarla</string>
     <string name="sort_by_title">Başlığa göre sırala</string>
@@ -117,9 +113,6 @@
     <string name="send">Gönder</string>
     <string name="send_comment">Yorumu gönder…</string>
     <string name="profile_picture">Profil fotoğrafı</string>
-    <string name="github">Github</string>
-    <string name="install">Yükle</string>
-    <string name="download_update_failed">Güncellenmiş sürüm indirilemedi</string>
     <string name="copyURL">URL\'yi kopyala</string>
     <string name="add_bookmark">Yer imi ekle</string>
     <string name="manage_bookmarks">Yer imlerini yönet</string>
@@ -210,7 +203,6 @@
     <string name="choose_directory">Dizin Seç</string>
     <string name="bookmark_here">Buraya yer işareti ekle</string>
     <string name="resume_from_page">%d. sayfadan devam et</string>
-    <string name="new_beta_version_found">Yeni beta sürümü bulundu</string>
     <string name="page_range">Sayfa aralığı:</string>
     <string name="upload_time">Yüklenme tarifi:</string>
     <string name="from_page">Sayfadan:</string>
@@ -265,7 +257,6 @@
     <string name="fix_inverted_title">Ters renkli resimleri düzelt</string>
     <string name="fix_inverted_summary">Eğer resimlerin renkleri ters görünüyorsa aktifleştirin (Cihaz temasını değiştirebilir)</string>
     <string name="navigation_settings_per_screen">Sayfa Ayarları</string>
-    <string name="downloaded_update_at" formatted="true">Güncelleme %s konumuna indirildi</string>
     <string name="summary_offscreen_limit">Bir galeriyi okurken önyüklenecek sayfa sayısını seçin</string>
     <string name="title_offscreen_limit">Resimleri Önyükleme</string>
     <string name="sort_popoular_month">Aylık Popülerlik</string>

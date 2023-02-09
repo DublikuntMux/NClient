@@ -87,10 +87,6 @@
     <string name="setting_off_remove_ignored">الأعمال ذات الوسوم المُتجاهَلة ستُضبَّب</string>
     <string name="remove_ignored_galleries">اِحذف الأعمال المُتجاهلة</string>
     <string name="clear_tag_preferences">أَزِل إعدادات الوسم</string>
-    <string name="no_updates_found">لا يوجد تحديث مُتوفِّر</string>
-    <string name="error_retrieving">طرأ خطأٌ أثناء استرجاع الإصدار الأخير</string>
-    <string name="new_version_found">وُجد إصدار جديد</string>
-    <string name="update_version_format" formatted="true">أتود التحديث من الإصدار %s إلى الإصدار %s ؟\n\n سِجل التغييرات: \n%s</string>
     <string name="clear_this_list">أتود محو هذه القائمة؟</string>
     <string name="set_minimum_count">عيِّن حدًّا أدنى للعدِّ</string>
     <string name="sort_by_title">ِاِفرِز حسب العنوان</string>
@@ -117,9 +113,6 @@
     <string name="send">أَرسل</string>
     <string name="send_comment">أَرسل التعليق…</string>
     <string name="profile_picture">صورة الملف الشخصي</string>
-    <string name="github">Github</string>
-    <string name="install">ثبِّت</string>
-    <string name="download_update_failed">تعذر تنزيل الإصدار المُحدَّث</string>
     <string name="copyURL">اِنسَخ الرابط</string>
     <string name="add_bookmark">أَضف إلى العلامات</string>
     <string name="manage_bookmarks">سيِّر العلامات</string>
@@ -210,7 +203,6 @@
     <string name="choose_directory">اِختر مجلدًا</string>
     <string name="bookmark_here">علِّم هنا</string>
     <string name="resume_from_page">اِستأنِف من الصفحة %d</string>
-    <string name="new_beta_version_found">هناك إصدار beta مُتوفِّر</string>
     <string name="page_range">نطاق الصفحات:</string>
     <string name="upload_time">رُفع منذ:</string>
     <string name="from_page">من الصفحة:</string>
@@ -265,7 +257,6 @@
     <string name="fix_inverted_title">أَصلِح الصور المقلوبة</string>
     <string name="fix_inverted_summary">عليك بتفعيل هذا الإعداد إذا كانت ألوان الصور مقلوبة (في بعض الأجهزة، قد يؤدي إلى جعل سِمة الجهاز فاتحة، تعطيله سيُصلح هذه المشكلة)</string>
     <string name="navigation_settings_per_screen">إعدادات التنقُّل حسب الشاشة</string>
-    <string name="downloaded_update_at" formatted="true">نُزِّل التحديث في %s</string>
     <string name="summary_offscreen_limit">عيِّن عدد الصور المراد تحميلها استباقيًّا خارج الشاشة أثناء قراءة عمل ما</string>
     <string name="title_offscreen_limit">الصور المراد تحميلها استباقيًّا</string>
     <string name="sort_popoular_month">رائجة على مدار الشهر</string>

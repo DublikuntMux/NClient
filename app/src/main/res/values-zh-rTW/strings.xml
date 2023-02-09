@@ -87,10 +87,6 @@
     <string name="setting_off_remove_ignored">模糊化帶有已忽略標籤的圖庫</string>
     <string name="remove_ignored_galleries">移除已忽略圖庫</string>
     <string name="clear_tag_preferences">清除標籤偏好</string>
-    <string name="no_updates_found">未發現更新</string>
-    <string name="error_retrieving">檢索最新版本出錯</string>
-    <string name="new_version_found">發現新版本</string>
-    <string name="update_version_format" formatted="true">從V %s 更新至V %s？\n\nChangelog:\n%s</string>
     <string name="clear_this_list">清空此列表？</string>
     <string name="set_minimum_count">設定最小值</string>
     <string name="sort_by_title">按標題排列</string>
@@ -117,9 +113,6 @@
     <string name="send">發送</string>
     <string name="send_comment">發送評論…</string>
     <string name="profile_picture">頭像</string>
-    <string name="github">Github</string>
-    <string name="install">安裝</string>
-    <string name="download_update_failed">無法下載新版本</string>
     <string name="copyURL">複製URL</string>
     <string name="add_bookmark">加入書籤</string>
     <string name="manage_bookmarks">管理書籤</string>
@@ -210,7 +203,6 @@
     <string name="choose_directory">選擇資料夾</string>
     <string name="bookmark_here">加入書籤</string>
     <string name="resume_from_page">從 %d 頁繼續</string>
-    <string name="new_beta_version_found">發現新的測試版</string>
     <string name="page_range">頁面範圍：</string>
     <string name="upload_time">上傳時間：</string>
     <string name="from_page">從頁數：</string>
@@ -265,7 +257,6 @@
     <string name="fix_inverted_title">Fix inverted images</string>
     <string name="fix_inverted_summary">Enable if the images are shown with inverted colors (in some devices can cause the system theme to be changed to light, disabling it will fix this issue)</string>
     <string name="navigation_settings_per_screen">Navigation settings per screen</string>
-    <string name="downloaded_update_at" formatted="true">Downloaded update at %s</string>
     <string name="summary_offscreen_limit">Set the number of images to preload offscreen when reading a gallery</string>
     <string name="title_offscreen_limit">Image to preload</string>
     <string name="sort_popoular_month">Monthly popular</string>

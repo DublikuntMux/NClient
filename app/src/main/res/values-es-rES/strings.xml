@@ -87,10 +87,6 @@
     <string name="setting_off_remove_ignored">Las galerías con etiquetas ignoradas se pondrán borrosas</string>
     <string name="remove_ignored_galleries">Eliminar las galerías ignoradas</string>
     <string name="clear_tag_preferences">Limpiar preferencias de etiquetas</string>
-    <string name="no_updates_found">No se han encontrado actualizaciones</string>
-    <string name="error_retrieving">Error al obtener la última versión</string>
-    <string name="new_version_found">Nueva versión encontrada</string>
-    <string name="update_version_format" formatted="true">¿Actualizar de versión %s a la versión %s?  Registro de cambios: %s</string>
     <string name="clear_this_list">¿Limpiar esta lista?</string>
     <string name="set_minimum_count">Establecer número mínimo</string>
     <string name="sort_by_title">Ordenar por título</string>
@@ -117,9 +113,6 @@
     <string name="send">Envíar</string>
     <string name="send_comment">Enviar comentario…</string>
     <string name="profile_picture">Foto de perfil</string>
-    <string name="github">Github</string>
-    <string name="install">Instalar</string>
-    <string name="download_update_failed">No se puede descargar la versión actualizada</string>
     <string name="copyURL">Copiar URL</string>
     <string name="add_bookmark">Agregar a marcadores</string>
     <string name="manage_bookmarks">Administrar los marcadores</string>
@@ -210,7 +203,6 @@
     <string name="choose_directory">Elegir directorio</string>
     <string name="bookmark_here">Marcar aquí</string>
     <string name="resume_from_page">Reanudar desde la página %d</string>
-    <string name="new_beta_version_found">Se ha encontrado una nueva versión beta</string>
     <string name="page_range">Rango de páginas:</string>
     <string name="upload_time">Tiempo de carga:</string>
     <string name="from_page">Desde página:</string>
@@ -265,7 +257,6 @@
     <string name="fix_inverted_title">Arreglar colores invertidos</string>
     <string name="fix_inverted_summary">Activa esto si ves los colores invertidos (en algunos dispositivos puede causar que el tema del dispositivo se cambie a claro, desactivando eso puede solucionar el problema.)</string>
     <string name="navigation_settings_per_screen">Opciones de navegacion por pantalla</string>
-    <string name="downloaded_update_at" formatted="true">Actualización descargada en la ruta: %s</string>
     <string name="summary_offscreen_limit">Establece el número de imágenes precargadas fuera de la pantalla</string>
     <string name="title_offscreen_limit">Imagen a precargar</string>
     <string name="sort_popoular_month">Populares por mes</string>

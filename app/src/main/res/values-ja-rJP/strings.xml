@@ -87,10 +87,6 @@
     <string name="setting_off_remove_ignored">タグが無視されたギャラリーはぼやけます</string>
     <string name="remove_ignored_galleries">無視されたギャラリーを削除</string>
     <string name="clear_tag_preferences">タグ設定をクリア</string>
-    <string name="no_updates_found">お使いのバージョンは最新です。</string>
-    <string name="error_retrieving">最新バージョンの取得中にエラーが発生しました</string>
-    <string name="new_version_found">新しい更新が利用可能です</string>
-    <string name="update_version_format" formatted="true">バージョン%sからバージョン%sに更新しますか？\ n \ n変更ログ：\ n%s</string>
     <string name="clear_this_list">このリストを削除</string>
     <string name="set_minimum_count">最小カウントを設定</string>
     <string name="sort_by_title">タイトルで並べ替え</string>
@@ -117,9 +113,6 @@
     <string name="send">送信</string>
     <string name="send_comment">コメントを送信</string>
     <string name="profile_picture">プロフィール画像</string>
-    <string name="github">Github（ギットハブ)</string>
-    <string name="install">インストール</string>
-    <string name="download_update_failed">更新されたバージョンをダウンロードできません。</string>
     <string name="copyURL">URLをコピー</string>
     <string name="add_bookmark">ブックマークに追加</string>
     <string name="manage_bookmarks">ブックマークを管理</string>
@@ -210,7 +203,6 @@
     <string name="choose_directory">ディレクトリを選択</string>
     <string name="bookmark_here">ここにブックマーク</string>
     <string name="resume_from_page">ページ%dから再開</string>
-    <string name="new_beta_version_found">最新のベータ版が見つかりました</string>
     <string name="page_range">ページの範囲:</string>
     <string name="upload_time">アップロード時間:</string>
     <string name="from_page">ページから:</string>
@@ -265,7 +257,6 @@
     <string name="fix_inverted_title">反転画像を修正</string>
     <string name="fix_inverted_summary">画像が反転した色で表示されている場合は有効にします（一部のデバイスでは、システムテーマが明るい色に変更される可能性があり、この設定を無効にするとこの問題が修正されます。）</string>
     <string name="navigation_settings_per_screen">画面ごとのナビゲーションを設定</string>
-    <string name="downloaded_update_at" formatted="true">%sでダウンロードされた更新</string>
     <string name="summary_offscreen_limit">ギャラリーを読むときに画面外にプリロードする画像の数を設定</string>
     <string name="title_offscreen_limit">プリロードする画像</string>
     <string name="sort_popoular_month">毎月の人気</string>
