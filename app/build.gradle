@@ -1,0 +1,64 @@
+apply plugin: 'com.android.application'
+
+android {
+    compileSdk 33
+    buildToolsVersion '33.0.1'
+    defaultConfig {
+        applicationId 'com.dublikunt.nclientv2'
+        minSdk 24
+        targetSdk 33
+        versionCode 294
+        multiDexEnabled true
+        versionName '2.9.4'
+        vectorDrawables.useSupportLibrary true
+        proguardFiles 'proguard-rules.pro'
+    }
+    buildTypes {
+        release {
+            minifyEnabled true
+            shrinkResources true
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt')
+            versionNameSuffix "-release"
+            resValue "string", "app_name", "NClientV2"
+        }
+        debug {
+            applicationIdSuffix ".debug"
+            versionNameSuffix "-debug"
+            resValue "string", "app_name", "NClientV2 Debug"
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+    lint {
+        abortOnError false
+        checkReleaseBuilds false
+    }
+    namespace 'com.dublikunt.nclientv2'
+    ndkVersion '25.2.9519653'
+}
+
+dependencies {
+    implementation 'androidx.appcompat:appcompat:1.6.0'
+    implementation 'androidx.cardview:cardview:1.0.0'
+    implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
+    implementation 'androidx.fragment:fragment:1.5.5'
+    implementation 'androidx.preference:preference:1.2.0'
+    implementation 'androidx.viewpager2:viewpager2:1.0.0'
+    implementation 'androidx.recyclerview:recyclerview:1.2.1'
+    implementation "androidx.multidex:multidex:2.0.1"
+    implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.1.0'
+    implementation 'com.google.android.material:material:1.8.0'
+
+    implementation 'com.squareup.okhttp3:okhttp-urlconnection:5.0.0-alpha.11'
+    implementation 'com.github.franmontiel:PersistentCookieJar:v1.0.1'
+    implementation 'org.jsoup:jsoup:1.15.3'
+    implementation 'com.github.bumptech.glide:glide:4.14.2'
+    implementation 'com.github.yukuku:ambilwarna:2.0.1'
+    implementation 'me.zhanghai.android.fastscroll:library:1.2.0'
+    implementation 'com.github.chrisbanes:PhotoView:2.0.0'
+    implementation 'com.zeugmasolutions.localehelper:locale-helper-android:1.5.1'
+
+    annotationProcessor 'com.github.bumptech.glide:compiler:4.14.2'
+}
