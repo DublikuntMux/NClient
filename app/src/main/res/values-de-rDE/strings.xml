@@ -277,7 +277,6 @@
     <string name="title_activity_captcha">CAPTCHA</string>
     <string name="invalid_response">Invalid response</string>
     <string name="system_default">System default</string>
-    <string name="clear_cookies">Clear cookies</string>
     <string-array name="scroll_type">
         <item>Horizontal</item>
         <item>Vertikal</item>
@@ -291,4 +290,5 @@
         <item>Japanisch</item>
         <item>Schön</item>
     </string-array>
+    <string name="clear_cookies">Klare Kekse</string>
 </resources>

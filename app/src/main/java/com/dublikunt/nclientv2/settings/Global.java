@@ -39,7 +39,7 @@ import com.dublikunt.nclientv2.components.CustomCookieJar;
 import com.dublikunt.nclientv2.components.classes.CustomSSLSocketFactory;
 import com.dublikunt.nclientv2.utility.LogUtility;
 import com.dublikunt.nclientv2.utility.Utility;
-import com.dublikunt.nclientv2.utility.network.NetworkUtil;
+import com.dublikunt.nclientv2.utility.NetworkUtil;
 import com.franmontiel.persistentcookiejar.cache.SetCookieCache;
 import com.franmontiel.persistentcookiejar.persistence.SharedPrefsCookiePersistor;
 
@@ -364,7 +364,6 @@ public class Global {
                     new SharedPrefsCookiePersistor(preferences)
                 )
             );
-        CustomSSLSocketFactory.enableTls12OnPreLollipop(builder);
         builder.addInterceptor(new CustomInterceptor(true));
         client = builder.build();
         client.dispatcher().setMaxRequests(25);

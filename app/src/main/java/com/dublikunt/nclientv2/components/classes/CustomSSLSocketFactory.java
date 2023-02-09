@@ -1,22 +1,11 @@
 package com.dublikunt.nclientv2.components.classes;
 
-import android.os.Build;
-
-import com.dublikunt.nclientv2.utility.LogUtility;
-
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.Socket;
-import java.util.ArrayList;
-import java.util.List;
 
-import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSocket;
 import javax.net.ssl.SSLSocketFactory;
-
-import okhttp3.ConnectionSpec;
-import okhttp3.OkHttpClient;
-import okhttp3.TlsVersion;
 
 public class CustomSSLSocketFactory extends SSLSocketFactory {
     private static final String[] TLS_V12_ONLY = {"TLSv1.2"};
@@ -25,32 +14,6 @@ public class CustomSSLSocketFactory extends SSLSocketFactory {
 
     public CustomSSLSocketFactory(SSLSocketFactory base) {
         this.delegate = base;
-    }
-
-    @SuppressWarnings("deprecation")
-    public static OkHttpClient.Builder enableTls12OnPreLollipop(OkHttpClient.Builder client) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN && Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP_MR1) {
-            try {
-                SSLContext sc = SSLContext.getInstance("TLSv1.2");
-                sc.init(null, null, null);
-                client.sslSocketFactory(new CustomSSLSocketFactory(sc.getSocketFactory()));
-
-                ConnectionSpec cs = new ConnectionSpec.Builder(ConnectionSpec.MODERN_TLS)
-                    .tlsVersions(TlsVersion.TLS_1_2)
-                    .build();
-
-                List<ConnectionSpec> specs = new ArrayList<>();
-                specs.add(cs);
-                specs.add(ConnectionSpec.COMPATIBLE_TLS);
-                specs.add(ConnectionSpec.CLEARTEXT);
-
-                client.connectionSpecs(specs);
-            } catch (Exception exc) {
-                LogUtility.e("Error while setting TLS 1.2", exc);
-            }
-        }
-
-        return client;
     }
 
     @Override

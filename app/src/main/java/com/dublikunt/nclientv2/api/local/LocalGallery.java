@@ -34,9 +34,7 @@ public class LocalGallery extends GenericGallery {
             return new LocalGallery[size];
         }
     };
-    private static final Pattern FILE_PATTERN = Pattern.compile("^(\\d{1,9})\\.(gif|png|jpg)$", Pattern.CASE_INSENSITIVE);
     private static final Pattern DUP_PATTERN = Pattern.compile("^(.*)\\.DUP\\d+$");
-    private static final Pattern IDFILE_PATTERN = Pattern.compile("^\\.\\d{1,6}$");
     private final GalleryFolder folder;
     @NonNull
     private final GalleryData galleryData;

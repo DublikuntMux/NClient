@@ -5,8 +5,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
-import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.util.JsonWriter;
 import android.util.Pair;
@@ -23,8 +21,6 @@ import com.dublikunt.nclientv2.PINActivity;
 import com.dublikunt.nclientv2.R;
 import com.dublikunt.nclientv2.SettingsActivity;
 import com.dublikunt.nclientv2.StatusManagerActivity;
-import com.dublikunt.nclientv2.async.MetadataFetcher;
-import com.dublikunt.nclientv2.async.VersionChecker;
 import com.dublikunt.nclientv2.components.LocaleManager;
 import com.dublikunt.nclientv2.components.launcher.LauncherCalculator;
 import com.dublikunt.nclientv2.components.launcher.LauncherReal;
@@ -38,7 +34,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -100,7 +96,7 @@ public class GeneralPreferenceFragment extends PreferenceFragmentCompat {
         for (Locale l : LocaleManager.LANGUAGES) {
             languages.add(new Pair<>(l.toString(), l.getDisplayName(actualLocale)));
         }
-        Collections.sort(languages, (o1, o2) -> o1.second.compareTo(o2.second));
+        languages.sort(Comparator.comparing(o -> o.second));
         languages.add(0, new Pair<>(getString(R.string.key_default_value), getString(R.string.system_default)));
         ListPreference preference = findPreference(getString(R.string.key_language));
         assert preference != null;
@@ -257,7 +253,7 @@ public class GeneralPreferenceFragment extends PreferenceFragmentCompat {
 
 
     private void initStoragePaths(ListPreference storagePreference) {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT || !Global.hasStoragePermission(act)) {
+        if (!Global.hasStoragePermission(act)) {
             storagePreference.setVisible(false);
             return;
         }

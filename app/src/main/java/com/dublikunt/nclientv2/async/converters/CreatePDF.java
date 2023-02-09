@@ -1,6 +1,5 @@
 package com.dublikunt.nclientv2.async.converters;
 
-import android.annotation.TargetApi;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
@@ -28,7 +27,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.List;
 
-@TargetApi(Build.VERSION_CODES.KITKAT)
 public class CreatePDF extends JobIntentService {
     private int notId;
     private int totalPage;

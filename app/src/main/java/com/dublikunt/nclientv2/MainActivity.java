@@ -39,8 +39,6 @@ import com.dublikunt.nclientv2.api.enums.SortType;
 import com.dublikunt.nclientv2.api.enums.SpecialTagIds;
 import com.dublikunt.nclientv2.api.enums.TagStatus;
 import com.dublikunt.nclientv2.api.enums.TagType;
-import com.dublikunt.nclientv2.async.ScrapeTags;
-import com.dublikunt.nclientv2.async.VersionChecker;
 import com.dublikunt.nclientv2.async.database.Queries;
 import com.dublikunt.nclientv2.async.downloader.DownloadGalleryV2;
 import com.dublikunt.nclientv2.components.GlideX;
@@ -67,7 +65,7 @@ public class MainActivity extends BaseActivity
     implements NavigationView.OnNavigationItemSelectedListener {
     private static final int MAX_FAIL_BEFORE_CLEAR_COOKIE = 3;
     private static final int CHANGE_LANGUAGE_DELAY = 1000;
-    private static boolean firstTime = true;//true only when app starting
+
     private final InspectorV3.InspectorResponse startGallery = new MainInspectorResponse() {
         @Override
         public void onSuccess(List<GenericGallery> galleries) {
@@ -142,7 +140,6 @@ public class MainActivity extends BaseActivity
 
         manageDrawer();
         setActivityTitle();
-        if (firstTime) checkUpdate();
         if (inspector != null) {
             inspector.start();
         } else {
@@ -286,13 +283,6 @@ public class MainActivity extends BaseActivity
 
     private void showError(@StringRes int text, View.OnClickListener listener) {
         showError(getString(text), listener);
-    }
-
-    private void checkUpdate() {
-        if (Global.shouldCheckForUpdates(this))
-            new VersionChecker(this, true);
-        ScrapeTags.startWork(this);
-        firstTime = false;
     }
 
     private void selectStartMode(Intent intent, String packageName) {
@@ -759,8 +749,6 @@ public class MainActivity extends BaseActivity
         Global.initStorage(this);
         if (requestCode == 1 && grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED)
             startLocalActivity();
-        if (requestCode == 2 && grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED)
-            new VersionChecker(this, true);
     }
 
     private void startLocalActivity() {

@@ -180,6 +180,7 @@ public class SimpleGallery extends GenericGallery {
         return null;
     }
 
+    @NonNull
     @Override
     public String toString() {
         return "SimpleGallery{" +

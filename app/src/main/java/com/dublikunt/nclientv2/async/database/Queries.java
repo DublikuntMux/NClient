@@ -34,6 +34,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 
@@ -48,26 +49,6 @@ public class Queries {
 
     public static int getColumnFromName(Cursor cursor, String name) {
         return cursor.getColumnIndex(name);
-    }
-
-    public static class DebugDatabase {
-        private static void dumpTable(String name, FileWriter sb) throws IOException {
-
-            String query = "SELECT * FROM " + name;
-            Cursor c = db.rawQuery(query, null);
-            sb.write("DUMPING: ");
-            sb.write(name);
-            sb.write(" count: ");
-            sb.write("" + c.getCount());
-            sb.write(": ");
-            if (c.moveToFirst()) {
-                do {
-                    sb.write(DatabaseUtils.dumpCurrentRowToString(c));
-                } while (c.moveToNext());
-            }
-            c.close();
-            sb.append("END DUMPING\n");
-        }
     }
 
     /**
@@ -246,7 +227,6 @@ public class Queries {
 
     public static class TagTable {
         public static final String TABLE_NAME = "Tags";
-        public static final String DROP_TABLE = "DROP TABLE IF EXISTS " + TABLE_NAME;
         static final String CREATE_TABLE = "CREATE TABLE IF NOT EXISTS `Tags` (" +
             " `idTag` INT  NOT NULL PRIMARY KEY," +
             " `name` TEXT NOT NULL , " +
@@ -561,7 +541,6 @@ public class Queries {
         public static final String RANGE_START = "range_start";
         public static final String RANGE_END = "range_end";
         public static final String TABLE_NAME = "Downloads";
-        public static final String DROP_TABLE = "DROP TABLE IF EXISTS " + TABLE_NAME;
         static final String CREATE_TABLE = "CREATE TABLE IF NOT EXISTS `Downloads` (" +
             "`id_gallery`  INT NOT NULL PRIMARY KEY , " +
             "`range_start` INT NOT NULL," +
@@ -612,7 +591,6 @@ public class Queries {
         public static final String THUMB = "thumbType";
         public static final String TIME = "time";
         public static final String TABLE_NAME = "History";
-        public static final String DROP_TABLE = "DROP TABLE IF EXISTS " + TABLE_NAME;
         static final String CREATE_TABLE = "CREATE TABLE IF NOT EXISTS `History`(" +
             "`id` INT NOT NULL PRIMARY KEY," +
             "`mediaId` INT NOT NULL," +
@@ -657,7 +635,6 @@ public class Queries {
 
     public static class BookmarkTable {
         public static final String TABLE_NAME = "Bookmark";
-        public static final String DROP_TABLE = "DROP TABLE IF EXISTS " + TABLE_NAME;
         static final String URL = "url";
         static final String PAGE = "page";
         static final String TYPE = "type";
@@ -708,7 +685,6 @@ public class Queries {
 
     public static class GalleryBridgeTable {
         public static final String TABLE_NAME = "GalleryTags";
-        public static final String DROP_TABLE = "DROP TABLE IF EXISTS " + TABLE_NAME;
         static final String CREATE_TABLE = "CREATE TABLE IF NOT EXISTS `GalleryTags` (" +
             "`id_gallery` INT NOT NULL , " +
             "`id_tag` INT NOT NULL ," +
@@ -753,7 +729,6 @@ public class Queries {
 
     public static class FavoriteTable {
         public static final String TABLE_NAME = "Favorite";
-        public static final String DROP_TABLE = "DROP TABLE IF EXISTS " + TABLE_NAME;
         static final String CREATE_TABLE = "CREATE TABLE IF NOT EXISTS `Favorite` (" +
             "`id_gallery` INT NOT NULL PRIMARY KEY , " +
             "`time` INT NOT NULL," +
@@ -880,7 +855,6 @@ public class Queries {
 
     public static class ResumeTable {
         public static final String TABLE_NAME = "Resume";
-        public static final String DROP_TABLE = "DROP TABLE IF EXISTS " + TABLE_NAME;
         static final String CREATE_TABLE = "CREATE TABLE IF NOT EXISTS `Resume` (" +
             "`id_gallery` INT NOT NULL PRIMARY KEY , " +
             "`page` INT NOT NULL" +
@@ -977,6 +951,28 @@ public class Queries {
             return db.rawQuery(query, new String[]{name, likeFilter, likeFilter, likeFilter});
         }
 
+        public static HashMap<String, Integer> getCountsPerStatus() {
+            String query = String.format("select %s, count(%s) as count from %s group by %s;",
+                StatusMangaTable.NAME, StatusMangaTable.GALLERY, StatusMangaTable.TABLE_NAME, StatusMangaTable.NAME);
+            LogUtility.d(query);
+
+            Cursor cursor = db.rawQuery(query, null);
+            HashMap<String, Integer> counts = new HashMap<>();
+
+            while (cursor.moveToNext()) {
+                try {
+                    String status = cursor.getString(0);
+                    int count = cursor.getInt(1);
+                    counts.put(status, count);
+                } catch (Exception e) {
+                    LogUtility.e(e);
+                }
+            }
+
+            cursor.close();
+            return counts;
+        }
+
         public static void removeStatus(String name) {
             db.delete(TABLE_NAME, NAME + "=?", new String[]{name});
         }
@@ -984,7 +980,6 @@ public class Queries {
 
     public static class StatusTable {
         public static final String TABLE_NAME = "Status";
-        public static final String DROP_TABLE = "DROP TABLE IF EXISTS " + TABLE_NAME;
         static final String CREATE_TABLE = "CREATE TABLE IF NOT EXISTS `Status` (" +
             "`name` TINYTEXT NOT NULL PRIMARY KEY, " +
             "`color` INT NOT NULL " +
@@ -1025,4 +1020,5 @@ public class Queries {
             StatusMangaTable.update(oldStatus, newStatus);
         }
     }
+
 }

@@ -56,7 +56,7 @@ class Importer {
             }
             reader.endObject();
         }
-        editor.commit();
+        editor.apply();
     }
 
     private static void importDB(InputStream stream) throws IOException {

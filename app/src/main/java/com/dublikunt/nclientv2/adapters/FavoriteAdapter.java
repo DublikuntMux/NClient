@@ -1,5 +1,6 @@
 package com.dublikunt.nclientv2.adapters;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.database.Cursor;
 import android.text.Layout;
@@ -45,6 +46,7 @@ public class FavoriteAdapter extends RecyclerView.Adapter<GenericAdapter.ViewHol
         setHasStableIds(true);
     }
 
+    @SuppressLint("Range")
     @Override
     public long getItemId(int position) {
         cursor.moveToPosition(position);

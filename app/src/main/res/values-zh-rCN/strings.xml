@@ -277,7 +277,6 @@
     <string name="title_activity_captcha">CAPTCHA</string>
     <string name="invalid_response">Invalid response</string>
     <string name="system_default">System default</string>
-    <string name="clear_cookies">Clear cookies</string>
     <string-array name="scroll_type">
         <item>水平</item>
         <item>垂直</item>
@@ -291,4 +290,5 @@
         <item>日文</item>
         <item>简约</item>
     </string-array>
+    <string name="clear_cookies">清除Cookies</string>
 </resources>

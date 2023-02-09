@@ -8,7 +8,7 @@ import com.dublikunt.nclientv2.async.downloader.DownloadGalleryV2;
 import com.dublikunt.nclientv2.settings.Database;
 import com.dublikunt.nclientv2.settings.Global;
 import com.dublikunt.nclientv2.settings.TagV2;
-import com.dublikunt.nclientv2.utility.network.NetworkUtil;
+import com.dublikunt.nclientv2.utility.NetworkUtil;
 
 public class MainApplication extends MultiDexApplication {
     @Override

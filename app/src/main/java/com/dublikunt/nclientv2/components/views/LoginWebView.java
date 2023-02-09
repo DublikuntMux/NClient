@@ -64,9 +64,6 @@ public class LoginWebView extends CustomWebView {
         @JavascriptInterface
         public void intercept(String email, String password, String token, String captcha) {
             LogUtility.d(String.format("e:'%s',p:'%s',t:'%s',c:'%s'", email, password, token, captcha));
-            return;
         }
     }
-
-
 }

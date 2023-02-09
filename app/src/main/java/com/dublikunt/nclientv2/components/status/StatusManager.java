@@ -34,7 +34,7 @@ public class StatusManager {
 
     public static List<String> getNames() {
         List<String> st = new ArrayList<>(statusMap.keySet());
-        Collections.sort(st, String::compareToIgnoreCase);
+        st.sort(String::compareToIgnoreCase);
         st.remove(DEFAULT_STATUS);
         //st.add(0,DEFAULT_STATUS);
         return st;
@@ -42,7 +42,7 @@ public class StatusManager {
 
     public static List<Status> toList() {
         ArrayList<Status> statuses = new ArrayList<>(statusMap.values());
-        Collections.sort(statuses, (o1, o2) -> o1.name.compareToIgnoreCase(o2.name));
+        statuses.sort((o1, o2) -> o1.name.compareToIgnoreCase(o2.name));
         statuses.remove(getByName(DEFAULT_STATUS));
         return statuses;
     }
