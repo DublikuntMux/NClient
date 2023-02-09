@@ -40,10 +40,6 @@ public class ScrapeTags extends JobIntentService {
     private int getNewVersionCode() throws IOException {
         Response x = Global.getClient(this).newCall(new Request.Builder().url(VERSION).build()).execute();
         ResponseBody body = x.body();
-        if (body == null) {
-            x.close();
-            return -1;
-        }
         try {
             int k = Integer.parseInt(body.string().trim());
             LogUtility.d("Found version: " + k);
@@ -83,10 +79,6 @@ public class ScrapeTags extends JobIntentService {
     private void fetchTags() throws IOException {
         Response x = Global.getClient(this).newCall(new Request.Builder().url(TAGS).build()).execute();
         ResponseBody body = x.body();
-        if (body == null) {
-            x.close();
-            return;
-        }
         JsonReader reader = new JsonReader(body.charStream());
         reader.beginArray();
         while (reader.hasNext()) {
