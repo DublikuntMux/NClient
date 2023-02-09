@@ -32,11 +32,11 @@ import com.dublikunt.nclientv2.ZoomActivity;
 import com.dublikunt.nclientv2.api.components.Gallery;
 import com.dublikunt.nclientv2.api.components.GenericGallery;
 import com.dublikunt.nclientv2.components.GlideX;
+import com.dublikunt.nclientv2.components.photoview.PhotoView;
 import com.dublikunt.nclientv2.files.GalleryFolder;
 import com.dublikunt.nclientv2.files.PageFile;
 import com.dublikunt.nclientv2.settings.Global;
 import com.dublikunt.nclientv2.utility.LogUtility;
-import com.github.chrisbanes.photoview.PhotoView;
 
 public class ZoomFragment extends Fragment {
 
