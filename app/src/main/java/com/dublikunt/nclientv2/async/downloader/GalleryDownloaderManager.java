@@ -101,8 +101,6 @@ public class GalleryDownloaderManager {
     }
 
     private void endNotification() {
-        //notification=new NotificationCompat.Builder(context.getApplicationContext(), Global.CHANNEL_ID1);
-        //notification.setOnlyAlertOnce(true).setSmallIcon(R.drawable.ic_check).setAutoCancel(true);
         clearNotificationAction();
         hidePercentage();
         if (downloaderV2.getStatus() != GalleryDownloaderV2.Status.CANCELED) {
@@ -142,10 +140,6 @@ public class GalleryDownloaderManager {
         Intent startIntent = new Intent(context, DownloadGalleryV2.class);
         Intent stopIntent = new Intent(context, DownloadGalleryV2.class);
         Intent pauseIntent = new Intent(context, DownloadGalleryV2.class);
-
-        //stopIntent.setAction("STOP");
-        //startIntent.setAction("START");
-        //pauseIntent.setAction("PAUSE");
 
         stopIntent.putExtra(context.getPackageName() + ".ID", downloaderV2.getId());
         pauseIntent.putExtra(context.getPackageName() + ".ID", downloaderV2.getId());

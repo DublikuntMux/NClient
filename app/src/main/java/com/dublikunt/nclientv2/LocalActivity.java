@@ -10,7 +10,6 @@ import android.widget.ArrayAdapter;
 import android.widget.LinearLayout;
 
 import androidx.appcompat.widget.Toolbar;
-import androidx.core.view.MenuItemCompat;
 
 import com.dublikunt.nclientv2.adapters.LocalAdapter;
 import com.dublikunt.nclientv2.api.local.FakeInspector;

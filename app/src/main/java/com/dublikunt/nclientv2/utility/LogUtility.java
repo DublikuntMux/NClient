@@ -13,9 +13,9 @@ public class LogUtility {
         else Log.d(LogUtility.LOGTAG, Arrays.toString(message));
     }
 
-    public static void d(Object message, Throwable throwable) {
+    public static void d(String message, Throwable throwable) {
         if (message == null) message = "";
-        Log.d(LogUtility.LOGTAG, message.toString(), throwable);
+        Log.d(LogUtility.LOGTAG, message, throwable);
     }
 
     public static void i(Object... message) {
@@ -24,9 +24,9 @@ public class LogUtility {
         else Log.i(LogUtility.LOGTAG, Arrays.toString(message));
     }
 
-    public static void i(Object message, Throwable throwable) {
+    public static void i(String message, Throwable throwable) {
         if (message == null) message = "";
-        Log.i(LogUtility.LOGTAG, message.toString(), throwable);
+        Log.i(LogUtility.LOGTAG, message, throwable);
     }
 
     public static void e(Object... message) {

@@ -9,7 +9,6 @@ import com.dublikunt.nclientv2.api.enums.TagType;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
@@ -94,7 +93,7 @@ public class TagList implements Parcelable {
     }
 
     public void sort(Comparator<Tag> comparator) {
-        for (Tags t : tagList) Collections.sort(t, comparator);
+        for (Tags t : tagList) t.sort(comparator);
     }
 
     public static class Tags extends ArrayList<Tag> {

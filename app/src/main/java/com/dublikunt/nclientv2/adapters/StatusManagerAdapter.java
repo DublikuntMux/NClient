@@ -22,10 +22,10 @@ import com.dublikunt.nclientv2.components.status.StatusManager;
 import com.dublikunt.nclientv2.settings.Global;
 import com.dublikunt.nclientv2.utility.Utility;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+import com.skydoves.colorpickerview.ColorPickerDialog;
+import com.skydoves.colorpickerview.listeners.ColorEnvelopeListener;
 
 import java.util.List;
-
-import yuku.ambilwarna.AmbilWarnaDialog;
 
 public class StatusManagerAdapter extends RecyclerView.Adapter<StatusManagerAdapter.ViewHolder> {
     private final List<Status> statusList;
@@ -90,21 +90,25 @@ public class StatusManagerAdapter extends RecyclerView.Adapter<StatusManagerAdap
         newColor = color;
         btnColor.setBackgroundColor(color);
         name.setText(status == null ? "" : status.name);
-        btnColor.setOnClickListener(v -> new AmbilWarnaDialog(activity, color, false, new AmbilWarnaDialog.OnAmbilWarnaListener() {
-            @Override
-            public void onCancel(AmbilWarnaDialog dialog) {
-            }
-
-            @Override
-            public void onOk(AmbilWarnaDialog dialog, int color) {
-                if (color == Color.WHITE || color == Color.BLACK) {
-                    Toast.makeText(activity, R.string.invalid_color_selected, Toast.LENGTH_SHORT).show();
-                    return;
-                }
-                newColor = color;
-                btnColor.setBackgroundColor(color);
-            }
-        }).show());
+        btnColor.setOnClickListener(v ->
+            new ColorPickerDialog.Builder(activity)
+                .setTitle("ColorPicker Dialog")
+                .setPreferenceName("MyColorPickerDialog")
+                .setPositiveButton(R.string.confirm_pin,
+                    (ColorEnvelopeListener) (envelope, fromUser) -> {
+                        if (envelope.getColor() == Color.WHITE || envelope.getColor() == Color.BLACK) {
+                            Toast.makeText(activity, R.string.invalid_color_selected, Toast.LENGTH_SHORT).show();
+                            return;
+                        }
+                        newColor = envelope.getColor();
+                        btnColor.setBackgroundColor(envelope.getColor());
+                    })
+                .setNegativeButton(R.string.cancel,
+                    (dialogInterface, i) -> dialogInterface.dismiss())
+                .attachAlphaSlideBar(false)
+                .attachBrightnessSlideBar(true)
+                .setBottomSpace(12)
+                .show());
         builder.setView(layout);
         builder.setTitle(status == null ? R.string.create_new_status : R.string.update_status);
         builder.setPositiveButton(R.string.ok, (dialog, which) -> {

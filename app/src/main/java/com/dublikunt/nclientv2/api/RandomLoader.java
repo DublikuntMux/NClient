@@ -19,6 +19,11 @@ public class RandomLoader {
         galleries = new ArrayList<>(MAXLOADED);
         galleryHasBeenRequested = RandomActivity.loadedGallery == null;
         loadRandomGallery();
+    }
+
+    private void loadRandomGallery() {
+        if (galleries.size() >= MAXLOADED) return;
+        InspectorV3.randomInspector(activity, response, false).start();
     }    private final InspectorV3.InspectorResponse response = new InspectorV3.DefaultInspectorResponse() {
         @Override
         public void onFailure(Exception e) {
@@ -40,11 +45,6 @@ public class RandomLoader {
         }
     };
 
-    private void loadRandomGallery() {
-        if (galleries.size() >= MAXLOADED) return;
-        InspectorV3.randomInspector(activity, response, false).start();
-    }
-
     public void requestGallery() {
         galleryHasBeenRequested = true;
         for (int i = 0; i < galleries.size(); i++) {
@@ -58,6 +58,8 @@ public class RandomLoader {
         }
         loadRandomGallery();
     }
+
+
 
 
 }

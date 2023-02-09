@@ -4,7 +4,6 @@ import android.annotation.SuppressLint;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
-import android.database.DatabaseUtils;
 import android.database.sqlite.SQLiteDatabase;
 
 import androidx.annotation.NonNull;
@@ -30,7 +29,6 @@ import com.dublikunt.nclientv2.settings.Global;
 import com.dublikunt.nclientv2.settings.TagV2;
 import com.dublikunt.nclientv2.utility.LogUtility;
 
-import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
@@ -123,11 +121,10 @@ public class Queries {
             return g;
         }
 
-        @Deprecated
         @NonNull
         public static Cursor getAllFavoriteCursorDeprecated(CharSequence query, boolean online) {
             LogUtility.i("FILTER IN: " + query + ";;" + online);
-            Cursor cursor;//=db.rawQuery(sql,new String[]{url,url,url,""+(online?2:1)});
+            Cursor cursor;
             String sql = "SELECT * FROM " + TABLE_NAME + " WHERE (" +
                 FAVORITE + " =? OR " + FAVORITE + "=3)";
             if (query != null && query.length() > 0) {

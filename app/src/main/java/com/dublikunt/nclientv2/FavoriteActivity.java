@@ -10,7 +10,6 @@ import android.view.MenuItem;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.SearchView;
 import androidx.appcompat.widget.Toolbar;
-import androidx.core.view.MenuItemCompat;
 
 import com.dublikunt.nclientv2.adapters.FavoriteAdapter;
 import com.dublikunt.nclientv2.api.components.Gallery;

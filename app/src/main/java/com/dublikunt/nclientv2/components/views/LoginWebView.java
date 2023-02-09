@@ -17,6 +17,11 @@ public class LoginWebView extends CustomWebView {
     public LoginWebView(Context context) {
         super(context);
         init(context);
+    }
+
+    public LoginWebView(Context context, AttributeSet attrs) {
+        super(context, attrs);
+        init(context);
     }    private final HtmlFetcher fetcher = new HtmlFetcher() {
         @Override
         public void fetchUrl(String url, String html) {
@@ -43,11 +48,6 @@ public class LoginWebView extends CustomWebView {
         }
     };
 
-    public LoginWebView(Context context, AttributeSet attrs) {
-        super(context, attrs);
-        init(context);
-    }
-
     public LoginWebView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         init(context);
@@ -66,4 +66,6 @@ public class LoginWebView extends CustomWebView {
             LogUtility.d(String.format("e:'%s',p:'%s',t:'%s',c:'%s'", email, password, token, captcha));
         }
     }
+
+
 }

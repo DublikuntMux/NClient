@@ -231,7 +231,4 @@
             <data android:mimeType="application/pdf" />
         </intent>
     </queries>
-    <meta-data
-        android:name="com.dublikunt.nclientv2.components.classes.integration.OkHttpLibraryGlideModule"
-        android:value="GlideModule" />
 </manifest>

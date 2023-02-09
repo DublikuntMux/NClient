@@ -23,7 +23,6 @@ import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.widget.SearchView;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.GravityCompat;
-import androidx.core.view.MenuItemCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -813,13 +812,6 @@ public class MainActivity extends BaseActivity
                     inspector.start();
                 });
             }
-        }
-
-        @Override
-        public boolean shouldStart(InspectorV3 inspector) {
-            return true;
-            //loadWebVewUrl(inspector.getUrl());
-            //return inspector.canParseDocument();
         }
     }
 

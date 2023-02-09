@@ -9,8 +9,6 @@ import android.net.NetworkRequest;
 
 import androidx.annotation.NonNull;
 
-import com.dublikunt.nclientv2.utility.LogUtility;
-
 public class NetworkUtil {
     private volatile static ConnectionType type = ConnectionType.WIFI;
 

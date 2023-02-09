@@ -51,6 +51,7 @@ public class ZoomFragment extends Fragment {
     private View.OnClickListener clickListener;
     private OnZoomChangeListener zoomChangeListener;
     private ImageViewTarget<Drawable> target = null;
+
     public ZoomFragment() {
     }
 

@@ -18,7 +18,6 @@ public class StatusManagerActivity extends GeneralActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        //Global.initActivity(this);
         setContentView(R.layout.activity_bookmark);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);

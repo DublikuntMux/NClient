@@ -138,8 +138,9 @@ public class Ranges implements Parcelable {
         MONTH(R.string.months, 'm'),
         YEAR(R.string.years, 'y');
         @StringRes
+        final
         int string;
-        char val;
+        final char val;
 
         TimeUnit(int string, char val) {
             this.string = string;

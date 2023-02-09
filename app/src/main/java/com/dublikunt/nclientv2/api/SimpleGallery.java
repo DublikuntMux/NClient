@@ -1,5 +1,6 @@
 package com.dublikunt.nclientv2.api;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
@@ -53,6 +54,7 @@ public class SimpleGallery extends GenericGallery {
         language = Language.values()[in.readByte()];
     }
 
+    @SuppressLint("Range")
     public SimpleGallery(Cursor c) {
         title = c.getString(c.getColumnIndex(Queries.HistoryTable.TITLE));
         id = c.getInt(c.getColumnIndex(Queries.HistoryTable.ID));

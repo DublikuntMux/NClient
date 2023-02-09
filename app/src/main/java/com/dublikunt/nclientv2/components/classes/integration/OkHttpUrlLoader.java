@@ -7,7 +7,6 @@ import com.bumptech.glide.load.model.GlideUrl;
 import com.bumptech.glide.load.model.ModelLoader;
 import com.bumptech.glide.load.model.ModelLoaderFactory;
 import com.bumptech.glide.load.model.MultiModelLoaderFactory;
-import com.dublikunt.nclientv2.components.classes.CustomSSLSocketFactory;
 import com.dublikunt.nclientv2.settings.CustomInterceptor;
 
 import java.io.InputStream;
@@ -73,7 +72,7 @@ public class OkHttpUrlLoader implements ModelLoader<GlideUrl, InputStream> {
                         OkHttpClient client = builder.build();
                         client.dispatcher().setMaxRequests(25);
                         client.dispatcher().setMaxRequestsPerHost(25);
-                        internalClient = client;
+                        internalClient = (Call.Factory) client;
                     }
                 }
             }

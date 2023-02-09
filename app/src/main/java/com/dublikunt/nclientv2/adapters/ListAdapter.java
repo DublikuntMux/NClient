@@ -96,9 +96,6 @@ public class ListAdapter extends RecyclerView.Adapter<GenericAdapter.ViewHolder>
             else holder.layout.performClick();
         });
         holder.layout.setOnClickListener(v -> {
-              /*Intent intent = new Intent(context, GalleryActivity.class);
-              intent.putExtra(context.getPackageName() + ".ID", ent.getId());
-              context.startActivity(intent);*/
             if (context instanceof MainActivity)
                 ((MainActivity) context).setIdOpenedGallery(ent.getId());
             downloadGallery(ent);
@@ -186,13 +183,6 @@ public class ListAdapter extends RecyclerView.Adapter<GenericAdapter.ViewHolder>
     }
 
     public void restartDataset(List<GenericGallery> galleries) {
-        /*int c=mDataset.size();
-        if(c>0) {
-            mDataset.clear();
-            context.runOnUiThread(() -> notifyItemRangeRemoved(0, c));
-        }
-        mDataset.addAll(galleries);
-        context.runOnUiThread(()->notifyItemRangeInserted(0,galleries.size()));*/
         mDataset.clear();
         for (GenericGallery g : galleries)
             if (g instanceof SimpleGallery)

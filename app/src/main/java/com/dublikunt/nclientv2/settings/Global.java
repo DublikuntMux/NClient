@@ -36,10 +36,9 @@ import com.dublikunt.nclientv2.api.enums.SortType;
 import com.dublikunt.nclientv2.api.enums.TitleType;
 import com.dublikunt.nclientv2.api.local.LocalSortType;
 import com.dublikunt.nclientv2.components.CustomCookieJar;
-import com.dublikunt.nclientv2.components.classes.CustomSSLSocketFactory;
 import com.dublikunt.nclientv2.utility.LogUtility;
-import com.dublikunt.nclientv2.utility.Utility;
 import com.dublikunt.nclientv2.utility.NetworkUtil;
+import com.dublikunt.nclientv2.utility.Utility;
 import com.franmontiel.persistentcookiejar.cache.SetCookieCache;
 import com.franmontiel.persistentcookiejar.persistence.SharedPrefsCookiePersistor;
 
@@ -140,6 +139,7 @@ public class Global {
     public static int getColPortStatus() {
         return colPortStat;
     }
+
     public static boolean isDestroyed(AppCompatActivity activity) {
         return activity.isDestroyed();
     }

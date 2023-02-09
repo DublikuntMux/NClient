@@ -85,8 +85,8 @@ public class Exporter {
 
     public static String defaultExportName(SettingsActivity context) {
         Date actualTime = new Date();
-        String date = DateFormat.getDateFormat(context).format(actualTime).replaceAll("[^0-9]*", "");
-        String time = DateFormat.getTimeFormat(context).format(actualTime).replaceAll("[^0-9]*", "");
+        String date = DateFormat.getDateFormat(context).format(actualTime).replaceAll("\\D*", "");
+        String time = DateFormat.getTimeFormat(context).format(actualTime).replaceAll("\\D*", "");
         return String.format("Backup_%s_%s.zip", date, time);
     }
 

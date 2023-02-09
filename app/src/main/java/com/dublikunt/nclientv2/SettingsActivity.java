@@ -23,7 +23,6 @@ import com.dublikunt.nclientv2.async.database.export.Manager;
 import com.dublikunt.nclientv2.components.activities.GeneralActivity;
 import com.dublikunt.nclientv2.components.views.GeneralPreferenceFragment;
 import com.dublikunt.nclientv2.settings.Global;
-import com.dublikunt.nclientv2.utility.LogUtility;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 import java.io.File;
@@ -58,7 +57,7 @@ public class SettingsActivity extends GeneralActivity {
             if (selectedFile == null) return;
             importSettings(selectedFile);
         });
-        SAVE_SETTINGS = registerForActivityResult(new ActivityResultContracts.CreateDocument() {
+        SAVE_SETTINGS = registerForActivityResult(new ActivityResultContracts.CreateDocument("application/zip") {
             @NonNull
             @Override
             public Intent createIntent(@NonNull Context context, @NonNull String input) {
