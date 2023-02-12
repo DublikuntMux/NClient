@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+<com.google.android.material.card.MaterialCardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -30,13 +31,12 @@
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@color/entry_background"
             android:orientation="vertical"
             app:layout_constraintBottom_toBottomOf="@id/image"
             app:layout_constraintEnd_toEndOf="@id/image"
             app:layout_constraintStart_toStartOf="@id/image">
 
-            <TextView
+            <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/title"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -44,7 +44,6 @@
                 android:gravity="center"
                 android:maxLines="3"
                 android:minLines="2"
-                android:text="249084208"
                 android:textAlignment="center"
                 android:textColor="@android:color/white"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -72,7 +71,7 @@
                     app:layout_constraintStart_toEndOf="@+id/progress"
                     app:layout_constraintTop_toTopOf="@+id/playButton" />
 
-                <ImageButton
+                <com.google.android.material.button.MaterialButton
                     android:id="@+id/playButton"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
@@ -85,9 +84,12 @@
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toStartOf="@+id/cancelButton"
                     app:layout_constraintTop_toTopOf="parent"
-                    app:srcCompat="@drawable/ic_play" />
+                    app:icon="@drawable/ic_play"
+                    app:iconGravity="textStart"
+                    app:iconPadding="0dp"
+                    app:iconTint="?android:attr/colorForeground" />
 
-                <ImageButton
+                <com.google.android.material.button.MaterialButton
                     android:id="@+id/cancelButton"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
@@ -100,9 +102,12 @@
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
-                    app:srcCompat="@drawable/ic_close" />
+                    app:icon="@drawable/ic_close"
+                    app:iconGravity="textStart"
+                    app:iconPadding="0dp"
+                    app:iconTint="?android:attr/colorForeground" />
 
-                <TextView
+                <com.google.android.material.textview.MaterialTextView
                     android:id="@+id/progress"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -115,4 +120,4 @@
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.constraintlayout.widget.ConstraintLayout>
-</androidx.cardview.widget.CardView>
+</com.google.android.material.card.MaterialCardView>

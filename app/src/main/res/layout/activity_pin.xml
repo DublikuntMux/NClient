@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -33,42 +34,26 @@
             android:orientation="horizontal"
             android:weightSum="3">
 
-            <Button
+            <com.google.android.material.button.MaterialButton
                 android:id="@+id/btn1"
-                style="?attr/borderlessButtonStyle"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:foreground="?attr/selectableItemBackgroundBorderless"
-                android:text="1"
-                android:textColor="?android:attr/colorForeground"
-                android:tint="?android:attr/colorForeground"
-                app:backgroundTint="@android:color/transparent"
-                tools:ignore="NestedWeights" />
+                android:text="1" />
 
-            <Button
+            <com.google.android.material.button.MaterialButton
                 android:id="@+id/btn2"
-                style="?attr/borderlessButtonStyle"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:foreground="?attr/selectableItemBackgroundBorderless"
-                android:text="2"
-                android:textColor="?android:attr/colorForeground"
-                android:tint="?android:attr/colorForeground"
-                app:backgroundTint="@android:color/transparent" />
+                android:text="2" />
 
-            <Button
+            <com.google.android.material.button.MaterialButton
                 android:id="@+id/btn3"
-                style="?attr/borderlessButtonStyle"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:foreground="?attr/selectableItemBackgroundBorderless"
-                android:text="3"
-                android:textColor="?android:attr/colorForeground"
-                android:tint="?android:attr/colorForeground"
-                app:backgroundTint="@android:color/transparent" />
+                android:text="3" />
         </LinearLayout>
 
         <LinearLayout
@@ -79,43 +64,26 @@
             android:orientation="horizontal"
             android:weightSum="3">
 
-            <Button
+            <com.google.android.material.button.MaterialButton
                 android:id="@+id/btn4"
-                style="?attr/borderlessButtonStyle"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:foreground="?attr/selectableItemBackgroundBorderless"
-                android:text="4"
-                android:textColor="?android:attr/colorForeground"
-                android:tint="?android:attr/colorForeground"
-                app:backgroundTint="@android:color/transparent"
-                tools:ignore="NestedWeights" />
+                android:text="4" />
 
-            <Button
+            <com.google.android.material.button.MaterialButton
                 android:id="@+id/btn5"
-                style="?attr/borderlessButtonStyle"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:foreground="?attr/selectableItemBackgroundBorderless"
-                android:text="5"
-                android:textColor="?android:attr/colorForeground"
-                android:tint="?android:attr/colorForeground"
-                app:backgroundTint="@android:color/transparent" />
+                android:text="5" />
 
-            <Button
+            <com.google.android.material.button.MaterialButton
                 android:id="@+id/btn6"
-                style="?attr/borderlessButtonStyle"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:background="?attr/selectableItemBackgroundBorderless"
-                android:foreground="?attr/selectableItemBackgroundBorderless"
-                android:text="6"
-                android:textColor="?android:attr/colorForeground"
-                android:tint="?android:attr/colorForeground"
-                app:backgroundTint="@android:color/transparent" />
+                android:text="6"/>
         </LinearLayout>
 
         <LinearLayout
@@ -126,42 +94,26 @@
             android:orientation="horizontal"
             android:weightSum="3">
 
-            <Button
+            <com.google.android.material.button.MaterialButton
                 android:id="@+id/btn7"
-                style="?attr/borderlessButtonStyle"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:foreground="?attr/selectableItemBackgroundBorderless"
-                android:text="7"
-                android:textColor="?android:attr/colorForeground"
-                android:tint="?android:attr/colorForeground"
-                app:backgroundTint="@android:color/transparent"
-                tools:ignore="NestedWeights" />
+                android:text="7" />
 
-            <Button
+            <com.google.android.material.button.MaterialButton
                 android:id="@+id/btn8"
-                style="?attr/borderlessButtonStyle"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:foreground="?attr/selectableItemBackgroundBorderless"
-                android:text="8"
-                android:textColor="?android:attr/colorForeground"
-                android:tint="?android:attr/colorForeground"
-                app:backgroundTint="@android:color/transparent" />
+                android:text="8" />
 
-            <Button
+            <com.google.android.material.button.MaterialButton
                 android:id="@+id/btn9"
-                style="?attr/borderlessButtonStyle"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:foreground="?attr/selectableItemBackgroundBorderless"
-                android:text="9"
-                android:textColor="?android:attr/colorForeground"
-                android:tint="?android:attr/colorForeground"
-                app:backgroundTint="@android:color/transparent" />
+                android:text="9" />
         </LinearLayout>
 
         <LinearLayout
@@ -172,41 +124,33 @@
             android:orientation="horizontal"
             android:weightSum="3">
 
-            <ImageButton
+            <com.google.android.material.button.MaterialButton
                 android:id="@+id/utility"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:background="?attr/selectableItemBackgroundBorderless"
                 android:contentDescription="@string/app_name"
-                android:textColor="?android:attr/colorForeground"
-                app:backgroundTint="@android:color/transparent"
-                app:srcCompat="@drawable/ic_arrow_back"
-                tools:ignore="NestedWeights"
-                app:tint="?android:attr/colorForeground" />
+                app:icon="@drawable/ic_arrow_back"
+                app:iconGravity="textStart"
+                app:iconPadding="0dp"
+            />
 
-            <Button
+            <com.google.android.material.button.MaterialButton
                 android:id="@+id/btn0"
-                style="?attr/borderlessButtonStyle"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:foreground="?attr/selectableItemBackgroundBorderless"
-                android:text="0"
-                android:textColor="?android:attr/colorForeground"
-                app:backgroundTint="@android:color/transparent" />
+                android:text="0" />
 
-            <ImageButton
+            <com.google.android.material.button.MaterialButton
                 android:id="@+id/cancelButton"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:background="?attr/selectableItemBackgroundBorderless"
                 android:contentDescription="@string/app_name"
-                android:textColor="?android:attr/colorForeground"
-                app:backgroundTint="@android:color/transparent"
-                app:srcCompat="@drawable/ic_backspace"
-                app:tint="?android:attr/colorForeground" />
+                app:icon="@drawable/ic_backspace"
+                app:iconGravity="textStart"
+                app:iconPadding="0dp" />
         </LinearLayout>
     </LinearLayout>
 
@@ -225,7 +169,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView">
 
-        <TextView
+        <com.google.android.material.textview.MaterialTextView
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
@@ -233,7 +177,7 @@
             android:text="@string/empty_circle"
             android:textSize="64sp" />
 
-        <TextView
+        <com.google.android.material.textview.MaterialTextView
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
@@ -241,7 +185,7 @@
             android:text="@string/empty_circle"
             android:textSize="64sp" />
 
-        <TextView
+        <com.google.android.material.textview.MaterialTextView
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
@@ -249,7 +193,7 @@
             android:text="@string/empty_circle"
             android:textSize="64sp" />
 
-        <TextView
+        <com.google.android.material.textview.MaterialTextView
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
@@ -269,7 +213,7 @@
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/ic_logo" />
 
-    <TextView
+    <com.google.android.material.textview.MaterialTextView
         android:id="@+id/textView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -280,7 +224,6 @@
         android:layout_marginRight="8dp"
         android:text="@string/insert_pin"
         android:textAppearance="@style/TextAppearance.AppCompat.Large"
-
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

@@ -1,8 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="setting_on_ignore_tags">Non verranno aggiunti ulteriori tag quando un tag è scelto da una galleria (tranne la lingua)</string>
-    <string name="setting_off_ignore_tags">Verranno aggiunti ulteriori tag quando un tag è scelto da una galleria (tranne la lingua)</string>
-    <string name="setting_on_use_account_tag">Usa i tag online per la ricerca (i tag locali avranno priorità)</string>
+    <string name="setting_on_ignore_tags">Non verranno aggiunti ulteriori tag quando un tag è scelto
+        da una galleria (tranne la lingua)</string>
+    <string name="setting_off_ignore_tags">Verranno aggiunti ulteriori tag quando un tag è scelto da
+        una galleria (tranne la lingua)</string>
+    <string name="setting_on_use_account_tag">Usa i tag online per la ricerca (i tag locali avranno
+        priorità)</string>
     <string name="setting_off_use_account_tag">I tag online verranno ignorati</string>
     <string name="theme_summary">Seleziona schema colori</string>
     <string name="change_theme">Cambia temi</string>
@@ -25,7 +28,8 @@
     <string name="channel1_name">Scarica galleria</string>
     <string name="channel2_name">Crea PDF</string>
     <string name="channel3_name">Crea ZIP</string>
-    <string name="channel1_description">Usato per visualizzare l\'avanzamento del download di gallerie</string>
+    <string name="channel1_description">Usato per visualizzare l\'avanzamento del download di
+        gallerie</string>
     <string name="channel2_description">Usato per visualizzare l\'avanzamento della creazione di PDF</string>
     <string name="channel3_description">Usato per visualizzare l\'avanzamento della creazione di ZIP</string>
     <string name="channel2_title">Creando PDF:</string>
@@ -122,7 +126,8 @@
     <string name="setting_on_use_rtl">Le immagini saranno mostrate da destra verso sinistra</string>
     <string name="setting_off_use_rtl">Le immagini saranno mostrate da sinistra verso destra</string>
     <string name="volume_change_setting">Cambia pagina coi pulsanti volume</string>
-    <string name="popular_tag_count">Il numero di tag popolari da mostrare mentre in modalità di ricerca avanzata</string>
+    <string name="popular_tag_count">Il numero di tag popolari da mostrare mentre in modalità di
+        ricerca avanzata</string>
     <string name="show_gallery_titles">Mostra titoli gallerie</string>
     <string name="use_column_port">Numero colonne mentre in modalità verticale</string>
     <string name="use_column_land">Numero colonne mentre in modalità orizzontale</string>
@@ -183,7 +188,8 @@
     <string name="data_usage_thumb">Scarica solo anteprime</string>
     <string name="data_usage_full">Scarica immagini complete o anteprime</string>
     <string name="data_usage_no">Non scaricare le immagini</string>
-    <string name="enable_network_to_continue">Abilita il download delle immagini o cambia tipo di rete per aprire l\'immagine</string>
+    <string name="enable_network_to_continue">Abilita il download delle immagini o cambia tipo di
+        rete per aprire l\'immagine</string>
     <string name="id_tag">ID:</string>
     <string name="id_copied_to_clipboard">ID copiato nella clipboard</string>
     <string name="copied_to_clipboard">Copiato nella clipboard</string>
@@ -233,7 +239,8 @@
     <string name="download_date">Data di download</string>
     <string name="page_count">Numero di pagine</string>
     <string name="descending_order">Ordine decrescente</string>
-    <string name="minimum_comment_length" formatted="true">Il commento deve essere di almeno %d caratteri</string>
+    <string name="minimum_comment_length" formatted="true">Il commento deve essere di almeno %d
+        caratteri</string>
     <string name="change_scroll_type">Cambia scorrimento</string>
     <string name="export_data">Esporta dati</string>
     <string name="import_data">Importa dati</string>
@@ -253,11 +260,16 @@
     <string name="custom_path">Percorso personalizzato</string>
     <string name="insert_path">Inserisci percorso</string>
     <string name="requesting_storage_access">Richiesta accesso alla memoria</string>
-    <string name="request_storage_manager_summary">Per via di alcune restrizioni sull\'accesso alla memoria su Android 11 sono richiesti ulteriori permessi per usare i percorsi personalizzati.\nSe vuoi dare questi permessi abilitali nella prossima schermata.</string>
+    <string name="request_storage_manager_summary">Per via di alcune restrizioni sull\'accesso alla
+        memoria su Android 11 sono richiesti ulteriori permessi per usare i percorsi
+        personalizzati.\nSe vuoi dare questi permessi abilitali nella prossima schermata.</string>
     <string name="fix_inverted_title">Ripara immagini invertite</string>
-    <string name="fix_inverted_summary">Abilita se le immagini sonoo msotrate a colori invertiti (in qualche dispositivo può cambiare il tema di sistema in chiaro, disabilitarlo riparerà il problema)</string>
+    <string name="fix_inverted_summary">Abilita se le immagini sonoo msotrate a colori invertiti (in
+        qualche dispositivo può cambiare il tema di sistema in chiaro, disabilitarlo riparerà il
+        problema)</string>
     <string name="navigation_settings_per_screen">Impostazioni di navigazione per schermata</string>
-    <string name="summary_offscreen_limit">Imposta il numero di immagini da preacricare quando si sta leggendo una galleria</string>
+    <string name="summary_offscreen_limit">Imposta il numero di immagini da preacricare quando si
+        sta leggendo una galleria</string>
     <string name="title_offscreen_limit">Immagini da precaricare</string>
     <string name="sort_popoular_month">Popolarità mensile</string>
     <string name="random">Casuale</string>
@@ -265,7 +277,6 @@
     <string name="export_finished">Esportazione completata</string>
     <string name="import_finished">Importazione completata</string>
     <string name="download_torrent">Download torrent</string>
-    <string name="title_activity_captcha">CAPTCHA</string>
     <string name="invalid_response">Risposta invalida</string>
     <string name="system_default">System default</string>
     <string-array name="scroll_type">
@@ -282,4 +293,6 @@
         <item>Semplice</item>
     </string-array>
     <string name="clear_cookies">Biscotti puliti</string>
+    <string name="confirm">Confermare</string>
+    <string name="сolor_selection">Selezione del colore</string>
 </resources>

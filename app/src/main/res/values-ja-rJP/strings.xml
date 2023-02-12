@@ -253,9 +253,12 @@
     <string name="custom_path">カスタムパス</string>
     <string name="insert_path">パスを挿入:</string>
     <string name="requesting_storage_access">ストレージアクセスの要求</string>
-    <string name="request_storage_manager_summary">Android 11ではストレージアクセスに制限があるため、このアプリではカスタムパスを使用するための追加の権限を付与する必要があります。\ nこれらの権限を付与する場合は、次のダイアログで設定を有効にしてください。</string>
+    <string name="request_storage_manager_summary">Android
+        11ではストレージアクセスに制限があるため、このアプリではカスタムパスを使用するための追加の権限を付与する必要があります。\
+        nこれらの権限を付与する場合は、次のダイアログで設定を有効にしてください。</string>
     <string name="fix_inverted_title">反転画像を修正</string>
-    <string name="fix_inverted_summary">画像が反転した色で表示されている場合は有効にします（一部のデバイスでは、システムテーマが明るい色に変更される可能性があり、この設定を無効にするとこの問題が修正されます。）</string>
+    <string name="fix_inverted_summary">
+        画像が反転した色で表示されている場合は有効にします（一部のデバイスでは、システムテーマが明るい色に変更される可能性があり、この設定を無効にするとこの問題が修正されます。）</string>
     <string name="navigation_settings_per_screen">画面ごとのナビゲーションを設定</string>
     <string name="summary_offscreen_limit">ギャラリーを読むときに画面外にプリロードする画像の数を設定</string>
     <string name="title_offscreen_limit">プリロードする画像</string>
@@ -265,7 +268,6 @@
     <string name="export_finished">エクスポートが完了しました</string>
     <string name="import_finished">インポートが完了しました</string>
     <string name="download_torrent">torrentファイルをダウンロード</string>
-    <string name="title_activity_captcha">CAPTCHA</string>
     <string name="invalid_response">無効な応答</string>
     <string name="system_default">システムのデフォルト</string>
     <string-array name="scroll_type">
@@ -282,4 +284,6 @@
         <item>かわいい</item>
     </string-array>
     <string name="clear_cookies">クッキーを消す</string>
+    <string name="confirm">確認</string>
+    <string name="сolor_selection">色の選択</string>
 </resources>

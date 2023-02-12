@@ -58,9 +58,12 @@
     <string name="key_change_page_buttons" translatable="false">change_page_buttons</string>
     <string name="dash" translatable="false">-</string>
     <string name="slash" translatable="false">/</string>
-    <string name="setting_on_ignore_tags">Other tags won\'t be queried when a tag is selected from the gallery menu (except language)</string>
-    <string name="setting_off_ignore_tags">Other tags will be queried when a tag is selected from the gallery menu</string>
-    <string name="setting_on_use_account_tag">Use the account tags into the search query (Local tags will have priority)</string>
+    <string name="setting_on_ignore_tags">Other tags won\'t be queried when a tag is selected from
+        the gallery menu (except language)</string>
+    <string name="setting_off_ignore_tags">Other tags will be queried when a tag is selected from
+        the gallery menu</string>
+    <string name="setting_on_use_account_tag">Use the account tags into the search query (Local tags
+        will have priority)</string>
     <string name="setting_off_use_account_tag">Account tags will be ignored for the query</string>
     <string name="theme_summary">Select theme colors</string>
     <string name="change_theme">Change theme</string>
@@ -241,7 +244,8 @@
     <string name="data_usage_thumb">Always download thumbnail</string>
     <string name="data_usage_full">Download thumbnail or full images</string>
     <string name="data_usage_no">Don\'t download images</string>
-    <string name="enable_network_to_continue">Enable image download or change network to open the image</string>
+    <string name="enable_network_to_continue">Enable image download or change network to open the
+        image</string>
     <string name="id_tag">ID:</string>
     <string name="id_copied_to_clipboard">ID copied to clipboard</string>
     <string name="copied_to_clipboard">Copied to clipboard</string>
@@ -291,7 +295,8 @@
     <string name="download_date">Download date</string>
     <string name="page_count">Page count</string>
     <string name="descending_order">Descending order</string>
-    <string name="minimum_comment_length" formatted="true">The comment must be at least %d characters</string>
+    <string name="minimum_comment_length" formatted="true">The comment must be at least %d
+        characters</string>
     <string name="change_scroll_type">Change scroll type</string>
     <string name="export_data">Export data</string>
     <string name="import_data">Import data</string>
@@ -311,11 +316,15 @@
     <string name="custom_path">Custom path</string>
     <string name="insert_path">Insert path:</string>
     <string name="requesting_storage_access">Requesting storage access</string>
-    <string name="request_storage_manager_summary">Due to some restriction in Android 11 to the storage access this app will require you to give additional permission to use custom paths.\nIf you want to give those permission please enable the setting in the next dialog.</string>
+    <string name="request_storage_manager_summary">Due to some restriction in Android 11 to the
+        storage access this app will require you to give additional permission to use custom
+        paths.\nIf you want to give those permission please enable the setting in the next dialog.</string>
     <string name="fix_inverted_title">Fix inverted images</string>
-    <string name="fix_inverted_summary">Enable if the images are shown with inverted colors (in some devices can cause the system theme to be changed to light, disabling it will fix this issue)</string>
+    <string name="fix_inverted_summary">Enable if the images are shown with inverted colors (in some
+        devices can cause the system theme to be changed to light, disabling it will fix this issue)</string>
     <string name="navigation_settings_per_screen">Navigation settings per screen</string>
-    <string name="summary_offscreen_limit">Set the number of images to preload offscreen when reading a gallery</string>
+    <string name="summary_offscreen_limit">Set the number of images to preload offscreen when
+        reading a gallery</string>
     <string name="title_offscreen_limit">Image to preload</string>
     <string name="sort_popoular_month">Monthly popular</string>
     <string name="random">Random</string>
@@ -323,7 +332,7 @@
     <string name="export_finished">Export finished</string>
     <string name="import_finished">Import finished</string>
     <string name="download_torrent">Download torrent</string>
-    <string name="title_activity_captcha">CAPTCHA</string>
+    <string name="title_activity_captcha" translatable="false">CAPTCHA</string>
     <string name="invalid_response">Invalid response</string>
     <string name="system_default">System default</string>
     <string name="clear_cookies">Clear cookies</string>
@@ -357,5 +366,7 @@
         <item>japanese</item>
         <item>pretty</item>
     </string-array>
+    <string name="confirm">Сonfirm</string>
+    <string name="сolor_selection">Color selection</string>
 
 </resources>

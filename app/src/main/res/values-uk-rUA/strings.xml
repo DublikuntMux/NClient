@@ -1,8 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="setting_on_ignore_tags">Інші теги не будуть використані, якщо тег вибрано з меню галереї(окрім мови)</string>
-    <string name="setting_off_ignore_tags">Інші теги будуть використані, якщо тег вибрано з меню галереї</string>
-    <string name="setting_on_use_account_tag">Використовувати теги аккаунту у пошуковому запиті (Локальні теги будуть мати більший пріоритет)</string>
+    <string name="setting_on_ignore_tags">Інші теги не будуть використані, якщо тег вибрано з меню
+        галереї(окрім мови)</string>
+    <string name="setting_off_ignore_tags">Інші теги будуть використані, якщо тег вибрано з меню
+        галереї</string>
+    <string name="setting_on_use_account_tag">Використовувати теги аккаунту у пошуковому запиті
+        (Локальні теги будуть мати більший пріоритет)</string>
     <string name="setting_off_use_account_tag">Теги аккаунту будуть ігноруватися при запиті</string>
     <string name="theme_summary">Обрати колір теми</string>
     <string name="change_theme">Змінити тему</string>
@@ -168,7 +171,8 @@
     <string name="resume">Продовжити</string>
     <string name="pause">Призупинити</string>
     <string name="title_copied_to_clipboard">Назва скопійована до буферу</string>
-    <string name="setting_zoom_one_column">Увімкнути масштабування, якщо у режимі однієї колонки всередині галереї</string>
+    <string name="setting_zoom_one_column">Увімкнути масштабування, якщо у режимі однієї колонки
+        всередині галереї</string>
     <string name="zoom_one_column">Увімкнути масштабування</string>
     <string name="insert_pin">Введіть PIN</string>
     <string name="confirm_pin">Підтвердити PIN</string>
@@ -183,7 +187,8 @@
     <string name="data_usage_thumb">Завжди завантажувати ескізи</string>
     <string name="data_usage_full">Завантажити ескіз або повне зображення</string>
     <string name="data_usage_no">Не завантажувати зображення</string>
-    <string name="enable_network_to_continue">Увімкнути завантаження зображень або змінити мережу для відкриття зображення</string>
+    <string name="enable_network_to_continue">Увімкнути завантаження зображень або змінити мережу
+        для відкриття зображення</string>
     <string name="id_tag">ID:</string>
     <string name="id_copied_to_clipboard">ID скопійовано до буфера обміну</string>
     <string name="copied_to_clipboard">Скопійовано до буфера обміну</string>
@@ -233,7 +238,8 @@
     <string name="download_date">Дата завантаження</string>
     <string name="page_count">Кількість сторінок</string>
     <string name="descending_order">За спаданням</string>
-    <string name="minimum_comment_length" formatted="true">Коментар повинен бути принаймні %d символів</string>
+    <string name="minimum_comment_length" formatted="true">Коментар повинен бути принаймні %d
+        символів</string>
     <string name="change_scroll_type">Змінити тип прокрутки</string>
     <string name="export_data">Експортування даних</string>
     <string name="import_data">Імпортувати дані</string>
@@ -253,9 +259,14 @@
     <string name="custom_path">Користувацький шлях</string>
     <string name="insert_path">Вкажіть шлях:</string>
     <string name="requesting_storage_access">Запит доступу до сховища</string>
-    <string name="request_storage_manager_summary">Через деякі обмеження в Android 11 на доступ до сховища цього додатку вимагають від вас додаткового дозволу на використання користувацьких шляхів.\nЯкщо ви хочете надати цим дозволу, будь ласка, увімкніть опцію в наступному діалоговому вікні.</string>
+    <string name="request_storage_manager_summary">Через деякі обмеження в Android 11 на доступ до
+        сховища цього додатку вимагають від вас додаткового дозволу на використання користувацьких
+        шляхів.\nЯкщо ви хочете надати цим дозволу, будь ласка, увімкніть опцію в наступному
+        діалоговому вікні.</string>
     <string name="fix_inverted_title">Виправити інвертовані зображення</string>
-    <string name="fix_inverted_summary">Увімкніть, якщо зображення відображаються інвертованим кольором (в деяких пристроях може призвести до зміни системної теми до світла, відключення виправить цю проблему)</string>
+    <string name="fix_inverted_summary">Увімкніть, якщо зображення відображаються інвертованим
+        кольором (в деяких пристроях може призвести до зміни системної теми до світла, відключення
+        виправить цю проблему)</string>
     <string name="navigation_settings_per_screen">Налаштування навігації на екрані</string>
     <string name="summary_offscreen_limit">Встановити ліміт предзавантаження</string>
     <string name="title_offscreen_limit">Зображення для предзавантаження</string>
@@ -265,7 +276,6 @@
     <string name="export_finished">Експорт завершено</string>
     <string name="import_finished">Імпорт завершено</string>
     <string name="download_torrent">Завантажити торрент</string>
-    <string name="title_activity_captcha">CAPTCHA</string>
     <string name="invalid_response">Недійсна відповідь</string>
     <string name="system_default">System default</string>
     <string name="clear_cookies">Очистити куки</string>
@@ -282,4 +292,6 @@
         <item>Японська</item>
         <item>Pretty</item>
     </string-array>
+    <string name="confirm">Підтвердити</string>
+    <string name="сolor_selection">Вибір кольору</string>
 </resources>

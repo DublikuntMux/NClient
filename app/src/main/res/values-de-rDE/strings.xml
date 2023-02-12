@@ -1,8 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="setting_on_ignore_tags">Andere Tags werden nicht gesucht wenn du einen Tag von einer Galerie auswählst (außer die Sprache)</string>
-    <string name="setting_off_ignore_tags">Andere Tags werden gesucht wenn du einen Tag von einer Galerie auswählst</string>
-    <string name="setting_on_use_account_tag">Benutze online Tags in deiner Suche (lokale Tags haben Priorität)</string>
+    <string name="setting_on_ignore_tags">Andere Tags werden nicht gesucht wenn du einen Tag von
+        einer Galerie auswählst (außer die Sprache)</string>
+    <string name="setting_off_ignore_tags">Andere Tags werden gesucht wenn du einen Tag von einer
+        Galerie auswählst</string>
+    <string name="setting_on_use_account_tag">Benutze online Tags in deiner Suche (lokale Tags haben
+        Priorität)</string>
     <string name="setting_off_use_account_tag">Online Tags werden bei deiner Suche ignoriert</string>
     <string name="theme_summary">Farbschema wählen</string>
     <string name="change_theme">Thema ändern</string>
@@ -25,7 +28,8 @@
     <string name="channel1_name">Galerie herunterladen</string>
     <string name="channel2_name">PDF erstellen</string>
     <string name="channel3_name">ZIP erstellen</string>
-    <string name="channel1_description">Benutzt um den Fortschritt beim Download der Galerie anzuzeigen</string>
+    <string name="channel1_description">Benutzt um den Fortschritt beim Download der Galerie
+        anzuzeigen</string>
     <string name="channel2_description">Benutzt um den Fortschritt beim Erstellen des PDF anzuzeigen</string>
     <string name="channel3_description">Benutzt um den Fortschritt beim Erstellen des ZIP anzuzeigen</string>
     <string name="channel2_title">Erstelle PDF:</string>
@@ -84,7 +88,8 @@
     <string name="favorite_count_format" formatted="true">%d Favoriten</string>
     <string name="favorite_manga">Lieblingsmanga</string>
     <string name="setting_on_remove_ignored">Die Galerie mit ignorierten Tags wird nicht gezeigt</string>
-    <string name="setting_off_remove_ignored">Die Galerie mit ignorierten Tags verschwommen angezeigt</string>
+    <string name="setting_off_remove_ignored">Die Galerie mit ignorierten Tags verschwommen
+        angezeigt</string>
     <string name="remove_ignored_galleries">Entferne ignorierte Galerien</string>
     <string name="clear_tag_preferences">Tag Präferenzen leeren</string>
     <string name="clear_this_list">Diese Liste leeren?</string>
@@ -183,7 +188,8 @@
     <string name="data_usage_thumb">Immer Vorschaubilder herunterladen</string>
     <string name="data_usage_full">Lade Vorschaubilder oder ganze Bilder herunter</string>
     <string name="data_usage_no">Lade keine Bilder herunter</string>
-    <string name="enable_network_to_continue">Aktiviere Bilder laden oder wechsel das Netzwerk um Bild zu öffnen</string>
+    <string name="enable_network_to_continue">Aktiviere Bilder laden oder wechsel das Netzwerk um
+        Bild zu öffnen</string>
     <string name="id_tag">ID:</string>
     <string name="id_copied_to_clipboard">ID in die Zwischenablage kopiert</string>
     <string name="copied_to_clipboard">In die Zwischenablage kopiert</string>
@@ -233,7 +239,8 @@
     <string name="download_date">Download Datum</string>
     <string name="page_count">Seitenanzahl</string>
     <string name="descending_order">Absteigende Reihenfolge</string>
-    <string name="minimum_comment_length" formatted="true">Der Kommentar muss mindestens %d Zeichen haben</string>
+    <string name="minimum_comment_length" formatted="true">Der Kommentar muss mindestens %d Zeichen
+        haben</string>
     <string name="change_scroll_type">Ändere Scroll Typ</string>
     <string name="export_data">Exportiere Daten</string>
     <string name="import_data">Importiere Daten</string>
@@ -253,11 +260,17 @@
     <string name="custom_path">Benutzerdefinierter Pfad</string>
     <string name="insert_path">Pfad:</string>
     <string name="requesting_storage_access">Fordere Berechtigungen für den Gerätespeicher</string>
-    <string name="request_storage_manager_summary">Aufgrund einer Einschränkung des Speicherzugriffs in Android 11 erfordert diese App eine zusätzliche Berechtigung zur Verwendung benutzerdefinierter Pfade.\nWenn Sie diese Berechtigung erteilen möchten, aktivieren Sie die Einstellung im nächsten Dialogfeld.</string>
+    <string name="request_storage_manager_summary">Aufgrund einer Einschränkung des Speicherzugriffs
+        in Android 11 erfordert diese App eine zusätzliche Berechtigung zur Verwendung
+        benutzerdefinierter Pfade.\nWenn Sie diese Berechtigung erteilen möchten, aktivieren Sie die
+        Einstellung im nächsten Dialogfeld.</string>
     <string name="fix_inverted_title">Repariere invertierte Bilder</string>
-    <string name="fix_inverted_summary">Aktivieren wenn Bilder mit invertierten Farben angezeigt werden (Auf manchen Geräten führt das zum ändern des Gerätethemas zu weiß. Deaktivieren der Einstellung wird dies wieder änderen.)</string>
+    <string name="fix_inverted_summary">Aktivieren wenn Bilder mit invertierten Farben angezeigt
+        werden (Auf manchen Geräten führt das zum ändern des Gerätethemas zu weiß. Deaktivieren der
+        Einstellung wird dies wieder änderen.)</string>
     <string name="navigation_settings_per_screen">Navigations Einstellungen pro Bild</string>
-    <string name="summary_offscreen_limit">Anzahl an Seiten die vorgeladen werden beim lesen einer Galerie</string>
+    <string name="summary_offscreen_limit">Anzahl an Seiten die vorgeladen werden beim lesen einer
+        Galerie</string>
     <string name="title_offscreen_limit">Bilder vorladen</string>
     <string name="sort_popoular_month">Populär diesen Monat</string>
     <string name="random">Zufällig</string>
@@ -265,7 +278,6 @@
     <string name="export_finished">Export finished</string>
     <string name="import_finished">Import finished</string>
     <string name="download_torrent">Download torrent</string>
-    <string name="title_activity_captcha">CAPTCHA</string>
     <string name="invalid_response">Invalid response</string>
     <string name="system_default">System default</string>
     <string-array name="scroll_type">
@@ -282,4 +294,6 @@
         <item>Schön</item>
     </string-array>
     <string name="clear_cookies">Klare Kekse</string>
+    <string name="confirm">Bestätigen</string>
+    <string name="сolor_selection">Farbauswahl</string>
 </resources>

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+<com.google.android.material.card.MaterialCardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -18,15 +19,14 @@
         android:orientation="horizontal"
         android:weightSum="10">
 
-        <TextView
+        <com.google.android.material.textview.MaterialTextView
             android:id="@+id/name"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
-            android:layout_marginLeft="8dp"
             android:layout_weight="7" />
 
-        <Button
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/color"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -37,7 +37,7 @@
             android:layout_weight="2"
             android:clickable="false" />
 
-        <ImageButton
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/cancelButton"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -47,6 +47,9 @@
             android:layout_weight="1"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:contentDescription="@null"
-            app:srcCompat="@drawable/ic_close" />
+            app:icon="@drawable/ic_close"
+            app:iconTint="?android:attr/colorForeground"
+            app:iconGravity="textStart"
+            app:iconPadding="0dp" />
     </LinearLayout>
-</androidx.cardview.widget.CardView>
+</com.google.android.material.card.MaterialCardView>

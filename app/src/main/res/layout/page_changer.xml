@@ -10,8 +10,8 @@
         android:id="@+id/seekBar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="24dp"
-        android:layout_marginBottom="24dp" />
+        android:layout_marginTop="20dp"
+        android:layout_marginBottom="20dp" />
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -21,17 +21,19 @@
         android:orientation="horizontal"
         android:weightSum="11">
 
-        <ImageButton
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/prev"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="2"
             android:contentDescription="@string/prev"
+            app:iconGravity="textStart"
+            app:iconPadding="0dp"
             app:backgroundTint="@android:color/transparent"
-            app:srcCompat="@drawable/ic_keyboard_arrow_left"
-            app:tint="?android:attr/colorForeground" />
+            app:icon="@drawable/ic_keyboard_arrow_left"
+            app:iconTint="?android:attr/colorForeground" />
 
-        <EditText
+        <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/edit_page"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -42,7 +44,7 @@
             android:textSize="24sp"
             tools:ignore="Autofill" />
 
-        <TextView
+        <com.google.android.material.textview.MaterialTextView
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
@@ -50,7 +52,7 @@
             android:text="@string/slash"
             android:textSize="24sp" />
 
-        <TextView
+        <com.google.android.material.textview.MaterialTextView
             android:id="@+id/page"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -58,16 +60,16 @@
             android:gravity="center"
             android:textSize="24sp" />
 
-        <ImageButton
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/next"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="2"
             android:contentDescription="@string/next"
+            app:iconGravity="textStart"
+            app:iconPadding="0dp"
             app:backgroundTint="@android:color/transparent"
-            app:srcCompat="@drawable/ic_keyboard_arrow_right"
-            app:tint="?android:attr/colorForeground" />
+            app:icon="@drawable/ic_keyboard_arrow_right"
+            app:iconTint="?android:attr/colorForeground" />
     </LinearLayout>
-
-
 </LinearLayout>

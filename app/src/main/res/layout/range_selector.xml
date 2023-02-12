@@ -4,7 +4,7 @@
     android:layout_height="wrap_content"
     android:orientation="vertical">
 
-    <TextView
+    <com.google.android.material.textview.MaterialTextView
         style="@style/TextAppearance.MaterialComponents.Headline6"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -17,7 +17,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 
-    <TextView
+    <com.google.android.material.textview.MaterialTextView
         style="@style/TextAppearance.MaterialComponents.Headline6"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

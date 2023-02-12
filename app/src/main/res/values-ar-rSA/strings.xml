@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="setting_on_ignore_tags">لن يُستعلم عن الوسوم الأخرى إذا اختير وسام من قائمة الأعمال (باستثناء اللغة)</string>
+    <string name="setting_on_ignore_tags">لن يُستعلم عن الوسوم الأخرى إذا اختير وسام من قائمة
+        الأعمال (باستثناء اللغة)</string>
     <string name="setting_off_ignore_tags">سيُستعلم عن الوسوم الأخرى إذا اختير وسام من قائمة الأعمال</string>
-    <string name="setting_on_use_account_tag">اِستخدم وسوم حسابك عند استعلام البحث (ستحظى الوسوم المحلية بالأولوية)</string>
+    <string name="setting_on_use_account_tag">اِستخدم وسوم حسابك عند استعلام البحث (ستحظى الوسوم
+        المحلية بالأولوية)</string>
     <string name="setting_off_use_account_tag">ستُتَجاهل وسوم حسابك عند الاستعلام</string>
     <string name="theme_summary">اِختر لون السِّمة</string>
     <string name="change_theme">غيِّر السِّمة</string>
@@ -253,11 +255,15 @@
     <string name="custom_path">مسار مُخصَّص</string>
     <string name="insert_path">أدخل المسار:</string>
     <string name="requesting_storage_access">الولوج لوحدة التخزين مطلوب</string>
-    <string name="request_storage_manager_summary">بسبب بعض قيود الولوج لوحدة التخزين في نظام أندرويد 11، سيُطلب منك منح أذونات إضافية للتطبيق تمكُّنًا من استخدام المسارات المُخصَّصة. إذا أردت منح هذه الأذونات فالمرجو منك تفعيل الإعداد في الشاشة التالية.</string>
+    <string name="request_storage_manager_summary">بسبب بعض قيود الولوج لوحدة التخزين في نظام
+        أندرويد 11، سيُطلب منك منح أذونات إضافية للتطبيق تمكُّنًا من استخدام المسارات المُخصَّصة.
+        إذا أردت منح هذه الأذونات فالمرجو منك تفعيل الإعداد في الشاشة التالية.</string>
     <string name="fix_inverted_title">أَصلِح الصور المقلوبة</string>
-    <string name="fix_inverted_summary">عليك بتفعيل هذا الإعداد إذا كانت ألوان الصور مقلوبة (في بعض الأجهزة، قد يؤدي إلى جعل سِمة الجهاز فاتحة، تعطيله سيُصلح هذه المشكلة)</string>
+    <string name="fix_inverted_summary">عليك بتفعيل هذا الإعداد إذا كانت ألوان الصور مقلوبة (في بعض
+        الأجهزة، قد يؤدي إلى جعل سِمة الجهاز فاتحة، تعطيله سيُصلح هذه المشكلة)</string>
     <string name="navigation_settings_per_screen">إعدادات التنقُّل حسب الشاشة</string>
-    <string name="summary_offscreen_limit">عيِّن عدد الصور المراد تحميلها استباقيًّا خارج الشاشة أثناء قراءة عمل ما</string>
+    <string name="summary_offscreen_limit">عيِّن عدد الصور المراد تحميلها استباقيًّا خارج الشاشة
+        أثناء قراءة عمل ما</string>
     <string name="title_offscreen_limit">الصور المراد تحميلها استباقيًّا</string>
     <string name="sort_popoular_month">رائجة على مدار الشهر</string>
     <string name="random">عشوائي</string>
@@ -265,7 +271,6 @@
     <string name="export_finished">Export finished</string>
     <string name="import_finished">Import finished</string>
     <string name="download_torrent">Download torrent</string>
-    <string name="title_activity_captcha">CAPTCHA</string>
     <string name="invalid_response">Invalid response</string>
     <string name="system_default">System default</string>
     <string-array name="scroll_type">
@@ -282,4 +287,6 @@
         <item>أنيق</item>
     </string-array>
     <string name="clear_cookies">محو ملفات تعريف الارتباط</string>
+    <string name="confirm">يتأكد</string>
+    <string name="сolor_selection">اختيار اللون</string>
 </resources>

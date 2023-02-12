@@ -1,8 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="setting_on_ignore_tags">Diğer etiketler galeri menüsünden bir etiket seçildiğinde listelenmeyecek (dil hariç)</string>
-    <string name="setting_off_ignore_tags">Diğer etiketler galeri menüsünden bir etiket seçildiğinde listelenecek</string>
-    <string name="setting_on_use_account_tag">Hesap etiketlerini aramada kullan (Yerel etiketler daha önceliklidir)</string>
+    <string name="setting_on_ignore_tags">Diğer etiketler galeri menüsünden bir etiket seçildiğinde
+        listelenmeyecek (dil hariç)</string>
+    <string name="setting_off_ignore_tags">Diğer etiketler galeri menüsünden bir etiket seçildiğinde
+        listelenecek</string>
+    <string name="setting_on_use_account_tag">Hesap etiketlerini aramada kullan (Yerel etiketler
+        daha önceliklidir)</string>
     <string name="setting_off_use_account_tag">Hesap etiketleri aramada dikkate alınmayacak</string>
     <string name="theme_summary">Tema rengini seç</string>
     <string name="change_theme">Tema değiştir</string>
@@ -26,8 +29,10 @@
     <string name="channel2_name">PDF oluştur</string>
     <string name="channel3_name">ZIP oluştur</string>
     <string name="channel1_description">Galerinin indirme sürecinin ne kadar tamamlandığını gösterir</string>
-    <string name="channel2_description">PDF\'nin oluşturulma sürecinin ne kadar tamamlandığını gösterir</string>
-    <string name="channel3_description">ZIP\'in oluşturulma sürecinin ne kadar tamamlandığını gösterir</string>
+    <string name="channel2_description">PDF\'nin oluşturulma sürecinin ne kadar tamamlandığını
+        gösterir</string>
+    <string name="channel3_description">ZIP\'in oluşturulma sürecinin ne kadar tamamlandığını
+        gösterir</string>
     <string name="channel2_title">PDF Oluşturuluyor:</string>
     <string name="channel3_title">ZIP oluşturuluyor:</string>
     <string name="tags_max_reached" formatted="true">Maksimum %d etiket seçebilirsiniz.</string>
@@ -83,8 +88,10 @@
     <string name="upload_date_format" formatted="true">%s tarihinde %s saatinde yüklendi</string>
     <string name="favorite_count_format" formatted="true">%d Favori</string>
     <string name="favorite_manga">Favoriler</string>
-    <string name="setting_on_remove_ignored">Dikkate alınmayan etiket içeren galeriler gösterilmeyecek</string>
-    <string name="setting_off_remove_ignored">Dikkate alınmayan etiket içeren galeriler bulanıklaştırılacak</string>
+    <string name="setting_on_remove_ignored">Dikkate alınmayan etiket içeren galeriler
+        gösterilmeyecek</string>
+    <string name="setting_off_remove_ignored">Dikkate alınmayan etiket içeren galeriler
+        bulanıklaştırılacak</string>
     <string name="remove_ignored_galleries">Dikkate alınmayan galerileri kaldır</string>
     <string name="clear_tag_preferences">Etiket tercihlerini temizle</string>
     <string name="clear_this_list">Bu listeyi temizle?</string>
@@ -183,7 +190,8 @@
     <string name="data_usage_thumb">Sadece kapak fotoğraflarını indir</string>
     <string name="data_usage_full">Her şeyi indir (Yüksek veri kullanımı)</string>
     <string name="data_usage_no">Sayfaları indirme</string>
-    <string name="enable_network_to_continue">Sayfayı görmek için veri kullanım ayarlarını değiştirin veya bağlı olduğunuz ağı değiştirin</string>
+    <string name="enable_network_to_continue">Sayfayı görmek için veri kullanım ayarlarını
+        değiştirin veya bağlı olduğunuz ağı değiştirin</string>
     <string name="id_tag">ID:</string>
     <string name="id_copied_to_clipboard">Galeri ID\'si panoya kopyalandı</string>
     <string name="copied_to_clipboard">Panoya kopyalandı</string>
@@ -253,9 +261,13 @@
     <string name="custom_path">Özel Dizin</string>
     <string name="insert_path">Dizin Gir:</string>
     <string name="requesting_storage_access">Depolamaya erişim izni isteniyor</string>
-    <string name="request_storage_manager_summary">Android 11\'de depolama erişimine yönelik bazı kısıtlamalar nedeniyle, bu uygulama özel yolları kullanmak için ek izin vermenizi gerektirecektir. \nBu izinleri vermek istiyorsanız, lütfen sonraki iletişim kutusunda uygulamaya izin verin.</string>
+    <string name="request_storage_manager_summary">Android 11\'de depolama erişimine yönelik bazı
+        kısıtlamalar nedeniyle, bu uygulama özel yolları kullanmak için ek izin vermenizi
+        gerektirecektir. \nBu izinleri vermek istiyorsanız, lütfen sonraki iletişim kutusunda
+        uygulamaya izin verin.</string>
     <string name="fix_inverted_title">Ters renkli resimleri düzelt</string>
-    <string name="fix_inverted_summary">Eğer resimlerin renkleri ters görünüyorsa aktifleştirin (Cihaz temasını değiştirebilir)</string>
+    <string name="fix_inverted_summary">Eğer resimlerin renkleri ters görünüyorsa aktifleştirin
+        (Cihaz temasını değiştirebilir)</string>
     <string name="navigation_settings_per_screen">Sayfa Ayarları</string>
     <string name="summary_offscreen_limit">Bir galeriyi okurken önyüklenecek sayfa sayısını seçin</string>
     <string name="title_offscreen_limit">Resimleri Önyükleme</string>
@@ -265,7 +277,6 @@
     <string name="export_finished">Dışa Aktarma Tamamlandı</string>
     <string name="import_finished">İçe Alma Tammalandı</string>
     <string name="download_torrent">Torrent İndir</string>
-    <string name="title_activity_captcha">CAPTCHA</string>
     <string name="invalid_response">Invalid response</string>
     <string name="system_default">System default</string>
     <string-array name="scroll_type">
@@ -282,4 +293,6 @@
         <item>Özel</item>
     </string-array>
     <string name="clear_cookies">Çerezleri temizlemek</string>
+    <string name="confirm">Onaylamak</string>
+    <string name="сolor_selection">Renk seçimi</string>
 </resources>

@@ -1,8 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="setting_on_ignore_tags">Другие тэги не будут применены, когда тэг выбран из меню галереи(кроме языка)</string>
-    <string name="setting_off_ignore_tags">Другие тэги будут применены, когда тэг выбран из меню галереи</string>
-    <string name="setting_on_use_account_tag">Использовать тэги аккаунта в поисковом запросе(Локальные тэги будут иметь больший приоритет)</string>
+    <string name="setting_on_ignore_tags">Другие тэги не будут применены, когда тэг выбран из меню
+        галереи(кроме языка)</string>
+    <string name="setting_off_ignore_tags">Другие тэги будут применены, когда тэг выбран из меню
+        галереи</string>
+    <string name="setting_on_use_account_tag">Использовать тэги аккаунта в поисковом
+        запросе(Локальные тэги будут иметь больший приоритет)</string>
     <string name="setting_off_use_account_tag">Тэги Аккаунта будут игнорироваться в запросе</string>
     <string name="theme_summary">Выбрать цвета темы</string>
     <string name="change_theme">Сменить тему</string>
@@ -91,8 +94,10 @@
     <string name="set_minimum_count">Установить минимальный счёт</string>
     <string name="sort_by_title">Сортировать по названию</string>
     <string name="sort_by_popular">Сортировать по популярности</string>
-    <string name="next_page_volume_up">Переходить к следующей странице по нажатии кнопки повышения громкости</string>
-    <string name="next_page_volume_down">Переходить к следующей странице по нажатии кнопки понижения громкости</string>
+    <string name="next_page_volume_up">Переходить к следующей странице по нажатии кнопки повышения
+        громкости</string>
+    <string name="next_page_volume_down">Переходить к следующей странице по нажатии кнопки понижения
+        громкости</string>
     <string name="change_title_type">Сменить тип заголовка</string>
     <string name="title_type_summary">Выбрать тип заголовка галерей по умолчанию</string>
     <string name="search_settings">Настройки поиска</string>
@@ -121,7 +126,8 @@
     <string name="enable_right_to_left">Включить справа налево</string>
     <string name="setting_on_use_rtl">Изображения будут показываться справа налево</string>
     <string name="setting_off_use_rtl">Изображения будут показываться слева направо</string>
-    <string name="volume_change_setting">Перелистывать страницы с помощью кнопок регулирвки громкости</string>
+    <string name="volume_change_setting">Перелистывать страницы с помощью кнопок регулирвки
+        громкости</string>
     <string name="popular_tag_count">Количество популярных тэгов отображается в Продвинутом поиске</string>
     <string name="show_gallery_titles">Показать заголовок галереи</string>
     <string name="use_column_port">Количество столбцов в портретном режиме</string>
@@ -183,7 +189,8 @@
     <string name="data_usage_thumb">Всегда загружать превью</string>
     <string name="data_usage_full">Загружать превью или полные изображения</string>
     <string name="data_usage_no">Не загружать изображения</string>
-    <string name="enable_network_to_continue">Включите загрузку изображения или смените сеть чтобы открыть изображение</string>
+    <string name="enable_network_to_continue">Включите загрузку изображения или смените сеть чтобы
+        открыть изображение</string>
     <string name="id_tag">ID:</string>
     <string name="id_copied_to_clipboard">ID скопирован в буфер обмена</string>
     <string name="copied_to_clipboard">Скопировано в буфер обмена</string>
@@ -233,7 +240,8 @@
     <string name="download_date">Время загрузки</string>
     <string name="page_count">Количество страниц</string>
     <string name="descending_order">В убывающем порядке</string>
-    <string name="minimum_comment_length" formatted="true">Коментарий должен быть хоят бы %d символов</string>
+    <string name="minimum_comment_length" formatted="true">Коментарий должен быть хоят бы %d
+        символов</string>
     <string name="change_scroll_type">Изменить тип прилистывания</string>
     <string name="export_data">Выгрузить данные</string>
     <string name="import_data">Загрузить данные</string>
@@ -244,7 +252,8 @@
     <string name="default_status_5">Планируется прочитать</string>
     <string name="title_site_mirror">Изменить зеркало сайта</string>
     <string name="disguise_app_in_drawer">Скрыть это приложение с панели навигации</string>
-    <string name="summary_disguise_app">Это приложение будет замаскировано под калькулятор(Экспериментально)</string>
+    <string name="summary_disguise_app">Это приложение будет замаскировано под
+        калькулятор(Экспериментально)</string>
     <string name="app_name_fake_calculator">Калькулятор</string>
     <string name="delete_galleries">Удалить галереи</string>
     <string name="delete">Удалить</string>
@@ -253,11 +262,17 @@
     <string name="custom_path">Кастомный путь</string>
     <string name="insert_path">Введите путь:</string>
     <string name="requesting_storage_access">Запрос доступа к хранилищу</string>
-    <string name="request_storage_manager_summary">Из-за некоторых ограничений в Android 11 для доступа к хранилищу это приложение потребует выдать дополнительные разрешения для использования кастомных путей.\nЕсли вы хотите выдать эти разрешения, пожалуйста, разрешите настройки в следующем диалоге</string>
+    <string name="request_storage_manager_summary">Из-за некоторых ограничений в Android 11 для
+        доступа к хранилищу это приложение потребует выдать дополнительные разрешения для
+        использования кастомных путей.\nЕсли вы хотите выдать эти разрешения, пожалуйста, разрешите
+        настройки в следующем диалоге</string>
     <string name="fix_inverted_title">Исправить инвертированные изображения</string>
-    <string name="fix_inverted_summary">Включить, если изображения показываются с инвертированными цветами(на некоторых девайсах при включении может вызвать смену темы на светлую, отключение исправит эту проблему) </string>
+    <string name="fix_inverted_summary">Включить, если изображения показываются с инвертированными
+        цветами(на некоторых девайсах при включении может вызвать смену темы на светлую, отключение
+        исправит эту проблему) </string>
     <string name="navigation_settings_per_screen">Настройки навигации при помощи экрана</string>
-    <string name="summary_offscreen_limit">Установите количество предзагружамых изображений во время чтения галереи</string>
+    <string name="summary_offscreen_limit">Установите количество предзагружамых изображений во время
+        чтения галереи</string>
     <string name="title_offscreen_limit">Изображение предзагрузки</string>
     <string name="sort_popoular_month">Популярные за месяц</string>
     <string name="random">Случайная</string>
@@ -265,7 +280,6 @@
     <string name="export_finished">Экспорт завершён</string>
     <string name="import_finished">Импорт завершён</string>
     <string name="download_torrent">Загрузить торрент</string>
-    <string name="title_activity_captcha">CAPTCHA</string>
     <string name="invalid_response">Получен неверный ответ с сервера</string>
     <string name="system_default">System default</string>
     <string name="clear_cookies">Очистить куки</string>
@@ -282,4 +296,6 @@
         <item>Японский</item>
         <item>Pretty</item>
     </string-array>
+    <string name="confirm">Подтвердить</string>
+    <string name="сolor_selection">Выбор цвета</string>
 </resources>

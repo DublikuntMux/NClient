@@ -1,8 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="setting_on_ignore_tags">Otras etiquetas no se agregarán cuando una etiqueta es seleccionada desde el menu de la galería (excepto el lenguaje)</string>
-    <string name="setting_off_ignore_tags">Otras etiquetas sí seran agregadas cuando una etiqueta es seleccionada desde el menu de la galería (excepto el lenguaje)</string>
-    <string name="setting_on_use_account_tag">Usar las etiquetas de la cuenta para la busqueda (las etiquetas locales tendrán prioridad)</string>
+    <string name="setting_on_ignore_tags">Otras etiquetas no se agregarán cuando una etiqueta es
+        seleccionada desde el menu de la galería (excepto el lenguaje)</string>
+    <string name="setting_off_ignore_tags">Otras etiquetas sí seran agregadas cuando una etiqueta es
+        seleccionada desde el menu de la galería (excepto el lenguaje)</string>
+    <string name="setting_on_use_account_tag">Usar las etiquetas de la cuenta para la busqueda (las
+        etiquetas locales tendrán prioridad)</string>
     <string name="setting_off_use_account_tag">Las etiquetas de la cuenta serán ignoradas</string>
     <string name="theme_summary">Seleccionar tema</string>
     <string name="change_theme">Cambiar tema</string>
@@ -30,7 +33,8 @@
     <string name="channel3_description">Usado para mostrar el progreso de la creación del comprimido</string>
     <string name="channel2_title">Creando PDF:</string>
     <string name="channel3_title">Comprimiendo:</string>
-    <string name="tags_max_reached" formatted="true">Puedes tener un máximo de %d etiquetas seleccionadas.</string>
+    <string name="tags_max_reached" formatted="true">Puedes tener un máximo de %d etiquetas
+        seleccionadas.</string>
     <string name="only_english">Solo inglés</string>
     <string name="only_japanese">Solo japonés</string>
     <string name="only_chinese">Solo chino</string>
@@ -84,7 +88,8 @@
     <string name="favorite_count_format" formatted="true">%d favoritos</string>
     <string name="favorite_manga">Manga favorito</string>
     <string name="setting_on_remove_ignored">Las galerías con etiquetas ignoradas no se mostrarán</string>
-    <string name="setting_off_remove_ignored">Las galerías con etiquetas ignoradas se pondrán borrosas</string>
+    <string name="setting_off_remove_ignored">Las galerías con etiquetas ignoradas se pondrán
+        borrosas</string>
     <string name="remove_ignored_galleries">Eliminar las galerías ignoradas</string>
     <string name="clear_tag_preferences">Limpiar preferencias de etiquetas</string>
     <string name="clear_this_list">¿Limpiar esta lista?</string>
@@ -168,7 +173,8 @@
     <string name="resume">Reanudar</string>
     <string name="pause">Pausa</string>
     <string name="title_copied_to_clipboard">Título copiado al portapapeles</string>
-    <string name="setting_zoom_one_column">Activar el zoom cuando se está en el modo de una sola columna dentro de una galería</string>
+    <string name="setting_zoom_one_column">Activar el zoom cuando se está en el modo de una sola
+        columna dentro de una galería</string>
     <string name="zoom_one_column">Activar el zoom</string>
     <string name="insert_pin">Insertar PIN</string>
     <string name="confirm_pin">Confirmar PIN</string>
@@ -183,7 +189,8 @@
     <string name="data_usage_thumb">Siempre descargar miniaturas</string>
     <string name="data_usage_full">Descargar imágenes en miniaturas o completas</string>
     <string name="data_usage_no">No descargar imágenes</string>
-    <string name="enable_network_to_continue">Habilitar la descarga de imágenes o cambiar de red para abrir la imagen</string>
+    <string name="enable_network_to_continue">Habilitar la descarga de imágenes o cambiar de red
+        para abrir la imagen</string>
     <string name="id_tag">ID:</string>
     <string name="id_copied_to_clipboard">ID copiada al portapapeles</string>
     <string name="copied_to_clipboard">Copiado al portapapeles</string>
@@ -233,7 +240,8 @@
     <string name="download_date">Fecha de descarga</string>
     <string name="page_count">Número de página</string>
     <string name="descending_order">Orden Descendiente</string>
-    <string name="minimum_comment_length" formatted="true">El comentario debe ser de al menos %d carácteres.</string>
+    <string name="minimum_comment_length" formatted="true">El comentario debe ser de al menos %d
+        carácteres.</string>
     <string name="change_scroll_type">Cambiar tipo de scroll</string>
     <string name="export_data">Exportar datos</string>
     <string name="import_data">Importar datos</string>
@@ -244,7 +252,8 @@
     <string name="default_status_5">Planeando leer</string>
     <string name="title_site_mirror">Caombiar fuente de datos</string>
     <string name="disguise_app_in_drawer">Ocultar aplicacion</string>
-    <string name="summary_disguise_app">La aplicacion se ocultará en la bandeja de aplicaciones (experimental)</string>
+    <string name="summary_disguise_app">La aplicacion se ocultará en la bandeja de aplicaciones
+        (experimental)</string>
     <string name="app_name_fake_calculator">Calculadora</string>
     <string name="delete_galleries">Borrar Galerías</string>
     <string name="delete">Borrar</string>
@@ -253,11 +262,16 @@
     <string name="custom_path">Ruta personalizada</string>
     <string name="insert_path">Inserte ruta:</string>
     <string name="requesting_storage_access">Solicitando acceso a almacenamiento</string>
-    <string name="request_storage_manager_summary">Debido a las restricciones de Android 11 debes de dar permisos adicionales para que las rutas funcionen.\nSi quieres conceder los permisos acepta en la siguiente ventana.</string>
+    <string name="request_storage_manager_summary">Debido a las restricciones de Android 11 debes de
+        dar permisos adicionales para que las rutas funcionen.\nSi quieres conceder los permisos
+        acepta en la siguiente ventana.</string>
     <string name="fix_inverted_title">Arreglar colores invertidos</string>
-    <string name="fix_inverted_summary">Activa esto si ves los colores invertidos (en algunos dispositivos puede causar que el tema del dispositivo se cambie a claro, desactivando eso puede solucionar el problema.)</string>
+    <string name="fix_inverted_summary">Activa esto si ves los colores invertidos (en algunos
+        dispositivos puede causar que el tema del dispositivo se cambie a claro, desactivando eso
+        puede solucionar el problema.)</string>
     <string name="navigation_settings_per_screen">Opciones de navegacion por pantalla</string>
-    <string name="summary_offscreen_limit">Establece el número de imágenes precargadas fuera de la pantalla</string>
+    <string name="summary_offscreen_limit">Establece el número de imágenes precargadas fuera de la
+        pantalla</string>
     <string name="title_offscreen_limit">Imagen a precargar</string>
     <string name="sort_popoular_month">Populares por mes</string>
     <string name="random">Aleatorio</string>
@@ -265,7 +279,6 @@
     <string name="export_finished">Export finished</string>
     <string name="import_finished">Import finished</string>
     <string name="download_torrent">Download torrent</string>
-    <string name="title_activity_captcha">CAPTCHA</string>
     <string name="invalid_response">Invalid response</string>
     <string name="system_default">System default</string>
     <string-array name="scroll_type">
@@ -282,4 +295,6 @@
         <item>Arreglado</item>
     </string-array>
     <string name="clear_cookies">Eliminar cookies</string>
+    <string name="confirm">Confirmar</string>
+    <string name="сolor_selection">Selección de color</string>
 </resources>

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -9,16 +10,14 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <TextView
+        <com.google.android.material.textview.MaterialTextView
             android:id="@+id/page_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="#5f000000"
             android:paddingStart="8dp"
             android:paddingTop="16dp"
             android:paddingEnd="16dp"
             android:paddingBottom="8dp"
-            android:textColor="#ffffffff"
             android:visibility="gone"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
@@ -34,12 +33,11 @@
             app:layout_constraintTop_toTopOf="parent"
             tools:context=".ZoomActivity" />
 
-        <androidx.appcompat.widget.Toolbar
+        <com.google.android.material.appbar.MaterialToolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:alpha="0.75"
-            android:background="?attr/colorPrimaryVariant"
             android:minHeight="?attr/actionBarSize"
             android:paddingTop="@dimen/status_bar_height"
             android:theme="?attr/actionBarTheme"
@@ -52,7 +50,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:alpha="0.75"
-            android:background="?attr/colorPrimaryVariant"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent">
@@ -68,7 +65,6 @@
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:alpha="0.75"
-            android:background="?attr/colorPrimaryVariant"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/toolbar"
             app:layout_constraintTop_toTopOf="parent" />

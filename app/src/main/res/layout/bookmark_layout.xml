@@ -1,4 +1,5 @@
-<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+<com.google.android.material.card.MaterialCardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -16,7 +17,7 @@
         android:focusable="true"
         android:foreground="?attr/selectableItemBackground">
 
-        <androidx.appcompat.widget.AppCompatImageButton
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/remove_button"
             android:layout_width="32dp"
             android:layout_height="32dp"
@@ -28,9 +29,12 @@
             app:layout_constraintEnd_toEndOf="@+id/page"
             app:layout_constraintStart_toStartOf="@+id/page"
             app:layout_constraintTop_toBottomOf="@+id/page"
-            app:srcCompat="@drawable/ic_close" />
+            app:icon="@drawable/ic_close"
+            app:iconGravity="textStart"
+            app:iconPadding="0dp"
+            app:iconTint="?android:attr/colorForeground" />
 
-        <TextView
+        <com.google.android.material.textview.MaterialTextView
             android:id="@+id/title"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -47,7 +51,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <TextView
+        <com.google.android.material.textview.MaterialTextView
             android:id="@+id/page"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -57,4 +61,4 @@
             app:layout_constraintTop_toTopOf="parent" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
-</androidx.cardview.widget.CardView>
+</com.google.android.material.card.MaterialCardView>

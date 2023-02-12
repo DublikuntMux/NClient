@@ -10,7 +10,7 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal">
 
-        <TextView
+        <com.google.android.material.textview.MaterialTextView
             style="@style/TextAppearance.MaterialComponents.Headline5"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -18,7 +18,7 @@
             android:minWidth="80dp"
             android:text="@string/id_tag" />
 
-        <TextView
+        <com.google.android.material.textview.MaterialTextView
             android:id="@+id/id_num"
             style="@style/TextAppearance.MaterialComponents.Headline5"
             android:layout_width="match_parent"
@@ -33,21 +33,13 @@
         android:orientation="vertical">
 
         <include layout="@layout/sub_tag_layout" />
-
         <include layout="@layout/sub_tag_layout" />
-
         <include layout="@layout/sub_tag_layout" />
-
         <include layout="@layout/sub_tag_layout" />
-
         <include layout="@layout/sub_tag_layout" />
-
         <include layout="@layout/sub_tag_layout" />
-
         <include layout="@layout/sub_tag_layout" />
-
         <include layout="@layout/sub_tag_layout" />
-
         <include layout="@layout/info_layout" />
     </LinearLayout>
 </LinearLayout>
