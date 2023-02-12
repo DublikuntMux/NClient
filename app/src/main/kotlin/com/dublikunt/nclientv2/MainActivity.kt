@@ -46,6 +46,7 @@ import com.dublikunt.nclientv2.utility.LogUtility
 import com.dublikunt.nclientv2.utility.Utility
 import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.android.material.imageview.ShapeableImageView
 import com.google.android.material.navigation.NavigationView
 import com.google.android.material.snackbar.Snackbar
 import java.util.*
@@ -83,7 +84,7 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
     private var inspecting = false
     private var filteringTag = false
     private lateinit var temporaryType: SortType
-    private lateinit var snackbar: Snackbar
+    private var snackbar: Snackbar? = null
     private var showedCaptcha = false
     private var noNeedForCaptcha = false
     private lateinit var pageSwitcher: PageSwitcher
@@ -95,13 +96,13 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
             runOnUiThread { recycler.smoothScrollToPosition(0) }
         }
     }
-    private val changeLanguageRunnable = Runnable {
+    val changeLanguageRunnable = Runnable {
         useNormalMode()
         inspector.start()
     }
     private lateinit var drawerLayout: DrawerLayout
     private lateinit var toolbar: MaterialToolbar
-    private lateinit var setting: Setting
+    private var setting: Setting? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -145,8 +146,10 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
     private fun setActivityTitle() {
         when (modeType) {
             ModeType.FAVORITE -> supportActionBar!!.setTitle(R.string.favorite_online_manga)
-            ModeType.SEARCH -> supportActionBar!!.title = inspector.searchTitle
-            ModeType.TAG -> supportActionBar!!.title = inspector.tag.name
+            ModeType.SEARCH -> supportActionBar!!.title =
+                inspector.searchTitle
+            ModeType.TAG -> supportActionBar!!.title =
+                inspector.tag.name
             ModeType.NORMAL -> supportActionBar!!.setTitle(com.franmontiel.persistentcookiejar.R.string.app_name)
             else -> supportActionBar!!.title = "WTF"
         }
@@ -182,7 +185,7 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
                 if (!pageSwitcher.lastPageReached() && lastGalleryReached(manager)) {
                     inspecting = true
                     inspector = inspector.cloneInspector(this@MainActivity, addDataset)
-                    inspector.page++
+                    inspector.page = inspector.page + 1
                     inspector.start()
                 }
             }
@@ -194,14 +197,13 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
      * Check if the last gallery has been shown
      */
     private fun lastGalleryReached(manager: CustomGridLayoutManager?): Boolean {
-        return manager!!.findLastVisibleItemPosition() >= recycler.adapter!!
-            .itemCount - 1 - manager.spanCount
+        return manager!!.findLastVisibleItemPosition() >= recycler.adapter!!.itemCount - 1 - manager.spanCount
     }
 
     private fun initializeNavigationView() {
         changeNavigationImage(navigationView)
         toolbar.setNavigationIcon(R.drawable.ic_arrow_back)
-        toolbar.setNavigationOnClickListener { v: View? -> finish() }
+        toolbar.setNavigationOnClickListener { finish() }
         navigationView.setNavigationItemSelectedListener(this)
         onlineFavoriteManager.isVisible = Login.isLogged()
     }
@@ -231,7 +233,8 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
 
     private fun hideError() {
         //errorText.setVisibility(View.GONE);
-        if (snackbar.isShown) snackbar.dismiss()
+        if (snackbar != null && snackbar!!.isShown) snackbar!!.dismiss()
+        snackbar = null
     }
 
     private fun showError(text: String?, listener: View.OnClickListener?) {
@@ -243,9 +246,9 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
             snackbar = Snackbar.make(masterLayout, text, Snackbar.LENGTH_SHORT)
         } else {
             snackbar = Snackbar.make(masterLayout, text, Snackbar.LENGTH_INDEFINITE)
-            snackbar.setAction(R.string.retry, listener)
+            snackbar!!.setAction(R.string.retry, listener)
         }
-        snackbar.show()
+        snackbar!!.show()
     }
 
     private fun showError(@StringRes text: Int, listener: View.OnClickListener?) {
@@ -315,15 +318,8 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
             )
             tags = tagArrayList?.let { HashSet(it) }
         }
-        inspector = searchInspector(
-            this,
-            query,
-            tags,
-            1,
-            Global.getSortType(),
-            ranges,
-            resetDataset
-        )
+        inspector =
+            searchInspector(this, query, tags, 1, Global.getSortType(), ranges, resetDataset)
         modeType = ModeType.SEARCH
     }
 
@@ -339,7 +335,9 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
     }
 
     private fun useTagMode(intent: Intent, packageName: String) {
-        val t = intent.getParcelableExtra<Tag>("$packageName.TAG")
+        val t = intent.getParcelableExtra<Tag>(
+            "$packageName.TAG"
+        )
         inspector = tagInspector(this, t, 1, Global.getSortType(), resetDataset)
         modeType = ModeType.TAG
     }
@@ -409,7 +407,7 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
             Language.JAPANESE -> Global.updateOnlyLanguage(this, Language.CHINESE)
             Language.CHINESE -> Global.updateOnlyLanguage(this, Language.ALL)
             Language.ALL -> Global.updateOnlyLanguage(this, Language.ENGLISH)
-            else -> {}
+            else -> Global.updateOnlyLanguage(this, Language.ALL)
         }
         //wait 250ms to reduce the requests
         changeLanguageTimeHandler.removeCallbacks(changeLanguageRunnable)
@@ -428,7 +426,7 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
             }
         }
 
-    private fun hidePageSwitcher() {
+    fun hidePageSwitcher() {
         runOnUiThread { pageSwitcher.visibility = View.GONE }
     }
 
@@ -466,18 +464,25 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
                 noNeedForCaptcha = true
             }
         }
-        Global.initFromShared(this) //restart all settings
-        inspector = inspector.cloneInspector(this, resetDataset)
-        inspector.start() //restart inspector
-        if (setting.theme != Global.getTheme() || setting.locale != Global.initLanguage(this)) {
-            val manager = GlideX.with(applicationContext)
-            manager?.pauseAllRequestsRecursive()
-            recreate()
+        if (setting != null) {
+            Global.initFromShared(this) //restart all settings
+            inspector = inspector.cloneInspector(this, resetDataset)
+            inspector.start() //restart inspector
+            if (setting!!.theme != Global.getTheme() || setting!!.locale != Global.initLanguage(this)) {
+                val manager = GlideX.with(applicationContext)
+                manager?.pauseAllRequestsRecursive()
+                recreate()
+            }
+            adapter.notifyDataSetChanged() //restart adapter
+            adapter.resetStatuses()
+            showPageSwitcher(inspector.page, inspector.pageCount) //restart page switcher
+            changeLayout(resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE)
+            setting = null
+        } else if (filteringTag) {
+            inspector = basicInspector(this, 1, resetDataset)
+            inspector.start()
+            filteringTag = false
         }
-        adapter.notifyDataSetChanged() //restart adapter
-        adapter.resetStatuses()
-        showPageSwitcher(inspector.page, inspector.pageCount) //restart page switcher
-        changeLayout(resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE)
         invalidateOptionsMenu()
     }
 
@@ -499,12 +504,12 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
     }
 
     private fun initializeSearchItem(item: MenuItem) {
-        if (modeType != ModeType.FAVORITE) item.actionView = null else {
+        if (modeType != ModeType.FAVORITE) item.actionView =
+            null else {
             (item.actionView as SearchView?)!!.setOnQueryTextListener(object :
                 SearchView.OnQueryTextListener {
                 override fun onQueryTextSubmit(query: String): Boolean {
-                    inspector =
-                        favoriteInspector(this@MainActivity, query, 1, resetDataset)
+                    inspector = favoriteInspector(this@MainActivity, query, 1, resetDataset)
                     inspector.start()
                     supportActionBar!!.title = query
                     return true
@@ -518,10 +523,8 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
     }
 
     private fun popularItemDispay(item: MenuItem) {
-        item.title = getString(
-            R.string.sort_type_title_format,
-            getString(Global.getSortType().nameId)
-        )
+        item.title =
+            getString(R.string.sort_type_title_format, getString(Global.getSortType().nameId))
         Global.setTint(item.icon)
     }
 
@@ -543,7 +546,10 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
                 item.setTitle(R.string.all_languages)
                 item.setIcon(R.drawable.ic_world)
             }
-            else -> {}
+            else -> {
+                item.setTitle(R.string.all_languages)
+                item.setIcon(R.drawable.ic_world)
+            }
         }
         Global.setTint(item.icon)
     }
@@ -595,9 +601,10 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
         temporaryType = Global.getSortType()
         builder.setIcon(R.drawable.ic_sort).setTitle(R.string.sort_select_type)
         builder.setSingleChoiceItems(
-            adapter,
-            temporaryType.ordinal
-        ) { _: DialogInterface?, which: Int -> temporaryType = SortType.values()[which] }
+            adapter, temporaryType.ordinal
+        ) { _: DialogInterface?, which: Int ->
+            temporaryType = SortType.values()[which]
+        }
         builder.setOnItemSelectedListener(object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(
                 parent: AdapterView<*>,
@@ -628,7 +635,9 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
             .setTitle(R.string.download_all_galleries_in_this_page)
             .setIcon(R.drawable.ic_file)
             .setNegativeButton(R.string.cancel, null)
-            .setPositiveButton(R.string.ok) { _: DialogInterface?, _: Int ->
+            .setPositiveButton(
+                R.string.ok
+            ) { _: DialogInterface?, _: Int ->
                 for (g in inspector.galleries) DownloadGalleryV2.downloadGallery(
                     this@MainActivity,
                     g
@@ -724,7 +733,8 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
         UNKNOWN, NORMAL, TAG, FAVORITE, SEARCH, BOOKMARK, ID
     }
 
-    internal abstract inner class MainInspectorResponse : DefaultInspectorResponse() {
+    internal abstract inner class MainInspectorResponse :
+        DefaultInspectorResponse() {
         override fun onSuccess(galleries: List<GenericGallery>) {
             super.onSuccess(galleries)
             adapter.resetStatuses()
@@ -754,20 +764,22 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
                     intent.putExtra("$packageName.IS_CAPTCHA", true)
                     startActivity(intent)
                 }
-                showError(R.string.invalid_response) { v: View? ->
-                    inspector = inspector.cloneInspector(this@MainActivity, inspector.response)
+                showError(R.string.invalid_response) {
+                    inspector =
+                        inspector.cloneInspector(this@MainActivity, inspector.response)
                     inspector.start()
                 }
             } else {
-                showError(R.string.unable_to_connect_to_the_site) { v: View? ->
-                    inspector = inspector.cloneInspector(this@MainActivity, inspector.response)
+                showError(R.string.unable_to_connect_to_the_site) {
+                    inspector =
+                        inspector.cloneInspector(this@MainActivity, inspector.response)
                     inspector.start()
                 }
             }
         }
     }
 
-    private inner class Setting {
+    private inner class Setting internal constructor() {
         val theme: ThemeScheme = Global.getTheme()
         val locale: Locale = Global.initLanguage(this@MainActivity)
 

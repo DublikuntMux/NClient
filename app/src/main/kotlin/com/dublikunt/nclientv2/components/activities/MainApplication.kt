@@ -12,6 +12,7 @@ import com.dublikunt.nclientv2.settings.Database
 import com.dublikunt.nclientv2.settings.Global
 import com.dublikunt.nclientv2.settings.TagV2
 import com.dublikunt.nclientv2.utility.NetworkUtil
+import com.google.android.material.color.DynamicColors
 
 class MainApplication : Application() {
     private lateinit var appObserver: ForegroundBackgroundListener
@@ -19,6 +20,7 @@ class MainApplication : Application() {
     override fun onCreate() {
         super.onCreate()
         Global.initLanguage(this)
+        DynamicColors.applyToActivitiesIfAvailable(this)
         AppCompatDelegate.setCompatVectorFromResourcesEnabled(true)
         Global.initStorage(this)
         Database.setDatabase(DatabaseHelper(applicationContext).writableDatabase)
