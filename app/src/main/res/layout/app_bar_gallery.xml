@@ -14,7 +14,6 @@
             android:id="@+id/collapsing"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            app:contentScrim="?attr/colorPrimaryVariant"
             app:expandedTitleTextAppearance="@style/TextAppearance.AppCompat.Large"
             app:layout_scrollFlags="scroll|enterAlways|enterAlwaysCollapsed"
             app:maxLines="4"
