@@ -1,30 +1,29 @@
-package com.dublikunt.nclientv2;
+package com.dublikunt.nclientv2
 
-import android.content.ClipData;
-import android.content.ClipboardManager;
-import android.content.Context;
-import android.net.Uri;
-import android.os.Bundle;
-import android.widget.Toast;
+import android.content.ClipData
+import android.content.ClipboardManager
+import android.content.Context
+import android.os.Bundle
+import android.widget.Toast
+import com.dublikunt.nclientv2.components.activities.GeneralActivity
 
-import com.dublikunt.nclientv2.components.activities.GeneralActivity;
-
-public class CopyToClipboardActivity extends GeneralActivity {
-    public static void copyTextToClipboard(Context context, String text) {
-        ClipboardManager clipboard = (ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);
-        ClipData clip = ClipData.newPlainText("text", text);
-        if (clipboard != null)
-            clipboard.setPrimaryClip(clip);
+class CopyToClipboardActivity : GeneralActivity() {
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        val uri = intent.data
+        if (uri != null) {
+            copyTextToClipboard(this, uri.toString())
+            Toast.makeText(this, R.string.link_copied_to_clipboard, Toast.LENGTH_SHORT).show()
+        }
+        finish()
     }
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        Uri uri = getIntent().getData();
-        if (uri != null) {
-            copyTextToClipboard(this, uri.toString());
-            Toast.makeText(this, R.string.link_copied_to_clipboard, Toast.LENGTH_SHORT).show();
+    companion object {
+        @JvmStatic
+        fun copyTextToClipboard(context: Context, text: String?) {
+            val clipboard = context.getSystemService(CLIPBOARD_SERVICE) as ClipboardManager
+            val clip = ClipData.newPlainText("text", text)
+            clipboard.setPrimaryClip(clip)
         }
-        finish();
     }
 }

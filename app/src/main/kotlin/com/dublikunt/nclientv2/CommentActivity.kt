@@ -1,138 +1,132 @@
-package com.dublikunt.nclientv2;
+package com.dublikunt.nclientv2
 
-import android.content.res.Configuration;
-import android.os.Bundle;
-import android.util.JsonReader;
-import android.util.JsonToken;
-import android.util.JsonWriter;
-import android.view.MenuItem;
-import android.view.View;
-import android.widget.EditText;
-import android.widget.Toast;
+import android.content.res.Configuration
+import android.os.Bundle
+import android.util.JsonReader
+import android.util.JsonToken
+import android.util.JsonWriter
+import android.view.MenuItem
+import android.view.View
+import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
+import androidx.core.view.GravityCompat
+import androidx.recyclerview.widget.DividerItemDecoration
+import com.dublikunt.nclientv2.adapters.CommentAdapter
+import com.dublikunt.nclientv2.api.comments.Comment
+import com.dublikunt.nclientv2.api.comments.CommentsFetcher
+import com.dublikunt.nclientv2.components.activities.BaseActivity
+import com.dublikunt.nclientv2.settings.AuthRequest
+import com.dublikunt.nclientv2.settings.Login
+import com.dublikunt.nclientv2.utility.Utility
+import com.google.android.material.appbar.MaterialToolbar
+import com.google.android.material.textfield.TextInputEditText
+import okhttp3.*
+import okhttp3.MediaType.Companion.toMediaType
+import okhttp3.RequestBody.Companion.toRequestBody
+import java.io.IOException
+import java.io.StringWriter
+import java.util.*
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.widget.Toolbar;
-import androidx.recyclerview.widget.DividerItemDecoration;
-
-import com.dublikunt.nclientv2.adapters.CommentAdapter;
-import com.dublikunt.nclientv2.api.comments.Comment;
-import com.dublikunt.nclientv2.api.comments.CommentsFetcher;
-import com.dublikunt.nclientv2.components.activities.BaseActivity;
-import com.dublikunt.nclientv2.settings.AuthRequest;
-import com.dublikunt.nclientv2.settings.Login;
-import com.dublikunt.nclientv2.utility.Utility;
-
-import java.io.IOException;
-import java.io.StringWriter;
-import java.util.Locale;
-
-import okhttp3.Call;
-import okhttp3.Callback;
-import okhttp3.MediaType;
-import okhttp3.RequestBody;
-import okhttp3.Response;
-
-
-public class CommentActivity extends BaseActivity {
-    private static final int MINIUM_MESSAGE_LENGHT = 10;
-    private CommentAdapter adapter;
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        //Global.initActivity(this);
-        setContentView(R.layout.activity_comment);
-        Toolbar toolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setDisplayShowTitleEnabled(true);
-        getSupportActionBar().setTitle(R.string.comments);
-        findViewById(R.id.page_switcher).setVisibility(View.GONE);
-        int id = getIntent().getIntExtra(getPackageName() + ".GALLERYID", -1);
+class CommentActivity : BaseActivity() {
+    private var adapter: CommentAdapter? = null
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_comment)
+        val toolbar = findViewById<MaterialToolbar>(R.id.toolbar)
+        setSupportActionBar(toolbar)
+        supportActionBar!!.setDisplayHomeAsUpEnabled(true)
+        supportActionBar!!.setDisplayShowTitleEnabled(true)
+        supportActionBar!!.setTitle(R.string.comments)
+        findViewById<View>(R.id.page_switcher).visibility = View.GONE
+        val id = intent.getIntExtra("$packageName.GALLERYID", -1)
         if (id == -1) {
-            finish();
-            return;
+            finish()
+            return
         }
-        recycler = findViewById(R.id.recycler);
-        refresher = findViewById(R.id.refresher);
-        refresher.setOnRefreshListener(() -> new CommentsFetcher(CommentActivity.this, id).start());
-        EditText commentText = findViewById(R.id.commentText);
-        findViewById(R.id.card).setVisibility(Login.isLogged() ? View.VISIBLE : View.GONE);
-        findViewById(R.id.sendButton).setOnClickListener(v -> {
-            if (commentText.getText().toString().length() < MINIUM_MESSAGE_LENGHT) {
-                Toast.makeText(this, getString(R.string.minimum_comment_length, MINIUM_MESSAGE_LENGHT), Toast.LENGTH_SHORT).show();
-                return;
+        recycler = findViewById(R.id.recycler)
+        refresher = findViewById(R.id.refresher)
+        refresher.setOnRefreshListener { CommentsFetcher(this@CommentActivity, id).start() }
+        val commentText = findViewById<TextInputEditText>(R.id.commentText)
+        findViewById<View>(R.id.card).visibility = if (Login.isLogged()) View.VISIBLE else View.GONE
+        findViewById<View>(R.id.sendButton).setOnClickListener { v: View? ->
+            if (commentText.text.toString().length < MINIUM_MESSAGE_LENGHT) {
+                Toast.makeText(
+                    this,
+                    getString(R.string.minimum_comment_length, MINIUM_MESSAGE_LENGHT),
+                    Toast.LENGTH_SHORT
+                ).show()
+                return@setOnClickListener
             }
-            String refererUrl = String.format(Locale.US, Utility.getBaseUrl() + "g/%d/", id);
-            String submitUrl = String.format(Locale.US, Utility.getBaseUrl() + "api/gallery/%d/comments/submit", id);
-            String requestString = createRequestString(commentText.getText().toString());
-            commentText.setText("");
-            RequestBody body = RequestBody.create(requestString, MediaType.get("application/json"));
-            new AuthRequest(refererUrl, submitUrl, new Callback() {
-                @Override
-                public void onFailure(@NonNull Call call, @NonNull IOException e) {
-
-                }
-
-                @Override
-                public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
-                    JsonReader reader = new JsonReader(response.body().charStream());
-                    Comment comment = null;
-                    reader.beginObject();
+            val refererUrl = String.format(Locale.US, Utility.getBaseUrl() + "g/%d/", id)
+            val submitUrl = String.format(
+                Locale.US,
+                Utility.getBaseUrl() + "api/gallery/%d/comments/submit",
+                id
+            )
+            val requestString = createRequestString(commentText.text.toString())
+            commentText.setText("")
+            val body: RequestBody = requestString.toRequestBody("application/json".toMediaType())
+            AuthRequest(refererUrl, submitUrl, object : Callback {
+                override fun onFailure(call: Call, e: IOException) {}
+                @Throws(IOException::class)
+                override fun onResponse(call: Call, response: Response) {
+                    val reader = JsonReader(response.body.charStream())
+                    var comment: Comment? = null
+                    reader.beginObject()
                     while (reader.peek() != JsonToken.END_OBJECT) {
-                        if ("comment".equals(reader.nextName())) {
-                            comment = new Comment(reader);
+                        if ("comment" == reader.nextName()) {
+                            comment = Comment(reader)
                         } else {
-                            reader.skipValue();
+                            reader.skipValue()
                         }
                     }
-                    reader.close();
-                    if (comment != null && adapter != null)
-                        adapter.addComment(comment);
+                    reader.close()
+                    if (comment != null && adapter != null) adapter!!.addComment(comment)
                 }
-            }).setMethod("POST", body).start();
-        });
-        changeLayout(getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE);
-        recycler.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL));
-        refresher.setRefreshing(true);
-        new CommentsFetcher(CommentActivity.this, id).start();
+            }).setMethod("POST", body).start()
+        }
+        changeLayout(resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE)
+        recycler.addItemDecoration(DividerItemDecoration(this, DividerItemDecoration.VERTICAL))
+        refresher.isRefreshing = true
+        CommentsFetcher(this@CommentActivity, id).start()
     }
 
-    public void setAdapter(CommentAdapter adapter) {
-        this.adapter = adapter;
+    fun setAdapter(adapter: CommentAdapter?) {
+        this.adapter = adapter
     }
 
-    private String createRequestString(String text) {
+    private fun createRequestString(text: String): String {
         try {
-            StringWriter writer = new StringWriter();
-            JsonWriter json = new JsonWriter(writer);
-            json.beginObject();
-            json.name("body").value(text);
-            json.endObject();
-            String finalText = writer.toString();
-            json.close();
-            return finalText;
-        } catch (IOException ignore) {
+            val writer = StringWriter()
+            val json = JsonWriter(writer)
+            json.beginObject()
+            json.name("body").value(text)
+            json.endObject()
+            val finalText = writer.toString()
+            json.close()
+            return finalText
+        } catch (ignore: IOException) {
         }
-        return "";
+        return ""
     }
 
-    @Override
-    protected int getPortraitColumnCount() {
-        return 1;
+    override fun getPortraitColumnCount(): Int {
+        return 1
     }
 
-    @Override
-    protected int getLandscapeColumnCount() {
-        return 2;
+    override fun getLandscapeColumnCount(): Int {
+        return 2
     }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == android.R.id.home) {
-            onBackPressed();
-            return true;
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        if (item.itemId == android.R.id.home) {
+            onBackPressed()
+            return true
         }
-        return super.onOptionsItemSelected(item);
+        return super.onOptionsItemSelected(item)
+    }
+
+    companion object {
+        private const val MINIUM_MESSAGE_LENGHT = 10
     }
 }

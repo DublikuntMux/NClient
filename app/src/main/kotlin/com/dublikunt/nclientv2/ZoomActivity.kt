@@ -1,433 +1,459 @@
-package com.dublikunt.nclientv2;
+package com.dublikunt.nclientv2
 
-import android.Manifest;
-import android.animation.Animator;
-import android.animation.AnimatorListenerAdapter;
-import android.content.SharedPreferences;
-import android.content.pm.PackageManager;
-import android.content.res.Configuration;
-import android.os.Bundle;
-import android.view.KeyEvent;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewConfiguration;
-import android.view.WindowManager;
-import android.widget.SeekBar;
-import android.widget.TextView;
-import android.widget.Toast;
+import android.Manifest
+import android.animation.Animator
+import android.animation.AnimatorListenerAdapter
+import android.content.DialogInterface
+import android.content.pm.PackageManager
+import android.content.res.Configuration
+import android.os.Bundle
+import android.view.*
+import android.widget.SeekBar
+import android.widget.SeekBar.OnSeekBarChangeListener
+import android.widget.Toast
+import androidx.annotation.NonNull
+import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.WindowInsetsControllerCompat
+import androidx.fragment.app.Fragment
+import androidx.viewpager2.adapter.FragmentStateAdapter
+import androidx.viewpager2.widget.ViewPager2
+import androidx.viewpager2.widget.ViewPager2.OnPageChangeCallback
+import com.bumptech.glide.Priority
+import com.dublikunt.nclientv2.api.components.GenericGallery
+import com.dublikunt.nclientv2.async.database.Queries
+import com.dublikunt.nclientv2.components.activities.GeneralActivity
+import com.dublikunt.nclientv2.components.views.ZoomFragment
+import com.dublikunt.nclientv2.files.GalleryFolder
+import com.dublikunt.nclientv2.settings.*
+import com.dublikunt.nclientv2.settings.DefaultDialogs.CustomDialogResults
+import com.dublikunt.nclientv2.utility.LogUtility
+import com.dublikunt.nclientv2.utility.Utility
+import com.google.android.material.appbar.MaterialToolbar
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.android.material.textview.MaterialTextView
+import java.io.File
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.widget.Toolbar;
-import androidx.constraintlayout.widget.ConstraintLayout;
-import androidx.fragment.app.Fragment;
-import androidx.viewpager2.adapter.FragmentStateAdapter;
-import androidx.viewpager2.widget.ViewPager2;
+class ZoomActivity : GeneralActivity() {
+    private var gallery: GenericGallery? = null
+    private var actualPage = 0
+    private var isHidden = false
+    private lateinit var mViewPager: ViewPager2
+    private lateinit var pageManagerLabel: MaterialTextView
+    private lateinit var cornerPageViewer: MaterialTextView
+    private lateinit var pageSwitcher: View
+    private lateinit var seekBar: SeekBar
+    private lateinit var toolbar: MaterialToolbar
+    private lateinit var view: View
+    private var directory: GalleryFolder? = null
 
-import com.bumptech.glide.Priority;
-import com.dublikunt.nclientv2.api.components.GenericGallery;
-import com.dublikunt.nclientv2.async.database.Queries;
-import com.dublikunt.nclientv2.components.activities.GeneralActivity;
-import com.dublikunt.nclientv2.components.views.ZoomFragment;
-import com.dublikunt.nclientv2.files.GalleryFolder;
-import com.dublikunt.nclientv2.settings.DefaultDialogs;
-import com.dublikunt.nclientv2.settings.Global;
-import com.dublikunt.nclientv2.utility.LogUtility;
-import com.dublikunt.nclientv2.utility.Utility;
-import com.google.android.material.dialog.MaterialAlertDialogBuilder;
-
-import java.io.File;
-
-public class ZoomActivity extends GeneralActivity {
-    private final static int hideFlags = View.SYSTEM_UI_FLAG_LAYOUT_STABLE | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION | View.SYSTEM_UI_FLAG_FULLSCREEN | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY;
-    private final static int showFlags = View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN | View.SYSTEM_UI_FLAG_LAYOUT_STABLE;
-    private static final String VOLUME_SIDE_KEY = "volumeSide";
-    private static final String SCROLL_TYPE_KEY = "zoomScrollType";
-    private GenericGallery gallery;
-    private int actualPage = 0;
-    private boolean isHidden = false;
-    private ViewPager2 mViewPager;
-    private TextView pageManagerLabel, cornerPageViewer;
-    private View pageSwitcher;
-    private SeekBar seekBar;
-    private Toolbar toolbar;
-    private View view;
-    private GalleryFolder directory;
     @ViewPager2.Orientation
-    private int tmpScrollType;
-    private boolean up = false, down = false, side;
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        //Global.initActivity(this);
-        SharedPreferences preferences = getSharedPreferences("Settings", 0);
-        side = preferences.getBoolean(VOLUME_SIDE_KEY, true);
-        setContentView(R.layout.activity_zoom);
+    private var tmpScrollType = 0
+    private var up = false
+    private var down = false
+    private var side = false
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        val preferences = getSharedPreferences("Settings", 0)
+        side = preferences.getBoolean(VOLUME_SIDE_KEY, true)
+        setContentView(R.layout.activity_zoom)
 
         //read arguments
-        gallery = getIntent().getParcelableExtra(getPackageName() + ".GALLERY");
-        final int page = getIntent().getExtras().getInt(getPackageName() + ".PAGE", 1) - 1;
-        directory = gallery.getGalleryFolder();
+        gallery = intent.getParcelableExtra("$packageName.GALLERY")
+        val page = intent.extras!!.getInt("$packageName.PAGE", 1) - 1
+        directory = gallery!!.galleryFolder
         //toolbar setup
-        toolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setDisplayShowTitleEnabled(true);
-        setTitle(gallery.getTitle());
-
-        getWindow().setFlags(
+        toolbar = findViewById(R.id.toolbar)
+        setSupportActionBar(toolbar)
+        supportActionBar!!.setDisplayHomeAsUpEnabled(true)
+        supportActionBar!!.setDisplayShowTitleEnabled(true)
+        title = gallery!!.title
+        window.setFlags(
             WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN
-                | WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
+                    or WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
             WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN
-                | WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
-        if (Global.isLockScreen())
-            getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+                    or WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS
+        )
+        if (Global.isLockScreen()) window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
 
 
         //find views
-        SectionsPagerAdapter mSectionsPagerAdapter = new SectionsPagerAdapter(this);
-        mViewPager = findViewById(R.id.container);
-        mViewPager.setAdapter(mSectionsPagerAdapter);
-        mViewPager.setOrientation(preferences.getInt(SCROLL_TYPE_KEY, ScrollType.HORIZONTAL.ordinal()));
-        mViewPager.setOffscreenPageLimit(Global.getOffscreenLimit());
-        pageSwitcher = findViewById(R.id.page_switcher);
-        pageManagerLabel = findViewById(R.id.pages);
-        cornerPageViewer = findViewById(R.id.page_text);
-        seekBar = findViewById(R.id.seekBar);
-        view = findViewById(R.id.view);
+        val mSectionsPagerAdapter: SectionsPagerAdapter = SectionsPagerAdapter(this)
+        mViewPager = findViewById(R.id.container)
+        mViewPager.adapter = mSectionsPagerAdapter
+        mViewPager.orientation = preferences.getInt(
+            SCROLL_TYPE_KEY,
+            ScrollType.HORIZONTAL.ordinal
+        )
+        mViewPager.offscreenPageLimit = Global.getOffscreenLimit()
+        pageSwitcher = findViewById(R.id.page_switcher)
+        pageManagerLabel = findViewById(R.id.pages)
+        cornerPageViewer = findViewById(R.id.page_text)
+        seekBar = findViewById(R.id.seekBar)
+        view = findViewById(R.id.view)
 
         //initial setup for views
-        changeLayout(getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE);
-        mViewPager.setKeepScreenOn(Global.isLockScreen());
-        findViewById(R.id.prev).setOnClickListener(v -> changeClosePage(false));
-        findViewById(R.id.next).setOnClickListener(v -> changeClosePage(true));
-        seekBar.setMax(gallery.getPageCount() - 1);
+        changeLayout(resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE)
+        mViewPager.keepScreenOn = Global.isLockScreen()
+        findViewById<View>(R.id.prev).setOnClickListener { v: View? -> changeClosePage(false) }
+        findViewById<View>(R.id.next).setOnClickListener { v: View? -> changeClosePage(true) }
+        seekBar.max = gallery!!.pageCount - 1
         if (Global.useRtl()) {
-            seekBar.setRotationY(180);
-            mViewPager.setLayoutDirection(ViewPager2.LAYOUT_DIRECTION_RTL);
+            seekBar.rotationY = 180f
+            mViewPager.layoutDirection = ViewPager2.LAYOUT_DIRECTION_RTL
         }
 
         //Adding listeners
-        mViewPager.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
-            @Override
-            public void onPageSelected(int newPage) {
-                int oldPage = actualPage;
-                actualPage = newPage;
-                LogUtility.d("Page selected: " + newPage + " from page " + oldPage);
-                setPageText(newPage + 1);
-                seekBar.setProgress(newPage);
-                clearFarRequests(oldPage, newPage);
-                makeNearRequests(newPage);
+        mViewPager.registerOnPageChangeCallback(object : OnPageChangeCallback() {
+            override fun onPageSelected(newPage: Int) {
+                val oldPage = actualPage
+                actualPage = newPage
+                LogUtility.d("Page selected: $newPage from page $oldPage")
+                setPageText(newPage + 1)
+                seekBar.progress = newPage
+                clearFarRequests(oldPage, newPage)
+                makeNearRequests(newPage)
             }
-        });
-        pageManagerLabel.setOnClickListener(v -> DefaultDialogs.pageChangerDialog(
-            new DefaultDialogs.Builder(this)
-                .setActual(actualPage + 1)
-                .setMin(1)
-                .setMax(gallery.getPageCount())
-                .setTitle(R.string.change_page)
-                .setDrawable(R.drawable.ic_find_in_page)
-                .setDialogs(new DefaultDialogs.CustomDialogResults() {
-                    @Override
-                    public void positive(int actual) {
-                        changePage(actual - 1);
-                    }
-                })
-        ));
-        seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-            @Override
-            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+        })
+        pageManagerLabel.setOnClickListener(View.OnClickListener { v: View? ->
+            DefaultDialogs.pageChangerDialog(
+                DefaultDialogs.Builder(this)
+                    .setActual(actualPage + 1)
+                    .setMin(1)
+                    .setMax(gallery!!.pageCount)
+                    .setTitle(R.string.change_page)
+                    .setDrawable(R.drawable.ic_find_in_page)
+                    .setDialogs(object : CustomDialogResults() {
+                        override fun positive(actual: Int) {
+                            changePage(actual - 1)
+                        }
+                    })
+            )
+        })
+        seekBar.setOnSeekBarChangeListener(object : OnSeekBarChangeListener {
+            override fun onProgressChanged(seekBar: SeekBar, progress: Int, fromUser: Boolean) {
                 if (fromUser) {
-                    setPageText(progress + 1);
+                    setPageText(progress + 1)
                 }
             }
 
-            @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {
+            override fun onStartTrackingTouch(seekBar: SeekBar) {}
+            override fun onStopTrackingTouch(seekBar: SeekBar) {
+                changePage(seekBar.progress)
             }
-
-            @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {
-                changePage(seekBar.getProgress());
-            }
-        });
-
-
-        changePage(page);
-        setPageText(page + 1);
-        seekBar.setProgress(page);
+        })
+        changePage(page)
+        setPageText(page + 1)
+        seekBar.progress = page
     }
 
-    private void setUserInput(boolean enabled) {
-        mViewPager.setUserInputEnabled(enabled);
+    private fun setUserInput(enabled: Boolean) {
+        mViewPager.isUserInputEnabled = enabled
     }
 
-    private void setPageText(int page) {
-        pageManagerLabel.setText(getString(R.string.page_format, page, gallery.getPageCount()));
-        cornerPageViewer.setText(getString(R.string.page_format, page, gallery.getPageCount()));
+    private fun setPageText(page: Int) {
+        pageManagerLabel.text = getString(R.string.page_format, page, gallery!!.pageCount)
+        cornerPageViewer.text = getString(R.string.page_format, page, gallery!!.pageCount)
     }
 
-
-    @Override
-    public boolean onKeyUp(int keyCode, KeyEvent event) {
+    override fun onKeyUp(keyCode: Int, event: KeyEvent): Boolean {
         if (Global.volumeOverride()) {
-            switch (keyCode) {
-                case KeyEvent.KEYCODE_VOLUME_UP:
-                    up = false;
-                    break;
-                case KeyEvent.KEYCODE_VOLUME_DOWN:
-                    down = false;
-                    break;
+            when (keyCode) {
+                KeyEvent.KEYCODE_VOLUME_UP -> up = false
+                KeyEvent.KEYCODE_VOLUME_DOWN -> down = false
             }
         }
-        return super.onKeyUp(keyCode, event);
+        return super.onKeyUp(keyCode, event)
     }
 
-    @Override
-    public boolean onKeyDown(int keyCode, KeyEvent event) {
+    override fun onKeyDown(keyCode: Int, event: KeyEvent): Boolean {
         if (Global.volumeOverride()) {
-            switch (keyCode) {
-                case KeyEvent.KEYCODE_VOLUME_UP:
-                    up = true;
-                    changeClosePage(side);
-                    if (up && down) changeSide();
-                    return true;
-                case KeyEvent.KEYCODE_VOLUME_DOWN:
-                    down = true;
-                    changeClosePage(!side);
-                    if (up && down) changeSide();
-                    return true;
+            when (keyCode) {
+                KeyEvent.KEYCODE_VOLUME_UP -> {
+                    up = true
+                    changeClosePage(side)
+                    if (up && down) changeSide()
+                    return true
+                }
+                KeyEvent.KEYCODE_VOLUME_DOWN -> {
+                    down = true
+                    changeClosePage(!side)
+                    if (up && down) changeSide()
+                    return true
+                }
             }
         }
-        return super.onKeyDown(keyCode, event);
+        return super.onKeyDown(keyCode, event)
     }
 
-    private void changeSide() {
-        getSharedPreferences("Settings", 0).edit().putBoolean(VOLUME_SIDE_KEY, side = !side).apply();
-        Toast.makeText(this, side ? R.string.next_page_volume_up : R.string.next_page_volume_down, Toast.LENGTH_SHORT).show();
+    private fun changeSide() {
+        getSharedPreferences("Settings", 0).edit()
+            .putBoolean(VOLUME_SIDE_KEY, !side.also { side = it }).apply()
+        Toast.makeText(
+            this,
+            if (side) R.string.next_page_volume_up else R.string.next_page_volume_down,
+            Toast.LENGTH_SHORT
+        ).show()
     }
 
-    public void changeClosePage(boolean next) {
-        if (Global.useRtl()) next = !next;
-        if (next && mViewPager.getCurrentItem() < (mViewPager.getAdapter().getItemCount() - 1))
-            changePage(mViewPager.getCurrentItem() + 1);
-        if (!next && mViewPager.getCurrentItem() > 0) changePage(mViewPager.getCurrentItem() - 1);
+    fun changeClosePage(next: Boolean) {
+        var next = next
+        if (Global.useRtl()) next = !next
+        if (next && mViewPager.currentItem < mViewPager.adapter!!.itemCount - 1) changePage(
+            mViewPager.currentItem + 1
+        )
+        if (!next && mViewPager.currentItem > 0) changePage(mViewPager.currentItem - 1)
     }
 
-    @Override
-    public void onConfigurationChanged(@NonNull Configuration newConfig) {
-        super.onConfigurationChanged(newConfig);
-        changeLayout(newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE);
+    override fun onConfigurationChanged(newConfig: Configuration) {
+        super.onConfigurationChanged(newConfig)
+        changeLayout(newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE)
     }
 
-    private boolean hardwareKeys() {
-        return ViewConfiguration.get(this).hasPermanentMenuKey();
+    private fun hardwareKeys(): Boolean {
+        return ViewConfiguration.get(this).hasPermanentMenuKey()
     }
 
-    private void applyMargin(boolean landscape, View view) {
-        ConstraintLayout.LayoutParams lp = (ConstraintLayout.LayoutParams) view.getLayoutParams();
-        lp.setMargins(0, 0, landscape && !hardwareKeys() ? Global.getNavigationBarHeight(this) : 0, 0);
-        view.setLayoutParams(lp);
+    private fun applyMargin(landscape: Boolean, view: View?) {
+        val lp = view!!.layoutParams as ConstraintLayout.LayoutParams
+        lp.setMargins(
+            0,
+            0,
+            if (landscape && !hardwareKeys()) Global.getNavigationBarHeight(this) else 0,
+            0
+        )
+        view.layoutParams = lp
     }
 
-    public ViewPager2 geViewPager() {
-        return mViewPager;
+    fun geViewPager(): ViewPager2? {
+        return mViewPager
     }
 
-    private void changeLayout(boolean landscape) {
-        int statusBarHeight = Global.getStatusBarHeight(this);
-        applyMargin(landscape, findViewById(R.id.master_layout));
-        applyMargin(landscape, toolbar);
-        pageSwitcher.setPadding(0, 0, 0, landscape ? 0 : statusBarHeight);
+    private fun changeLayout(landscape: Boolean) {
+        val statusBarHeight = Global.getStatusBarHeight(this)
+        applyMargin(landscape, findViewById(R.id.master_layout))
+        applyMargin(landscape, toolbar)
+        pageSwitcher.setPadding(0, 0, 0, if (landscape) 0 else statusBarHeight)
     }
 
-    private void changePage(int newPage) {
-        mViewPager.setCurrentItem(newPage);
+    private fun changePage(newPage: Int) {
+        mViewPager.currentItem = newPage
     }
 
-    private void changeScrollTypeDialog() {
-        MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(this);
-        int scrollType = mViewPager.getOrientation();
-        tmpScrollType = mViewPager.getOrientation();
-        builder.setTitle(getString(R.string.change_scroll_type) + ":");
-        builder.setSingleChoiceItems(R.array.scroll_type, scrollType, (dialog, which) -> tmpScrollType = which);
-        builder.setPositiveButton(R.string.ok, (dialog, which) -> {
+    private fun changeScrollTypeDialog() {
+        val builder = MaterialAlertDialogBuilder(this)
+        val scrollType = mViewPager.orientation
+        tmpScrollType = mViewPager.orientation
+        builder.setTitle(getString(R.string.change_scroll_type) + ":")
+        builder.setSingleChoiceItems(
+            R.array.scroll_type,
+            scrollType
+        ) { _: DialogInterface?, which: Int -> tmpScrollType = which }
+        builder.setPositiveButton(R.string.ok) { _: DialogInterface?, _: Int ->
             if (tmpScrollType != scrollType) {
-                mViewPager.setOrientation(tmpScrollType);
-                getSharedPreferences("Settings", 0).edit().putInt(SCROLL_TYPE_KEY, tmpScrollType).apply();
-                int page = actualPage;
-                changePage(page + 1);
-                changePage(page);
+                mViewPager.orientation = tmpScrollType
+                getSharedPreferences("Settings", 0).edit().putInt(SCROLL_TYPE_KEY, tmpScrollType)
+                    .apply()
+                val page = actualPage
+                changePage(page + 1)
+                changePage(page)
             }
-        }).setNegativeButton(R.string.cancel, null);
-        builder.show();
+        }.setNegativeButton(R.string.cancel, null)
+        builder.show()
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_zoom, menu);
-        Utility.tintMenu(menu);
-        return true;
+        menuInflater.inflate(R.menu.menu_zoom, menu)
+        Utility.tintMenu(menu)
+        return true
     }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
+        val id = item.itemId
         if (id == R.id.rotate) {
-            getActualFragment().rotate();
+            actualFragment!!.rotate()
         } else if (id == R.id.save_page) {
             if (Global.hasStoragePermission(this)) {
-                downloadPage();
-            } else requestStorage();
+                downloadPage()
+            } else requestStorage()
         } else if (id == R.id.share) {
-            if (gallery.getId() <= 0) sendImage(false);
-            else openSendImageDialog();
+            if (gallery!!.id <= 0) sendImage(false) else openSendImageDialog()
         } else if (id == android.R.id.home) {
-            finish();
-            return true;
+            finish()
+            return true
         } else if (id == R.id.bookmark) {
-            Queries.ResumeTable.insert(gallery.getId(), actualPage + 1);
+            Queries.ResumeTable.insert(gallery!!.id, actualPage + 1)
         } else if (id == R.id.scrollType) {
-            changeScrollTypeDialog();
+            changeScrollTypeDialog()
         }
-
-        return super.onOptionsItemSelected(item);
+        return super.onOptionsItemSelected(item)
     }
 
-    private void openSendImageDialog() {
-        MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(this);
-        builder.setPositiveButton(R.string.yes, (dialog, which) -> sendImage(true))
-            .setNegativeButton(R.string.no, (dialog, which) -> sendImage(false))
+    private fun openSendImageDialog() {
+        val builder = MaterialAlertDialogBuilder(this)
+        builder.setPositiveButton(R.string.yes) { _: DialogInterface?, _: Int ->
+            sendImage(
+                true
+            )
+        }
+            .setNegativeButton(R.string.no) { _: DialogInterface?, _: Int ->
+                sendImage(
+                    false
+                )
+            }
             .setCancelable(true).setTitle(R.string.send_with_title)
             .setMessage(R.string.caption_send_with_title)
-            .show();
+            .show()
     }
 
-    private void requestStorage() {
-        requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE}, 1);
+    private fun requestStorage() {
+        requestPermissions(
+            arrayOf(
+                Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                Manifest.permission.READ_EXTERNAL_STORAGE
+            ), 1
+        )
     }
 
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        Global.initStorage(this);
-        if (requestCode == 1 && grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED)
-            downloadPage();
-
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        Global.initStorage(this)
+        if (requestCode == 1 && grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) downloadPage()
     }
 
-    private ZoomFragment getActualFragment() {
-        return getActualFragment(mViewPager.getCurrentItem());
-    }
+    private val actualFragment: ZoomFragment?
+        get() = getActualFragment(mViewPager.currentItem)
 
-    private void makeNearRequests(int newPage) {
-        ZoomFragment fragment;
-        int offScreenLimit = Global.getOffscreenLimit();
-        for (int i = newPage - offScreenLimit; i <= newPage + offScreenLimit; i++) {
-            fragment = getActualFragment(i);
-            if (fragment == null) continue;
-            if (i == newPage) fragment.loadImage(Priority.IMMEDIATE);
-            else fragment.loadImage();
+    private fun makeNearRequests(newPage: Int) {
+        var fragment: ZoomFragment?
+        val offScreenLimit = Global.getOffscreenLimit()
+        for (i in newPage - offScreenLimit..newPage + offScreenLimit) {
+            fragment = getActualFragment(i)
+            if (fragment == null) continue
+            if (i == newPage) fragment.loadImage(Priority.IMMEDIATE) else fragment.loadImage()
         }
     }
 
-    private void clearFarRequests(int oldPage, int newPage) {
-        ZoomFragment fragment;
-        int offScreenLimit = Global.getOffscreenLimit();
-        for (int i = oldPage - offScreenLimit; i <= oldPage + offScreenLimit; i++) {
-            if (i >= newPage - offScreenLimit && i <= newPage + offScreenLimit) continue;
-            fragment = getActualFragment(i);
-            if (fragment == null) continue;
-            fragment.cancelRequest();
+    private fun clearFarRequests(oldPage: Int, newPage: Int) {
+        var fragment: ZoomFragment?
+        val offScreenLimit = Global.getOffscreenLimit()
+        for (i in oldPage - offScreenLimit..oldPage + offScreenLimit) {
+            if (i >= newPage - offScreenLimit && i <= newPage + offScreenLimit) continue
+            fragment = getActualFragment(i)
+            if (fragment == null) continue
+            fragment.cancelRequest()
         }
-
     }
 
-    private ZoomFragment getActualFragment(int position) {
-        return (ZoomFragment) getSupportFragmentManager().findFragmentByTag("f" + position);
+    private fun getActualFragment(position: Int): ZoomFragment? {
+        return supportFragmentManager.findFragmentByTag("f$position") as ZoomFragment?
     }
 
-    private void sendImage(boolean withText) {
-        int pageNum = mViewPager.getCurrentItem();
-        Utility.sendImage(this, getActualFragment().getDrawable(), withText ? gallery.sharePageUrl(pageNum) : null);
+    private fun sendImage(withText: Boolean) {
+        val pageNum = mViewPager.currentItem
+        Utility.sendImage(
+            this,
+            actualFragment!!.drawable,
+            if (withText) gallery!!.sharePageUrl(pageNum) else null
+        )
     }
 
-    private void downloadPage() {
-        final File output = new File(Global.SCREENFOLDER, gallery.getId() + "-" + (mViewPager.getCurrentItem() + 1) + ".jpg");
-        Utility.saveImage(getActualFragment().getDrawable(), output);
+    private fun downloadPage() {
+        val output = File(
+            Global.SCREENFOLDER,
+            gallery!!.id.toString() + "-" + (mViewPager.currentItem + 1) + ".jpg"
+        )
+        Utility.saveImage(actualFragment!!.drawable, output)
     }
 
-    private void animateLayout() {
-
-        AnimatorListenerAdapter adapter = new AnimatorListenerAdapter() {
-            @Override
-            public void onAnimationEnd(Animator animation) {
+    private fun animateLayout() {
+        val adapter: AnimatorListenerAdapter = object : AnimatorListenerAdapter() {
+            override fun onAnimationEnd(animation: Animator) {
                 if (isHidden) {
-                    pageSwitcher.setVisibility(View.GONE);
-                    toolbar.setVisibility(View.GONE);
-                    view.setVisibility(View.GONE);
-                    cornerPageViewer.setVisibility(View.VISIBLE);
+                    pageSwitcher.visibility = View.GONE
+                    toolbar.visibility = View.GONE
+                    view.visibility = View.GONE
+                    cornerPageViewer.visibility = View.VISIBLE
                 }
             }
-        };
-
-        pageSwitcher.setVisibility(View.VISIBLE);
-        toolbar.setVisibility(View.VISIBLE);
-        view.setVisibility(View.VISIBLE);
-        cornerPageViewer.setVisibility(View.GONE);
-
-        pageSwitcher.animate().alpha(isHidden ? 0f : 0.75f).setDuration(150).setListener(adapter).start();
-        view.animate().alpha(isHidden ? 0f : 0.75f).setDuration(150).setListener(adapter).start();
-        toolbar.animate().alpha(isHidden ? 0f : 0.75f).setDuration(150).setListener(adapter).start();
-    }
-
-    private void applyVisibilityFlag() {
-        getWindow().getDecorView().setSystemUiVisibility(isHidden ? hideFlags : showFlags);
-    }
-
-    private enum ScrollType {HORIZONTAL, VERTICAL}
-
-    public class SectionsPagerAdapter extends FragmentStateAdapter {
-        private boolean allowScroll = true;
-
-        public SectionsPagerAdapter(ZoomActivity activity) {
-            super(activity.getSupportFragmentManager(), activity.getLifecycle());
-
         }
+        pageSwitcher.visibility = View.VISIBLE
+        toolbar.visibility = View.VISIBLE
+        view.visibility = View.VISIBLE
+        cornerPageViewer.visibility = View.GONE
+        pageSwitcher.animate().alpha(if (isHidden) 0f else 0.75f).setDuration(150)
+            .setListener(adapter).start()
+        view.animate().alpha(if (isHidden) 0f else 0.75f).setDuration(150).setListener(adapter)
+            .start()
+        toolbar.animate().alpha(if (isHidden) 0f else 0.75f).setDuration(150).setListener(adapter)
+            .start()
+    }
 
-        @NonNull
-        @Override
-        public Fragment createFragment(int position) {
-            ZoomFragment f = ZoomFragment.newInstance(gallery, position, directory);
+    private fun applyVisibilityFlag() {
+        if (isHidden){
+            hideSystemUI(window.decorView)
+        } else {
+            showSystemUI(window.decorView)
+        }
+    }
 
-            f.setZoomChangeListener((v, zoomLevel) -> {
+    private enum class ScrollType {
+        HORIZONTAL, VERTICAL
+    }
+
+    inner class SectionsPagerAdapter(activity: ZoomActivity) :
+        FragmentStateAdapter(activity.supportFragmentManager, activity.lifecycle) {
+        private var allowScroll = true
+        override fun createFragment(position: Int): Fragment {
+            val f = ZoomFragment.newInstance(gallery, position, directory)
+            f.setZoomChangeListener { _: View?, zoomLevel: Float ->
                 try {
-                    boolean _allowScroll = zoomLevel < 1.1f;
-                    if (_allowScroll != allowScroll) {
-                        setUserInput(!allowScroll);
-                        allowScroll = _allowScroll;
+                    val Scroll = zoomLevel < 1.1f
+                    if (Scroll != allowScroll) {
+                        setUserInput(!allowScroll)
+                        allowScroll = Scroll
                     }
-                } catch (Exception ignored) {
+                } catch (ignored: Exception) {
                 }
-            });
-
-            f.setClickListener(v -> {
-                isHidden = !isHidden;
-                LogUtility.d("Clicked " + isHidden);
-                applyVisibilityFlag();
-                animateLayout();
-            });
-            return f;
+            }
+            f.setClickListener { v: View? ->
+                isHidden = !isHidden
+                LogUtility.d("Clicked $isHidden")
+                applyVisibilityFlag()
+                animateLayout()
+            }
+            return f
         }
 
-        @Override
-        public int getItemCount() {
-            return gallery.getPageCount();
+        override fun getItemCount(): Int {
+            return gallery!!.pageCount
         }
+    }
+
+    private fun hideSystemUI(view: View) {
+        WindowCompat.setDecorFitsSystemWindows(window, false)
+        WindowInsetsControllerCompat(window, view).let { controller ->
+            controller.hide(WindowInsetsCompat.Type.systemBars())
+            controller.systemBarsBehavior = WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+        }
+    }
+
+    private fun showSystemUI(view: View) {
+        WindowCompat.setDecorFitsSystemWindows(window, true)
+        WindowInsetsControllerCompat(window, view).show(WindowInsetsCompat.Type.systemBars())
+    }
+
+    companion object {
+        private const val VOLUME_SIDE_KEY = "volumeSide"
+        private const val SCROLL_TYPE_KEY = "zoomScrollType"
     }
 }

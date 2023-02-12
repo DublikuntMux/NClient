@@ -1,234 +1,224 @@
-package com.dublikunt.nclientv2;
+package com.dublikunt.nclientv2
 
-import android.content.res.Configuration;
-import android.os.Bundle;
-import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.view.View;
-import android.widget.ArrayAdapter;
-import android.widget.LinearLayout;
+import android.content.DialogInterface
+import android.content.res.Configuration
+import android.os.Bundle
+import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuItem
+import android.view.View
+import android.widget.ArrayAdapter
+import android.widget.LinearLayout
+import androidx.activity.OnBackPressedCallback
+import androidx.appcompat.widget.SearchView
+import com.dublikunt.nclientv2.adapters.LocalAdapter
+import com.dublikunt.nclientv2.api.local.FakeInspector
+import com.dublikunt.nclientv2.api.local.LocalGallery
+import com.dublikunt.nclientv2.api.local.LocalSortType
+import com.dublikunt.nclientv2.async.converters.CreatePDF
+import com.dublikunt.nclientv2.async.downloader.GalleryDownloaderV2
+import com.dublikunt.nclientv2.components.activities.BaseActivity
+import com.dublikunt.nclientv2.components.classes.MultichoiceAdapter
+import com.dublikunt.nclientv2.components.classes.MultichoiceAdapter.DefaultMultichoiceListener
+import com.dublikunt.nclientv2.components.classes.MultichoiceAdapter.MultichoiceListener
+import com.dublikunt.nclientv2.settings.Global
+import com.dublikunt.nclientv2.utility.Utility
+import com.google.android.material.appbar.MaterialToolbar
+import com.google.android.material.chip.ChipGroup
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.android.material.switchmaterial.SwitchMaterial
+import java.io.File
 
-import androidx.appcompat.widget.Toolbar;
-
-import com.dublikunt.nclientv2.adapters.LocalAdapter;
-import com.dublikunt.nclientv2.api.local.FakeInspector;
-import com.dublikunt.nclientv2.api.local.LocalGallery;
-import com.dublikunt.nclientv2.api.local.LocalSortType;
-import com.dublikunt.nclientv2.async.converters.CreatePDF;
-import com.dublikunt.nclientv2.async.downloader.GalleryDownloaderV2;
-import com.dublikunt.nclientv2.components.activities.BaseActivity;
-import com.dublikunt.nclientv2.components.classes.MultichoiceAdapter;
-import com.dublikunt.nclientv2.settings.Global;
-import com.dublikunt.nclientv2.utility.Utility;
-import com.google.android.material.chip.ChipGroup;
-import com.google.android.material.dialog.MaterialAlertDialogBuilder;
-import com.google.android.material.switchmaterial.SwitchMaterial;
-
-import java.io.File;
-import java.util.List;
-
-public class LocalActivity extends BaseActivity {
-    private Menu optionMenu;
-    private LocalAdapter adapter;
-    private final MultichoiceAdapter.MultichoiceListener listener = new MultichoiceAdapter.DefaultMultichoiceListener() {
-
-        @Override
-        public void choiceChanged() {
-            setMenuVisibility(optionMenu);
+class LocalActivity : BaseActivity() {
+    private var optionMenu: Menu? = null
+    private var adapter: LocalAdapter? = null
+    private val listener: MultichoiceListener = object : DefaultMultichoiceListener() {
+        override fun choiceChanged() {
+            setMenuVisibility(optionMenu)
         }
-    };
-    private Toolbar toolbar;
-    private int colCount;
-    private int idGalleryPosition = -1;
-    private File folder = Global.MAINFOLDER;
-    private androidx.appcompat.widget.SearchView searchView;
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        //Global.initActivity(this);
-        setContentView(R.layout.app_bar_main);
-        toolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setDisplayShowTitleEnabled(true);
-        getSupportActionBar().setTitle(R.string.downloaded_manga);
-        findViewById(R.id.page_switcher).setVisibility(View.GONE);
-        recycler = findViewById(R.id.recycler);
-        refresher = findViewById(R.id.refresher);
-        refresher.setOnRefreshListener(() -> new FakeInspector(this, folder).execute(this));
-        changeLayout(getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE);
-        new FakeInspector(this, folder).execute(this);
+    }
+    private lateinit var toolbar: MaterialToolbar
+    var colCount = 0
+        private set
+    private var idGalleryPosition = -1
+    private var folder = Global.MAINFOLDER
+    private lateinit var searchView: SearchView
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.app_bar_main)
+        toolbar = findViewById(R.id.toolbar)
+        setSupportActionBar(toolbar)
+        onBackPressedDispatcher.addCallback(this, onBackPressedCallback)
+        supportActionBar!!.setDisplayHomeAsUpEnabled(true)
+        supportActionBar!!.setDisplayShowTitleEnabled(true)
+        supportActionBar!!.setTitle(R.string.downloaded_manga)
+        findViewById<View>(R.id.page_switcher).visibility = View.GONE
+        recycler = findViewById(R.id.recycler)
+        refresher = findViewById(R.id.refresher)
+        refresher.setOnRefreshListener { FakeInspector(this, folder).execute(this) }
+        changeLayout(resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE)
+        FakeInspector(this, folder).execute(this)
     }
 
-    public void setAdapter(LocalAdapter adapter) {
-        this.adapter = adapter;
-        this.adapter.addListener(listener);
-        recycler.setAdapter(adapter);
+    fun setAdapter(adapter: LocalAdapter?) {
+        this.adapter = adapter
+        this.adapter!!.addListener(listener)
+        recycler.adapter = adapter
     }
 
-    public void setIdGalleryPosition(int idGalleryPosition) {
-        this.idGalleryPosition = idGalleryPosition;
+    fun setIdGalleryPosition(idGalleryPosition: Int) {
+        this.idGalleryPosition = idGalleryPosition
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.download, menu);
-        getMenuInflater().inflate(R.menu.local_multichoice, menu);
-        this.optionMenu = menu;
-        setMenuVisibility(menu);
-        searchView = (androidx.appcompat.widget.SearchView) menu.findItem(R.id.search).getActionView();
-        searchView.setOnQueryTextListener(new androidx.appcompat.widget.SearchView.OnQueryTextListener() {
-            @Override
-            public boolean onQueryTextSubmit(String query) {
-                return true;
+        menuInflater.inflate(R.menu.download, menu)
+        menuInflater.inflate(R.menu.local_multichoice, menu)
+        optionMenu = menu
+        setMenuVisibility(menu)
+        searchView = menu.findItem(R.id.search).actionView as SearchView
+        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String): Boolean {
+                return true
             }
 
-            @Override
-            public boolean onQueryTextChange(String newText) {
-                if (recycler.getAdapter() != null)
-                    ((LocalAdapter) recycler.getAdapter()).getFilter().filter(newText);
-                return true;
+            override fun onQueryTextChange(newText: String): Boolean {
+                if (recycler.adapter != null) (recycler.adapter as LocalAdapter?)!!.filter.filter(
+                    newText
+                )
+                return true
             }
-        });
-
-        Utility.tintMenu(menu);
-
-        return true;
+        })
+        Utility.tintMenu(menu)
+        return true
     }
 
-    private void setMenuVisibility(Menu menu) {
-        if (menu == null) return;
-        MultichoiceAdapter.Mode mode = adapter == null ? MultichoiceAdapter.Mode.NORMAL : adapter.getMode();
-        boolean hasGallery = false;
-        boolean hasDownloads = false;
+    private fun setMenuVisibility(menu: Menu?) {
+        if (menu == null) return
+        val mode = if (adapter == null) MultichoiceAdapter.Mode.NORMAL else adapter!!.mode
+        var hasGallery = false
+        var hasDownloads = false
         if (mode == MultichoiceAdapter.Mode.SELECTING) {
-            hasGallery = adapter.hasSelectedClass(LocalGallery.class);
-            hasDownloads = adapter.hasSelectedClass(GalleryDownloaderV2.class);
+            hasGallery = adapter!!.hasSelectedClass(LocalGallery::class.java)
+            hasDownloads = adapter!!.hasSelectedClass(GalleryDownloaderV2::class.java)
         }
-
-        menu.findItem(R.id.search).setVisible(mode == MultichoiceAdapter.Mode.NORMAL);
-        menu.findItem(R.id.sort_by_name).setVisible(mode == MultichoiceAdapter.Mode.NORMAL);
-        menu.findItem(R.id.folder_choose).setVisible(mode == MultichoiceAdapter.Mode.NORMAL && Global.getUsableFolders(this).size() > 1);
-        menu.findItem(R.id.random_favorite).setVisible(mode == MultichoiceAdapter.Mode.NORMAL);
-
-        menu.findItem(R.id.delete_all).setVisible(mode == MultichoiceAdapter.Mode.SELECTING);
-        menu.findItem(R.id.select_all).setVisible(mode == MultichoiceAdapter.Mode.SELECTING);
-        menu.findItem(R.id.pause_all).setVisible(mode == MultichoiceAdapter.Mode.SELECTING && !hasGallery && hasDownloads);
-        menu.findItem(R.id.start_all).setVisible(mode == MultichoiceAdapter.Mode.SELECTING && !hasGallery && hasDownloads);
-        menu.findItem(R.id.pdf_all).setVisible(mode == MultichoiceAdapter.Mode.SELECTING && hasGallery && !hasDownloads && CreatePDF.hasPDFCapabilities());
-        menu.findItem(R.id.zip_all).setVisible(mode == MultichoiceAdapter.Mode.SELECTING && hasGallery && !hasDownloads);
+        menu.findItem(R.id.search).isVisible = mode == MultichoiceAdapter.Mode.NORMAL
+        menu.findItem(R.id.sort_by_name).isVisible = mode == MultichoiceAdapter.Mode.NORMAL
+        menu.findItem(R.id.folder_choose).isVisible =
+            mode == MultichoiceAdapter.Mode.NORMAL && Global.getUsableFolders(
+                this
+            ).size > 1
+        menu.findItem(R.id.random_favorite).isVisible = mode == MultichoiceAdapter.Mode.NORMAL
+        menu.findItem(R.id.delete_all).isVisible = mode == MultichoiceAdapter.Mode.SELECTING
+        menu.findItem(R.id.select_all).isVisible = mode == MultichoiceAdapter.Mode.SELECTING
+        menu.findItem(R.id.pause_all).isVisible =
+            mode == MultichoiceAdapter.Mode.SELECTING && !hasGallery && hasDownloads
+        menu.findItem(R.id.start_all).isVisible =
+            mode == MultichoiceAdapter.Mode.SELECTING && !hasGallery && hasDownloads
+        menu.findItem(R.id.pdf_all).isVisible =
+            mode == MultichoiceAdapter.Mode.SELECTING && hasGallery && !hasDownloads && CreatePDF.hasPDFCapabilities()
+        menu.findItem(R.id.zip_all).isVisible =
+            mode == MultichoiceAdapter.Mode.SELECTING && hasGallery && !hasDownloads
     }
 
-    @Override
-    protected void onDestroy() {
-        if (adapter != null) adapter.removeObserver();
-        super.onDestroy();
+    override fun onDestroy() {
+        if (adapter != null) adapter!!.removeObserver()
+        super.onDestroy()
     }
 
-    @Override
-    protected void changeLayout(boolean landscape) {
-        colCount = (landscape ? getLandscapeColumnCount() : getPortraitColumnCount());
-        if (adapter != null) adapter.setColCount(colCount);
-        super.changeLayout(landscape);
+    override fun changeLayout(landscape: Boolean) {
+        colCount = if (landscape) landscapeColumnCount else portraitColumnCount
+        if (adapter != null) adapter!!.setColCount(colCount)
+        super.changeLayout(landscape)
     }
 
-    public int getColCount() {
-        return colCount;
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
+    override fun onResume() {
+        super.onResume()
         if (idGalleryPosition != -1) {
-            adapter.updateColor(idGalleryPosition);
-            idGalleryPosition = -1;
+            adapter!!.updateColor(idGalleryPosition)
+            idGalleryPosition = -1
         }
     }
 
-    public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == android.R.id.home) {
-            onBackPressed();
-            return true;
-        } else if (item.getItemId() == R.id.pause_all) {
-            adapter.pauseSelected();
-        } else if (item.getItemId() == R.id.start_all) {
-            adapter.startSelected();
-        } else if (item.getItemId() == R.id.delete_all) {
-            adapter.deleteSelected();
-        } else if (item.getItemId() == R.id.pdf_all) {
-            adapter.pdfSelected();
-        } else if (item.getItemId() == R.id.zip_all) {
-            adapter.zipSelected();
-        } else if (item.getItemId() == R.id.select_all) {
-            adapter.selectAll();
-        } else if (item.getItemId() == R.id.folder_choose) {
-            showDialogFolderChoose();
-        } else if (item.getItemId() == R.id.random_favorite) {
-            if (adapter != null) adapter.viewRandom();
-        } else if (item.getItemId() == R.id.sort_by_name) {
-            dialogSortType();
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        if (item.itemId == android.R.id.home) {
+            return true
+        } else if (item.itemId == R.id.pause_all) {
+            adapter!!.pauseSelected()
+        } else if (item.itemId == R.id.start_all) {
+            adapter!!.startSelected()
+        } else if (item.itemId == R.id.delete_all) {
+            adapter!!.deleteSelected()
+        } else if (item.itemId == R.id.pdf_all) {
+            adapter!!.pdfSelected()
+        } else if (item.itemId == R.id.zip_all) {
+            adapter!!.zipSelected()
+        } else if (item.itemId == R.id.select_all) {
+            adapter!!.selectAll()
+        } else if (item.itemId == R.id.folder_choose) {
+            showDialogFolderChoose()
+        } else if (item.itemId == R.id.random_favorite) {
+            if (adapter != null) adapter!!.viewRandom()
+        } else if (item.itemId == R.id.sort_by_name) {
+            dialogSortType()
         }
-        return super.onOptionsItemSelected(item);
+        return super.onOptionsItemSelected(item)
     }
 
-    @Override
-    public void onBackPressed() {
-        if (adapter != null && adapter.getMode() == MultichoiceAdapter.Mode.SELECTING)
-            adapter.deselectAll();
-        else
-            super.onBackPressed();
+    private val onBackPressedCallback: OnBackPressedCallback =
+        object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                if (adapter != null && adapter!!.mode == MultichoiceAdapter.Mode.SELECTING) adapter!!.deselectAll()
+            }
+        }
+
+    private fun showDialogFolderChoose() {
+        val strings = Global.getUsableFolders(this)
+        val adapter: ArrayAdapter<out File> =
+            ArrayAdapter(this, android.R.layout.select_dialog_singlechoice, strings)
+        val builder = MaterialAlertDialogBuilder(this)
+        builder.setTitle(R.string.choose_directory).setIcon(R.drawable.ic_folder)
+        builder.setAdapter(adapter) { _: DialogInterface?, which: Int ->
+            folder = File(strings[which], "NClientV2")
+            FakeInspector(this, folder).execute(this)
+        }.setNegativeButton(R.string.cancel, null).show()
     }
 
-    private void showDialogFolderChoose() {
-        List<File> strings = Global.getUsableFolders(this);
-        ArrayAdapter<? extends File> adapter = new ArrayAdapter<>(this, android.R.layout.select_dialog_singlechoice, strings);
-        MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(this);
-        builder.setTitle(R.string.choose_directory).setIcon(R.drawable.ic_folder);
-        builder.setAdapter(adapter, (dialog, which) -> {
-            folder = new File(strings.get(which), "NClientV2");
-            new FakeInspector(this, folder).execute(this);
-        }).setNegativeButton(R.string.cancel, null).show();
-    }
-
-    private void dialogSortType() {
-        LocalSortType sortType = Global.getLocalSortType();
-        MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(this);
-        LinearLayout view = (LinearLayout) LayoutInflater.from(this).inflate(R.layout.local_sort_type, toolbar, false);
-        ChipGroup group = view.findViewById(R.id.chip_group);
-        SwitchMaterial switchMaterial = view.findViewById(R.id.ascending);
-        group.check(group.getChildAt(sortType.type.ordinal()).getId());
-        switchMaterial.setChecked(sortType.descending);
-        builder.setView(view);
-        builder.setPositiveButton(R.string.ok, (dialog, which) -> {
-                int typeSelectedIndex = group.indexOfChild(group.findViewById(group.getCheckedChipId()));
-                LocalSortType.Type typeSelected = LocalSortType.Type.values()[typeSelectedIndex];
-                boolean descending = switchMaterial.isChecked();
-                LocalSortType newSortType = new LocalSortType(typeSelected, descending);
-                if (sortType.equals(newSortType)) return;
-                Global.setLocalSortType(LocalActivity.this, newSortType);
-                if (adapter != null) adapter.sortChanged();
-            })
+    private fun dialogSortType() {
+        val sortType = Global.getLocalSortType()
+        val builder = MaterialAlertDialogBuilder(this)
+        val view = LayoutInflater.from(this)
+            .inflate(R.layout.local_sort_type, toolbar, false) as LinearLayout
+        val group = view.findViewById<ChipGroup>(R.id.chip_group)
+        val switchMaterial = view.findViewById<SwitchMaterial>(R.id.ascending)
+        group.check(group.getChildAt(sortType.type.ordinal).id)
+        switchMaterial.isChecked = sortType.descending
+        builder.setView(view)
+        builder.setPositiveButton(R.string.ok) { _: DialogInterface?, _: Int ->
+            val typeSelectedIndex = group.indexOfChild(group.findViewById(group.checkedChipId))
+            val typeSelected = LocalSortType.Type.values()[typeSelectedIndex]
+            val descending = switchMaterial.isChecked
+            val newSortType = LocalSortType(typeSelected, descending)
+            if (sortType == newSortType) return@setPositiveButton
+            Global.setLocalSortType(this@LocalActivity, newSortType)
+            if (adapter != null) adapter!!.sortChanged()
+        }
             .setNeutralButton(R.string.cancel, null)
             .setTitle(R.string.sort_select_type)
-            .show();
+            .show()
     }
 
-    @Override
-    protected int getPortraitColumnCount() {
-        return Global.getColPortDownload();
+    override fun getPortraitColumnCount(): Int {
+        return Global.getColPortDownload()
     }
 
-    @Override
-    protected int getLandscapeColumnCount() {
-        return Global.getColLandDownload();
+    override fun getLandscapeColumnCount(): Int {
+        return Global.getColLandDownload()
     }
 
-    public String getQuery() {
-        if (searchView == null) return "";
-        CharSequence query = searchView.getQuery();
-        return query == null ? "" : query.toString();
-    }
+    val query: String
+        get() {
+            val query = searchView.query
+            return query?.toString() ?: ""
+        }
 }

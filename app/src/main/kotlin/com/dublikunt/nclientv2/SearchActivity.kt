@@ -1,89 +1,77 @@
-package com.dublikunt.nclientv2;
+package com.dublikunt.nclientv2
 
-import android.content.Context;
-import android.content.Intent;
-import android.os.Bundle;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewGroup;
-import android.view.inputmethod.EditorInfo;
-import android.view.inputmethod.InputMethodManager;
-import android.widget.ArrayAdapter;
-import android.widget.Button;
-import android.widget.LinearLayout;
-import android.widget.TextView;
+import android.content.DialogInterface
+import android.content.Intent
+import android.os.Bundle
+import android.view.*
+import android.view.inputmethod.EditorInfo
+import android.view.inputmethod.InputMethodManager
+import android.widget.ArrayAdapter
+import android.widget.LinearLayout
+import android.widget.TextView
+import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.widget.SearchView
+import androidx.recyclerview.widget.DividerItemDecoration
+import androidx.recyclerview.widget.RecyclerView
+import com.dublikunt.nclientv2.MainActivity
+import com.dublikunt.nclientv2.adapters.HistoryAdapter
+import com.dublikunt.nclientv2.api.components.Ranges
+import com.dublikunt.nclientv2.api.components.Tag
+import com.dublikunt.nclientv2.api.enums.Language
+import com.dublikunt.nclientv2.api.enums.SpecialTagIds
+import com.dublikunt.nclientv2.api.enums.TagStatus
+import com.dublikunt.nclientv2.api.enums.TagType
+import com.dublikunt.nclientv2.async.database.Queries
+import com.dublikunt.nclientv2.components.activities.GeneralActivity
+import com.dublikunt.nclientv2.components.widgets.ChipTag
+import com.dublikunt.nclientv2.components.widgets.CustomLinearLayoutManager
+import com.dublikunt.nclientv2.settings.DefaultDialogs
+import com.dublikunt.nclientv2.settings.DefaultDialogs.CustomDialogResults
+import com.dublikunt.nclientv2.settings.DefaultDialogs.DialogResults
+import com.dublikunt.nclientv2.settings.Global
+import com.dublikunt.nclientv2.settings.Login
+import com.dublikunt.nclientv2.utility.LogUtility
+import com.dublikunt.nclientv2.utility.Utility
+import com.google.android.material.appbar.MaterialToolbar
+import com.google.android.material.button.MaterialButton
+import com.google.android.material.chip.Chip
+import com.google.android.material.chip.ChipGroup
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.android.material.textfield.MaterialAutoCompleteTextView
+import java.util.*
 
-import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.widget.AppCompatAutoCompleteTextView;
-import androidx.appcompat.widget.SearchView;
-import androidx.appcompat.widget.Toolbar;
-import androidx.recyclerview.widget.DividerItemDecoration;
-import androidx.recyclerview.widget.RecyclerView;
-
-import com.dublikunt.nclientv2.adapters.HistoryAdapter;
-import com.dublikunt.nclientv2.api.components.Ranges;
-import com.dublikunt.nclientv2.api.components.Tag;
-import com.dublikunt.nclientv2.api.enums.Language;
-import com.dublikunt.nclientv2.api.enums.SpecialTagIds;
-import com.dublikunt.nclientv2.api.enums.TagStatus;
-import com.dublikunt.nclientv2.api.enums.TagType;
-import com.dublikunt.nclientv2.async.database.Queries;
-import com.dublikunt.nclientv2.components.activities.GeneralActivity;
-import com.dublikunt.nclientv2.components.widgets.ChipTag;
-import com.dublikunt.nclientv2.components.widgets.CustomLinearLayoutManager;
-import com.dublikunt.nclientv2.settings.DefaultDialogs;
-import com.dublikunt.nclientv2.settings.Global;
-import com.dublikunt.nclientv2.settings.Login;
-import com.dublikunt.nclientv2.utility.LogUtility;
-import com.dublikunt.nclientv2.utility.Utility;
-import com.google.android.material.chip.Chip;
-import com.google.android.material.chip.ChipGroup;
-import com.google.android.material.dialog.MaterialAlertDialogBuilder;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
-
-public class SearchActivity extends GeneralActivity {
-    public static final int CUSTOM_ID_START = 100000000;
-    private static int customId = CUSTOM_ID_START;
-    private final Ranges ranges = new Ranges();
-    private final ArrayList<ChipTag> tags = new ArrayList<>();
-    private final Chip[] addChip = new Chip[TagType.values.length];
-    private ChipGroup[] groups;
-    private SearchView searchView;
-    private AppCompatAutoCompleteTextView autoComplete;
-    private TagType loadedTag = null;
-    private HistoryAdapter adapter;
-    private boolean advanced = false;
-    private Ranges.TimeUnit temporaryUnit;
-    private InputMethodManager inputMethodManager;
-    private AlertDialog alertDialog;
-
-    public void setQuery(String str, boolean submit) {
-        runOnUiThread(() -> searchView.setQuery(str, submit));
+class SearchActivity : GeneralActivity() {
+    private val ranges = Ranges()
+    private val tags = ArrayList<ChipTag>()
+    private val addChip = arrayOfNulls<Chip>(TagType.values.size)
+    private lateinit var groups: Array<ChipGroup?>
+    private lateinit var searchView: SearchView
+    private lateinit var autoComplete: MaterialAutoCompleteTextView
+    private var loadedTag: TagType? = null
+    private lateinit var adapter: HistoryAdapter
+    private var advanced = false
+    private var temporaryUnit: Ranges.TimeUnit? = null
+    private var inputMethodManager: InputMethodManager? = null
+    private lateinit var alertDialog: AlertDialog
+    fun setQuery(str: String?, submit: Boolean) {
+        runOnUiThread { searchView.setQuery(str, submit) }
     }
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        //Global.initActivity(this);
-        setContentView(R.layout.activity_search);
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_search)
         //init toolbar
-        Toolbar toolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-        assert getSupportActionBar() != null;
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setDisplayShowTitleEnabled(false);
-
-        inputMethodManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+        val toolbar = findViewById<MaterialToolbar>(R.id.toolbar)
+        setSupportActionBar(toolbar)
+        assert(supportActionBar != null)
+        supportActionBar!!.setDisplayHomeAsUpEnabled(true)
+        supportActionBar!!.setDisplayShowTitleEnabled(false)
+        inputMethodManager = getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
 
         //find IDs
-        searchView = findViewById(R.id.search);
-        RecyclerView recyclerView = findViewById(R.id.recycler);
-
-        groups = new ChipGroup[]{
+        searchView = findViewById(R.id.search)
+        val recyclerView = findViewById<RecyclerView>(R.id.recycler)
+        groups = arrayOf(
             null,
             findViewById(R.id.parody_group),
             findViewById(R.id.character_group),
@@ -91,320 +79,372 @@ public class SearchActivity extends GeneralActivity {
             findViewById(R.id.artist_group),
             findViewById(R.id.group_group),
             findViewById(R.id.language_group),
-            findViewById(R.id.category_group),
-        };
-        initRanges();
-        adapter = new HistoryAdapter(this);
-        autoComplete = (AppCompatAutoCompleteTextView) getLayoutInflater().inflate(R.layout.autocomplete_entry, findViewById(R.id.appbar), false);
-        autoComplete.setOnEditorActionListener((v, actionId, event) -> {
+            findViewById(R.id.category_group)
+        )
+        initRanges()
+        adapter = HistoryAdapter(this)
+        autoComplete = layoutInflater.inflate(
+            R.layout.autocomplete_entry,
+            findViewById(R.id.appbar),
+            false
+        ) as MaterialAutoCompleteTextView
+        autoComplete.setOnEditorActionListener { v: TextView?, actionId: Int, _: KeyEvent? ->
             if (actionId == EditorInfo.IME_ACTION_SEND) {
-                alertDialog.dismiss();
-                createChip();
-                return true;
+                alertDialog.dismiss()
+                createChip()
+                return@setOnEditorActionListener true
             }
-            return false;
-        });
+            false
+        }
 
         //init recyclerview
-        recyclerView.setLayoutManager(new CustomLinearLayoutManager(this));
-        recyclerView.setAdapter(adapter);
-        recyclerView.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL));
-
-
-        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-            @Override
-            public boolean onQueryTextSubmit(String query) {
-                query = query.trim();
-                if (query.length() == 0 && !advanced) return true;
-                if (query.length() > 0) adapter.addHistory(query);
-                final Intent i = new Intent(SearchActivity.this, MainActivity.class);
-                i.putExtra(getPackageName() + ".SEARCHMODE", true);
-                i.putExtra(getPackageName() + ".QUERY", query);
-                i.putExtra(getPackageName() + ".ADVANCED", advanced);
+        recyclerView.layoutManager = CustomLinearLayoutManager(this)
+        recyclerView.adapter = adapter
+        recyclerView.addItemDecoration(DividerItemDecoration(this, DividerItemDecoration.VERTICAL))
+        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String): Boolean {
+                var query = query
+                query = query.trim { it <= ' ' }
+                if (query.isEmpty() && !advanced) return true
+                if (query.isNotEmpty()) adapter.addHistory(query)
+                val i = Intent(this@SearchActivity, MainActivity::class.java)
+                i.putExtra("$packageName.SEARCHMODE", true)
+                i.putExtra("$packageName.QUERY", query)
+                i.putExtra("$packageName.ADVANCED", advanced)
                 if (advanced) {
-                    ArrayList<Tag> tt = new ArrayList<>(tags.size());
-                    for (ChipTag t : tags)
-                        if (t.getTag().getStatus() == TagStatus.ACCEPTED) tt.add(t.getTag());
-                    i.putParcelableArrayListExtra(getPackageName() + ".TAGS", tt);
-                    i.putExtra(getPackageName() + ".RANGES", ranges);
+                    val tt = ArrayList<Tag>(tags.size)
+                    for (t in tags) if (t.tag.status == TagStatus.ACCEPTED) tt.add(t.tag)
+                    i.putParcelableArrayListExtra("$packageName.TAGS", tt)
+                    i.putExtra("$packageName.RANGES", ranges)
                 }
-                SearchActivity.this.runOnUiThread(() -> {
-                    startActivity(i);
-                    finish();
-                });
-                return true;
-            }
-
-            @Override
-            public boolean onQueryTextChange(String newText) {
-                return false;
-            }
-        });
-
-        populateGroup();
-        searchView.requestFocus();
-    }
-
-    private void createPageBuilder(int title, int min, int max, int actual, DefaultDialogs.DialogResults results) {
-        min = Math.max(1, min);
-        actual = Math.max(actual, min);
-        DefaultDialogs.pageChangerDialog(new DefaultDialogs.Builder(this)
-            .setTitle(title)
-            .setMax(max)
-            .setMin(min)
-            .setDrawable(R.drawable.ic_search)
-            .setActual(actual)
-            .setYesbtn(R.string.ok)
-            .setNobtn(R.string.cancel)
-            .setMaybebtn(R.string.reset)
-            .setDialogs(results));
-    }
-
-    private void initRanges() {
-        LinearLayout pageRangeLayout = findViewById(R.id.page_range);
-        LinearLayout uploadRangeLayout = findViewById(R.id.upload_range);
-        ((TextView) pageRangeLayout.findViewById(R.id.title)).setText(R.string.page_range);
-        ((TextView) uploadRangeLayout.findViewById(R.id.title)).setText(R.string.upload_time);
-        Button fromPage = pageRangeLayout.findViewById(R.id.fromButton);
-        Button toPage = pageRangeLayout.findViewById(R.id.toButton);
-        Button fromDate = uploadRangeLayout.findViewById(R.id.fromButton);
-        Button toDate = uploadRangeLayout.findViewById(R.id.toButton);
-        fromPage.setOnClickListener(v -> createPageBuilder(R.string.from_page, 0, 2000, ranges.getFromPage(), new DefaultDialogs.CustomDialogResults() {
-            @Override
-            public void positive(int actual) {
-                ranges.setFromPage(actual);
-                fromPage.setText(String.format(Locale.US, "%d", actual));
-                if (ranges.getFromPage() > ranges.getToPage()) {
-                    ranges.setToPage(Ranges.UNDEFINED);
-                    toPage.setText("");
+                runOnUiThread {
+                    startActivity(i)
+                    finish()
                 }
-                advanced = true;
+                return true
             }
 
-            @Override
-            public void neutral() {
-                ranges.setFromPage(Ranges.UNDEFINED);
-                fromPage.setText("");
+            override fun onQueryTextChange(newText: String): Boolean {
+                return false
             }
-        }));
-        toPage.setOnClickListener(v -> createPageBuilder(R.string.to_page, ranges.getFromPage(), 2000, ranges.getToPage(), new DefaultDialogs.CustomDialogResults() {
-            @Override
-            public void positive(int actual) {
-                ranges.setToPage(actual);
-                toPage.setText(String.format(Locale.US, "%d", actual));
-                advanced = true;
-            }
-
-            @Override
-            public void neutral() {
-                ranges.setToPage(Ranges.UNDEFINED);
-                toPage.setText("");
-            }
-        }));
-        fromDate.setOnClickListener(v -> showUnitDialog(fromDate, true));
-        toDate.setOnClickListener(v -> showUnitDialog(toDate, false));
+        })
+        populateGroup()
+        searchView.requestFocus()
     }
 
-    private void showUnitDialog(Button button, boolean from) {
-        int i = 0;
-        String[] strings = new String[Ranges.TimeUnit.values().length];
-        for (Ranges.TimeUnit unit : Ranges.TimeUnit.values())
-            strings[i++] = getString(unit.getString());
+    private fun createPageBuilder(
+        title: Int,
+        min: Int,
+        max: Int,
+        actual: Int,
+        results: DialogResults
+    ) {
+        var min = min
+        var actual = actual
+        min = 1.coerceAtLeast(min)
+        actual = actual.coerceAtLeast(min)
+        DefaultDialogs.pageChangerDialog(
+            DefaultDialogs.Builder(this)
+                .setTitle(title)
+                .setMax(max)
+                .setMin(min)
+                .setDrawable(R.drawable.ic_search)
+                .setActual(actual)
+                .setYesbtn(R.string.ok)
+                .setNobtn(R.string.cancel)
+                .setMaybebtn(R.string.reset)
+                .setDialogs(results)
+        )
+    }
 
-        MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(this);
-        builder.setTitle(R.string.choose_unit);
-        builder.setIcon(R.drawable.ic_search);
-        builder.setAdapter(new ArrayAdapter<>(this, android.R.layout.simple_dropdown_item_1line, strings), (dialog, which) -> {
-            temporaryUnit = Ranges.TimeUnit.values()[which];
-            createPageBuilder(from ? R.string.from_time : R.string.to_time, 1, temporaryUnit == Ranges.TimeUnit.YEAR ? 10 : 100, 1, new DefaultDialogs.CustomDialogResults() {
-                @Override
-                public void positive(int actual) {
-                    if (from) {
-                        ranges.setFromDateUnit(temporaryUnit);
-                        ranges.setFromDate(actual);
-                    } else {
-                        ranges.setToDateUnit(temporaryUnit);
-                        ranges.setToDate(actual);
+    private fun initRanges() {
+        val pageRangeLayout = findViewById<LinearLayout>(R.id.page_range)
+        val uploadRangeLayout = findViewById<LinearLayout>(R.id.upload_range)
+        (pageRangeLayout.findViewById<View>(R.id.title) as TextView).setText(R.string.page_range)
+        (uploadRangeLayout.findViewById<View>(R.id.title) as TextView).setText(R.string.upload_time)
+        val fromPage = pageRangeLayout.findViewById<MaterialButton>(R.id.fromButton)
+        val toPage = pageRangeLayout.findViewById<MaterialButton>(R.id.toButton)
+        val fromDate = uploadRangeLayout.findViewById<MaterialButton>(R.id.fromButton)
+        val toDate = uploadRangeLayout.findViewById<MaterialButton>(R.id.toButton)
+        fromPage.setOnClickListener { v: View? ->
+            createPageBuilder(
+                R.string.from_page,
+                0,
+                2000,
+                ranges.fromPage,
+                object : CustomDialogResults() {
+                    override fun positive(actual: Int) {
+                        ranges.fromPage = actual
+                        fromPage.text = String.format(Locale.US, "%d", actual)
+                        if (ranges.fromPage > ranges.toPage) {
+                            ranges.toPage = Ranges.UNDEFINED
+                            toPage.text = ""
+                        }
+                        advanced = true
                     }
-                    button.setText(String.format(Locale.US, "%d %c", actual, Character.toUpperCase(temporaryUnit.getVal())));
-                    advanced = true;
-                }
 
-                @Override
-                public void neutral() {
-                    if (from) {
-                        ranges.setFromDateUnit(Ranges.UNDEFINED_DATE);
-                        ranges.setFromDate(Ranges.UNDEFINED);
-                    } else {
-                        ranges.setToDateUnit(Ranges.UNDEFINED_DATE);
-                        ranges.setToDate(Ranges.UNDEFINED);
+                    override fun neutral() {
+                        ranges.fromPage = Ranges.UNDEFINED
+                        fromPage.text = ""
                     }
-                    button.setText("");
-                }
-            });
-        });
-        builder.setNeutralButton(R.string.reset, (dialog, which) -> {
+                })
+        }
+        toPage.setOnClickListener { v: View? ->
+            createPageBuilder(
+                R.string.to_page,
+                ranges.fromPage,
+                2000,
+                ranges.toPage,
+                object : CustomDialogResults() {
+                    override fun positive(actual: Int) {
+                        ranges.toPage = actual
+                        toPage.text = String.format(Locale.US, "%d", actual)
+                        advanced = true
+                    }
+
+                    override fun neutral() {
+                        ranges.toPage = Ranges.UNDEFINED
+                        toPage.text = ""
+                    }
+                })
+        }
+        fromDate.setOnClickListener { v: View? -> showUnitDialog(fromDate, true) }
+        toDate.setOnClickListener { v: View? -> showUnitDialog(toDate, false) }
+    }
+
+    private fun showUnitDialog(button: MaterialButton, from: Boolean) {
+        var i = 0
+        val strings = arrayOfNulls<String>(Ranges.TimeUnit.values().size)
+        for (unit in Ranges.TimeUnit.values()) strings[i++] = getString(unit.string)
+        val builder = MaterialAlertDialogBuilder(this)
+        builder.setTitle(R.string.choose_unit)
+        builder.setIcon(R.drawable.ic_search)
+        builder.setAdapter(
+            ArrayAdapter(
+                this,
+                android.R.layout.simple_dropdown_item_1line,
+                strings
+            )
+        ) { _: DialogInterface?, which: Int ->
+            temporaryUnit = Ranges.TimeUnit.values()[which]
+            createPageBuilder(
+                if (from) R.string.from_time else R.string.to_time,
+                1,
+                if (temporaryUnit == Ranges.TimeUnit.YEAR) 10 else 100,
+                1,
+                object : CustomDialogResults() {
+                    override fun positive(actual: Int) {
+                        if (from) {
+                            ranges.fromDateUnit = temporaryUnit
+                            ranges.fromDate = actual
+                        } else {
+                            ranges.toDateUnit = temporaryUnit
+                            ranges.toDate = actual
+                        }
+                        button.text = String.format(
+                            Locale.US,
+                            "%d %c",
+                            actual,
+                            temporaryUnit!!.getVal().uppercaseChar()
+                        )
+                        advanced = true
+                    }
+
+                    override fun neutral() {
+                        if (from) {
+                            ranges.fromDateUnit = Ranges.UNDEFINED_DATE
+                            ranges.fromDate = Ranges.UNDEFINED
+                        } else {
+                            ranges.toDateUnit = Ranges.UNDEFINED_DATE
+                            ranges.toDate = Ranges.UNDEFINED
+                        }
+                        button.text = ""
+                    }
+                })
+        }
+        builder.setNeutralButton(R.string.reset) { _: DialogInterface?, _: Int ->
             if (from) {
-                ranges.setFromDateUnit(Ranges.UNDEFINED_DATE);
-                ranges.setFromDate(Ranges.UNDEFINED);
+                ranges.fromDateUnit = Ranges.UNDEFINED_DATE
+                ranges.fromDate = Ranges.UNDEFINED
             } else {
-                ranges.setToDateUnit(Ranges.UNDEFINED_DATE);
-                ranges.setToDate(Ranges.UNDEFINED);
+                ranges.toDateUnit = Ranges.UNDEFINED_DATE
+                ranges.toDate = Ranges.UNDEFINED
             }
-            button.setText("");
-        });
-        builder.show();
+            button.text = ""
+        }
+        builder.show()
     }
 
-    private void populateGroup() {
+    private fun populateGroup() {
         //add top tags
-        for (TagType type : new TagType[]{TagType.TAG, TagType.PARODY, TagType.CHARACTER, TagType.ARTIST, TagType.GROUP}) {
-            for (Tag t : Queries.TagTable.getTopTags(type, Global.getFavoriteLimit(this)))
-                addChipTag(t, true, true);
+        for (type in arrayOf(
+            TagType.TAG,
+            TagType.PARODY,
+            TagType.CHARACTER,
+            TagType.ARTIST,
+            TagType.GROUP
+        )) {
+            for (t in Queries.TagTable.getTopTags(
+                type,
+                Global.getFavoriteLimit(this)
+            )) addChipTag(t, close = true, canBeAvoided = true)
         }
         //add already filtered tags
-        for (Tag t : Queries.TagTable.getAllFiltered())
-            if (!tagAlreadyExist(t)) addChipTag(t, true, true);
+        for (t in Queries.TagTable.getAllFiltered()) if (!tagAlreadyExist(t)) addChipTag(
+            t,
+            close = true,
+            canBeAvoided = true
+        )
         //add categories
-        for (Tag t : Queries.TagTable.getTrueAllType(TagType.CATEGORY)) addChipTag(t, false, false);
+        for (t in Queries.TagTable.getTrueAllType(TagType.CATEGORY)) addChipTag(t,
+            close = false,
+            canBeAvoided = false
+        )
         //add languages
-        for (Tag t : Queries.TagTable.getTrueAllType(TagType.LANGUAGE)) {
-            if (t.getId() == SpecialTagIds.LANGUAGE_ENGLISH && Global.getOnlyLanguage() == Language.ENGLISH)
-                t.setStatus(TagStatus.ACCEPTED);
-            else if (t.getId() == SpecialTagIds.LANGUAGE_JAPANESE && Global.getOnlyLanguage() == Language.JAPANESE)
-                t.setStatus(TagStatus.ACCEPTED);
-            else if (t.getId() == SpecialTagIds.LANGUAGE_CHINESE && Global.getOnlyLanguage() == Language.CHINESE)
-                t.setStatus(TagStatus.ACCEPTED);
-            addChipTag(t, false, false);
+        for (t in Queries.TagTable.getTrueAllType(TagType.LANGUAGE)) {
+            if (t.id == SpecialTagIds.LANGUAGE_ENGLISH.toInt() && Global.getOnlyLanguage() == Language.ENGLISH) t.status =
+                TagStatus.ACCEPTED else if (t.id == SpecialTagIds.LANGUAGE_JAPANESE.toInt() && Global.getOnlyLanguage() == Language.JAPANESE) t.status =
+                TagStatus.ACCEPTED else if (t.id == SpecialTagIds.LANGUAGE_CHINESE.toInt() && Global.getOnlyLanguage() == Language.CHINESE) t.status =
+                TagStatus.ACCEPTED
+            addChipTag(t, false, canBeAvoided = false)
         }
         //add online tags
-        if (Login.useAccountTag()) for (Tag t : Queries.TagTable.getAllOnlineBlacklisted())
-            if (!tagAlreadyExist(t))
-                addChipTag(t, true, true);
+        if (Login.useAccountTag()) for (t in Queries.TagTable.getAllOnlineBlacklisted()) if (!tagAlreadyExist(
+                t
+            )
+        ) addChipTag(t, true, canBeAvoided = true)
         //add + button
-        for (TagType type : TagType.values) {
+        for (type in TagType.values) {
             //ignore these tags
-            if (type == TagType.UNKNOWN || type == TagType.LANGUAGE || type == TagType.CATEGORY) {
-                addChip[type.getId()] = null;
-                continue;
+            if (type === TagType.UNKNOWN || type === TagType.LANGUAGE || type === TagType.CATEGORY) {
+                addChip[type.id.toInt()] = null
+                continue
             }
-            ChipGroup cg = getGroup(type);
-            Chip add = createAddChip(type, cg);
-            addChip[type.getId()] = add;
-            cg.addView(add);
+            val cg = getGroup(type)
+            val add = createAddChip(type, cg)
+            addChip[type.id.toInt()] = add
+            cg!!.addView(add)
         }
     }
 
-    private Chip createAddChip(TagType type, ChipGroup group) {
-        Chip c = (Chip) getLayoutInflater().inflate(R.layout.chip_layout, group, false);
-        c.setCloseIconVisible(false);
-        c.setChipIconResource(R.drawable.ic_add);
-        c.setText(getString(R.string.add));
-        c.setOnClickListener(v -> loadTag(type));
-        Global.setTint(c.getChipIcon());
-        return c;
+    private fun createAddChip(type: TagType, group: ChipGroup?): Chip {
+        val c = layoutInflater.inflate(R.layout.chip_layout, group, false) as Chip
+        c.isCloseIconVisible = false
+        c.setChipIconResource(R.drawable.ic_add)
+        c.text = getString(R.string.add)
+        c.setOnClickListener { v: View? -> loadTag(type) }
+        Global.setTint(c.chipIcon)
+        return c
     }
 
-    private boolean tagAlreadyExist(Tag tag) {
-        for (ChipTag t : tags) {
-            if (t.getTag().getName().equals(tag.getName())) return true;
+    private fun tagAlreadyExist(tag: Tag): Boolean {
+        for (t in tags) {
+            if (t.tag.name == tag.name) return true
         }
-        return false;
+        return false
     }
 
-    private void addChipTag(Tag t, boolean close, boolean canBeAvoided) {
-        ChipGroup cg = getGroup(t.getType());
-        ChipTag c = (ChipTag) getLayoutInflater().inflate(R.layout.chip_layout_entry, cg, false);
-        c.init(t, close, canBeAvoided);
-        c.setOnCloseIconClickListener(v -> {
-            cg.removeView(c);
-            tags.remove(c);
-            advanced = true;
-        });
-        c.setOnClickListener(v -> {
-            c.updateStatus();
-            advanced = true;
-        });
-        cg.addView(c);
-        tags.add(c);
-    }
-
-    private void loadDropdown(TagType type) {
-        List<Tag> allTags = Queries.TagTable.getAllTagOfType(type);
-        String[] tagNames = new String[allTags.size()];
-        int i = 0;
-        for (Tag t : allTags) tagNames[i++] = t.getName();
-        autoComplete.setAdapter(new ArrayAdapter<>(SearchActivity.this, android.R.layout.simple_dropdown_item_1line, tagNames));
-        loadedTag = type;
-    }
-
-    private void loadTag(TagType type) {
-        if (type != loadedTag) loadDropdown(type);
-        addDialog();
-        autoComplete.requestFocus();
-        inputMethodManager.showSoftInput(autoComplete, InputMethodManager.SHOW_IMPLICIT);
-    }
-
-    private ChipGroup getGroup(TagType type) {
-        return groups[type.getId()];
-    }
-
-    private void addDialog() {
-        MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(this);
-        builder.setView(autoComplete);
-        autoComplete.setText("");
-        builder.setPositiveButton(R.string.ok, (dialog, which) -> createChip());
-        builder.setCancelable(true).setNegativeButton(R.string.cancel, null);
-        builder.setTitle(R.string.insert_tag_name);
-        try {
-            alertDialog = builder.show();
-        } catch (IllegalStateException e) {//the autoComplete is still attached to another View
-            ((ViewGroup) autoComplete.getParent()).removeView(autoComplete);
-            alertDialog = builder.show();
+    private fun addChipTag(t: Tag, close: Boolean, canBeAvoided: Boolean) {
+        val cg = getGroup(t.type)
+        val c = layoutInflater.inflate(R.layout.chip_layout_entry, cg, false) as ChipTag
+        c.init(t, close, canBeAvoided)
+        c.setOnCloseIconClickListener {
+            cg!!.removeView(c)
+            tags.remove(c)
+            advanced = true
         }
-
+        c.setOnClickListener {
+            c.updateStatus()
+            advanced = true
+        }
+        cg!!.addView(c)
+        tags.add(c)
     }
 
-    private void createChip() {
-        String name = autoComplete.getText().toString().toLowerCase(Locale.US);
-        Tag tag = Queries.TagTable.searchTag(name, loadedTag);
-        if (tag == null) tag = new Tag(name, 0, customId++, loadedTag, TagStatus.ACCEPTED);
-        LogUtility.d("CREATED WITH ID: " + tag.getId());
-        if (tagAlreadyExist(tag)) return;
+    private fun loadDropdown(type: TagType) {
+        val allTags = Queries.TagTable.getAllTagOfType(type)
+        val tagNames = arrayOfNulls<String>(allTags.size)
+        var i = 0
+        for (t in allTags) tagNames[i++] = t.name
+        autoComplete.setAdapter(
+            ArrayAdapter(
+                this@SearchActivity,
+                android.R.layout.simple_dropdown_item_1line,
+                tagNames
+            )
+        )
+        loadedTag = type
+    }
+
+    private fun loadTag(type: TagType) {
+        if (type !== loadedTag) loadDropdown(type)
+        addDialog()
+        autoComplete.requestFocus()
+        inputMethodManager!!.showSoftInput(autoComplete, InputMethodManager.SHOW_IMPLICIT)
+    }
+
+    private fun getGroup(type: TagType?): ChipGroup? {
+        return groups[type!!.id.toInt()]
+    }
+
+    private fun addDialog() {
+        val builder = MaterialAlertDialogBuilder(this)
+        builder.setView(autoComplete)
+        autoComplete.setText("")
+        builder.setPositiveButton(R.string.ok) { _: DialogInterface?, _: Int -> createChip() }
+        builder.setCancelable(true).setNegativeButton(R.string.cancel, null)
+        builder.setTitle(R.string.insert_tag_name)
+        alertDialog = try {
+            builder.show()
+        } catch (e: IllegalStateException) { //the autoComplete is still attached to another View
+            (autoComplete.parent as ViewGroup).removeView(autoComplete)
+            builder.show()
+        }
+    }
+
+    private fun createChip() {
+        val name = autoComplete.text.toString().lowercase()
+        var tag = Queries.TagTable.searchTag(name, loadedTag)
+        if (tag == null) tag = Tag(name, 0, customId++, loadedTag, TagStatus.ACCEPTED)
+        LogUtility.d("CREATED WITH ID: " + tag.id)
+        if (tagAlreadyExist(tag)) return
         //remove add, insert new tag, reinsert add
-        if (getGroup(loadedTag) != null) getGroup(loadedTag).removeView(addChip[loadedTag.getId()]);
-        addChipTag(tag, true, true);
-        getGroup(loadedTag).addView(addChip[loadedTag.getId()]);
-
-        inputMethodManager.hideSoftInputFromWindow(searchView.getWindowToken(), InputMethodManager.SHOW_IMPLICIT);
-        autoComplete.setText("");
-        advanced = true;
-        if (autoComplete.getParent() != null)
-            ((ViewGroup) autoComplete.getParent()).removeView(autoComplete);
+        if (getGroup(loadedTag) != null) getGroup(loadedTag)!!.removeView(addChip[loadedTag!!.id.toInt()])
+        addChipTag(tag, close = true, canBeAvoided = true)
+        getGroup(loadedTag)!!.addView(addChip[loadedTag!!.id.toInt()])
+        inputMethodManager!!.hideSoftInputFromWindow(
+            searchView.windowToken,
+            InputMethodManager.SHOW_IMPLICIT
+        )
+        autoComplete.setText("")
+        advanced = true
+        if (autoComplete.parent != null) (autoComplete.parent as ViewGroup).removeView(
+            autoComplete
+        )
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.search, menu);
-        Utility.tintMenu(menu);
-        return super.onCreateOptionsMenu(menu);
-
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        menuInflater.inflate(R.menu.search, menu)
+        Utility.tintMenu(menu)
+        return super.onCreateOptionsMenu(menu)
     }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == android.R.id.home) {
-            finish();
-            return true;
-        } else if (item.getItemId() == R.id.view_groups) {
-            View v = findViewById(R.id.groups);
-            boolean isVisible = v.getVisibility() == View.VISIBLE;
-            v.setVisibility(isVisible ? View.GONE : View.VISIBLE);
-            item.setIcon(isVisible ? R.drawable.ic_add : R.drawable.ic_close);
-            Global.setTint(item.getIcon());
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        if (item.itemId == android.R.id.home) {
+            finish()
+            return true
+        } else if (item.itemId == R.id.view_groups) {
+            val v = findViewById<View>(R.id.groups)
+            val isVisible = v.visibility == View.VISIBLE
+            v.visibility = if (isVisible) View.GONE else View.VISIBLE
+            item.setIcon(if (isVisible) R.drawable.ic_add else R.drawable.ic_close)
+            Global.setTint(item.icon)
         }
-        return super.onOptionsItemSelected(item);
+        return super.onOptionsItemSelected(item)
     }
 
-
+    companion object {
+        private const val CUSTOM_ID_START = 100000000
+        private var customId = CUSTOM_ID_START
+    }
 }

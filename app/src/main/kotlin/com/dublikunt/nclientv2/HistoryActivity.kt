@@ -1,70 +1,59 @@
-package com.dublikunt.nclientv2;
+package com.dublikunt.nclientv2
 
-import android.content.res.Configuration;
-import android.os.Bundle;
-import android.view.Menu;
-import android.view.MenuItem;
+import android.content.res.Configuration
+import android.os.Bundle
+import android.view.Menu
+import android.view.MenuItem
+import com.dublikunt.nclientv2.adapters.ListAdapter
+import com.dublikunt.nclientv2.api.components.GenericGallery
+import com.dublikunt.nclientv2.async.database.Queries
+import com.dublikunt.nclientv2.components.activities.BaseActivity
+import com.dublikunt.nclientv2.settings.Global
+import com.dublikunt.nclientv2.utility.Utility
+import com.google.android.material.appbar.MaterialToolbar
 
-import androidx.appcompat.widget.Toolbar;
-
-import com.dublikunt.nclientv2.adapters.ListAdapter;
-import com.dublikunt.nclientv2.async.database.Queries;
-import com.dublikunt.nclientv2.components.activities.BaseActivity;
-import com.dublikunt.nclientv2.settings.Global;
-import com.dublikunt.nclientv2.utility.Utility;
-
-import java.util.ArrayList;
-
-public class HistoryActivity extends BaseActivity {
-    ListAdapter adapter;
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        //Global.initActivity(this);
-        setContentView(R.layout.activity_bookmark);
-        Toolbar toolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setDisplayShowTitleEnabled(true);
-        getSupportActionBar().setTitle(R.string.history);
-        recycler = findViewById(R.id.recycler);
-        masterLayout = findViewById(R.id.master_layout);
-        adapter = new ListAdapter(this);
-        adapter.addGalleries(new ArrayList<>(Queries.HistoryTable.getHistory()));
-        changeLayout(getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE);
-        recycler.setAdapter(adapter);
+class HistoryActivity : BaseActivity() {
+    lateinit var adapter: ListAdapter
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_bookmark)
+        val toolbar = findViewById<MaterialToolbar>(R.id.toolbar)
+        setSupportActionBar(toolbar)
+        supportActionBar!!.setDisplayHomeAsUpEnabled(true)
+        supportActionBar!!.setDisplayShowTitleEnabled(true)
+        supportActionBar!!.setTitle(R.string.history)
+        recycler = findViewById(R.id.recycler)
+        masterLayout = findViewById(R.id.master_layout)
+        adapter = ListAdapter(this)
+        adapter.addGalleries(ArrayList<GenericGallery>(Queries.HistoryTable.getHistory()))
+        changeLayout(resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE)
+        recycler.adapter = adapter
     }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == android.R.id.home) {
-            finish();
-            return true;
-        } else if (item.getItemId() == R.id.cancelAll) {
-            Queries.HistoryTable.emptyHistory();
-            adapter.restartDataset(new ArrayList<>(1));
-            return true;
-
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        if (item.itemId == android.R.id.home) {
+            finish()
+            return true
+        } else if (item.itemId == R.id.cancelAll) {
+            Queries.HistoryTable.emptyHistory()
+            adapter.restartDataset(ArrayList(1))
+            return true
         }
-        return super.onOptionsItemSelected(item);
+        return super.onOptionsItemSelected(item)
     }
 
-    @Override
-    protected int getPortraitColumnCount() {
-        return Global.getColPortHistory();
+    override fun getPortraitColumnCount(): Int {
+        return Global.getColPortHistory()
     }
 
-    @Override
-    protected int getLandscapeColumnCount() {
-        return Global.getColLandHistory();
+    override fun getLandscapeColumnCount(): Int {
+        return Global.getColLandHistory()
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        super.onCreateOptionsMenu(menu);
-        getMenuInflater().inflate(R.menu.history, menu);
-        Utility.tintMenu(menu);
-        return true;
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        super.onCreateOptionsMenu(menu)
+        menuInflater.inflate(R.menu.history, menu)
+        Utility.tintMenu(menu)
+        return true
     }
 }

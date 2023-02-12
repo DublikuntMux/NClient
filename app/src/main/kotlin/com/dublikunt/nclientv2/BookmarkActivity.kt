@@ -1,42 +1,35 @@
-package com.dublikunt.nclientv2;
+package com.dublikunt.nclientv2
 
-import android.os.Bundle;
-import android.view.MenuItem;
+import android.os.Bundle
+import android.view.MenuItem
+import androidx.recyclerview.widget.RecyclerView
+import com.dublikunt.nclientv2.adapters.BookmarkAdapter
+import com.dublikunt.nclientv2.components.activities.GeneralActivity
+import com.dublikunt.nclientv2.components.widgets.CustomLinearLayoutManager
+import com.google.android.material.appbar.MaterialToolbar
 
-import androidx.appcompat.widget.Toolbar;
-import androidx.recyclerview.widget.RecyclerView;
-
-import com.dublikunt.nclientv2.adapters.BookmarkAdapter;
-import com.dublikunt.nclientv2.components.activities.GeneralActivity;
-import com.dublikunt.nclientv2.components.widgets.CustomLinearLayoutManager;
-
-public class BookmarkActivity extends GeneralActivity {
-    BookmarkAdapter adapter;
-    RecyclerView recycler;
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        //Global.initActivity(this);
-        setContentView(R.layout.activity_bookmark);
-        Toolbar toolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setDisplayShowTitleEnabled(true);
-        getSupportActionBar().setTitle(R.string.manage_bookmarks);
-
-        recycler = findViewById(R.id.recycler);
-        adapter = new BookmarkAdapter(this);
-        recycler.setLayoutManager(new CustomLinearLayoutManager(this));
-        recycler.setAdapter(adapter);
+class BookmarkActivity : GeneralActivity() {
+    lateinit var adapter: BookmarkAdapter
+    lateinit var recycler: RecyclerView
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_bookmark)
+        val toolbar = findViewById<MaterialToolbar>(R.id.toolbar)
+        setSupportActionBar(toolbar)
+        supportActionBar!!.setDisplayHomeAsUpEnabled(true)
+        supportActionBar!!.setDisplayShowTitleEnabled(true)
+        supportActionBar!!.setTitle(R.string.manage_bookmarks)
+        recycler = findViewById(R.id.recycler)
+        adapter = BookmarkAdapter(this)
+        recycler.layoutManager = CustomLinearLayoutManager(this)
+        recycler.adapter = adapter
     }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == android.R.id.home) {
-            finish();
-            return true;
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        if (item.itemId == android.R.id.home) {
+            finish()
+            return true
         }
-        return super.onOptionsItemSelected(item);
+        return super.onOptionsItemSelected(item)
     }
 }
