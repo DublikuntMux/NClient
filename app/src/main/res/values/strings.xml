@@ -368,5 +368,6 @@
     </string-array>
     <string name="confirm">Сonfirm</string>
     <string name="сolor_selection">Color selection</string>
+    <string name="main">Main</string>
 
 </resources>

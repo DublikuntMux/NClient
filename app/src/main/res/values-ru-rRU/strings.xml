@@ -298,4 +298,5 @@
     </string-array>
     <string name="confirm">Подтвердить</string>
     <string name="сolor_selection">Выбор цвета</string>
+    <string name="main">Основное</string>
 </resources>

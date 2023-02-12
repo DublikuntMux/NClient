@@ -294,4 +294,5 @@
     </string-array>
     <string name="confirm">Підтвердити</string>
     <string name="сolor_selection">Вибір кольору</string>
+    <string name="main">Основне</string>
 </resources>
