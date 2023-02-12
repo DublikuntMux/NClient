@@ -1,37 +1,29 @@
-package com.dublikunt.nclientv2.components.activities;
+package com.dublikunt.nclientv2.components.activities
 
-import android.os.Bundle;
-import android.view.WindowManager;
+import android.os.Bundle
+import android.view.WindowManager
+import androidx.appcompat.app.AppCompatActivity
+import com.dublikunt.nclientv2.R
+import com.dublikunt.nclientv2.settings.Global
 
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
-
-import com.dublikunt.nclientv2.R;
-import com.dublikunt.nclientv2.settings.Global;
-
-public abstract class GeneralActivity extends AppCompatActivity {
-    private boolean isFastScrollerApplied = false;
-
-    @Override
-    protected void onPause() {
-        if (Global.hideMultitask())
-            getWindow().addFlags(WindowManager.LayoutParams.FLAG_SECURE);
-        super.onPause();
+abstract class GeneralActivity : AppCompatActivity() {
+    private var isFastScrollerApplied = false
+    override fun onPause() {
+        if (Global.hideMultitask()) window.addFlags(WindowManager.LayoutParams.FLAG_SECURE)
+        super.onPause()
     }
 
-    @Override
-    protected void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        Global.initActivity(this);
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        Global.initActivity(this)
     }
 
-    @Override
-    protected void onResume() {
-        getWindow().clearFlags(WindowManager.LayoutParams.FLAG_SECURE);
-        super.onResume();
+    override fun onResume() {
+        window.clearFlags(WindowManager.LayoutParams.FLAG_SECURE)
+        super.onResume()
         if (!isFastScrollerApplied) {
-            isFastScrollerApplied = true;
-            Global.applyFastScroller(findViewById(R.id.recycler));
+            isFastScrollerApplied = true
+            Global.applyFastScroller(findViewById(R.id.recycler))
         }
     }
 }
