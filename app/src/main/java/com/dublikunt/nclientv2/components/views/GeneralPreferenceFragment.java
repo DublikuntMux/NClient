@@ -11,7 +11,6 @@ import android.util.Pair;
 import android.view.View;
 import android.widget.Toast;
 
-import androidx.appcompat.widget.AppCompatAutoCompleteTextView;
 import androidx.preference.ListPreference;
 import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.SeekBarPreference;
@@ -29,6 +28,7 @@ import com.dublikunt.nclientv2.settings.Login;
 import com.dublikunt.nclientv2.utility.LogUtility;
 import com.dublikunt.nclientv2.utility.Utility;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+import com.google.android.material.textfield.MaterialAutoCompleteTextView;
 
 import java.io.File;
 import java.io.IOException;
@@ -236,7 +236,7 @@ public class GeneralPreferenceFragment extends PreferenceFragmentCompat {
         }
         final String key = getString(R.string.key_save_path);
         MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(act);
-        AppCompatAutoCompleteTextView edit = (AppCompatAutoCompleteTextView) View.inflate(act, R.layout.autocomplete_entry, null);
+        MaterialAutoCompleteTextView edit = (MaterialAutoCompleteTextView) View.inflate(act, R.layout.autocomplete_entry, null);
         edit.setHint(R.string.insert_path);
         builder.setView(edit);
         builder.setTitle(R.string.insert_path);

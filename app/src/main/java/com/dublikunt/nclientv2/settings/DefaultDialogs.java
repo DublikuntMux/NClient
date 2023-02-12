@@ -5,15 +5,16 @@ import android.text.Editable;
 import android.text.InputFilter;
 import android.text.TextWatcher;
 import android.view.View;
-import android.widget.EditText;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
 import androidx.annotation.DrawableRes;
+import androidx.annotation.NonNull;
 import androidx.annotation.StringRes;
 
 import com.dublikunt.nclientv2.R;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+import com.google.android.material.textfield.TextInputEditText;
 
 import java.util.Locale;
 
@@ -27,7 +28,7 @@ public class DefaultDialogs {
         final SeekBar seekBar = v.findViewById(R.id.seekBar);
         if (Global.useRtl()) seekBar.setRotationY(180);
         final TextView totalPage = v.findViewById(R.id.page);
-        final EditText actualPage = v.findViewById(R.id.edit_page);
+        final TextInputEditText actualPage = v.findViewById(R.id.edit_page);
         v.findViewById(R.id.prev).setOnClickListener(v12 -> {
             seekBar.setProgress(seekBar.getProgress() - 1);
             actualPage.setText(String.format(Locale.US, "%d", seekBar.getProgress() + builder.min));

@@ -4,9 +4,6 @@ import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -21,7 +18,9 @@ import com.dublikunt.nclientv2.components.status.Status;
 import com.dublikunt.nclientv2.components.status.StatusManager;
 import com.dublikunt.nclientv2.settings.Global;
 import com.dublikunt.nclientv2.utility.Utility;
+import com.google.android.material.button.MaterialButton;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+import com.google.android.material.textfield.TextInputEditText;
 import com.skydoves.colorpickerview.ColorPickerDialog;
 import com.skydoves.colorpickerview.listeners.ColorEnvelopeListener;
 
@@ -51,8 +50,8 @@ public class StatusManagerAdapter extends RecyclerView.Adapter<StatusManagerAdap
             holder.name.setText(R.string.add);
             holder.color.setVisibility(View.INVISIBLE);
             holder.color.setBackgroundColor(Color.TRANSPARENT);
-            holder.cancel.setImageResource(R.drawable.ic_add);
-            Global.setTint(holder.cancel.getDrawable());
+            holder.cancel.setIconResource(R.drawable.ic_add);
+            Global.setTint(holder.cancel.getIcon());
             holder.cancel.setOnClickListener(null);
             holder.master.setOnClickListener(v -> updateStatus(null));
             return;
@@ -62,7 +61,7 @@ public class StatusManagerAdapter extends RecyclerView.Adapter<StatusManagerAdap
         holder.color.setVisibility(View.VISIBLE);
         holder.color.setBackgroundColor(status.opaqueColor());
 
-        holder.cancel.setImageResource(R.drawable.ic_close);
+        holder.cancel.setIconResource(R.drawable.ic_close);
         holder.master.setOnClickListener(v -> updateStatus(status));
         holder.cancel.setOnClickListener(v -> {
             StatusManager.remove(status);
@@ -84,17 +83,16 @@ public class StatusManagerAdapter extends RecyclerView.Adapter<StatusManagerAdap
     private void updateStatus(@Nullable Status status) {
         MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(activity);
         LinearLayout layout = (LinearLayout) View.inflate(activity, R.layout.dialog_add_status, null);
-        EditText name = layout.findViewById(R.id.name);
-        Button btnColor = layout.findViewById(R.id.color);
+        TextInputEditText name = layout.findViewById(R.id.name);
+        MaterialButton btnColor = layout.findViewById(R.id.color);
         int color = status == null ? Utility.RANDOM.nextInt() | 0xff000000 : status.opaqueColor();
         newColor = color;
         btnColor.setBackgroundColor(color);
         name.setText(status == null ? "" : status.name);
         btnColor.setOnClickListener(v ->
             new ColorPickerDialog.Builder(activity)
-                .setTitle("ColorPicker Dialog")
-                .setPreferenceName("MyColorPickerDialog")
-                .setPositiveButton(R.string.confirm_pin,
+                .setTitle(R.string.сolor_selection)
+                .setPositiveButton(R.string.confirm,
                     (ColorEnvelopeListener) (envelope, fromUser) -> {
                         if (envelope.getColor() == Color.WHITE || envelope.getColor() == Color.BLACK) {
                             Toast.makeText(activity, R.string.invalid_color_selected, Toast.LENGTH_SHORT).show();
@@ -144,8 +142,8 @@ public class StatusManagerAdapter extends RecyclerView.Adapter<StatusManagerAdap
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
         LinearLayout master;
-        Button color;
-        ImageButton cancel;
+        MaterialButton color;
+        MaterialButton cancel;
         TextView name;
 
         public ViewHolder(@NonNull View itemView) {

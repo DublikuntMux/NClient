@@ -8,11 +8,9 @@ import android.net.Uri;
 import android.util.AttributeSet;
 import android.view.GestureDetector;
 
-import androidx.appcompat.widget.AppCompatImageView;
-
 
 @SuppressWarnings("unused")
-public class PhotoView extends AppCompatImageView {
+public class PhotoView extends androidx.appcompat.widget.AppCompatImageView {
 
     private PhotoViewAttacher attacher;
     private ScaleType pendingScaleType;

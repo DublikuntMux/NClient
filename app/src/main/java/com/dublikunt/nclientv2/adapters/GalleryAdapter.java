@@ -7,7 +7,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -38,6 +37,7 @@ import com.dublikunt.nclientv2.utility.Utility;
 import com.google.android.material.chip.Chip;
 import com.google.android.material.chip.ChipGroup;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+import com.google.android.material.textview.MaterialTextView;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -176,7 +176,7 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.ViewHold
 
     private void loadTagLayout(ViewHolder holder) {
         final ViewGroup vg = holder.master.findViewById(R.id.tag_master);
-        final TextView idContainer = holder.master.findViewById(R.id.id_num);
+        final MaterialTextView idContainer = holder.master.findViewById(R.id.id_num);
         initializeIdContainer(idContainer);
         if (!hasTags()) {
             ViewGroup.LayoutParams layoutParams = vg.getLayoutParams();
@@ -197,7 +197,7 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.ViewHold
             cg = lay.findViewById(R.id.chip_group);
             if (cg.getChildCount() != 0) continue;
             lay.setVisibility(tagCount == 0 ? View.GONE : View.VISIBLE);
-            ((TextView) lay.findViewById(R.id.title)).setText(idStringTagName);
+            ((MaterialTextView) lay.findViewById(R.id.title)).setText(idStringTagName);
             for (int a = 0; a < tagCount; a++) {
                 final Tag tag = tagList.getTag(type, a);
                 Chip c = (Chip) inflater.inflate(R.layout.chip_layout, cg, false);
@@ -219,7 +219,7 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.ViewHold
         }
     }
 
-    private void initializeIdContainer(TextView idContainer) {
+    private void initializeIdContainer(MaterialTextView idContainer) {
         if (gallery.getId() <= 0) {
             idContainer.setVisibility(View.GONE);
             return;
@@ -236,7 +236,7 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.ViewHold
     }
 
     private void addInfoLayout(ViewHolder holder, GalleryData gallery) {
-        TextView text = holder.master.findViewById(R.id.page_count);
+        MaterialTextView text = holder.master.findViewById(R.id.page_count);
         text.setText(context.getString(R.string.page_count_format, gallery.getPageCount()));
         text = holder.master.findViewById(R.id.upload_date);
         text.setText(
@@ -408,7 +408,7 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.ViewHold
 
     static class ViewHolder extends RecyclerView.ViewHolder {
         final View master;
-        final TextView pageNumber;
+        final MaterialTextView pageNumber;
 
         ViewHolder(View v, Type type) {
             super(v);

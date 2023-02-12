@@ -13,7 +13,6 @@ import android.view.ViewParent;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.Interpolator;
 import android.widget.ImageView;
-import android.widget.ImageView.ScaleType;
 import android.widget.OverScroller;
 
 /**
@@ -69,7 +68,7 @@ public class PhotoViewAttacher implements View.OnTouchListener,
     private float mBaseRotation;
 
     private boolean mZoomEnabled = true;
-    private ScaleType mScaleType = ScaleType.FIT_CENTER;
+    private ImageView.ScaleType mScaleType = ImageView.ScaleType.FIT_CENTER;
 
     private final OnGestureListener onGestureListener = new OnGestureListener() {
         @Override
@@ -308,11 +307,11 @@ public class PhotoViewAttacher implements View.OnTouchListener,
         setScale(scale, false);
     }
 
-    public ScaleType getScaleType() {
+    public ImageView.ScaleType getScaleType() {
         return mScaleType;
     }
 
-    public void setScaleType(ScaleType scaleType) {
+    public void setScaleType(ImageView.ScaleType scaleType) {
         if (Util.isSupportedScaleType(scaleType) && scaleType != mScaleType) {
             mScaleType = scaleType;
             update();
@@ -577,17 +576,17 @@ public class PhotoViewAttacher implements View.OnTouchListener,
         mBaseMatrix.reset();
         final float widthScale = viewWidth / drawableWidth;
         final float heightScale = viewHeight / drawableHeight;
-        if (mScaleType == ScaleType.CENTER) {
+        if (mScaleType == ImageView.ScaleType.CENTER) {
             mBaseMatrix.postTranslate((viewWidth - drawableWidth) / 2F,
                 (viewHeight - drawableHeight) / 2F);
 
-        } else if (mScaleType == ScaleType.CENTER_CROP) {
+        } else if (mScaleType == ImageView.ScaleType.CENTER_CROP) {
             float scale = Math.max(widthScale, heightScale);
             mBaseMatrix.postScale(scale, scale);
             mBaseMatrix.postTranslate((viewWidth - drawableWidth * scale) / 2F,
                 (viewHeight - drawableHeight * scale) / 2F);
 
-        } else if (mScaleType == ScaleType.CENTER_INSIDE) {
+        } else if (mScaleType == ImageView.ScaleType.CENTER_INSIDE) {
             float scale = Math.min(1.0f, Math.min(widthScale, heightScale));
             mBaseMatrix.postScale(scale, scale);
             mBaseMatrix.postTranslate((viewWidth - drawableWidth * scale) / 2F,

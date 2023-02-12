@@ -11,7 +11,6 @@ import android.widget.Filterable;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -35,6 +34,7 @@ import com.dublikunt.nclientv2.utility.ImageDownloadUtility;
 import com.dublikunt.nclientv2.utility.LogUtility;
 import com.dublikunt.nclientv2.utility.Utility;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+import com.google.android.material.textview.MaterialTextView;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -479,7 +479,7 @@ public class LocalAdapter extends MultichoiceAdapter<Object, LocalAdapter.ViewHo
     static class ViewHolder extends RecyclerView.ViewHolder {
         final ImageView imgView;
         final View overlay;
-        final TextView title, pages, flag, progress;
+        final MaterialTextView title, pages, flag, progress;
         final ViewGroup layout;
         final ImageButton playButton, cancelButton;
         final ProgressBar progressBar;

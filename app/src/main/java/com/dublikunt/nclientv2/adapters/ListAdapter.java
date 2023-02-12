@@ -8,7 +8,6 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
-import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.dublikunt.nclientv2.GalleryActivity;
@@ -24,6 +23,7 @@ import com.dublikunt.nclientv2.settings.Global;
 import com.dublikunt.nclientv2.settings.TagV2;
 import com.dublikunt.nclientv2.utility.ImageDownloadUtility;
 import com.dublikunt.nclientv2.utility.LogUtility;
+import com.google.android.material.card.MaterialCardView;
 import com.google.android.material.snackbar.Snackbar;
 
 import java.io.File;
@@ -74,7 +74,7 @@ public class ListAdapter extends RecyclerView.Adapter<GenericAdapter.ViewHolder>
             holder.flag.setAlpha(1f);
         }
         if (context instanceof GalleryActivity) {
-            CardView card = (CardView) holder.layout.getParent();
+            MaterialCardView card = (MaterialCardView) holder.layout.getParent();
             ViewGroup.LayoutParams params = card.getLayoutParams();
             params.width = Global.getGalleryWidth();
             params.height = Global.getGalleryHeight();

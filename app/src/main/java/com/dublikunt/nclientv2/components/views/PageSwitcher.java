@@ -10,17 +10,17 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatEditText;
-import androidx.appcompat.widget.AppCompatImageButton;
-import androidx.cardview.widget.CardView;
 
 import com.dublikunt.nclientv2.R;
 import com.dublikunt.nclientv2.settings.DefaultDialogs;
+import com.google.android.material.button.MaterialButton;
+import com.google.android.material.card.MaterialCardView;
 
 import java.util.Locale;
 
-public class PageSwitcher extends CardView {
+public class PageSwitcher extends MaterialCardView {
 
-    private AppCompatImageButton prev, next;
+    private MaterialButton prev, next;
     private AppCompatEditText text;
     @Nullable
     private PageChanger changer;
