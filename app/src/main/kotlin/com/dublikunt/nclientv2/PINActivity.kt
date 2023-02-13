@@ -11,7 +11,6 @@ import com.dublikunt.nclientv2.MainActivity
 import com.dublikunt.nclientv2.components.activities.GeneralActivity
 import com.dublikunt.nclientv2.settings.Global
 import com.google.android.material.button.MaterialButton
-import java.util.*
 
 class PINActivity : GeneralActivity() {
     private lateinit var texts: MutableList<TextView>

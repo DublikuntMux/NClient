@@ -31,12 +31,15 @@ class User private constructor(val username: String, id: String, codename: Strin
         @JvmStatic
         fun createUser(createUser: CreateUser?) {
             Global.getClient()!!
-                .newCall(Request.Builder().url(Login.BASE_HTTP_URL).build()).enqueue(object : Callback {
+                .newCall(Request.Builder().url(Login.BASE_HTTP_URL).build())
+                .enqueue(object : Callback {
                     override fun onFailure(call: Call, e: IOException) {}
+
                     @Throws(IOException::class)
                     override fun onResponse(call: Call, response: Response) {
                         var user: User? = null
-                        val doc = Jsoup.parse(response.body.byteStream(), null, Utility.getBaseUrl())
+                        val doc =
+                            Jsoup.parse(response.body.byteStream(), null, Utility.getBaseUrl())
                         val elements = doc.getElementsByClass("fa-tachometer-alt")
                         if (elements.size > 0) {
                             val x = elements.first()!!.parent()

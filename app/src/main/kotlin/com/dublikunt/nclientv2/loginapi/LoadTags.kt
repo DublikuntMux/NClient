@@ -22,7 +22,8 @@ class LoadTags(private val adapter: TagsAdapter?) : Thread() {
     private fun getScripts(url: String): Elements {
         val response = Global.getClient()!!
             .newCall(Request.Builder().url(url).build()).execute()
-        val x = Jsoup.parse(response.body.byteStream(), null, Utility.getBaseUrl()).getElementsByTag("script")
+        val x = Jsoup.parse(response.body.byteStream(), null, Utility.getBaseUrl())
+            .getElementsByTag("script")
         response.close()
         return x
     }

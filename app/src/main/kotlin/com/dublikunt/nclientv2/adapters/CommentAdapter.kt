@@ -64,6 +64,7 @@ class CommentAdapter(
                 String.format(Locale.US, Utility.getBaseUrl() + "api/comments/%d/delete", c.id)
             AuthRequest(refererUrl, submitUrl, object : Callback {
                 override fun onFailure(call: Call, e: IOException) {}
+
                 @Throws(IOException::class)
                 override fun onResponse(call: Call, response: Response) {
                     if (response.body.string().contains("true")) {

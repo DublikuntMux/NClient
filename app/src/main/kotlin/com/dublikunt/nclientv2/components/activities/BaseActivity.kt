@@ -1,7 +1,6 @@
 package com.dublikunt.nclientv2.components.activities
 
 import android.content.res.Configuration
-import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout

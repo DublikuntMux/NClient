@@ -200,10 +200,14 @@ class GalleryActivity : BaseActivity() {
 
 
     override val portraitColumnCount: Int
-        get() { return 0 }
+        get() {
+            return 0
+        }
 
     override val landscapeColumnCount: Int
-        get() { return 0 }
+        get() {
+            return 0
+        }
 
     private fun initFavoriteIcon(menu: Menu) {
         val onlineFavorite = !isLocal && (gallery as Gallery).isOnlineFavorite
@@ -431,6 +435,7 @@ class GalleryActivity : BaseActivity() {
         LogUtility.download("Calling: $url")
         AuthRequest(galleryUrl, url, object : Callback {
             override fun onFailure(call: Call, e: IOException) {}
+
             @Throws(IOException::class)
             override fun onResponse(call: Call, response: Response) {
                 val responseString = response.body.string()

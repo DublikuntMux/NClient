@@ -9,7 +9,6 @@ import android.view.View
 import android.widget.ImageButton
 import android.widget.TextView
 import androidx.activity.OnBackPressedCallback
-import androidx.core.view.GravityCompat
 import androidx.core.widget.ImageViewCompat
 import com.dublikunt.nclientv2.api.RandomLoader
 import com.dublikunt.nclientv2.api.components.Gallery

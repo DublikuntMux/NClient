@@ -24,6 +24,20 @@ public class RandomLoader {
     private void loadRandomGallery() {
         if (galleries.size() >= MAXLOADED) return;
         InspectorV3.randomInspector(activity, response, false).start();
+    }
+
+    public void requestGallery() {
+        galleryHasBeenRequested = true;
+        for (int i = 0; i < galleries.size(); i++) {
+            if (galleries.get(i) == null)
+                galleries.remove(i--);
+        }
+        if (galleries.size() > 0) {
+            Gallery gallery = galleries.remove(0);
+            activity.runOnUiThread(() -> activity.loadGallery(gallery));
+            galleryHasBeenRequested = false;
+        }
+        loadRandomGallery();
     }    private final InspectorV3.InspectorResponse response = new InspectorV3.DefaultInspectorResponse() {
         @Override
         public void onFailure(Exception e) {
@@ -44,20 +58,6 @@ public class RandomLoader {
             else if (galleries.size() < MAXLOADED) loadRandomGallery();
         }
     };
-
-    public void requestGallery() {
-        galleryHasBeenRequested = true;
-        for (int i = 0; i < galleries.size(); i++) {
-            if (galleries.get(i) == null)
-                galleries.remove(i--);
-        }
-        if (galleries.size() > 0) {
-            Gallery gallery = galleries.remove(0);
-            activity.runOnUiThread(() -> activity.loadGallery(gallery));
-            galleryHasBeenRequested = false;
-        }
-        loadRandomGallery();
-    }
 
 
 

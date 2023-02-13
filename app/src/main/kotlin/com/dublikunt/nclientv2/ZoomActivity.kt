@@ -25,8 +25,9 @@ import com.dublikunt.nclientv2.async.database.Queries
 import com.dublikunt.nclientv2.components.activities.GeneralActivity
 import com.dublikunt.nclientv2.components.views.ZoomFragment
 import com.dublikunt.nclientv2.files.GalleryFolder
-import com.dublikunt.nclientv2.settings.*
+import com.dublikunt.nclientv2.settings.DefaultDialogs
 import com.dublikunt.nclientv2.settings.DefaultDialogs.CustomDialogResults
+import com.dublikunt.nclientv2.settings.Global
 import com.dublikunt.nclientv2.utility.LogUtility
 import com.dublikunt.nclientv2.utility.Utility
 import com.google.android.material.appbar.MaterialToolbar
@@ -70,9 +71,9 @@ class ZoomActivity : GeneralActivity() {
         title = gallery!!.title
         window.setFlags(
             WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN
-                    or WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
+                or WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
             WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN
-                    or WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS
+                or WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS
         )
         if (Global.isLockScreen()) window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
 
@@ -398,7 +399,7 @@ class ZoomActivity : GeneralActivity() {
     }
 
     private fun applyVisibilityFlag() {
-        if (isHidden){
+        if (isHidden) {
             hideSystemUI(window.decorView)
         } else {
             showSystemUI(window.decorView)
@@ -442,7 +443,8 @@ class ZoomActivity : GeneralActivity() {
         WindowCompat.setDecorFitsSystemWindows(window, false)
         WindowInsetsControllerCompat(window, view).let { controller ->
             controller.hide(WindowInsetsCompat.Type.systemBars())
-            controller.systemBarsBehavior = WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+            controller.systemBarsBehavior =
+                WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
         }
     }
 

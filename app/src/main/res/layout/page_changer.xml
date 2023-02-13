@@ -27,10 +27,10 @@
             android:layout_height="wrap_content"
             android:layout_weight="2"
             android:contentDescription="@string/prev"
-            app:iconGravity="textStart"
-            app:iconPadding="0dp"
             app:backgroundTint="@android:color/transparent"
             app:icon="@drawable/ic_keyboard_arrow_left"
+            app:iconGravity="textStart"
+            app:iconPadding="0dp"
             app:iconTint="?android:attr/colorForeground" />
 
         <com.google.android.material.textfield.TextInputEditText
@@ -66,10 +66,10 @@
             android:layout_height="wrap_content"
             android:layout_weight="2"
             android:contentDescription="@string/next"
-            app:iconGravity="textStart"
-            app:iconPadding="0dp"
             app:backgroundTint="@android:color/transparent"
             app:icon="@drawable/ic_keyboard_arrow_right"
+            app:iconGravity="textStart"
+            app:iconPadding="0dp"
             app:iconTint="?android:attr/colorForeground" />
     </LinearLayout>
 </LinearLayout>

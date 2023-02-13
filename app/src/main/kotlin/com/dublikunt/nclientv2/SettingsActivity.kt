@@ -51,11 +51,13 @@ class SettingsActivity : GeneralActivity() {
     }
 
     private fun registerActivities() {
-        IMPORT_ZIP = registerForActivityResult(ActivityResultContracts.GetContent()) { selectedFile: Uri? ->
-            if (selectedFile == null) return@registerForActivityResult
-            importSettings(selectedFile)
-        }
-        SAVE_SETTINGS = registerForActivityResult(object : ActivityResultContracts.CreateDocument("application/zip") {
+        IMPORT_ZIP =
+            registerForActivityResult(ActivityResultContracts.GetContent()) { selectedFile: Uri? ->
+                if (selectedFile == null) return@registerForActivityResult
+                importSettings(selectedFile)
+            }
+        SAVE_SETTINGS = registerForActivityResult(object :
+            ActivityResultContracts.CreateDocument("application/zip") {
             override fun createIntent(context: Context, input: String): Intent {
                 val i: Intent = super.createIntent(context, input)
                 i.type = "application/zip"

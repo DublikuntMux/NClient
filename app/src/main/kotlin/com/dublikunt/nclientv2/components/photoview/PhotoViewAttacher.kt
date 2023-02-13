@@ -155,9 +155,9 @@ class PhotoViewAttacher(private val mImageView: ImageView) : OnTouchListener,
                     // Check to see if the user tapped on the photo
                     if (displayRect.contains(x, y)) {
                         val xResult = ((x - displayRect.left)
-                                / displayRect.width())
+                            / displayRect.width())
                         val yResult = ((y - displayRect.top)
-                                / displayRect.height())
+                            / displayRect.height())
                         if (mPhotoTapListener != null) {
                             mPhotoTapListener!!.onPhotoTap(mImageView, xResult, yResult)
                         }
@@ -261,7 +261,10 @@ class PhotoViewAttacher(private val mImageView: ImageView) : OnTouchListener,
         }
     var scale: Float
         get() = sqrt(
-            (getValue(mSuppMatrix, Matrix.MSCALE_X).toDouble().pow(2.0).toFloat() + getValue(mSuppMatrix, Matrix.MSKEW_Y).toDouble().pow(2.0).toFloat()).toDouble()
+            (getValue(mSuppMatrix, Matrix.MSCALE_X).toDouble().pow(2.0).toFloat() + getValue(
+                mSuppMatrix,
+                Matrix.MSKEW_Y
+            ).toDouble().pow(2.0).toFloat()).toDouble()
         ).toFloat()
         set(scale) {
             setScale(scale, false)
@@ -584,8 +587,16 @@ class PhotoViewAttacher(private val mImageView: ImageView) : OnTouchListener,
                         mTempDst,
                         ScaleToFit.START
                     )
-                    ScaleType.FIT_END -> mBaseMatrix.setRectToRect(mTempSrc, mTempDst, ScaleToFit.END)
-                    ScaleType.FIT_XY -> mBaseMatrix.setRectToRect(mTempSrc, mTempDst, ScaleToFit.FILL)
+                    ScaleType.FIT_END -> mBaseMatrix.setRectToRect(
+                        mTempSrc,
+                        mTempDst,
+                        ScaleToFit.END
+                    )
+                    ScaleType.FIT_XY -> mBaseMatrix.setRectToRect(
+                        mTempSrc,
+                        mTempDst,
+                        ScaleToFit.FILL
+                    )
                     else -> {}
                 }
             }

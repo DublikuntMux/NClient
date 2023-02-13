@@ -1,5 +1,4 @@
-<com.google.android.material.card.MaterialCardView
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -25,14 +24,14 @@
             android:layout_marginBottom="8dp"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:contentDescription="@string/bookmark_description"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="@+id/page"
-            app:layout_constraintStart_toStartOf="@+id/page"
-            app:layout_constraintTop_toBottomOf="@+id/page"
             app:icon="@drawable/ic_close"
             app:iconGravity="textStart"
             app:iconPadding="0dp"
-            app:iconTint="?android:attr/colorForeground" />
+            app:iconTint="?android:attr/colorForeground"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="@+id/page"
+            app:layout_constraintStart_toStartOf="@+id/page"
+            app:layout_constraintTop_toBottomOf="@+id/page" />
 
         <com.google.android.material.textview.MaterialTextView
             android:id="@+id/title"

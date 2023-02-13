@@ -209,10 +209,14 @@ class LocalActivity : BaseActivity() {
     }
 
     override val portraitColumnCount: Int
-        get() { return Global.getColPortDownload() }
+        get() {
+            return Global.getColPortDownload()
+        }
 
     override val landscapeColumnCount: Int
-        get() { return Global.getColLandDownload() }
+        get() {
+            return Global.getColLandDownload()
+        }
 
     val query: String
         get() {

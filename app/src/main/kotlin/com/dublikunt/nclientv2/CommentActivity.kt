@@ -8,8 +8,6 @@ import android.util.JsonWriter
 import android.view.MenuItem
 import android.view.View
 import android.widget.Toast
-import androidx.activity.OnBackPressedCallback
-import androidx.core.view.GravityCompat
 import androidx.recyclerview.widget.DividerItemDecoration
 import com.dublikunt.nclientv2.adapters.CommentAdapter
 import com.dublikunt.nclientv2.api.comments.Comment
@@ -69,6 +67,7 @@ class CommentActivity : BaseActivity() {
             val body: RequestBody = requestString.toRequestBody("application/json".toMediaType())
             AuthRequest(refererUrl, submitUrl, object : Callback {
                 override fun onFailure(call: Call, e: IOException) {}
+
                 @Throws(IOException::class)
                 override fun onResponse(call: Call, response: Response) {
                     val reader = JsonReader(response.body.charStream())
@@ -112,10 +111,14 @@ class CommentActivity : BaseActivity() {
     }
 
     override val portraitColumnCount: Int
-        get() { return 1 }
+        get() {
+            return 1
+        }
 
     override val landscapeColumnCount: Int
-        get() { return 2 }
+        get() {
+            return 2
+        }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if (item.itemId == android.R.id.home) {

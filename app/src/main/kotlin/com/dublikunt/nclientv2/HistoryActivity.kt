@@ -44,10 +44,14 @@ class HistoryActivity : BaseActivity() {
     }
 
     override val portraitColumnCount: Int
-        get() { return Global.getColPortHistory() }
+        get() {
+            return Global.getColPortHistory()
+        }
 
     override val landscapeColumnCount: Int
-        get() { return Global.getColLandHistory() }
+        get() {
+            return Global.getColLandHistory()
+        }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         super.onCreateOptionsMenu(menu)

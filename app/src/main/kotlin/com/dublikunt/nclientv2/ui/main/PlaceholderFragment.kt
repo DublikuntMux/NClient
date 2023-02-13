@@ -9,7 +9,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout.OnRefreshListener
 import com.dublikunt.nclientv2.R
 import com.dublikunt.nclientv2.adapters.StatusViewerAdapter
 import com.dublikunt.nclientv2.components.widgets.CustomGridLayoutManager

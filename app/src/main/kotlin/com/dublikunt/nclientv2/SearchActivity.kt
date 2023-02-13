@@ -295,7 +295,8 @@ class SearchActivity : GeneralActivity() {
             canBeAvoided = true
         )
         //add categories
-        for (t in Queries.TagTable.getTrueAllType(TagType.CATEGORY)) addChipTag(t,
+        for (t in Queries.TagTable.getTrueAllType(TagType.CATEGORY)) addChipTag(
+            t,
             close = false,
             canBeAvoided = false
         )

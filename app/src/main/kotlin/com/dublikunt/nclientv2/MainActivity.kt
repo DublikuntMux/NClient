@@ -555,10 +555,14 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
     }
 
     override val portraitColumnCount: Int
-        get() { return Global.getColPortMain() }
+        get() {
+            return Global.getColPortMain()
+        }
 
     override val landscapeColumnCount: Int
-        get() { return Global.getColLandMain() }
+        get() {
+            return Global.getColLandMain()
+        }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         val i: Intent

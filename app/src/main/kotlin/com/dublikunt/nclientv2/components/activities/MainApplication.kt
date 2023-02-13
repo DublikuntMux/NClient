@@ -1,6 +1,5 @@
 package com.dublikunt.nclientv2.components.activities
 
-import android.app.Activity
 import android.app.Application
 import androidx.appcompat.app.AppCompatDelegate
 import com.dublikunt.nclientv2.async.database.DatabaseHelper

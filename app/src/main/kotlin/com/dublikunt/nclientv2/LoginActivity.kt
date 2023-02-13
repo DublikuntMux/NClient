@@ -96,7 +96,8 @@ class LoginActivity : GeneralActivity() {
                 Login.BASE_HTTP_URL,
                 "$key=$value; Max-Age=31449600; Path=/; SameSite=Lax"
             )
-            Global.client.cookieJar.saveFromResponse(Login.BASE_HTTP_URL,
+            Global.client.cookieJar.saveFromResponse(
+                Login.BASE_HTTP_URL,
                 listOf(cookie) as List<Cookie>
             )
             if (!isCaptcha && key == Login.LOGIN_COOKIE) User.createUser(null)

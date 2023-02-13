@@ -57,10 +57,14 @@ class FavoriteActivity : BaseActivity() {
     }
 
     override val portraitColumnCount: Int
-        get() { return Global.getColPortFavorite() }
+        get() {
+            return Global.getColPortFavorite()
+        }
 
     override val landscapeColumnCount: Int
-        get() { return Global.getColLandFavorite() }
+        get() {
+            return Global.getColLandFavorite()
+        }
 
     private fun calculatePages(text: String?): Int {
         val perPage = entryPerPage
@@ -141,6 +145,7 @@ class FavoriteActivity : BaseActivity() {
 
     companion object {
         private const val ENTRY_PER_PAGE = 24
+
         @JvmStatic
         val entryPerPage: Int
             get() = if (Global.isInfiniteScrollFavorite()) Int.MAX_VALUE else ENTRY_PER_PAGE

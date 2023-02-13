@@ -65,14 +65,19 @@ abstract class GenericAdapter<T : GenericGallery?> internal constructor(val data
     class ViewHolder(v: View) : RecyclerView.ViewHolder(v) {
         @JvmField
         val imgView: ImageView
+
         @JvmField
         val overlay: View
+
         @JvmField
         val title: TextView
+
         @JvmField
         val pages: TextView
+
         @JvmField
         val flag: TextView
+
         @JvmField
         val layout: View
 

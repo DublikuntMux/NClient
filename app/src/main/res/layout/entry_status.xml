@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.google.android.material.card.MaterialCardView
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -48,8 +47,8 @@
             android:background="?attr/selectableItemBackgroundBorderless"
             android:contentDescription="@null"
             app:icon="@drawable/ic_close"
-            app:iconTint="?android:attr/colorForeground"
             app:iconGravity="textStart"
-            app:iconPadding="0dp" />
+            app:iconPadding="0dp"
+            app:iconTint="?android:attr/colorForeground" />
     </LinearLayout>
 </com.google.android.material.card.MaterialCardView>
