@@ -46,7 +46,6 @@ import com.dublikunt.nclientv2.utility.LogUtility
 import com.dublikunt.nclientv2.utility.Utility
 import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import com.google.android.material.imageview.ShapeableImageView
 import com.google.android.material.navigation.NavigationView
 import com.google.android.material.snackbar.Snackbar
 import java.util.*
@@ -56,13 +55,13 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
         override fun onSuccess(galleries: List<GenericGallery>) {
             val g = if (galleries.size == 1) galleries[0] as Gallery else Gallery.emptyGallery()
             val intent = Intent(this@MainActivity, GalleryActivity::class.java)
-            LogUtility.d(g.toString())
+            LogUtility.download(g.toString())
             intent.putExtra("$packageName.GALLERY", g)
             runOnUiThread {
                 startActivity(intent)
                 finish()
             }
-            LogUtility.d("STARTED")
+            LogUtility.download("STARTED")
         }
     }
     private val changeLanguageTimeHandler = Handler(Looper.myLooper()!!)
@@ -103,13 +102,14 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
     private lateinit var drawerLayout: DrawerLayout
     private lateinit var toolbar: MaterialToolbar
     private var setting: Setting? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         onBackPressedDispatcher.addCallback(this, onBackPressedCallback)
 
         selectStartMode(intent, packageName)
-        LogUtility.d("Main started with mode $modeType")
+        LogUtility.download("Main started with mode $modeType")
 
         findUsefulViews()
         initializeToolbar()
@@ -347,7 +347,7 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
      */
     private fun manageDataStart(data: Uri) {
         val datas = data.pathSegments
-        LogUtility.d("Datas: $datas")
+        LogUtility.download("Datas: $datas")
         if (datas.size == 0) {
             useNormalMode()
             return
@@ -554,17 +554,15 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
         Global.setTint(item.icon)
     }
 
-    override fun getPortraitColumnCount(): Int {
-        return Global.getColPortMain()
-    }
+    override val portraitColumnCount: Int
+        get() { return Global.getColPortMain() }
 
-    override fun getLandscapeColumnCount(): Int {
-        return Global.getColLandMain()
-    }
+    override val landscapeColumnCount: Int
+        get() { return Global.getColLandMain() }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         val i: Intent
-        LogUtility.d("Pressed item: " + item.itemId)
+        LogUtility.download("Pressed item: " + item.itemId)
         if (item.itemId == R.id.by_popular) {
             updateSortType(item)
         } else if (item.itemId == R.id.only_language) {

@@ -24,6 +24,7 @@ class FavoriteActivity : BaseActivity() {
     private var sortByTitle = false
     private lateinit var pageSwitcher: PageSwitcher
     private lateinit var searchView: SearchView
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.app_bar_main)
@@ -55,13 +56,11 @@ class FavoriteActivity : BaseActivity() {
         pageSwitcher.setPages(totalPages, actualPages)
     }
 
-    override fun getLandscapeColumnCount(): Int {
-        return Global.getColLandFavorite()
-    }
+    override val portraitColumnCount: Int
+        get() { return Global.getColPortFavorite() }
 
-    override fun getPortraitColumnCount(): Int {
-        return Global.getColPortFavorite()
-    }
+    override val landscapeColumnCount: Int
+        get() { return Global.getColLandFavorite() }
 
     private fun calculatePages(text: String?): Int {
         val perPage = entryPerPage
@@ -105,17 +104,22 @@ class FavoriteActivity : BaseActivity() {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         val i: Intent
-        if (item.itemId == R.id.open_browser) {
-            i = Intent(Intent.ACTION_VIEW, Uri.parse(Utility.getBaseUrl() + "favorites/"))
-            startActivity(i)
-        } else if (item.itemId == R.id.download_page) {
-            showDialogDownloadAll()
-        } else if (item.itemId == R.id.sort_by_name) {
-            sortByTitle = !sortByTitle
-            adapter.setSortByTitle(sortByTitle)
-            item.setTitle(if (sortByTitle) R.string.sort_by_latest else R.string.sort_by_title)
-        } else if (item.itemId == R.id.random_favorite) {
-            adapter.randomGallery()
+        when (item.itemId) {
+            R.id.open_browser -> {
+                i = Intent(Intent.ACTION_VIEW, Uri.parse(Utility.getBaseUrl() + "favorites/"))
+                startActivity(i)
+            }
+            R.id.download_page -> {
+                showDialogDownloadAll()
+            }
+            R.id.sort_by_name -> {
+                sortByTitle = !sortByTitle
+                adapter.setSortByTitle(sortByTitle)
+                item.setTitle(if (sortByTitle) R.string.sort_by_latest else R.string.sort_by_title)
+            }
+            R.id.random_favorite -> {
+                adapter.randomGallery()
+            }
         }
         return super.onOptionsItemSelected(item)
     }

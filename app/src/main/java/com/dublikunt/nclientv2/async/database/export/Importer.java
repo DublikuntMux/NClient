@@ -106,7 +106,7 @@ class Importer {
         ZipEntry entry;
         while ((entry = inputStream.getNextEntry()) != null) {
             String name = entry.getName();
-            LogUtility.d("Importing: " + name);
+            LogUtility.download("Importing: " + name);
             if (Exporter.DB_ZIP_FILE.equals(name)) {
                 importDB(inputStream);
             } else {

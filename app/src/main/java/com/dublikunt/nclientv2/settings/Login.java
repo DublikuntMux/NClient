@@ -107,7 +107,7 @@ public class Login {
 
     public static boolean isLogged(@Nullable Context context) {
         List<Cookie> cookies = Global.client.cookieJar().loadForRequest(BASE_HTTP_URL);
-        LogUtility.d("Cookies: " + cookies);
+        LogUtility.download("Cookies: " + cookies);
         if (hasCookie(LOGIN_COOKIE)) {
             if (user == null) User.createUser(user -> {
                 if (user != null) {

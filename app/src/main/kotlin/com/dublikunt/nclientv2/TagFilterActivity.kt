@@ -46,7 +46,7 @@ class TagFilterActivity : GeneralActivity() {
         mViewPager.adapter = mTagTypePageAdapter
         mViewPager.offscreenPageLimit = 1
         val tabLayout = findViewById<TabLayout>(R.id.tabs)
-        LogUtility.d("ISNULL?" + (tabLayout == null))
+        LogUtility.download("ISNULL?" + (tabLayout == null))
         mViewPager.registerOnPageChangeCallback(object : OnPageChangeCallback() {
             override fun onPageSelected(position: Int) {
                 val page = getFragment(position)
@@ -86,7 +86,7 @@ class TagFilterActivity : GeneralActivity() {
             val data = intent.data
             if (data != null) {
                 val params = data.pathSegments
-                for (x in params) LogUtility.i(x)
+                for (x in params) LogUtility.info(x)
                 if (params.size > 0) {
                     when (params[0]) {
                         "tags" -> return 1
@@ -160,7 +160,7 @@ class TagFilterActivity : GeneralActivity() {
         builder.setYesbtn(R.string.ok).setNobtn(R.string.cancel)
         builder.setTitle(R.string.set_minimum_count).setDialogs(object : CustomDialogResults() {
             override fun positive(actual: Int) {
-                LogUtility.d("ACTUAL: $actual")
+                LogUtility.download("ACTUAL: $actual")
                 TagV2.updateMinCount(this@TagFilterActivity, actual)
                 actualFragment?.changeSize()
             }

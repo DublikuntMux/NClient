@@ -166,7 +166,7 @@ public class Global {
         if (!files.contains(ROOTFOLDER) && !isExternalStorageManager())
             ROOTFOLDER = new File(getDefaultFileParent(context));
         MAINFOLDER = new File(ROOTFOLDER, MAINFOLDER_NAME);
-        LogUtility.d(MAINFOLDER);
+        LogUtility.download(MAINFOLDER);
         OLD_GALLERYFOLDER = new File(context.getExternalFilesDir(Environment.DIRECTORY_PICTURES), MAINFOLDER_NAME);
         DOWNLOADFOLDER = new File(MAINFOLDER, DOWNLOADFOLDER_NAME);
         SCREENFOLDER = new File(MAINFOLDER, SCREENFOLDER_NAME);
@@ -329,7 +329,7 @@ public class Global {
     public static void setLocalSortType(Context context, LocalSortType localSortType) {
         context.getSharedPreferences("Settings", 0).edit().putInt(context.getString(R.string.key_local_sort), localSortType.hashCode()).apply();
         Global.localSortType = localSortType;
-        LogUtility.d("Assegning: " + localSortType);
+        LogUtility.download("Assegning: " + localSortType);
     }
 
     public static String getMirror() {
@@ -369,7 +369,7 @@ public class Global {
         client.dispatcher().setMaxRequests(25);
         client.dispatcher().setMaxRequestsPerHost(25);
         for (Cookie cookie : client.cookieJar().loadForRequest(Login.BASE_HTTP_URL)) {
-            LogUtility.d("Cookie: " + cookie);
+            LogUtility.download("Cookie: " + cookie);
         }
         Login.isLogged(context);
     }
@@ -524,7 +524,7 @@ public class Global {
             Global.TORRENTFOLDER.mkdir(),
             Global.BACKUPFOLDER.mkdir(),
         };
-        LogUtility.d(
+        LogUtility.download(
             "0:" + context.getFilesDir() + '\n' +
                 "1:" + Global.MAINFOLDER + bools[0] + '\n' +
                 "2:" + Global.DOWNLOADFOLDER + bools[1] + '\n' +
@@ -645,7 +645,7 @@ public class Global {
             fh.read(eoi);
             return eoi[0] != (byte) 0xFF || eoi[1] != (byte) 0xD9; // FF D9
         } catch (IOException e) {
-            LogUtility.e(e.getMessage(), e);
+            LogUtility.INSTANCE.error(e.getMessage(), e);
         }
         return true;
     }

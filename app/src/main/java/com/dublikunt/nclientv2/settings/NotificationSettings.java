@@ -36,7 +36,7 @@ public class NotificationSettings {
         notificationArray.remove(Integer.valueOf(notificationId));
         notificationArray.add(notificationId);
         trimArray();
-        LogUtility.d("Notification count: " + notificationArray.size());
+        LogUtility.download("Notification count: " + notificationArray.size());
         notificationSettings.notificationManager.notify(notificationId, notification);
     }
 

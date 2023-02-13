@@ -295,7 +295,7 @@ public class InspectorV3 extends Thread implements Parcelable {
             }
         }
         url = builder.toString().replace(' ', '+');
-        LogUtility.d("WWW: " + getBookmarkURL());
+        LogUtility.download("WWW: " + getBookmarkURL());
     }
 
     public void forceStart() {
@@ -338,7 +338,7 @@ public class InspectorV3 extends Thread implements Parcelable {
 
     @Override
     public void run() {
-        LogUtility.d("Starting download: " + url);
+        LogUtility.download("Starting download: " + url);
         if (response != null) response.onStart();
         try {
             createDocument();
@@ -350,7 +350,7 @@ public class InspectorV3 extends Thread implements Parcelable {
             if (response != null) response.onFailure(e);
         }
         if (response != null) response.onEnd();
-        LogUtility.d("Finished download: " + url);
+        LogUtility.download("Finished download: " + url);
     }
 
     private void doSingle(Element document) throws IOException, InvalidResponseException {
@@ -373,7 +373,7 @@ public class InspectorV3 extends Thread implements Parcelable {
         } catch (Exception e) {
             isFavorite = false;
         }
-        LogUtility.d("is favorite? " + isFavorite);
+        LogUtility.download("is favorite? " + isFavorite);
         galleries.add(new Gallery(context.get(), json, rel, isFavorite));
     }
 
@@ -495,7 +495,7 @@ public class InspectorV3 extends Thread implements Parcelable {
 
         @Override
         public void onFailure(Exception e) {
-            LogUtility.e(e.getLocalizedMessage(), e);
+            LogUtility.INSTANCE.error(e.getLocalizedMessage(), e);
         }
     }
 }

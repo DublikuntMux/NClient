@@ -40,7 +40,7 @@ public class CustomWebView extends WebView {
 
     @Override
     public void loadUrl(String url) {
-        LogUtility.d("Loading url: " + url);
+        LogUtility.download("Loading url: " + url);
         super.loadUrl(url);
     }
 
@@ -53,7 +53,7 @@ public class CustomWebView extends WebView {
         setWebViewClient(new WebViewClient() {
             @Override
             public void onPageStarted(WebView view, String url, Bitmap favicon) {
-                LogUtility.d("Started url: " + url);
+                LogUtility.download("Started url: " + url);
                 super.onPageStarted(view, url, favicon);
             }
 
@@ -66,7 +66,7 @@ public class CustomWebView extends WebView {
 
         });
 
-        addFetcher((url, html) -> LogUtility.d("Fetch for url " + url + ": " + html));
+        addFetcher((url, html) -> LogUtility.download("Fetch for url " + url + ": " + html));
     }
 
     public void addFetcher(@Nullable HtmlFetcher fetcher) {

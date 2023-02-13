@@ -85,7 +85,7 @@ public class ZoomFragment extends Fragment {
                 ((float) Global.getDeviceHeight((AppCompatActivity) activity) * width);
         finalSize = Math.max(finalSize, Global.getDefaultZoom());
         finalSize = Math.min(finalSize, MAX_SCALE);
-        LogUtility.d("Final scale: " + finalSize);
+        LogUtility.download("Final scale: " + finalSize);
         return (float) Math.floor(finalSize);
     }
 
@@ -112,7 +112,7 @@ public class ZoomFragment extends Fragment {
             } else if (clickListener != null) {
                 clickListener.onClick(view);
             }
-            LogUtility.d(view, x, y, prev, next);
+            LogUtility.download(view, x, y, prev, next);
         });
 
         photoView.setOnScaleChangeListener((float scaleFactor, float focusX, float focusY) -> {
@@ -214,11 +214,11 @@ public class ZoomFragment extends Fragment {
         if (glide == null) return null;
         if (pageFile != null) {
             request = glide.load(pageFile);
-            LogUtility.d("Requested file glide: " + pageFile);
+            LogUtility.download("Requested file glide: " + pageFile);
         } else {
             if (url == null) request = glide.load(R.mipmap.ic_launcher);
             else {
-                LogUtility.d("Requested url glide: " + url);
+                LogUtility.download("Requested url glide: " + url);
                 request = glide.load(url);
             }
         }

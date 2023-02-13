@@ -83,7 +83,7 @@ public class TagsAdapter extends RecyclerView.Adapter<TagsAdapter.ViewHolder> im
                 results.count = tags.getCount();
                 results.values = tags;
 
-                LogUtility.d(results.count + "," + results.values);
+                LogUtility.download(results.count + "," + results.values);
                 return results;
             }
 

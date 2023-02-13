@@ -32,7 +32,7 @@ public class Manager extends Thread {
             else Importer.importData(context, file);
             context.runOnUiThread(end);
         } catch (IOException e) {
-            LogUtility.e(e, e);
+            LogUtility.INSTANCE.error(e, e);
         }
     }
 }

@@ -87,7 +87,7 @@ public class CreatePDF extends JobIntentService {
             finalPath.mkdirs();
             finalPath = new File(finalPath, gallery.getTitle() + ".pdf");
             finalPath.createNewFile();
-            LogUtility.d("Generating PDF at: " + finalPath);
+            LogUtility.download("Generating PDF at: " + finalPath);
             FileOutputStream out = new FileOutputStream(finalPath);
             document.writeTo(out);
             out.close();
@@ -97,7 +97,7 @@ public class CreatePDF extends JobIntentService {
             notification.setContentText(gallery.getTitle());
             createIntentOpen(finalPath);
             NotificationSettings.notify(getString(R.string.channel2_name), notId, notification.build());
-            LogUtility.d(finalPath.getAbsolutePath());
+            LogUtility.download(finalPath.getAbsolutePath());
         } catch (IOException e) {
             notification.setContentTitle(getString(R.string.error_pdf));
             notification.setContentText(getString(R.string.failed));
@@ -130,7 +130,7 @@ public class CreatePDF extends JobIntentService {
             } else {
                 notification.setContentIntent(PendingIntent.getActivity(getApplicationContext(), 0, i, 0));
             }
-            LogUtility.d(apkURI.toString());
+            LogUtility.download(apkURI.toString());
         } catch (IllegalArgumentException ignore) {//sometimes the uri isn't available
 
         }

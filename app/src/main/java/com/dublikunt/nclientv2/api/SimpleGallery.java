@@ -105,7 +105,7 @@ public class SimpleGallery extends GenericGallery {
         if (tags == null) return false;
         for (Tag t : tags.getAllTagsList())
             if (s.contains(t.toQueryTag(TagStatus.AVOIDED))) {
-                LogUtility.d("Found: " + s + ",," + t.toQueryTag());
+                LogUtility.download("Found: " + s + ",," + t.toQueryTag());
                 return true;
             }
         return false;

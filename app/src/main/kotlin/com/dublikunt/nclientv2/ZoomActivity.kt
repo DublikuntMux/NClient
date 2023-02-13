@@ -11,7 +11,6 @@ import android.view.*
 import android.widget.SeekBar
 import android.widget.SeekBar.OnSeekBarChangeListener
 import android.widget.Toast
-import androidx.annotation.NonNull
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
@@ -109,7 +108,7 @@ class ZoomActivity : GeneralActivity() {
             override fun onPageSelected(newPage: Int) {
                 val oldPage = actualPage
                 actualPage = newPage
-                LogUtility.d("Page selected: $newPage from page $oldPage")
+                LogUtility.download("Page selected: $newPage from page $oldPage")
                 setPageText(newPage + 1)
                 seekBar.progress = newPage
                 clearFarRequests(oldPage, newPage)
@@ -427,7 +426,7 @@ class ZoomActivity : GeneralActivity() {
             }
             f.setClickListener { v: View? ->
                 isHidden = !isHidden
-                LogUtility.d("Clicked $isHidden")
+                LogUtility.download("Clicked $isHidden")
                 applyVisibilityFlag()
                 animateLayout()
             }

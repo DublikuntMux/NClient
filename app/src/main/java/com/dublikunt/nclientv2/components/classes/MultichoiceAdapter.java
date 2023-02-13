@@ -139,7 +139,7 @@ public abstract class MultichoiceAdapter<D, T extends RecyclerView.ViewHolder> e
                 ViewGroup.LayoutParams multiParam = multichoiceHolder.getLayoutParams();
                 multiParam.width = master.getWidth();
                 multiParam.height = master.getHeight();
-                LogUtility.d("Multiparam: " + multiParam.width + ", " + multiParam.height);
+                LogUtility.download("Multiparam: " + multiParam.width + ", " + multiParam.height);
                 multichoiceHolder.setLayoutParams(multiParam);
             });
         }

@@ -22,7 +22,7 @@ public class CustomInterceptor implements Interceptor {
     public Response intercept(Chain chain) throws IOException {
         Request request = chain.request();
         if (logRequests)
-            LogUtility.d("Requested url: " + request.url());
+            LogUtility.download("Requested url: " + request.url());
         Request.Builder r = request.newBuilder();
         r.addHeader("User-Agent", Global.getUserAgent());
         return chain.proceed(r.build());

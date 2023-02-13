@@ -29,6 +29,7 @@ import java.util.*
 
 class CommentActivity : BaseActivity() {
     private var adapter: CommentAdapter? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_comment)
@@ -48,7 +49,7 @@ class CommentActivity : BaseActivity() {
         refresher.setOnRefreshListener { CommentsFetcher(this@CommentActivity, id).start() }
         val commentText = findViewById<TextInputEditText>(R.id.commentText)
         findViewById<View>(R.id.card).visibility = if (Login.isLogged()) View.VISIBLE else View.GONE
-        findViewById<View>(R.id.sendButton).setOnClickListener { v: View? ->
+        findViewById<View>(R.id.sendButton).setOnClickListener {
             if (commentText.text.toString().length < MINIUM_MESSAGE_LENGHT) {
                 Toast.makeText(
                     this,
@@ -110,13 +111,11 @@ class CommentActivity : BaseActivity() {
         return ""
     }
 
-    override fun getPortraitColumnCount(): Int {
-        return 1
-    }
+    override val portraitColumnCount: Int
+        get() { return 1 }
 
-    override fun getLandscapeColumnCount(): Int {
-        return 2
-    }
+    override val landscapeColumnCount: Int
+        get() { return 2 }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if (item.itemId == android.R.id.home) {

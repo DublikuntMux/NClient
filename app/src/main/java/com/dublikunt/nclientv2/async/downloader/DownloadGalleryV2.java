@@ -58,7 +58,7 @@ public class DownloadGalleryV2 extends JobIntentService {
             new PageChecker().start();
             startWork(context);
         } catch (IOException e) {
-            LogUtility.e(e, e);
+            LogUtility.INSTANCE.error(e, e);
         }
     }
 
@@ -80,10 +80,10 @@ public class DownloadGalleryV2 extends JobIntentService {
         if (intent != null) {
             int id = intent.getIntExtra(getPackageName() + ".ID", -1);
             String mode = intent.getStringExtra(getPackageName() + ".MODE");
-            LogUtility.d("" + mode);
+            LogUtility.download("" + mode);
             GalleryDownloaderManager manager = DownloadQueue.managerFromId(id);
             if (manager != null) {
-                LogUtility.d("IntentAction: " + mode + " for id " + id);
+                LogUtility.download("IntentAction: " + mode + " for id " + id);
                 assert mode != null;
                 switch (mode) {
                     case "STOP":
@@ -118,7 +118,7 @@ public class DownloadGalleryV2 extends JobIntentService {
                 }
                 continue;
             }
-            LogUtility.d("Downloading: " + entry.downloader().getId());
+            LogUtility.download("Downloading: " + entry.downloader().getId());
             if (entry.downloader().downloadGalleryData()) {
                 entry.downloader().download();
             }

@@ -23,7 +23,7 @@ public class CustomSwipe extends SwipeRefreshLayout {
         try {
             throw new Exception();
         } catch (Exception e) {
-            LogUtility.e("NEW VALUE: " + refreshing + ",," + e.getLocalizedMessage(), e);
+            LogUtility.INSTANCE.error("NEW VALUE: " + refreshing + ",," + e.getLocalizedMessage(), e);
         }
         super.setRefreshing(refreshing);
     }

@@ -1,76 +1,55 @@
-package com.dublikunt.nclientv2.loginapi;
+package com.dublikunt.nclientv2.loginapi
 
-import androidx.annotation.NonNull;
+import com.dublikunt.nclientv2.settings.Global
+import com.dublikunt.nclientv2.settings.Login
+import com.dublikunt.nclientv2.utility.Utility
+import okhttp3.Call
+import okhttp3.Callback
+import okhttp3.Request
+import okhttp3.Response
+import org.jsoup.Jsoup
+import java.io.IOException
 
-import com.dublikunt.nclientv2.settings.Global;
-import com.dublikunt.nclientv2.settings.Login;
-import com.dublikunt.nclientv2.utility.Utility;
+class User private constructor(val username: String, id: String, codename: String) {
+    val codename: String
+    val id: Int
 
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
-
-import java.io.IOException;
-
-import okhttp3.Call;
-import okhttp3.Callback;
-import okhttp3.Request;
-import okhttp3.Response;
-
-public class User {
-    private final String username, codename;
-    private final int id;
-
-    private User(String username, String id, String codename) {
-        this.username = username;
-        this.id = Integer.parseInt(id);
-        this.codename = codename;
+    init {
+        this.id = id.toInt()
+        this.codename = codename
     }
 
-    public static void createUser(final CreateUser createUser) {
-        Global.getClient().newCall(new Request.Builder().url(Login.BASE_HTTP_URL).build()).enqueue(new Callback() {
-            @Override
-            public void onFailure(@NonNull Call call, @NonNull IOException e) {
-            }
-
-            @Override
-            public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
-                User user = null;
-                Document doc = Jsoup.parse(response.body().byteStream(), null, Utility.getBaseUrl());
-                Elements elements = doc.getElementsByClass("fa-tachometer-alt");
-                if (elements.size() > 0) {
-                    Element x = elements.first().parent();
-                    String username = x.text().trim();
-                    String[] y = x.attr("href").split("/");
-                    user = new User(username, y[2], y[3]);
-                }
-                Login.updateUser(user);
-                if (createUser != null) createUser.onCreateUser(Login.getUser());
-            }
-        });
+    override fun toString(): String {
+        return "$username($id/$codename)"
     }
 
-    @Override
-    public String toString() {
-        return username + '(' + id + '/' + codename + ')';
+    interface CreateUser {
+        fun onCreateUser(user: User?)
     }
 
-    public String getUsername() {
-        return username;
+    companion object {
+        @JvmStatic
+        fun createUser(createUser: CreateUser?) {
+            Global.getClient()!!
+                .newCall(Request.Builder().url(Login.BASE_HTTP_URL).build()).enqueue(object : Callback {
+                    override fun onFailure(call: Call, e: IOException) {}
+                    @Throws(IOException::class)
+                    override fun onResponse(call: Call, response: Response) {
+                        var user: User? = null
+                        val doc = Jsoup.parse(response.body.byteStream(), null, Utility.getBaseUrl())
+                        val elements = doc.getElementsByClass("fa-tachometer-alt")
+                        if (elements.size > 0) {
+                            val x = elements.first()!!.parent()
+                            val username = x!!.text().trim { it <= ' ' }
+                            val y =
+                                x.attr("href").split("/".toRegex()).dropLastWhile { it.isEmpty() }
+                                    .toTypedArray()
+                            user = User(username, y[2], y[3])
+                        }
+                        Login.updateUser(user)
+                        createUser?.onCreateUser(Login.getUser())
+                    }
+                })
+        }
     }
-
-    public int getId() {
-        return id;
-    }
-
-    public String getCodename() {
-        return codename;
-    }
-
-    public interface CreateUser {
-        void onCreateUser(User user);
-    }
-
-
 }

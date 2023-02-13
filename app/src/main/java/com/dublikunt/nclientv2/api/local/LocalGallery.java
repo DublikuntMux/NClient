@@ -136,7 +136,7 @@ public class LocalGallery extends GenericGallery {
     }
 
     private void checkSize(File f) {
-        LogUtility.d("Decoding: " + f);
+        LogUtility.download("Decoding: " + f);
         BitmapFactory.Options options = new BitmapFactory.Options();
         options.inJustDecodeBounds = true;
         BitmapFactory.decodeFile(f.getAbsolutePath(), options);

@@ -66,7 +66,7 @@ public class Tag implements Parcelable {
                     name = jr.nextString();
                     break;
                 case "url":
-                    LogUtility.d("Tag URL: " + jr.nextString());
+                    LogUtility.download("Tag URL: " + jr.nextString());
                     break;
                 default:
                     jr.skipValue();

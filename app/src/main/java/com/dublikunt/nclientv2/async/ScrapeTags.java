@@ -42,11 +42,11 @@ public class ScrapeTags extends JobIntentService {
         ResponseBody body = x.body();
         try {
             int k = Integer.parseInt(body.string().trim());
-            LogUtility.d("Found version: " + k);
+            LogUtility.download("Found version: " + k);
             x.close();
             return k;
         } catch (NumberFormatException e) {
-            LogUtility.e("Unable to convert", e);
+            LogUtility.INSTANCE.error("Unable to convert", e);
         }
         return -1;
     }
@@ -59,7 +59,7 @@ public class ScrapeTags extends JobIntentService {
         int lastVersion = preferences.getInt("lastTagsVersion", -1), newVersion = -1;
         if (!enoughDayPassed(nowTime, lastTime)) return;
 
-        LogUtility.d("Scraping tags");
+        LogUtility.download("Scraping tags");
         try {
             newVersion = getNewVersionCode();
             if (lastVersion > -1 && lastVersion >= newVersion) return;
@@ -69,7 +69,7 @@ public class ScrapeTags extends JobIntentService {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        LogUtility.d("End scraping");
+        LogUtility.download("End scraping");
         preferences.edit()
             .putLong("lastSync", nowTime.getTime())
             .putInt("lastTagsVersion", newVersion)
@@ -112,7 +112,7 @@ public class ScrapeTags extends JobIntentService {
             if (daysBetween > DAYS_UNTIL_SCRAPE)
                 return true;
         }
-        LogUtility.d("Passed " + daysBetween + " days since last scrape");
+        LogUtility.download("Passed " + daysBetween + " days since last scrape");
         return false;
     }
 }

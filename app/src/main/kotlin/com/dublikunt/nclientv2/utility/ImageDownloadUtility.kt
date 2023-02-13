@@ -1,92 +1,95 @@
-package com.dublikunt.nclientv2.utility;
+package com.dublikunt.nclientv2.utility
 
-import android.content.Context;
-import android.graphics.drawable.Drawable;
-import android.net.Uri;
-import android.widget.ImageView;
+import android.content.Context
+import android.graphics.drawable.Drawable
+import android.net.Uri
+import android.widget.ImageView
+import androidx.annotation.DrawableRes
+import androidx.appcompat.app.AppCompatActivity
+import com.bumptech.glide.load.resource.bitmap.Rotate
+import com.bumptech.glide.request.target.ImageViewTarget
+import com.dublikunt.nclientv2.api.components.Gallery
+import com.dublikunt.nclientv2.components.GlideX
+import com.dublikunt.nclientv2.settings.Global
+import java.io.File
 
-import androidx.annotation.DrawableRes;
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
-
-import com.bumptech.glide.RequestBuilder;
-import com.bumptech.glide.RequestManager;
-import com.bumptech.glide.load.resource.bitmap.Rotate;
-import com.bumptech.glide.request.target.ImageViewTarget;
-import com.dublikunt.nclientv2.api.components.Gallery;
-import com.dublikunt.nclientv2.components.GlideX;
-import com.dublikunt.nclientv2.settings.Global;
-
-import java.io.File;
-
-public class ImageDownloadUtility {
-    public static void preloadImage(Context context, Uri url) {
-        if (Global.getDownloadPolicy() == Global.DataUsageType.NONE) return;
-        RequestManager manager = GlideX.with(context);
-        LogUtility.d("Requested url glide: " + url);
-        if (manager != null) manager.load(url).preload();
+object ImageDownloadUtility {
+    @JvmStatic
+    fun preloadImage(context: Context?, url: Uri) {
+        if (Global.getDownloadPolicy() == Global.DataUsageType.NONE) return
+        val manager = GlideX.with(context)
+        LogUtility.download("Requested url glide: $url")
+        manager?.load(url)?.preload()
     }
 
-    public static void loadImageOp(Context context, ImageView view, File file, int angle) {
-        RequestManager glide = GlideX.with(context);
-        if (glide == null) return;
-        Drawable logo = Global.getLogo(context.getResources());
-        glide.load(file).transform(new Rotate(angle)).error(logo).placeholder(logo).into(view);
-        LogUtility.d("Requested file glide: " + file);
+    @JvmStatic
+    fun loadImageOp(context: Context, view: ImageView?, file: File, angle: Int) {
+        val glide = GlideX.with(context) ?: return
+        val logo = Global.getLogo(context.resources)
+        glide.load(file).transform(Rotate(angle)).error(logo).placeholder(logo).into(view!!)
+        LogUtility.download("Requested file glide: $file")
     }
 
-    public static void loadImageOp(Context context, ImageView view, Gallery gallery, int page, int angle) {
-        Uri url = getUrlForGallery(gallery, page, true);
-        loadImageOp(context, view, url, angle);
+    @JvmStatic
+    fun loadImageOp(context: Context, view: ImageView, gallery: Gallery, page: Int, angle: Int) {
+        val url = getUrlForGallery(gallery, page, true)
+        loadImageOp(context, view, url, angle)
     }
 
-    public static void loadImageOp(Context context, ImageView view, Uri url, int angle) {
-        LogUtility.d("Requested url glide: " + url);
+    @JvmStatic
+    fun loadImageOp(context: Context, view: ImageView, url: Uri?, angle: Int) {
+        LogUtility.download("Requested url glide: $url")
         if (Global.getDownloadPolicy() == Global.DataUsageType.NONE) {
-            loadLogo(view);
-            return;
+            loadLogo(view)
+            return
         }
-        RequestManager glide = GlideX.with(context);
-        if (glide == null) return;
-        Drawable logo = Global.getLogo(context.getResources());
-        RequestBuilder<Drawable> dra = glide.load(url);
-        if (angle != 0)
-            dra = dra.transform(new Rotate(angle));
+        val glide = GlideX.with(context) ?: return
+        val logo = Global.getLogo(context.resources)
+        var dra = glide.load(url)
+        if (angle != 0) dra = dra.transform(Rotate(angle))
         dra.error(logo)
             .placeholder(logo)
-            .into(new ImageViewTarget<Drawable>(view) {
-                @Override
-                protected void setResource(@Nullable Drawable resource) {
-                    this.view.setImageDrawable(resource);
+            .into(object : ImageViewTarget<Drawable?>(view) {
+                override fun setResource(resource: Drawable?) {
+                    this.view.setImageDrawable(resource)
                 }
-            });
+            })
     }
 
-    private static Uri getUrlForGallery(Gallery gallery, int page, boolean shouldFull) {
-        return shouldFull ? gallery.getPageUrl(page) : gallery.getLowPage(page);
+    private fun getUrlForGallery(gallery: Gallery, page: Int, shouldFull: Boolean): Uri {
+        return if (shouldFull) gallery.getPageUrl(page) else gallery.getLowPage(page)
     }
 
-    public static void downloadPage(AppCompatActivity activity, ImageView imageView, Gallery gallery, int page, boolean shouldFull) {
-        shouldFull = gallery.getPageExtension(page).equals("gif") || shouldFull;
-        loadImageOp(activity, imageView, getUrlForGallery(gallery, page, shouldFull), 0);
+    @JvmStatic
+    fun downloadPage(
+        activity: AppCompatActivity,
+        imageView: ImageView,
+        gallery: Gallery,
+        page: Int,
+        shouldFull: Boolean
+    ) {
+        var shouldFull = shouldFull
+        shouldFull = gallery.getPageExtension(page) == "gif" || shouldFull
+        loadImageOp(activity, imageView, getUrlForGallery(gallery, page, shouldFull), 0)
     }
 
-    private static void loadLogo(ImageView imageView) {
-        imageView.setImageDrawable(Global.getLogo(imageView.getResources()));
+    @JvmStatic
+    private fun loadLogo(imageView: ImageView) {
+        imageView.setImageDrawable(Global.getLogo(imageView.resources))
     }
 
-    public static void loadImage(AppCompatActivity activity, Uri url, ImageView imageView) {
-        loadImageOp(activity, imageView, url, 0);
+    @JvmStatic
+    fun loadImage(activity: AppCompatActivity, url: Uri?, imageView: ImageView) {
+        loadImageOp(activity, imageView, url, 0)
     }
 
-    public static void loadImage(AppCompatActivity activity, File file, ImageView imageView) {
-        loadImage(activity, file == null ? null : Uri.fromFile(file), imageView);
+    @JvmStatic
+    fun loadImage(activity: AppCompatActivity, file: File?, imageView: ImageView) {
+        loadImage(activity, if (file == null) null else Uri.fromFile(file), imageView)
     }
 
-    /**
-     * Load Resource using id
-     */
-    public static void loadImage(@DrawableRes int resource, ImageView imageView) {
-        imageView.setImageResource(resource);
+    @JvmStatic
+    fun loadImage(@DrawableRes resource: Int, imageView: ImageView) {
+        imageView.setImageResource(resource)
     }
 }

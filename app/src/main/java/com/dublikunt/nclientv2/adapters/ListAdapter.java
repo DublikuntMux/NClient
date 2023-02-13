@@ -158,7 +158,7 @@ public class ListAdapter extends RecyclerView.Adapter<GenericAdapter.ViewHolder>
                     return;
                 }
                 Intent intent = new Intent(context, GalleryActivity.class);
-                LogUtility.d(galleries.get(0).toString());
+                LogUtility.download(galleries.get(0).toString());
                 intent.putExtra(context.getPackageName() + ".GALLERY", galleries.get(0));
                 context.runOnUiThread(() -> context.startActivity(intent));
             }
@@ -176,9 +176,9 @@ public class ListAdapter extends RecyclerView.Adapter<GenericAdapter.ViewHolder>
         for (GenericGallery g : galleries) {
             mDataset.add((SimpleGallery) g);
 
-            LogUtility.d("Simple: " + g);
+            LogUtility.download("Simple: " + g);
         }
-        LogUtility.d(String.format(Locale.US, "%s,old:%d,new:%d,len%d", this, c, mDataset.size(), galleries.size()));
+        LogUtility.download(String.format(Locale.US, "%s,old:%d,new:%d,len%d", this, c, mDataset.size(), galleries.size()));
         context.runOnUiThread(() -> notifyItemRangeInserted(c, galleries.size()));
     }
 

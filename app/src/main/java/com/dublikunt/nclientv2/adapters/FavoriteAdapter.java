@@ -108,7 +108,7 @@ public class FavoriteAdapter extends RecyclerView.Adapter<GenericAdapter.ViewHol
 
     private void startGallery(Gallery ent) {
         Intent intent = new Intent(activity, GalleryActivity.class);
-        LogUtility.d(ent + "");
+        LogUtility.download(ent + "");
         intent.putExtra(activity.getPackageName() + ".GALLERY", ent);
         intent.putExtra(activity.getPackageName() + ".UNKNOWN", true);
         activity.startActivity(intent);
@@ -138,17 +138,17 @@ public class FavoriteAdapter extends RecyclerView.Adapter<GenericAdapter.ViewHol
             protected FilterResults performFiltering(CharSequence constraint) {
                 constraint = constraint.toString().toLowerCase(Locale.US);
                 if ((!force && lastQuery.equals(constraint))) return null;
-                LogUtility.d("FILTERING");
+                LogUtility.download("FILTERING");
                 setRefresh(true);
                 FilterResults results = new FilterResults();
                 lastQuery = constraint.toString();
-                LogUtility.d(lastQuery + "LASTQERY");
+                LogUtility.download(lastQuery + "LASTQERY");
                 force = false;
                 Cursor c = Queries.FavoriteTable.getAllFavoriteGalleriesCursor(lastQuery, sortByTitle, perPage, (activity.getActualPage() - 1) * perPage);
                 results.count = c.getCount();
                 results.values = c;
-                LogUtility.d("FILTERING3");
-                LogUtility.e(results.count + ";" + results.values);
+                LogUtility.download("FILTERING3");
+                LogUtility.INSTANCE.error(results.count + ";" + results.values);
                 setRefresh(false);
                 return results;
             }
@@ -157,7 +157,7 @@ public class FavoriteAdapter extends RecyclerView.Adapter<GenericAdapter.ViewHol
             protected void publishResults(CharSequence constraint, FilterResults results) {
                 if (results == null) return;
                 setRefresh(true);
-                LogUtility.d("After called2");
+                LogUtility.download("After called2");
                 final int oldSize = getItemCount(), newSize = results.count;
                 updateCursor((Cursor) results.values);
                 //not in runOnUIThread because is always executed on UI

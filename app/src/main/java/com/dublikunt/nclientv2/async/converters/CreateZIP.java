@@ -76,7 +76,7 @@ public class CreateZIP extends JobIntentService {
             out.close();
             postExecute(true, gallery, null, file);
         } catch (IOException e) {
-            LogUtility.e(e.getLocalizedMessage(), e);
+            LogUtility.INSTANCE.error(e.getLocalizedMessage(), e);
             postExecute(false, gallery, e.getLocalizedMessage(), null);
         }
 
@@ -115,7 +115,7 @@ public class CreateZIP extends JobIntentService {
             } else {
                 notification.setContentIntent(PendingIntent.getActivity(getApplicationContext(), 0, i, 0));
             }
-            LogUtility.d(apkURI.toString());
+            LogUtility.download(apkURI.toString());
         } catch (IllegalArgumentException ignore) {//sometimes the uri isn't available
 
         }

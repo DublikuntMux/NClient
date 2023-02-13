@@ -119,7 +119,7 @@ public class GalleryDownloaderV2 {
     private void onEnd() {
         setStatus(Status.FINISHED);
         for (DownloadObserver observer : observers) observer.triggerEndDownload(this);
-        LogUtility.d("Delete 75: " + id);
+        LogUtility.download("Delete 75: " + id);
         Queries.DownloadTable.removeGallery(id);
     }
 
@@ -190,7 +190,7 @@ public class GalleryDownloaderV2 {
                 setGallery(g);
             return g.isValid();
         } catch (Exception e) {
-            LogUtility.e("Error while downloading", e);
+            LogUtility.INSTANCE.error("Error while downloading", e);
             return false;
         }
     }
@@ -211,7 +211,7 @@ public class GalleryDownloaderV2 {
         if (this.status == status) return;
         this.status = status;
         if (status == Status.CANCELED) {
-            LogUtility.d("Delete 95: " + id);
+            LogUtility.download("Delete 95: " + id);
             onCancel();
             Global.recursiveDelete(folder);
             Queries.DownloadTable.removeGallery(id);
@@ -260,7 +260,7 @@ public class GalleryDownloaderV2 {
     private boolean savePage(PageContainer page) {
         if (page == null) return true;
         File filePath = new File(folder, page.getPageName());
-        LogUtility.d("Saving into: " + filePath + "," + page.url);
+        LogUtility.download("Saving into: " + filePath + "," + page.url);
         if (filePath.exists() && !isCorrupted(filePath)) return true;
         try {
             Response r = Global.getClient(context).newCall(new Request.Builder().url(page.url).build()).execute();
@@ -283,7 +283,7 @@ public class GalleryDownloaderV2 {
             }
             return true;
         } catch (IOException | NumberFormatException e) {
-            LogUtility.e(e, e);
+            LogUtility.INSTANCE.error(e, e);
         }
         return false;
     }
@@ -333,7 +333,7 @@ public class GalleryDownloaderV2 {
 
     private void writeNoMedia() throws IOException {
         File nomedia = new File(folder, ".nomedia");
-        LogUtility.d("NOMEDIA: " + nomedia + " for id " + id);
+        LogUtility.download("NOMEDIA: " + nomedia + " for id " + id);
         FileWriter writer = new FileWriter(nomedia);
         gallery.jsonWrite(writer);
         writer.close();

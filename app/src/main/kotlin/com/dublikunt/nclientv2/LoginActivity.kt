@@ -70,7 +70,7 @@ class LoginActivity : GeneralActivity() {
             do {
                 Utility.threadSleep(100)
                 if (isInterrupted) {
-                    LogUtility.i((if (isCaptcha) "captcha" else "login") + " interrupted")
+                    LogUtility.info((if (isCaptcha) "captcha" else "login") + " interrupted")
                     return
                 }
                 cookies = manager.getCookie(Utility.getBaseUrl())
@@ -87,7 +87,7 @@ class LoginActivity : GeneralActivity() {
                     "sessionid="
                 ))
             )
-            LogUtility.i((if (isCaptcha) "captcha" else "login") + " finish")
+            LogUtility.info((if (isCaptcha) "captcha" else "login") + " finish")
             runOnUiThread { finish() }
         }
 

@@ -137,7 +137,7 @@ public class Exporter {
             } else if (val instanceof Long) {
                 writer.beginObject().name(SharedType.LONG.name()).value((Long) val).endObject();
             } else {
-                LogUtility.e("Missing export class: " + val.getClass().getName());
+                LogUtility.INSTANCE.error("Missing export class: " + val.getClass().getName());
             }
         }
         writer.endObject();

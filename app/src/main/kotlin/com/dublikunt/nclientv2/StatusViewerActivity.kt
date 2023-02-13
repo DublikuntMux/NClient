@@ -67,7 +67,9 @@ class StatusViewerActivity : GeneralActivity() {
 
     private fun getPositionFragment(position: Int): PlaceholderFragment? {
         val f = supportFragmentManager.findFragmentByTag("f$position") as PlaceholderFragment?
-        LogUtility.d(f)
+        if (f != null) {
+            LogUtility.download(f)
+        }
         return f
     }
 

@@ -12,7 +12,7 @@ public class ConnectivityReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(final Context context, final Intent intent) {
-        LogUtility.d("Is online? " + isOnline(context));
+        LogUtility.download("Is online? " + isOnline(context));
     }
 
     public boolean isOnline(Context context) {

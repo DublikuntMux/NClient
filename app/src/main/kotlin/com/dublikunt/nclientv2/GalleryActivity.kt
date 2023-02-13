@@ -56,6 +56,7 @@ class GalleryActivity : BaseActivity() {
     private lateinit var onlineFavoriteItem: MenuItem
     private var statusString: String? = null
     private var newStatusColor = 0
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_gallery)
@@ -76,7 +77,7 @@ class GalleryActivity : BaseActivity() {
         if (gallery.type != GenericGallery.Type.LOCAL) {
             Queries.HistoryTable.addGallery((gallery as Gallery).toSimpleGallery())
         }
-        LogUtility.d("" + gallery)
+        LogUtility.download("" + gallery)
         if (Global.useRtl()) recycler.rotationY = 180f
         isLocal = intent.getBooleanExtra("$packageName.ISLOCAL", false)
         zoom = intent.getIntExtra("$packageName.ZOOM", 0)
@@ -90,7 +91,7 @@ class GalleryActivity : BaseActivity() {
         val data = intent.data
         if (data != null && data.pathSegments.size >= 2) { //if using an URL
             val params = data.pathSegments
-            LogUtility.d(params.size.toString() + ": " + params)
+            LogUtility.download(params.size.toString() + ": " + params)
             val id: Int = try { //if not an id return
                 params[1].toInt()
             } catch (ignore: NumberFormatException) {
@@ -100,7 +101,7 @@ class GalleryActivity : BaseActivity() {
                 zoom = try {
                     params[2].toInt()
                 } catch (e: NumberFormatException) {
-                    LogUtility.e(e.localizedMessage, e)
+                    e.localizedMessage?.let { LogUtility.error(it) }
                     0
                 }
             }
@@ -197,13 +198,12 @@ class GalleryActivity : BaseActivity() {
         actionBar.title = title
     }
 
-    override fun getPortraitColumnCount(): Int {
-        return 0
-    }
 
-    override fun getLandscapeColumnCount(): Int {
-        return 0
-    }
+    override val portraitColumnCount: Int
+        get() { return 0 }
+
+    override val landscapeColumnCount: Int
+        get() { return 0 }
 
     private fun initFavoriteIcon(menu: Menu) {
         val onlineFavorite = !isLocal && (gallery as Gallery).isOnlineFavorite
@@ -428,7 +428,7 @@ class GalleryActivity : BaseActivity() {
             if (wasFavorite) "un" else ""
         )
         val galleryUrl = String.format(Locale.US, Utility.getBaseUrl() + "g/%d/", gallery.id)
-        LogUtility.d("Calling: $url")
+        LogUtility.download("Calling: $url")
         AuthRequest(galleryUrl, url, object : Callback {
             override fun onFailure(call: Call, e: IOException) {}
             @Throws(IOException::class)
@@ -450,7 +450,7 @@ class GalleryActivity : BaseActivity() {
             val pos = manager.findFirstVisibleItemPosition()
             Global.updateColumnCount(this, x)
             recycler.layoutManager = CustomGridLayoutManager(this, x)
-            LogUtility.d("Span count: " + manager.spanCount)
+            LogUtility.download("Span count: " + manager.spanCount)
             adapter.setColCount(Global.getColumnCount())
             recycler.adapter = adapter
             lookup()
@@ -474,7 +474,7 @@ class GalleryActivity : BaseActivity() {
             override fun onSuccess(galleries: List<GenericGallery>) {
                 if (galleries.isEmpty()) return
                 val intent = Intent(this@GalleryActivity, GalleryActivity::class.java)
-                LogUtility.d(galleries[0].toString())
+                LogUtility.download(galleries[0].toString())
                 intent.putExtra("$packageName.GALLERY", galleries[0])
                 runOnUiThread { startActivity(intent) }
             }

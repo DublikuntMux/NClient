@@ -13,7 +13,6 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.SearchView
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.RecyclerView
-import com.dublikunt.nclientv2.MainActivity
 import com.dublikunt.nclientv2.adapters.HistoryAdapter
 import com.dublikunt.nclientv2.api.components.Ranges
 import com.dublikunt.nclientv2.api.components.Tag
@@ -406,7 +405,7 @@ class SearchActivity : GeneralActivity() {
         val name = autoComplete.text.toString().lowercase()
         var tag = Queries.TagTable.searchTag(name, loadedTag)
         if (tag == null) tag = Tag(name, 0, customId++, loadedTag, TagStatus.ACCEPTED)
-        LogUtility.d("CREATED WITH ID: " + tag.id)
+        LogUtility.download("CREATED WITH ID: " + tag.id)
         if (tagAlreadyExist(tag)) return
         //remove add, insert new tag, reinsert add
         if (getGroup(loadedTag) != null) getGroup(loadedTag)!!.removeView(addChip[loadedTag!!.id.toInt()])

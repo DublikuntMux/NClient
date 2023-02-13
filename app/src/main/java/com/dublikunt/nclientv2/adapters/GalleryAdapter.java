@@ -85,7 +85,7 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.ViewHold
         } catch (IllegalArgumentException ignore) {
             directory = null;
         }
-        LogUtility.d("Max maxSize: " + maxSize + ", min maxSize: " + gallery.getMinSize());
+        LogUtility.download("Max maxSize: " + maxSize + ", min maxSize: " + gallery.getMinSize());
     }
 
     public Type positionToType(int pos) {
@@ -103,7 +103,7 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.ViewHold
         if (colCount == 1) policy = Policy.FULL;
         else if (maxSize.getHeight() - minSize.getHeight() < TOLERANCE) policy = Policy.MAX;
         else policy = Policy.PROPORTION;
-        LogUtility.d("NEW POLICY: " + policy);
+        LogUtility.download("NEW POLICY: " + policy);
     }
 
     public GalleryFolder getDirectory() {
@@ -155,7 +155,7 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.ViewHold
     }
 
     private void loadRelatedLayout(ViewHolder holder) {
-        LogUtility.d("Called RElated");
+        LogUtility.download("Called RElated");
         final RecyclerView recyclerView = holder.master.findViewById(R.id.recycler);
         if (gallery.isLocal()) {
             holder.master.setVisibility(View.GONE);
@@ -270,7 +270,7 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.ViewHold
             holder.itemView.post(() -> {//find the max size and apply proportion
                 if (maxImageSize != null) return;
                 int cellWidth = holder.itemView.getWidth();// this will give you cell width dynamically
-                LogUtility.d(String.format(Locale.US, "Setting: %d,%s", cellWidth, maxSize.toString()));
+                LogUtility.download(String.format(Locale.US, "Setting: %d,%s", cellWidth, maxSize.toString()));
                 if (maxSize.getWidth() > 10 && maxSize.getHeight() > 10) {
                     int hei = (maxSize.getHeight() * cellWidth) / maxSize.getWidth();
                     if (hei >= 100)

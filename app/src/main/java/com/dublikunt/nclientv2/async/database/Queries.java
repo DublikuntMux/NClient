@@ -123,7 +123,7 @@ public class Queries {
 
         @NonNull
         public static Cursor getAllFavoriteCursorDeprecated(CharSequence query, boolean online) {
-            LogUtility.i("FILTER IN: " + query + ";;" + online);
+            LogUtility.INSTANCE.info("FILTER IN: " + query + ";;" + online);
             Cursor cursor;
             String sql = "SELECT * FROM " + TABLE_NAME + " WHERE (" +
                 FAVORITE + " =? OR " + FAVORITE + "=3)";
@@ -134,9 +134,9 @@ public class Queries {
                 String q = '%' + query.toString() + '%';
                 cursor = db.rawQuery(sql, new String[]{"" + (online ? 2 : 1), q, q, q});
             } else cursor = db.rawQuery(sql, new String[]{"" + (online ? 2 : 1)});
-            LogUtility.d(sql);
-            LogUtility.d("AFTER FILTERING: " + cursor.getCount());
-            LogUtility.i("END FILTER IN: " + query + ";;" + online);
+            LogUtility.download(sql);
+            LogUtility.download("AFTER FILTERING: " + cursor.getCount());
+            LogUtility.INSTANCE.info("END FILTER IN: " + query + ";;" + online);
             return cursor;
         }
 
@@ -299,7 +299,7 @@ public class Queries {
             list.add("" + TagV2.getMinCount());               //minium tags (always provided)
             if (query.length() > 0) list.add('%' + query + '%');    //query
             if (type != null) list.add("" + type.getId());      //type of the tag
-            LogUtility.d("FILTER URL: " + sql + ", ARGS: " + list);
+            LogUtility.download("FILTER URL: " + sql + ", ARGS: " + list);
             return db.rawQuery(sql.toString(), list.toArray(new String[0]));
         }
 
@@ -490,7 +490,7 @@ public class Queries {
          */
         public static List<Tag> search(String name, TagType type) {
             String query = "SELECT * FROM " + TABLE_NAME + " WHERE " + NAME + " LIKE ? AND " + TYPE + "=?";
-            LogUtility.d(query);
+            LogUtility.download(query);
             Cursor c = db.rawQuery(query, new String[]{'%' + name + '%', "" + type.getId()});
             return getTagsFromCursor(c);
         }
@@ -503,7 +503,7 @@ public class Queries {
         public static Tag searchTag(String name, TagType type) {
             Tag tag = null;
             String query = "SELECT * FROM " + TABLE_NAME + " WHERE " + NAME + " = ? AND " + TYPE + "=?";
-            LogUtility.d(query);
+            LogUtility.download(query);
             Cursor c = db.rawQuery(query, new String[]{name, "" + type.getId()});
             if (c.moveToFirst()) tag = cursorToTag(c);
             c.close();
@@ -644,7 +644,7 @@ public class Queries {
             ");";
 
         public static void deleteBookmark(String url) {
-            LogUtility.d("Deleted: " + db.delete(TABLE_NAME, URL + "=?", new String[]{url}));
+            LogUtility.download("Deleted: " + db.delete(TABLE_NAME, URL + "=?", new String[]{url}));
         }
 
         public static void addBookmark(InspectorV3 inspector) {
@@ -654,7 +654,7 @@ public class Queries {
             values.put(PAGE, inspector.getPage());
             values.put(TYPE, inspector.getRequestType().ordinal());
             values.put(TAG_ID, tag == null ? 0 : tag.getId());
-            LogUtility.d("ADDED: " + inspector.getUrl());
+            LogUtility.download("ADDED: " + inspector.getUrl());
             db.insertWithOnConflict(TABLE_NAME, null, values, SQLiteDatabase.CONFLICT_IGNORE);
         }
 
@@ -663,7 +663,7 @@ public class Queries {
             Cursor cursor = db.rawQuery(query, null);
             List<Bookmark> bookmarks = new ArrayList<>(cursor.getCount());
             Bookmark b;
-            LogUtility.d("This url has " + cursor.getCount());
+            LogUtility.download("This url has " + cursor.getCount());
             if (cursor.moveToFirst()) {
                 do {
                     b = new Bookmark(
@@ -865,7 +865,7 @@ public class Queries {
             values.put(ID_GALLERY, id);
             values.put(PAGE, page);
             db.insertWithOnConflict(TABLE_NAME, null, values, SQLiteDatabase.CONFLICT_REPLACE);
-            LogUtility.d("Added bookmark to page " + page + " of id " + id);
+            LogUtility.download("Added bookmark to page " + page + " of id " + id);
         }
 
         public static int pageFromId(int id) {
@@ -944,14 +944,14 @@ public class Queries {
                 sortByTitle ? FavoriteTable.titleTypeToColumn(Global.getTitleType()) : TIME + " DESC"
             );
             String likeFilter = '%' + filter + '%';
-            LogUtility.d(query);
+            LogUtility.download(query);
             return db.rawQuery(query, new String[]{name, likeFilter, likeFilter, likeFilter});
         }
 
         public static HashMap<String, Integer> getCountsPerStatus() {
             String query = String.format("select %s, count(%s) as count from %s group by %s;",
                 StatusMangaTable.NAME, StatusMangaTable.GALLERY, StatusMangaTable.TABLE_NAME, StatusMangaTable.NAME);
-            LogUtility.d(query);
+            LogUtility.download(query);
 
             Cursor cursor = db.rawQuery(query, null);
             HashMap<String, Integer> counts = new HashMap<>();
@@ -962,7 +962,7 @@ public class Queries {
                     int count = cursor.getInt(1);
                     counts.put(status, count);
                 } catch (Exception e) {
-                    LogUtility.e(e);
+                    LogUtility.INSTANCE.error(e);
                 }
             }
 

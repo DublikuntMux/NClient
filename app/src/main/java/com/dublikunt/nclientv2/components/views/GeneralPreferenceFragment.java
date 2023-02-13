@@ -291,7 +291,7 @@ public class GeneralPreferenceFragment extends PreferenceFragmentCompat {
         String settings = sw.toString();
         writer.close();
 
-        LogUtility.d(settings);
+        LogUtility.download(settings);
         return settings;
     }
 

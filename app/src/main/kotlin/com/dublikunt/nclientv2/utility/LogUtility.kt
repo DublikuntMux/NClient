@@ -1,42 +1,44 @@
-package com.dublikunt.nclientv2.utility;
+package com.dublikunt.nclientv2.utility
 
-import android.util.Log;
+import android.util.Log
 
-import java.util.Arrays;
+object LogUtility {
+    private const val LOGTAG = "NCLIENTLOG"
 
-public class LogUtility {
-    public static final String LOGTAG = "NCLIENTLOG";
-
-    public static void d(Object... message) {
-        if (message == null) return;
-        if (message.length == 1) Log.d(LogUtility.LOGTAG, "" + message[0]);
-        else Log.d(LogUtility.LOGTAG, Arrays.toString(message));
+    @JvmStatic
+    fun download(vararg message: Any) {
+        if (message.size == 1) Log.d(LOGTAG, "" + message[0]) else Log.d(
+            LOGTAG, message.contentToString()
+        )
     }
 
-    public static void d(String message, Throwable throwable) {
-        if (message == null) message = "";
-        Log.d(LogUtility.LOGTAG, message, throwable);
+    fun download(message: String?, throwable: Throwable?) {
+        var message = message
+        if (message == null) message = ""
+        Log.d(LOGTAG, message, throwable)
     }
 
-    public static void i(Object... message) {
-        if (message == null) return;
-        if (message.length == 1) Log.i(LogUtility.LOGTAG, "" + message[0]);
-        else Log.i(LogUtility.LOGTAG, Arrays.toString(message));
+    fun info(vararg message: Any) {
+        if (message.size == 1) Log.i(LOGTAG, "" + message[0]) else Log.i(
+            LOGTAG, message.contentToString()
+        )
     }
 
-    public static void i(String message, Throwable throwable) {
-        if (message == null) message = "";
-        Log.i(LogUtility.LOGTAG, message, throwable);
+    fun info(message: String?, throwable: Throwable?) {
+        var message = message
+        if (message == null) message = ""
+        Log.i(LOGTAG, message, throwable)
     }
 
-    public static void e(Object... message) {
-        if (message == null) return;
-        if (message.length == 1) Log.e(LogUtility.LOGTAG, "" + message[0]);
-        else Log.e(LogUtility.LOGTAG, Arrays.toString(message));
+    fun error(vararg message: Any) {
+        if (message.size == 1) Log.e(LOGTAG, "" + message[0]) else Log.e(
+            LOGTAG, message.contentToString()
+        )
     }
 
-    public static void e(Object message, Throwable throwable) {
-        if (message == null) message = "";
-        Log.e(LogUtility.LOGTAG, message.toString(), throwable);
+    fun error(message: Any?, throwable: Throwable?) {
+        var message = message
+        if (message == null) message = ""
+        Log.e(LOGTAG, message.toString(), throwable)
     }
 }

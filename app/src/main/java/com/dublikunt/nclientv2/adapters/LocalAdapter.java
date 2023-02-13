@@ -112,7 +112,7 @@ public class LocalAdapter extends MultichoiceAdapter<Object, LocalAdapter.ViewHo
             if (l != null) {
                 dataset.remove(l);
                 dataset.add(l);
-                LogUtility.d(l);
+                LogUtility.download(l);
                 sortElements();
             }
             context.runOnUiThread(() -> notifyItemRangeChanged(0, getItemCount()));

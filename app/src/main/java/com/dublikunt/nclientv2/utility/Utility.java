@@ -118,7 +118,7 @@ public class Utility {
             ostream.flush();
             ostream.close();
         } catch (IOException e) {
-            LogUtility.e(e.getLocalizedMessage(), e);
+            LogUtility.INSTANCE.error(e.getLocalizedMessage(), e);
         }
     }
 

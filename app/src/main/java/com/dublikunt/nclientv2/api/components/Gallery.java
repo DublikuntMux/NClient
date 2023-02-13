@@ -42,7 +42,7 @@ public class Gallery extends GenericGallery {
     public static final Creator<Gallery> CREATOR = new Creator<Gallery>() {
         @Override
         public Gallery createFromParcel(Parcel in) {
-            LogUtility.d("Reading to parcel");
+            LogUtility.download("Reading to parcel");
             return new Gallery(in);
         }
 
@@ -61,7 +61,7 @@ public class Gallery extends GenericGallery {
     private Size maxSize = new Size(0, 0), minSize = new Size(Integer.MAX_VALUE, Integer.MAX_VALUE);
 
     public Gallery(Context context, String json, Elements related, boolean isFavorite) throws IOException {
-        LogUtility.d("Found JSON: " + json);
+        LogUtility.download("Found JSON: " + json);
         JsonReader reader = new JsonReader(new StringReader(json));
         this.related = new ArrayList<>(related.size());
         for (Element e : related) this.related.add(new SimpleGallery(context, e));
@@ -81,7 +81,7 @@ public class Gallery extends GenericGallery {
         folder = GalleryFolder.fromId(null, galleryData.getId());
         this.language = loadLanguage(tags);
         onlineFavorite = false;
-        LogUtility.d(toString());
+        LogUtility.download(toString());
     }
 
     private Gallery() {
@@ -285,7 +285,7 @@ public class Gallery extends GenericGallery {
     public boolean hasIgnoredTags(Set<Tag> s) {
         for (Tag t : getTags().getAllTagsSet())
             if (s.contains(t)) {
-                LogUtility.d("Found: " + s + ",," + t.toQueryTag());
+                LogUtility.download("Found: " + s + ",," + t.toQueryTag());
                 return true;
             }
         return false;

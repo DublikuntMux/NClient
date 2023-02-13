@@ -14,6 +14,7 @@ import com.google.android.material.appbar.MaterialToolbar
 
 class HistoryActivity : BaseActivity() {
     lateinit var adapter: ListAdapter
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_bookmark)
@@ -42,13 +43,11 @@ class HistoryActivity : BaseActivity() {
         return super.onOptionsItemSelected(item)
     }
 
-    override fun getPortraitColumnCount(): Int {
-        return Global.getColPortHistory()
-    }
+    override val portraitColumnCount: Int
+        get() { return Global.getColPortHistory() }
 
-    override fun getLandscapeColumnCount(): Int {
-        return Global.getColLandHistory()
-    }
+    override val landscapeColumnCount: Int
+        get() { return Global.getColLandHistory() }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         super.onCreateOptionsMenu(menu)

@@ -63,7 +63,7 @@ public class StatusViewerAdapter extends RecyclerView.Adapter<GenericAdapter.Vie
         holder.layout.setOnClickListener(v -> {
             //Global.setLoadedGallery(ent);
             Intent intent = new Intent(context, GalleryActivity.class);
-            LogUtility.d(ent + "");
+            LogUtility.download(ent + "");
             intent.putExtra(context.getPackageName() + ".GALLERY", ent);
             context.startActivity(intent);
         });
