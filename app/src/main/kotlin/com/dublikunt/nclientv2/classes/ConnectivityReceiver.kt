@@ -1,25 +1,20 @@
-package com.dublikunt.nclientv2.components.classes;
+package com.dublikunt.nclientv2.classes
 
-import android.content.BroadcastReceiver;
-import android.content.Context;
-import android.content.Intent;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
+import android.content.BroadcastReceiver
+import android.content.Context
+import android.content.Intent
+import android.net.ConnectivityManager
+import com.dublikunt.nclientv2.utility.LogUtility.download
 
-import com.dublikunt.nclientv2.utility.LogUtility;
-
-public class ConnectivityReceiver extends BroadcastReceiver {
-
-    @Override
-    public void onReceive(final Context context, final Intent intent) {
-        LogUtility.download("Is online? " + isOnline(context));
+class ConnectivityReceiver : BroadcastReceiver() {
+    override fun onReceive(context: Context, intent: Intent) {
+        download("Is online? " + isOnline(context))
     }
 
-    public boolean isOnline(Context context) {
-
-        ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo netInfo = cm.getActiveNetworkInfo();
+    fun isOnline(context: Context): Boolean {
+        val cm = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        val netInfo = cm.activeNetworkInfo
         //should check null because in airplane mode it will be null
-        return (netInfo != null && netInfo.isConnected());
+        return netInfo != null && netInfo.isConnected
     }
 }

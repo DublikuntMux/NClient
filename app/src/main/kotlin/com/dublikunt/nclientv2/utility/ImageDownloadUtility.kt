@@ -16,7 +16,7 @@ import java.io.File
 object ImageDownloadUtility {
     @JvmStatic
     fun preloadImage(context: Context?, url: Uri) {
-        if (Global.getDownloadPolicy() == Global.DataUsageType.NONE) return
+        if (Global.downloadPolicy == Global.DataUsageType.NONE) return
         val manager = GlideX.with(context)
         LogUtility.download("Requested url glide: $url")
         manager?.load(url)?.preload()
@@ -39,7 +39,7 @@ object ImageDownloadUtility {
     @JvmStatic
     fun loadImageOp(context: Context, view: ImageView, url: Uri?, angle: Int) {
         LogUtility.download("Requested url glide: $url")
-        if (Global.getDownloadPolicy() == Global.DataUsageType.NONE) {
+        if (Global.downloadPolicy == Global.DataUsageType.NONE) {
             loadLogo(view)
             return
         }

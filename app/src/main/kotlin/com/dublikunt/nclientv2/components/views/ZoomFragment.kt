@@ -1,252 +1,250 @@
-package com.dublikunt.nclientv2.components.views;
+package com.dublikunt.nclientv2.components.views
 
-import android.graphics.drawable.Animatable;
-import android.graphics.drawable.Drawable;
-import android.net.Uri;
-import android.os.Bundle;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.ImageButton;
-import android.widget.ImageView;
+import android.graphics.drawable.Animatable
+import android.graphics.drawable.Drawable
+import android.net.Uri
+import android.os.Bundle
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import android.widget.ImageButton
+import android.widget.ImageView
+import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.Fragment
+import com.bumptech.glide.Priority
+import com.bumptech.glide.RequestBuilder
+import com.bumptech.glide.load.DataSource
+import com.bumptech.glide.load.engine.GlideException
+import com.bumptech.glide.load.resource.bitmap.Rotate
+import com.bumptech.glide.load.resource.gif.GifDrawable
+import com.bumptech.glide.request.RequestListener
+import com.bumptech.glide.request.target.ImageViewTarget
+import com.bumptech.glide.request.target.Target
+import com.bumptech.glide.request.transition.Transition
+import com.dublikunt.nclientv2.R
+import com.dublikunt.nclientv2.ZoomActivity
+import com.dublikunt.nclientv2.api.components.Gallery
+import com.dublikunt.nclientv2.api.components.GenericGallery
+import com.dublikunt.nclientv2.components.GlideX.with
+import com.dublikunt.nclientv2.components.photoview.OnPhotoTapListener
+import com.dublikunt.nclientv2.components.photoview.OnScaleChangedListener
+import com.dublikunt.nclientv2.components.photoview.PhotoView
+import com.dublikunt.nclientv2.files.GalleryFolder
+import com.dublikunt.nclientv2.files.PageFile
+import com.dublikunt.nclientv2.settings.Global
+import com.dublikunt.nclientv2.utility.LogUtility.download
+import kotlin.math.floor
+import kotlin.math.max
+import kotlin.math.min
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentActivity;
+class ZoomFragment : Fragment() {
+    private lateinit var photoView: PhotoView
+    private lateinit var retryButton: ImageButton
+    private var pageFile: PageFile? = null
+    private var url: Uri? = null
+    private var degree = 0
+    private var completedDownload = false
+    private var clickListener: View.OnClickListener? = null
+    private var zoomChangeListener: OnZoomChangeListener? = null
+    private lateinit var target: ImageViewTarget<Drawable>
 
-import com.bumptech.glide.Priority;
-import com.bumptech.glide.RequestBuilder;
-import com.bumptech.glide.RequestManager;
-import com.bumptech.glide.load.DataSource;
-import com.bumptech.glide.load.engine.GlideException;
-import com.bumptech.glide.load.resource.bitmap.Rotate;
-import com.bumptech.glide.load.resource.gif.GifDrawable;
-import com.bumptech.glide.request.RequestListener;
-import com.bumptech.glide.request.target.ImageViewTarget;
-import com.bumptech.glide.request.target.Target;
-import com.bumptech.glide.request.transition.Transition;
-import com.dublikunt.nclientv2.R;
-import com.dublikunt.nclientv2.ZoomActivity;
-import com.dublikunt.nclientv2.api.components.Gallery;
-import com.dublikunt.nclientv2.api.components.GenericGallery;
-import com.dublikunt.nclientv2.components.GlideX;
-import com.dublikunt.nclientv2.components.photoview.PhotoView;
-import com.dublikunt.nclientv2.files.GalleryFolder;
-import com.dublikunt.nclientv2.files.PageFile;
-import com.dublikunt.nclientv2.settings.Global;
-import com.dublikunt.nclientv2.utility.LogUtility;
-
-public class ZoomFragment extends Fragment {
-
-    private static final float MAX_SCALE = 4f;
-    private static final float CHANGE_PAGE_THRESHOLD = .2f;
-    private PhotoView photoView = null;
-    private ImageButton retryButton;
-    private PageFile pageFile = null;
-    private Uri url;
-    private int degree = 0;
-    private boolean completedDownload = false;
-    private View.OnClickListener clickListener;
-    private OnZoomChangeListener zoomChangeListener;
-    private ImageViewTarget<Drawable> target = null;
-
-    public ZoomFragment() {
+    fun setClickListener(clickListener: View.OnClickListener?) {
+        this.clickListener = clickListener
     }
 
-    public static ZoomFragment newInstance(GenericGallery gallery, int page, @Nullable GalleryFolder directory) {
-        Bundle args = new Bundle();
-        args.putString("URL", gallery.isLocal() ? null : ((Gallery) gallery).getPageUrl(page).toString());
-        args.putParcelable("FOLDER", directory == null ? null : directory.getPage(page + 1));
-        ZoomFragment fragment = new ZoomFragment();
-        fragment.setArguments(args);
-        return fragment;
+    fun setZoomChangeListener(zoomChangeListener: OnZoomChangeListener?) {
+        this.zoomChangeListener = zoomChangeListener
     }
 
-    private boolean isValueApproximate(final float expectedValue, final float value) {
-        final float errorMargin = 0.05f;
-        return Math.abs(expectedValue - value) < errorMargin;
+    private fun calculateScaleFactor(width: Int, height: Int): Float {
+        val activity = activity
+        if (height < width * 2) return Global.getDefaultZoom()
+        var finalSize = Global.getDeviceWidth(activity as AppCompatActivity?).toFloat() * height /
+                (Global.getDeviceHeight(activity).toFloat() * width)
+        finalSize = max(finalSize, Global.getDefaultZoom())
+        finalSize = min(finalSize, MAX_SCALE)
+        download("Final scale: $finalSize")
+        return floor(finalSize.toDouble()).toFloat()
     }
 
-    public void setClickListener(View.OnClickListener clickListener) {
-        this.clickListener = clickListener;
-    }
-
-    public void setZoomChangeListener(OnZoomChangeListener zoomChangeListener) {
-        this.zoomChangeListener = zoomChangeListener;
-    }
-
-    private float calculateScaleFactor(int width, int height) {
-        FragmentActivity activity = getActivity();
-        if (height < width * 2) return Global.getDefaultZoom();
-        float finalSize =
-            ((float) Global.getDeviceWidth((AppCompatActivity) activity) * height) /
-                ((float) Global.getDeviceHeight((AppCompatActivity) activity) * width);
-        finalSize = Math.max(finalSize, Global.getDefaultZoom());
-        finalSize = Math.min(finalSize, MAX_SCALE);
-        LogUtility.download("Final scale: " + finalSize);
-        return (float) Math.floor(finalSize);
-    }
-
-    @Nullable
-    @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.fragment_zoom, container, false);
-        ZoomActivity activity = (ZoomActivity) getActivity();
-        assert getArguments() != null;
-        assert activity != null;
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        val rootView = inflater.inflate(R.layout.fragment_zoom, container, false)
+        val activity = activity as ZoomActivity?
+        assert(arguments != null)
+        assert(activity != null)
         //find views
-        photoView = rootView.findViewById(R.id.image);
-        retryButton = rootView.findViewById(R.id.imageView);
+        photoView = rootView.findViewById(R.id.image)
+        retryButton = rootView.findViewById(R.id.imageView)
         //read arguments
-        String str = getArguments().getString("URL");
-        url = str == null ? null : Uri.parse(str);
-        pageFile = getArguments().getParcelable("FOLDER");
-        photoView.setAllowParentInterceptOnEdge(true);
-        photoView.setOnPhotoTapListener((view, x, y) -> {
-            boolean prev = x < CHANGE_PAGE_THRESHOLD;
-            boolean next = x > 1f - CHANGE_PAGE_THRESHOLD;
-            if ((prev || next) && Global.isButtonChangePage()) {
-                activity.changeClosePage(next);
-            } else if (clickListener != null) {
-                clickListener.onClick(view);
+        val str = requireArguments().getString("URL")
+        url = if (str == null) null else Uri.parse(str)
+        pageFile = requireArguments().getParcelable("FOLDER")
+        photoView.setAllowParentInterceptOnEdge(true)
+        photoView.setOnPhotoTapListener(object : OnPhotoTapListener {
+            override fun onPhotoTap(view: ImageView?, x: Float, y: Float) {
+                val prev = x < CHANGE_PAGE_THRESHOLD
+                val next = x > 1f - CHANGE_PAGE_THRESHOLD
+                if ((prev || next) && Global.isButtonChangePage) {
+                    activity!!.changeClosePage(next)
+                } else if (clickListener != null) {
+                    clickListener!!.onClick(view)
+                }
+                download(view!!, x, y, prev, next)
             }
-            LogUtility.download(view, x, y, prev, next);
-        });
-
-        photoView.setOnScaleChangeListener((float scaleFactor, float focusX, float focusY) -> {
-            if (this.zoomChangeListener != null) {
-                this.zoomChangeListener.onZoomChange(rootView, photoView.getScale());
+        })
+        photoView.setOnScaleChangeListener(object : OnScaleChangedListener {
+            override fun onScaleChange(scaleFactor: Float, focusX: Float, focusY: Float) {
+                if (zoomChangeListener != null) {
+                    zoomChangeListener!!.onZoomChange(rootView, photoView.scale)
+                }
             }
-        });
-
-        photoView.setMaximumScale(MAX_SCALE);
-        retryButton.setOnClickListener(v -> loadImage());
-        createTarget();
-        loadImage();
-        return rootView;
+        })
+        photoView.maximumScale = MAX_SCALE
+        retryButton.setOnClickListener { loadImage() }
+        createTarget()
+        loadImage()
+        return rootView
     }
 
-    private void createTarget() {
-        target = new ImageViewTarget<Drawable>(photoView) {
-
-            @Override
-            protected void setResource(@Nullable Drawable resource) {
-                photoView.setImageDrawable(resource);
+    private fun createTarget() {
+        target = object : ImageViewTarget<Drawable>(photoView) {
+            override fun setResource(resource: Drawable?) {
+                photoView.setImageDrawable(resource)
             }
 
-            void applyDrawable(ImageView toShow, ImageView toHide, Drawable drawable) {
-                toShow.setVisibility(View.VISIBLE);
-                toHide.setVisibility(View.GONE);
-                toShow.setImageDrawable(drawable);
-                if (toShow instanceof PhotoView)
-                    scalePhoto(drawable);
+            fun applyDrawable(toShow: ImageView?, toHide: ImageView?, drawable: Drawable?) {
+                toShow!!.visibility = View.VISIBLE
+                toHide!!.visibility = View.GONE
+                toShow.setImageDrawable(drawable)
+                if (toShow is PhotoView) scalePhoto(drawable)
             }
 
-            @Override
-            public void onLoadStarted(@Nullable Drawable placeholder) {
-                super.onLoadStarted(placeholder);
-                applyDrawable(photoView, retryButton, placeholder);
+            override fun onLoadStarted(placeholder: Drawable?) {
+                super.onLoadStarted(placeholder)
+                applyDrawable(photoView, retryButton, placeholder)
             }
 
-            @Override
-            public void onLoadFailed(@Nullable Drawable errorDrawable) {
-                super.onLoadFailed(errorDrawable);
-                applyDrawable(retryButton, photoView, errorDrawable);
+            override fun onLoadFailed(errorDrawable: Drawable?) {
+                super.onLoadFailed(errorDrawable)
+                applyDrawable(retryButton, photoView, errorDrawable)
             }
 
-            @Override
-            public void onResourceReady(@NonNull Drawable resource, @Nullable Transition<? super Drawable> transition) {
-                applyDrawable(photoView, retryButton, resource);
-                if (resource instanceof Animatable)
-                    ((GifDrawable) resource).start();
+            override fun onResourceReady(
+                resource: Drawable,
+                transition: Transition<in Drawable?>?
+            ) {
+                applyDrawable(photoView, retryButton, resource)
+                if (resource is Animatable) (resource as GifDrawable).start()
             }
 
-            @Override
-            public void onLoadCleared(@Nullable Drawable placeholder) {
-                super.onLoadCleared(placeholder);
-                applyDrawable(photoView, retryButton, placeholder);
+            override fun onLoadCleared(placeholder: Drawable?) {
+                super.onLoadCleared(placeholder)
+                applyDrawable(photoView, retryButton, placeholder)
             }
-        };
+        }
     }
 
-    private void scalePhoto(Drawable drawable) {
-        photoView.setScale(calculateScaleFactor(
-            drawable.getIntrinsicWidth(),
-            drawable.getIntrinsicHeight()
-        ), 0, 0, false);
+    private fun scalePhoto(drawable: Drawable?) {
+        photoView.setScale(
+            calculateScaleFactor(
+                drawable!!.intrinsicWidth,
+                drawable.intrinsicHeight
+            ), 0f, 0f, false
+        )
     }
 
-    public void loadImage() {
-        loadImage(Priority.NORMAL);
-    }
-
-    public void loadImage(Priority priority) {
-        if (completedDownload) return;
-        cancelRequest();
-        RequestBuilder<Drawable> dra = loadPage();
-        if (dra == null) return;
+    @JvmOverloads
+    fun loadImage(priority: Priority? = Priority.NORMAL) {
+        if (completedDownload) return
+        cancelRequest()
+        val dra = loadPage() ?: return
         dra
-            .transform(new Rotate(degree))
+            .transform(Rotate(degree))
             .placeholder(R.drawable.ic_launcher_foreground)
             .error(R.drawable.ic_refresh)
-            .priority(priority)
-            .addListener(new RequestListener<Drawable>() {
-                @Override
-                public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
-                    return false;
+            .priority(priority!!)
+            .addListener(object : RequestListener<Drawable?> {
+                override fun onLoadFailed(
+                    e: GlideException?,
+                    model: Any,
+                    target: Target<Drawable?>,
+                    isFirstResource: Boolean
+                ): Boolean {
+                    return false
                 }
 
-                @Override
-                public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
-                    completedDownload = true;
-                    return false;
+                override fun onResourceReady(
+                    resource: Drawable?,
+                    model: Any,
+                    target: Target<Drawable?>,
+                    dataSource: DataSource,
+                    isFirstResource: Boolean
+                ): Boolean {
+                    completedDownload = true
+                    return false
                 }
             })
-            .into(target);
+            .into(target)
     }
 
-    @Nullable
-    private RequestBuilder<Drawable> loadPage() {
-        RequestBuilder<Drawable> request;
-        RequestManager glide = GlideX.with(photoView);
-        if (glide == null) return null;
+    private fun loadPage(): RequestBuilder<Drawable>? {
+        val request: RequestBuilder<Drawable>
+        val glide = with(photoView) ?: return null
         if (pageFile != null) {
-            request = glide.load(pageFile);
-            LogUtility.download("Requested file glide: " + pageFile);
+            request = glide.load(pageFile)
+            download("Requested file glide: $pageFile")
         } else {
-            if (url == null) request = glide.load(R.mipmap.ic_launcher);
-            else {
-                LogUtility.download("Requested url glide: " + url);
-                request = glide.load(url);
+            request = if (url == null) glide.load(R.mipmap.ic_launcher) else {
+                download("Requested url glide: $url")
+                glide.load(url)
             }
         }
-        return request;
+        return request
     }
 
-    public Drawable getDrawable() {
-        return photoView.getDrawable();
+    val drawable: Drawable
+        get() = photoView.drawable
+
+    fun cancelRequest() {
+        if (completedDownload) return
+        val manager = with(photoView)
+        manager?.clear(target)
     }
 
-    public void cancelRequest() {
-        if (completedDownload) return;
-        if (photoView != null && target != null) {
-            RequestManager manager = GlideX.with(photoView);
-            if (manager != null) manager.clear(target);
+    private fun updateDegree() {
+        degree = (degree + 270) % 360
+        loadImage()
+    }
+
+    fun rotate() {
+        updateDegree()
+    }
+
+    interface OnZoomChangeListener {
+        fun onZoomChange(v: View?, zoomLevel: Float)
+    }
+
+    companion object {
+        private const val MAX_SCALE = 4f
+        private const val CHANGE_PAGE_THRESHOLD = .2f
+        fun newInstance(
+            gallery: GenericGallery,
+            page: Int,
+            directory: GalleryFolder?
+        ): ZoomFragment {
+            val args = Bundle()
+            args.putString(
+                "URL",
+                if (gallery.isLocal) null else (gallery as Gallery).getPageUrl(page).toString()
+            )
+            args.putParcelable("FOLDER", directory?.getPage(page + 1))
+            val fragment = ZoomFragment()
+            fragment.arguments = args
+            return fragment
         }
-    }
-
-    private void updateDegree() {
-        degree = (degree + 270) % 360;
-        loadImage();
-    }
-
-    public void rotate() {
-        updateDegree();
-    }
-
-    public interface OnZoomChangeListener {
-        void onZoomChange(View v, float zoomLevel);
     }
 }

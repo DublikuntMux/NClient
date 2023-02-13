@@ -50,7 +50,7 @@ class RandomActivity : GeneralActivity() {
         supportActionBar!!.setDisplayHomeAsUpEnabled(true)
         supportActionBar!!.setDisplayShowTitleEnabled(true)
         supportActionBar!!.setTitle(R.string.random_manga)
-        if (loadedGallery != null) loadGallery(loadedGallery)
+        loadedGallery?.let { loadGallery(it) }
         shuffle.setOnClickListener { loader!!.requestGallery() }
         thumbnail.setOnClickListener {
             if (loadedGallery != null) {
@@ -62,7 +62,7 @@ class RandomActivity : GeneralActivity() {
         share.setOnClickListener {
             if (loadedGallery != null) Global.shareGallery(
                 this@RandomActivity,
-                loadedGallery
+                loadedGallery!!
             )
         }
         censor.setOnClickListener { censor.visibility = View.GONE }
@@ -75,7 +75,7 @@ class RandomActivity : GeneralActivity() {
             favoriteUpdateButton()
         }
         val colorStateList =
-            ColorStateList.valueOf(if (Global.getTheme() == Global.ThemeScheme.LIGHT) Color.WHITE else Color.BLACK)
+            ColorStateList.valueOf(if (Global.theme == Global.ThemeScheme.LIGHT) Color.WHITE else Color.BLACK)
         ImageViewCompat.setImageTintList(shuffle, colorStateList)
         ImageViewCompat.setImageTintList(share, colorStateList)
         ImageViewCompat.setImageTintList(favorite, colorStateList)
@@ -92,7 +92,7 @@ class RandomActivity : GeneralActivity() {
         return super.onOptionsItemSelected(item)
     }
 
-    fun loadGallery(gallery: Gallery?) {
+    fun loadGallery(gallery: Gallery) {
         loadedGallery = gallery
         if (Global.isDestroyed(this)) return
         ImageDownloadUtility.loadImage(this, gallery!!.cover, thumbnail)
@@ -119,7 +119,7 @@ class RandomActivity : GeneralActivity() {
     private val onBackPressedCallback: OnBackPressedCallback =
         object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
-                loadedGallery = null
+                loadedGallery
             }
         }
 

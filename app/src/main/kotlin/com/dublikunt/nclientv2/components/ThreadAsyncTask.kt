@@ -1,56 +1,29 @@
-package com.dublikunt.nclientv2.components;
+package com.dublikunt.nclientv2.components
 
-import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatActivity
+import com.dublikunt.nclientv2.settings.Global
 
-import com.dublikunt.nclientv2.settings.Global;
-
-public abstract class ThreadAsyncTask<Params, Progress, Result> {
-
-    private final AppCompatActivity activity;
-
-    public ThreadAsyncTask(AppCompatActivity activity) {
-        this.activity = activity;
-    }
-
+abstract class ThreadAsyncTask<Params, Progress, Result>(private val activity: AppCompatActivity) {
     @SafeVarargs
-    public final void execute(Params... params) {
-        Thread thread = new AsyncThread(params);
-        thread.start();
+    fun execute(vararg params: Params) {
+        val thread: Thread = AsyncThread(params as Array<Params>)
+        thread.start()
     }
 
-    protected void onPreExecute() {
-    }
-
-    protected void onPostExecute(Result result) {
-    }
-
-    protected void onProgressUpdate(Progress... values) {
-    }
-
-    protected abstract Result doInBackground(Params... params);
-
+    protected fun onPreExecute() {}
+    protected open fun onPostExecute(result: Result) {}
+    protected open fun onProgressUpdate(vararg values: Progress) {}
+    protected abstract fun doInBackground(vararg params: Params): Result
     @SafeVarargs
-    protected final void publishProgress(Progress... values) {
-        if (!Global.isDestroyed(activity))
-            activity.runOnUiThread(() -> onProgressUpdate(values));
+    protected fun publishProgress(vararg values: Progress) {
+        if (!Global.isDestroyed(activity)) activity.runOnUiThread { onProgressUpdate(*values) }
     }
 
-    class AsyncThread extends Thread {
-
-        Params[] params;
-
-        AsyncThread(Params[] params) {
-            this.params = params;
-        }
-
-        @Override
-        public void run() {
-            if (!Global.isDestroyed(activity))
-                activity.runOnUiThread(ThreadAsyncTask.this::onPreExecute);
-            Result result = doInBackground(params);
-            if (!Global.isDestroyed(activity))
-                activity.runOnUiThread(() -> onPostExecute(result));
+    internal inner class AsyncThread(var params: Array<Params>) : Thread() {
+        override fun run() {
+            if (!Global.isDestroyed(activity)) activity.runOnUiThread { onPreExecute() }
+            val result = doInBackground(*params)
+            if (!Global.isDestroyed(activity)) activity.runOnUiThread { onPostExecute(result) }
         }
     }
-
 }

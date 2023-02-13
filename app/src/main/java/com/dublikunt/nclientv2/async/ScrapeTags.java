@@ -38,7 +38,7 @@ public class ScrapeTags extends JobIntentService {
     }
 
     private int getNewVersionCode() throws IOException {
-        Response x = Global.getClient(this).newCall(new Request.Builder().url(VERSION).build()).execute();
+        Response x = Global.getClient().newCall(new Request.Builder().url(VERSION).build()).execute();
         ResponseBody body = x.body();
         try {
             int k = Integer.parseInt(body.string().trim());
@@ -77,7 +77,7 @@ public class ScrapeTags extends JobIntentService {
     }
 
     private void fetchTags() throws IOException {
-        Response x = Global.getClient(this).newCall(new Request.Builder().url(TAGS).build()).execute();
+        Response x = Global.getClient().newCall(new Request.Builder().url(TAGS).build()).execute();
         ResponseBody body = x.body();
         JsonReader reader = new JsonReader(body.charStream());
         reader.beginArray();

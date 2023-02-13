@@ -21,7 +21,6 @@ public class CSRFGet extends Thread {
     @Override
     public void run() {
         try {
-            assert Global.getClient() != null;
             okhttp3.Response response = Global.getClient().newCall(new Request.Builder().url(url).build()).execute();
             response.body();
             String token = response.body().string();

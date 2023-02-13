@@ -1,17 +1,19 @@
-package com.dublikunt.nclientv2.components.status;
+package com.dublikunt.nclientv2.components.status
 
-import android.graphics.Color;
+import android.graphics.Color
 
-public class Status {
-    public final int color;
-    public final String name;
+class Status internal constructor(color: Int, name: String) {
+    @JvmField
+    val color: Int
+    @JvmField
+    val name: String
 
-    Status(int color, String name) {
-        this.color = Color.argb(0x7f, Color.red(color), Color.green(color), Color.blue(color));
-        this.name = name;
+    init {
+        this.color = Color.argb(0x7f, Color.red(color), Color.green(color), Color.blue(color))
+        this.name = name
     }
 
-    public int opaqueColor() {
-        return color | 0xff000000;
+    fun opaqueColor(): Int {
+        return color or -0x1000000
     }
 }

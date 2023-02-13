@@ -22,7 +22,6 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 class FavoriteActivity : BaseActivity() {
     private lateinit var adapter: FavoriteAdapter
     private var sortByTitle = false
-    private lateinit var pageSwitcher: PageSwitcher
     private var searchView: SearchView? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -33,7 +32,6 @@ class FavoriteActivity : BaseActivity() {
         supportActionBar!!.setDisplayHomeAsUpEnabled(true)
         supportActionBar!!.setDisplayShowTitleEnabled(true)
         supportActionBar!!.setTitle(R.string.favorite_manga)
-        pageSwitcher = findViewById(R.id.page_switcher)
         recycler = findViewById(R.id.recycler)
         refresher = findViewById(R.id.refresher)
         refresher.isRefreshing = true
@@ -41,29 +39,16 @@ class FavoriteActivity : BaseActivity() {
         refresher.setOnRefreshListener { adapter.forceReload() }
         changeLayout(resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE)
         recycler.adapter = adapter
-        pageSwitcher.setPages(1, 1)
-        pageSwitcher.setChanger(object : DefaultPageChanger() {
-            override fun pageChanged(switcher: PageSwitcher, page: Int) {
-                adapter.changePage()
-            }
-        })
-    }
-
-    val actualPage: Int
-        get() = pageSwitcher.actualPage
-
-    fun changePages(totalPages: Int, actualPages: Int) {
-        pageSwitcher.setPages(totalPages, actualPages)
     }
 
     override val portraitColumnCount: Int
         get() {
-            return Global.getColPortFavorite()
+            return Global.colPortFavorite
         }
 
     override val landscapeColumnCount: Int
         get() {
-            return Global.getColLandFavorite()
+            return Global.colLandFavorite
         }
 
     private fun calculatePages(text: String?): Int {
@@ -78,7 +63,6 @@ class FavoriteActivity : BaseActivity() {
         refresher.isEnabled = true
         refresher.isRefreshing = true
         val query = searchView?.query.toString()
-        pageSwitcher.setTotalPage(calculatePages(query))
         adapter.forceReload()
         super.onResume()
     }
@@ -97,7 +81,6 @@ class FavoriteActivity : BaseActivity() {
             }
 
             override fun onQueryTextChange(newText: String): Boolean {
-                pageSwitcher.setTotalPage(calculatePages(newText))
                 adapter.filter.filter(newText)
                 return true
             }
@@ -144,10 +127,8 @@ class FavoriteActivity : BaseActivity() {
     }
 
     companion object {
-        private const val ENTRY_PER_PAGE = 24
-
         @JvmStatic
         val entryPerPage: Int
-            get() = if (Global.isInfiniteScrollFavorite()) Int.MAX_VALUE else ENTRY_PER_PAGE
+            get() = Int.MAX_VALUE
     }
 }

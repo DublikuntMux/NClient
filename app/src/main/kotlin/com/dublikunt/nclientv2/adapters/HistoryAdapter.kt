@@ -9,7 +9,7 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.RecyclerView
 import com.dublikunt.nclientv2.R
 import com.dublikunt.nclientv2.SearchActivity
-import com.dublikunt.nclientv2.components.classes.History
+import com.dublikunt.nclientv2.classes.History
 import com.dublikunt.nclientv2.settings.Global
 import com.dublikunt.nclientv2.utility.ImageDownloadUtility.loadImage
 
@@ -19,11 +19,14 @@ class HistoryAdapter(private val context: SearchActivity) :
     private var remove = -1
 
     init {
-        if (!Global.isKeepHistory()) context.getSharedPreferences("History", 0).edit().clear()
+        if (!Global.isKeepHistory) context.getSharedPreferences("History", 0).edit().clear()
             .apply()
-        history = if (Global.isKeepHistory()) History.setToList(
-            context.getSharedPreferences("History", 0).getStringSet("history", HashSet())
-        ) else null
+        history = if (Global.isKeepHistory) context.getSharedPreferences("History", 0).getStringSet("history", HashSet())
+            ?.let {
+                History.setToList(
+                    it
+                )
+            } as MutableList<History>? else null
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -71,8 +74,8 @@ class HistoryAdapter(private val context: SearchActivity) :
         return history?.size ?: 0
     }
 
-    fun addHistory(value: String?) {
-        if (!Global.isKeepHistory()) return
+    fun addHistory(value: String) {
+        if (!Global.isKeepHistory) return
         val history = History(value, false)
         val pos = this.history!!.indexOf(history)
         if (pos >= 0) this.history[pos] = history else this.history.add(history)

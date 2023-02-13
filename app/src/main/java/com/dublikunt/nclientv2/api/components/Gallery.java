@@ -18,7 +18,7 @@ import com.dublikunt.nclientv2.api.enums.TagStatus;
 import com.dublikunt.nclientv2.api.enums.TagType;
 import com.dublikunt.nclientv2.api.enums.TitleType;
 import com.dublikunt.nclientv2.async.database.Queries;
-import com.dublikunt.nclientv2.components.classes.Size;
+import com.dublikunt.nclientv2.classes.Size;
 import com.dublikunt.nclientv2.files.GalleryFolder;
 import com.dublikunt.nclientv2.files.PageFile;
 import com.dublikunt.nclientv2.settings.Global;

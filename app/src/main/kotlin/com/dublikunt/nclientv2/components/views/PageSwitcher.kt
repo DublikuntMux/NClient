@@ -1,148 +1,125 @@
-package com.dublikunt.nclientv2.components.views;
+package com.dublikunt.nclientv2.components.views
 
-import android.content.Context;
-import android.util.AttributeSet;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.widget.LinearLayout;
+import android.content.Context
+import android.util.AttributeSet
+import android.view.LayoutInflater
+import android.view.View
+import android.widget.LinearLayout
+import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.AppCompatEditText
+import com.dublikunt.nclientv2.R
+import com.dublikunt.nclientv2.settings.DefaultDialogs
+import com.dublikunt.nclientv2.settings.DefaultDialogs.CustomDialogResults
+import com.google.android.material.button.MaterialButton
+import com.google.android.material.card.MaterialCardView
+import java.util.*
+import kotlin.math.max
+import kotlin.math.min
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.AppCompatEditText;
+class PageSwitcher : MaterialCardView {
+    private var prev: MaterialButton? = null
+    private var next: MaterialButton? = null
+    private var text: AppCompatEditText? = null
+    private var changer: PageChanger? = null
+    private var totalPage = 0
+    var actualPage = 0
 
-import com.dublikunt.nclientv2.R;
-import com.dublikunt.nclientv2.settings.DefaultDialogs;
-import com.google.android.material.button.MaterialButton;
-import com.google.android.material.card.MaterialCardView;
-
-import java.util.Locale;
-
-public class PageSwitcher extends MaterialCardView {
-
-    private MaterialButton prev, next;
-    private AppCompatEditText text;
-    @Nullable
-    private PageChanger changer;
-    private int totalPage;
-    private int actualPage;
-
-    public PageSwitcher(@NonNull Context context) {
-        super(context);
-        init(context);
+    constructor(context: Context) : super(context) {
+        init(context)
     }
 
-
-    public PageSwitcher(@NonNull Context context, @Nullable AttributeSet attrs) {
-        super(context, attrs);
-        init(context);
-        setPages(0, 0);
+    constructor(context: Context, attrs: AttributeSet?) : super(context, attrs) {
+        init(context)
+        setPages(0, 0)
     }
 
-    public PageSwitcher(@NonNull Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
-        super(context, attrs, defStyleAttr);
-        init(context);
+    constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : super(
+        context,
+        attrs,
+        defStyleAttr
+    ) {
+        init(context)
     }
 
-    public void setChanger(@Nullable PageChanger changer) {
-        this.changer = changer;
+    fun setChanger(changer: PageChanger?) {
+        this.changer = changer
     }
 
-    public void setPages(int totalPage, int actualPage) {
-        actualPage = Math.min(totalPage, Math.max(actualPage, 1));
-        boolean pageChanged = this.actualPage != actualPage;
-        if (this.totalPage == totalPage && !pageChanged) return;
-        this.totalPage = totalPage;
-        this.actualPage = actualPage;
-        if (pageChanged && changer != null) changer.pageChanged(this, actualPage);
-        updateViews();
+    fun setPages(totalPage: Int, actualPage: Int) {
+        var actualPage = actualPage
+        actualPage = min(totalPage, max(actualPage, 1))
+        val pageChanged = this.actualPage != actualPage
+        if (this.totalPage == totalPage && !pageChanged) return
+        this.totalPage = totalPage
+        this.actualPage = actualPage
+        if (pageChanged && changer != null) changer!!.pageChanged(this, actualPage)
+        updateViews()
     }
 
-    public void setTotalPage(int totalPage) {
-        setPages(totalPage, actualPage);
+    fun setTotalPage(totalPage: Int) {
+        setPages(totalPage, actualPage)
     }
 
-    private void updateViews() {
-        ((AppCompatActivity) getContext()).runOnUiThread(() -> {
-            setVisibility(totalPage <= 1 ? View.GONE : View.VISIBLE);
-            prev.setAlpha(actualPage > 1 ? 1f : .5f);
-            prev.setEnabled(actualPage > 1);
-            next.setAlpha(actualPage < totalPage ? 1f : .5f);
-            next.setEnabled(actualPage < totalPage);
-            text.setText(String.format(Locale.US, "%d / %d", actualPage, totalPage));
-        });
+    private fun updateViews() {
+        (context as AppCompatActivity).runOnUiThread {
+            visibility = if (totalPage <= 1) GONE else VISIBLE
+            prev!!.alpha = if (actualPage > 1) 1f else .5f
+            prev!!.isEnabled = actualPage > 1
+            next!!.alpha = if (actualPage < totalPage) 1f else .5f
+            next!!.isEnabled = actualPage < totalPage
+            text!!.setText(String.format(Locale.US, "%d / %d", actualPage, totalPage))
+        }
     }
 
-    private void init(Context context) {
-        LinearLayout master = LayoutInflater.from(context).inflate(R.layout.page_switcher, this, true).findViewById(R.id.master_layout);
-        prev = master.findViewById(R.id.prev);
-        next = master.findViewById(R.id.next);
-        text = master.findViewById(R.id.page_index);
-        addViewListeners();
+    private fun init(context: Context) {
+        val master = LayoutInflater.from(context).inflate(R.layout.page_switcher, this, true)
+            .findViewById<LinearLayout>(R.id.master_layout)
+        prev = master.findViewById(R.id.prev)
+        next = master.findViewById(R.id.next)
+        text = master.findViewById(R.id.page_index)
+        addViewListeners()
     }
 
-    private void addViewListeners() {
-        next.setOnClickListener(v -> {
-            if (changer != null) changer.onNextClicked(this);
-        });
-        prev.setOnClickListener(v -> {
-            if (changer != null) changer.onPrevClicked(this);
-        });
-        text.setOnClickListener(v -> loadDialog());
+    private fun addViewListeners() {
+        next!!.setOnClickListener { if (changer != null) changer!!.onNextClicked(this) }
+        prev!!.setOnClickListener { if (changer != null) changer!!.onPrevClicked(this) }
+        text!!.setOnClickListener { loadDialog() }
     }
 
-    public int getActualPage() {
-        return actualPage;
+    fun lastPageReached(): Boolean {
+        return actualPage == totalPage
     }
 
-    public void setActualPage(int actualPage) {
-        setPages(totalPage, actualPage);
-    }
-
-    public boolean lastPageReached() {
-        return actualPage == totalPage;
-    }
-
-    private void loadDialog() {
+    private fun loadDialog() {
         DefaultDialogs.pageChangerDialog(
-            new DefaultDialogs.Builder(getContext())
+            DefaultDialogs.Builder(context)
                 .setActual(actualPage)
                 .setMin(1)
                 .setMax(totalPage)
                 .setTitle(R.string.change_page)
                 .setDrawable(R.drawable.ic_find_in_page)
-                .setDialogs(new DefaultDialogs.CustomDialogResults() {
-                    @Override
-                    public void positive(int actual) {
-                        setActualPage(actual);
+                .setDialogs(object : CustomDialogResults() {
+                    override fun positive(actual: Int) {
+                        actualPage = actual
                     }
                 })
-        );
+        )
     }
 
-
-    public interface PageChanger {
-        void pageChanged(PageSwitcher switcher, int page);
-
-        void onPrevClicked(PageSwitcher switcher);
-
-        void onNextClicked(PageSwitcher switcher);
+    interface PageChanger {
+        fun pageChanged(switcher: PageSwitcher, page: Int)
+        fun onPrevClicked(switcher: PageSwitcher)
+        fun onNextClicked(switcher: PageSwitcher)
     }
 
-    public static class DefaultPageChanger implements PageChanger {
-
-        @Override
-        public void pageChanged(PageSwitcher switcher, int page) {
+    open class DefaultPageChanger : PageChanger {
+        override fun pageChanged(switcher: PageSwitcher, page: Int) {}
+        override fun onPrevClicked(switcher: PageSwitcher) {
+            switcher.actualPage --
         }
 
-        @Override
-        public void onPrevClicked(PageSwitcher switcher) {
-            switcher.setActualPage(switcher.getActualPage() - 1);
-        }
-
-        @Override
-        public void onNextClicked(PageSwitcher switcher) {
-            switcher.setActualPage(switcher.getActualPage() + 1);
+        override fun onNextClicked(switcher: PageSwitcher) {
+            switcher.actualPage ++
         }
     }
 }

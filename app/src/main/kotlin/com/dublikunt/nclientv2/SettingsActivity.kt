@@ -20,6 +20,7 @@ import com.dublikunt.nclientv2.async.database.export.Manager
 import com.dublikunt.nclientv2.components.activities.GeneralActivity
 import com.dublikunt.nclientv2.components.views.GeneralPreferenceFragment
 import com.dublikunt.nclientv2.settings.*
+import com.dublikunt.nclientv2.settings.Global.isExternalStorageManager
 import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import java.io.File
@@ -80,7 +81,7 @@ class SettingsActivity : GeneralActivity() {
                     override fun parseResult(resultCode: Int, intent: Intent?) {
                     }
                 }) {
-                    if (Global.isExternalStorageManager()) {
+                    if (isExternalStorageManager) {
                         fragment.manageCustomPath()
                     }
                 }

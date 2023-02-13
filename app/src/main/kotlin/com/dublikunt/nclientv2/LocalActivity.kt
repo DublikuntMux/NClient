@@ -18,9 +18,9 @@ import com.dublikunt.nclientv2.api.local.LocalSortType
 import com.dublikunt.nclientv2.async.converters.CreatePDF
 import com.dublikunt.nclientv2.async.downloader.GalleryDownloaderV2
 import com.dublikunt.nclientv2.components.activities.BaseActivity
-import com.dublikunt.nclientv2.components.classes.MultichoiceAdapter
-import com.dublikunt.nclientv2.components.classes.MultichoiceAdapter.DefaultMultichoiceListener
-import com.dublikunt.nclientv2.components.classes.MultichoiceAdapter.MultichoiceListener
+import com.dublikunt.nclientv2.classes.MultichoiceAdapter
+import com.dublikunt.nclientv2.classes.MultichoiceAdapter.DefaultMultichoiceListener
+import com.dublikunt.nclientv2.classes.MultichoiceAdapter.MultichoiceListener
 import com.dublikunt.nclientv2.settings.Global
 import com.dublikunt.nclientv2.utility.Utility
 import com.google.android.material.appbar.MaterialToolbar
@@ -185,7 +185,7 @@ class LocalActivity : BaseActivity() {
     }
 
     private fun dialogSortType() {
-        val sortType = Global.getLocalSortType()
+        val sortType = Global.localSortType
         val builder = MaterialAlertDialogBuilder(this)
         val view = LayoutInflater.from(this)
             .inflate(R.layout.local_sort_type, toolbar, false) as LinearLayout
@@ -210,12 +210,12 @@ class LocalActivity : BaseActivity() {
 
     override val portraitColumnCount: Int
         get() {
-            return Global.getColPortDownload()
+            return Global.colPortDownload
         }
 
     override val landscapeColumnCount: Int
         get() {
-            return Global.getColLandDownload()
+            return Global.colLandDownload
         }
 
     val query: String

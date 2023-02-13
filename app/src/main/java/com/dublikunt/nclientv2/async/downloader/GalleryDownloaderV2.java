@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.regex.Pattern;
 
@@ -263,12 +264,11 @@ public class GalleryDownloaderV2 {
         LogUtility.download("Saving into: " + filePath + "," + page.url);
         if (filePath.exists() && !isCorrupted(filePath)) return true;
         try {
-            Response r = Global.getClient(context).newCall(new Request.Builder().url(page.url).build()).execute();
+            Response r = Global.getClient().newCall(new Request.Builder().url(page.url).build()).execute();
             if (r.code() != 200) {
                 r.close();
                 return false;
             }
-            assert r.body() != null;
             long expectedSize = Integer.parseInt(r.header("Content-Length", "-1"));
             long len = r.body().contentLength();
             if (len < 0 || expectedSize != len) {
@@ -347,7 +347,7 @@ public class GalleryDownloaderV2 {
         GalleryDownloaderV2 that = (GalleryDownloaderV2) o;
 
         if (id != that.id) return false;
-        return folder != null ? folder.equals(that.folder) : that.folder == null;
+        return Objects.equals(folder, that.folder);
     }
 
     @Override

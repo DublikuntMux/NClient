@@ -28,7 +28,7 @@ import com.dublikunt.nclientv2.async.downloader.DownloadGalleryV2;
 import com.dublikunt.nclientv2.async.downloader.DownloadObserver;
 import com.dublikunt.nclientv2.async.downloader.DownloadQueue;
 import com.dublikunt.nclientv2.async.downloader.GalleryDownloaderV2;
-import com.dublikunt.nclientv2.components.classes.MultichoiceAdapter;
+import com.dublikunt.nclientv2.classes.MultichoiceAdapter;
 import com.dublikunt.nclientv2.settings.Global;
 import com.dublikunt.nclientv2.utility.ImageDownloadUtility;
 import com.dublikunt.nclientv2.utility.LogUtility;

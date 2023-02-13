@@ -12,7 +12,7 @@ import com.dublikunt.nclientv2.components.status.StatusManager
  */
 class SectionsPagerAdapter(context: StatusViewerActivity) :
     FragmentStateAdapter(context.supportFragmentManager, context.lifecycle) {
-    private var statuses: List<String> = StatusManager.getNames()
+    private var statuses: List<String> = StatusManager.names
     private var counts: HashMap<String, Int> = Queries.StatusMangaTable.getCountsPerStatus()
 
     fun getPageTitle(position: Int): CharSequence? {

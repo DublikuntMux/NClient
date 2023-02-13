@@ -20,7 +20,7 @@ import java.util.*
 class LoadTags(private val adapter: TagsAdapter?) : Thread() {
     @Throws(IOException::class)
     private fun getScripts(url: String): Elements {
-        val response = Global.getClient()!!
+        val response = Global.client!!
             .newCall(Request.Builder().url(url).build()).execute()
         val x = Jsoup.parse(response.body.byteStream(), null, Utility.getBaseUrl())
             .getElementsByTag("script")

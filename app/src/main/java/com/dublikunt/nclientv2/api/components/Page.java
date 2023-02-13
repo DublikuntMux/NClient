@@ -7,7 +7,7 @@ import android.util.JsonToken;
 
 import com.dublikunt.nclientv2.api.enums.ImageExt;
 import com.dublikunt.nclientv2.api.enums.ImageType;
-import com.dublikunt.nclientv2.components.classes.Size;
+import com.dublikunt.nclientv2.classes.Size;
 
 import java.io.IOException;
 

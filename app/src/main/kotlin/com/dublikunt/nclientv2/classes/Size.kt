@@ -1,67 +1,46 @@
-package com.dublikunt.nclientv2.components.classes;
+package com.dublikunt.nclientv2.classes
 
-import android.os.Parcel;
-import android.os.Parcelable;
+import android.os.Parcel
+import android.os.Parcelable
+import android.os.Parcelable.Creator
 
-import androidx.annotation.NonNull;
+open class Size : Parcelable {
+    var width: Int
+    var height: Int
 
-public class Size implements Parcelable {
-    public static final Creator<Size> CREATOR = new Creator<Size>() {
-        @Override
-        public Size createFromParcel(Parcel in) {
-            return new Size(in);
-        }
-
-        @Override
-        public Size[] newArray(int size) {
-            return new Size[size];
-        }
-    };
-    private int width, height;
-
-    public Size(int width, int height) {
-        this.width = width;
-        this.height = height;
+    constructor(width: Int, height: Int) {
+        this.width = width
+        this.height = height
     }
 
-    protected Size(Parcel in) {
-        width = in.readInt();
-        height = in.readInt();
+    protected constructor(`in`: Parcel) {
+        width = `in`.readInt()
+        height = `in`.readInt()
     }
 
-    public int getWidth() {
-        return width;
+    override fun describeContents(): Int {
+        return 0
     }
 
-    public void setWidth(int width) {
-        this.width = width;
+    override fun writeToParcel(dest: Parcel, flags: Int) {
+        dest.writeInt(width)
+        dest.writeInt(height)
     }
 
-    public int getHeight() {
-        return height;
-    }
-
-    public void setHeight(int height) {
-        this.height = height;
-    }
-
-    @Override
-    public int describeContents() {
-        return 0;
-    }
-
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeInt(width);
-        dest.writeInt(height);
-    }
-
-    @NonNull
-    @Override
-    public String toString() {
+    override fun toString(): String {
         return "Size{" +
-            "width=" + width +
-            ", height=" + height +
-            '}';
+                "width=" + width +
+                ", height=" + height +
+                '}'
+    }
+
+    companion object CREATOR : Creator<Size> {
+        override fun createFromParcel(parcel: Parcel): Size {
+            return Size(parcel)
+        }
+
+        override fun newArray(size: Int): Array<Size?> {
+            return arrayOfNulls(size)
+        }
     }
 }

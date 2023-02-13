@@ -1,33 +1,28 @@
-package com.dublikunt.nclientv2.components.widgets;
+package com.dublikunt.nclientv2.components.widgets
 
-import android.content.Context;
-import android.util.AttributeSet;
+import android.content.Context
+import android.util.AttributeSet
+import android.view.KeyEvent
+import android.widget.TextView
+import androidx.appcompat.widget.SearchView
 
-import androidx.appcompat.widget.SearchView;
+class CustomSearchView : SearchView {
+    constructor(context: Context?) : super(context!!)
+    constructor(context: Context?, attrs: AttributeSet?) : super(
+        context!!, attrs
+    )
 
-public class CustomSearchView extends SearchView {
+    constructor(context: Context?, attrs: AttributeSet?, defStyleAttr: Int) : super(
+        context!!, attrs, defStyleAttr
+    )
 
-    public CustomSearchView(Context context) {
-        super(context);
-    }
-
-    public CustomSearchView(Context context, AttributeSet attrs) {
-        super(context, attrs);
-    }
-
-    public CustomSearchView(Context context, AttributeSet attrs, int defStyleAttr) {
-        super(context, attrs, defStyleAttr);
-    }
-
-    @Override
-    public void setOnQueryTextListener(OnQueryTextListener listener) {
-        super.setOnQueryTextListener(listener);
-        SearchAutoComplete mSearchSrcTextView = this.findViewById(androidx.appcompat.R.id.search_src_text);
-        mSearchSrcTextView.setOnEditorActionListener((textView, i, keyEvent) -> {
-            if (listener != null) {
-                listener.onQueryTextSubmit(getQuery().toString());
-            }
-            return true;
-        });
+    override fun setOnQueryTextListener(listener: OnQueryTextListener) {
+        super.setOnQueryTextListener(listener)
+        val mSearchSrcTextView =
+            findViewById<SearchAutoComplete>(androidx.appcompat.R.id.search_src_text)
+        mSearchSrcTextView.setOnEditorActionListener { _: TextView?, _: Int, _: KeyEvent? ->
+            listener.onQueryTextSubmit(query.toString())
+            true
+        }
     }
 }

@@ -30,9 +30,9 @@ class User private constructor(val username: String, id: String, codename: Strin
     companion object {
         @JvmStatic
         fun createUser(createUser: CreateUser?) {
-            Global.getClient()!!
-                .newCall(Request.Builder().url(Login.BASE_HTTP_URL).build())
-                .enqueue(object : Callback {
+            Global.client
+                ?.newCall(Request.Builder().url(Login.BASE_HTTP_URL).build())
+                ?.enqueue(object : Callback {
                     override fun onFailure(call: Call, e: IOException) {}
 
                     @Throws(IOException::class)

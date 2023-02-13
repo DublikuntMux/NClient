@@ -1,58 +1,49 @@
-package com.dublikunt.nclientv2.components.classes;
+package com.dublikunt.nclientv2.classes
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*
 
-public class History {
-    private final String value;
-    private final Date date;
+class History(value: String, set: Boolean) {
+    val value: String
+    private var date: Date
 
-    public History(String value, boolean set) {
+    init {
         if (set) {
-            int p = value.indexOf('|');
-            date = new Date(Long.parseLong(value.substring(0, p)));
-            this.value = value.substring(p + 1);
+            val p = value.indexOf('|')
+            date = Date(value.substring(0, p).toLong())
+            this.value = value.substring(p + 1)
         } else {
-            this.value = value;
-            this.date = new Date();
+            this.value = value
+            date = Date()
         }
     }
 
-    public static List<History> setToList(Set<String> set) {
-        List<History> h = new ArrayList<>(set.size());
-        for (String s : set) h.add(new History(s, true));
-        h.sort((o2, o1) -> {
-            int o = o1.date.compareTo(o2.date);
-            if (o == 0) o = o1.value.compareTo(o2.value);
-            return o;
-        });
-
-        return h;
+    override fun equals(o: Any?): Boolean {
+        if (this === o) return true
+        if (o == null || javaClass != o.javaClass) return false
+        val history = o as History
+        return value == history.value
     }
 
-    public static Set<String> listToSet(List<History> list) {
-        HashSet<String> s = new HashSet<>(list.size());
-        for (History h : list) s.add(h.date.getTime() + "|" + h.value);
-        return s;
+    override fun hashCode(): Int {
+        return value.hashCode()
     }
 
-    public String getValue() {
-        return value;
-    }
+    companion object {
+        fun setToList(set: Set<String>): List<History> {
+            val h: MutableList<History> = ArrayList(set.size)
+            for (s in set) h.add(History(s, true))
+            h.sortWith { o2: History, o1: History ->
+                var o = o1.date!!.compareTo(o2.date)
+                if (o == 0) o = o1.value!!.compareTo(o2.value!!)
+                o
+            }
+            return h
+        }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        History history = (History) o;
-        return value.equals(history.value);
-    }
-
-    @Override
-    public int hashCode() {
-        return value.hashCode();
+        fun listToSet(list: List<History>): Set<String> {
+            val s = HashSet<String>(list.size)
+            for (h in list) s.add(h.date!!.time.toString() + "|" + h.value)
+            return s
+        }
     }
 }

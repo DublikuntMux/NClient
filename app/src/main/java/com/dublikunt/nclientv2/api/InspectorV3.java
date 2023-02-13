@@ -310,7 +310,7 @@ public class InspectorV3 extends Thread implements Parcelable {
 
     public void createDocument() throws IOException {
         if (htmlDocument != null) return;
-        Response response = Global.getClient(context.get()).newCall(new Request.Builder().url(url).build()).execute();
+        Response response = Global.getClient().newCall(new Request.Builder().url(url).build()).execute();
         setHtmlDocument(Jsoup.parse(response.body().byteStream(), "UTF-8", Utility.getBaseUrl()));
         response.close();
     }

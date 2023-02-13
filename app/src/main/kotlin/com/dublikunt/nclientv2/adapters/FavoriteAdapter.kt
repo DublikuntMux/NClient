@@ -133,8 +133,7 @@ class FavoriteAdapter(private val activity: FavoriteActivity) :
                 val c = Queries.FavoriteTable.getAllFavoriteGalleriesCursor(
                     lastQuery,
                     sortByTitle,
-                    perPage,
-                    (activity.actualPage - 1) * perPage
+                    perPage
                 )
                 results.count = c.count
                 results.values = c

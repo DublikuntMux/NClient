@@ -29,7 +29,7 @@ class PINActivity : GeneralActivity() {
             return
         }
         val logo = findViewById<ImageView>(R.id.imageView)
-        logo.setImageResource(if (Global.getTheme() == Global.ThemeScheme.LIGHT) R.drawable.ic_logo_dark else R.drawable.ic_logo)
+        logo.setImageResource(if (Global.theme == Global.ThemeScheme.LIGHT) R.drawable.ic_logo_dark else R.drawable.ic_logo)
         val linear = findViewById<LinearLayout>(R.id.linearLayout)
         text = findViewById(R.id.textView)
         val cancelButton = findViewById<MaterialButton>(R.id.cancelButton)

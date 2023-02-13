@@ -27,7 +27,7 @@ class PlaceholderFragment : Fragment() {
     }
 
     private fun getColumnCount(landscape: Boolean): Int {
-        return if (landscape) Global.getColLandStatus() else Global.getColPortStatus()
+        return if (landscape) Global.colLandStatus else Global.colPortStatus
     }
 
     override fun onConfigurationChanged(newConfig: Configuration) {

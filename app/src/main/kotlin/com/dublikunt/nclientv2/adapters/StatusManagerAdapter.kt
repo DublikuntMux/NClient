@@ -24,7 +24,7 @@ import com.skydoves.colorpickerview.listeners.ColorEnvelopeListener
 
 class StatusManagerAdapter(activity: AppCompatActivity) :
     RecyclerView.Adapter<StatusManagerAdapter.ViewHolder>() {
-    private val statusList: MutableList<Status> = StatusManager.toList()
+    private val statusList: MutableList<Status> = StatusManager.toList() as MutableList<Status>
     private val activity: AppCompatActivity
     private var newColor = 0
 

@@ -30,7 +30,7 @@ public class AuthRequest extends Thread {
 
     @Override
     public void run() {
-        new CSRFGet(token -> Global.client.newCall(new Request.Builder().url(url)
+        new CSRFGet(token -> Global.getClient().newCall(new Request.Builder().url(url)
             .addHeader("Referer", referer)
             .addHeader("X-CSRFToken", token)
             .addHeader("X-Requested-With", "XMLHttpRequest")

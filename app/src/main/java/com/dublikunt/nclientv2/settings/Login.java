@@ -44,12 +44,12 @@ public class Login {
     }
 
     private static void removeCookie() {
-        CustomCookieJar cookieJar = (CustomCookieJar) Global.client.cookieJar();
+        CustomCookieJar cookieJar = (CustomCookieJar) Global.getClient().cookieJar();
         cookieJar.removeCookie(Login.LOGIN_COOKIE);
     }
 
     public static void removeCloudflareCookies() {
-        CustomCookieJar cookieJar = (CustomCookieJar) Global.client.cookieJar();
+        CustomCookieJar cookieJar = (CustomCookieJar) Global.getClient().cookieJar();
         List<Cookie> cookies = cookieJar.loadForRequest(BASE_HTTP_URL);
         for (Cookie cookie : cookies) {
             if (cookie.name().equals(LOGIN_COOKIE)) {
@@ -60,7 +60,7 @@ public class Login {
     }
 
     public static void logout(Context context) {
-        CustomCookieJar cookieJar = (CustomCookieJar) Global.client.cookieJar();
+        CustomCookieJar cookieJar = (CustomCookieJar) Global.getClient().cookieJar();
         removeCookie();
         cookieJar.clearSession();
         updateUser(null);//remove user
@@ -96,7 +96,7 @@ public class Login {
     }
 
     public static boolean hasCookie(String name) {
-        List<Cookie> cookies = Global.client.cookieJar().loadForRequest(BASE_HTTP_URL);
+        List<Cookie> cookies = Global.getClient().cookieJar().loadForRequest(BASE_HTTP_URL);
         for (Cookie c : cookies) {
             if (c.name().equals(name)) {
                 return true;
@@ -106,7 +106,7 @@ public class Login {
     }
 
     public static boolean isLogged(@Nullable Context context) {
-        List<Cookie> cookies = Global.client.cookieJar().loadForRequest(BASE_HTTP_URL);
+        List<Cookie> cookies = Global.getClient().cookieJar().loadForRequest(BASE_HTTP_URL);
         LogUtility.download("Cookies: " + cookies);
         if (hasCookie(LOGIN_COOKIE)) {
             if (user == null) User.createUser(user -> {

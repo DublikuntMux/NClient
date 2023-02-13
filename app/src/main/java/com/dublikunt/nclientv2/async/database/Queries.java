@@ -22,7 +22,7 @@ import com.dublikunt.nclientv2.api.enums.TagType;
 import com.dublikunt.nclientv2.api.enums.TitleType;
 import com.dublikunt.nclientv2.async.downloader.GalleryDownloaderManager;
 import com.dublikunt.nclientv2.async.downloader.GalleryDownloaderV2;
-import com.dublikunt.nclientv2.components.classes.Bookmark;
+import com.dublikunt.nclientv2.classes.Bookmark;
 import com.dublikunt.nclientv2.components.status.Status;
 import com.dublikunt.nclientv2.components.status.StatusManager;
 import com.dublikunt.nclientv2.settings.Global;
@@ -771,10 +771,10 @@ public class Queries {
          * @param orderByTitle true if order by title, false order by latest
          * @return cursor which points to the galleries
          */
-        public static Cursor getAllFavoriteGalleriesCursor(CharSequence query, boolean orderByTitle, int limit, int offset) {
+        public static Cursor getAllFavoriteGalleriesCursor(CharSequence query, boolean orderByTitle, int limit) {
             String order = orderByTitle ? titleTypeToColumn(Global.getTitleType()) : FavoriteTable.TIME + " DESC";
             String param = "%" + query + "%";
-            String limitString = String.format(Locale.US, " %d, %d ", offset, limit);
+            String limitString = String.format(Locale.US, " 0, %d ", limit);
             return db.query(FAVORITE_JOIN_GALLERY, null, TITLE_CLAUSE, new String[]{param, param, param}, null, null, order, limitString);
         }
 

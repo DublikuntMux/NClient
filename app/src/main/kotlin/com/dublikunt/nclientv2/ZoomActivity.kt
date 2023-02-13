@@ -35,8 +35,9 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.textview.MaterialTextView
 import java.io.File
 
+
 class ZoomActivity : GeneralActivity() {
-    private var gallery: GenericGallery? = null
+    private lateinit var gallery: GenericGallery
     private var actualPage = 0
     private var isHidden = false
     private lateinit var mViewPager: ViewPager2
@@ -60,22 +61,22 @@ class ZoomActivity : GeneralActivity() {
         setContentView(R.layout.activity_zoom)
 
         //read arguments
-        gallery = intent.getParcelableExtra("$packageName.GALLERY")
+        gallery = intent.getParcelableExtra("$packageName.GALLERY")!!
         val page = intent.extras!!.getInt("$packageName.PAGE", 1) - 1
-        directory = gallery!!.galleryFolder
+        directory = gallery.galleryFolder
         //toolbar setup
         toolbar = findViewById(R.id.toolbar)
         setSupportActionBar(toolbar)
         supportActionBar!!.setDisplayHomeAsUpEnabled(true)
         supportActionBar!!.setDisplayShowTitleEnabled(true)
-        title = gallery!!.title
+        title = gallery.title
         window.setFlags(
             WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN
                 or WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
             WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN
                 or WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS
         )
-        if (Global.isLockScreen()) window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+        if (Global.isLockScreen) window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
 
 
         //find views
@@ -86,7 +87,7 @@ class ZoomActivity : GeneralActivity() {
             SCROLL_TYPE_KEY,
             ScrollType.HORIZONTAL.ordinal
         )
-        mViewPager.offscreenPageLimit = Global.getOffscreenLimit()
+        mViewPager.offscreenPageLimit = Global.offscreenLimit
         pageSwitcher = findViewById(R.id.page_switcher)
         pageManagerLabel = findViewById(R.id.pages)
         cornerPageViewer = findViewById(R.id.page_text)
@@ -95,10 +96,10 @@ class ZoomActivity : GeneralActivity() {
 
         //initial setup for views
         changeLayout(resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE)
-        mViewPager.keepScreenOn = Global.isLockScreen()
+        mViewPager.keepScreenOn = Global.isLockScreen
         findViewById<View>(R.id.prev).setOnClickListener { v: View? -> changeClosePage(false) }
         findViewById<View>(R.id.next).setOnClickListener { v: View? -> changeClosePage(true) }
-        seekBar.max = gallery!!.pageCount - 1
+        seekBar.max = gallery.pageCount - 1
         if (Global.useRtl()) {
             seekBar.rotationY = 180f
             mViewPager.layoutDirection = ViewPager2.LAYOUT_DIRECTION_RTL
@@ -121,7 +122,7 @@ class ZoomActivity : GeneralActivity() {
                 DefaultDialogs.Builder(this)
                     .setActual(actualPage + 1)
                     .setMin(1)
-                    .setMax(gallery!!.pageCount)
+                    .setMax(gallery.pageCount)
                     .setTitle(R.string.change_page)
                     .setDrawable(R.drawable.ic_find_in_page)
                     .setDialogs(object : CustomDialogResults() {
@@ -153,8 +154,8 @@ class ZoomActivity : GeneralActivity() {
     }
 
     private fun setPageText(page: Int) {
-        pageManagerLabel.text = getString(R.string.page_format, page, gallery!!.pageCount)
-        cornerPageViewer.text = getString(R.string.page_format, page, gallery!!.pageCount)
+        pageManagerLabel.text = getString(R.string.page_format, page, gallery.pageCount)
+        cornerPageViewer.text = getString(R.string.page_format, page, gallery.pageCount)
     }
 
     override fun onKeyUp(keyCode: Int, event: KeyEvent): Boolean {
@@ -282,12 +283,12 @@ class ZoomActivity : GeneralActivity() {
                 downloadPage()
             } else requestStorage()
         } else if (id == R.id.share) {
-            if (gallery!!.id <= 0) sendImage(false) else openSendImageDialog()
+            if (gallery.id <= 0) sendImage(false) else openSendImageDialog()
         } else if (id == android.R.id.home) {
             finish()
             return true
         } else if (id == R.id.bookmark) {
-            Queries.ResumeTable.insert(gallery!!.id, actualPage + 1)
+            Queries.ResumeTable.insert(gallery.id, actualPage + 1)
         } else if (id == R.id.scrollType) {
             changeScrollTypeDialog()
         }
@@ -335,7 +336,7 @@ class ZoomActivity : GeneralActivity() {
 
     private fun makeNearRequests(newPage: Int) {
         var fragment: ZoomFragment?
-        val offScreenLimit = Global.getOffscreenLimit()
+        val offScreenLimit = Global.offscreenLimit
         for (i in newPage - offScreenLimit..newPage + offScreenLimit) {
             fragment = getActualFragment(i)
             if (fragment == null) continue
@@ -345,7 +346,7 @@ class ZoomActivity : GeneralActivity() {
 
     private fun clearFarRequests(oldPage: Int, newPage: Int) {
         var fragment: ZoomFragment?
-        val offScreenLimit = Global.getOffscreenLimit()
+        val offScreenLimit = Global.offscreenLimit
         for (i in oldPage - offScreenLimit..oldPage + offScreenLimit) {
             if (i >= newPage - offScreenLimit && i <= newPage + offScreenLimit) continue
             fragment = getActualFragment(i)
@@ -363,14 +364,14 @@ class ZoomActivity : GeneralActivity() {
         Utility.sendImage(
             this,
             actualFragment!!.drawable,
-            if (withText) gallery!!.sharePageUrl(pageNum) else null
+            if (withText) gallery.sharePageUrl(pageNum) else null
         )
     }
 
     private fun downloadPage() {
         val output = File(
             Global.SCREENFOLDER,
-            gallery!!.id.toString() + "-" + (mViewPager.currentItem + 1) + ".jpg"
+            gallery.id.toString() + "-" + (mViewPager.currentItem + 1) + ".jpg"
         )
         Utility.saveImage(actualFragment!!.drawable, output)
     }
@@ -415,17 +416,20 @@ class ZoomActivity : GeneralActivity() {
         private var allowScroll = true
         override fun createFragment(position: Int): Fragment {
             val f = ZoomFragment.newInstance(gallery, position, directory)
-            f.setZoomChangeListener { _: View?, zoomLevel: Float ->
-                try {
-                    val Scroll = zoomLevel < 1.1f
-                    if (Scroll != allowScroll) {
-                        setUserInput(!allowScroll)
-                        allowScroll = Scroll
+            f.setZoomChangeListener(object : ZoomFragment.OnZoomChangeListener {
+                override fun onZoomChange(v: View?, zoomLevel: Float) {
+                    try {
+                        val Scroll = zoomLevel < 1.1f
+                        if (Scroll != allowScroll) {
+                            setUserInput(!allowScroll)
+                            allowScroll = Scroll
+                        }
+                    } catch (ignored: Exception) {
                     }
-                } catch (ignored: Exception) {
                 }
-            }
-            f.setClickListener { v: View? ->
+            })
+
+            f.setClickListener {
                 isHidden = !isHidden
                 LogUtility.download("Clicked $isHidden")
                 applyVisibilityFlag()
@@ -435,7 +439,7 @@ class ZoomActivity : GeneralActivity() {
         }
 
         override fun getItemCount(): Int {
-            return gallery!!.pageCount
+            return gallery.pageCount
         }
     }
 

@@ -60,7 +60,7 @@ class GalleryActivity : BaseActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_gallery)
-        if (Global.isLockScreen()) window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+        if (Global.isLockScreen) window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         toolbar = findViewById(R.id.toolbar)
         setSupportActionBar(toolbar)
         supportActionBar!!.setDisplayHomeAsUpEnabled(true)
@@ -83,7 +83,7 @@ class GalleryActivity : BaseActivity() {
         zoom = intent.getIntExtra("$packageName.ZOOM", 0)
         refresher.isEnabled = false
         recycler.layoutManager =
-            CustomGridLayoutManager(this, Global.getColumnCount())
+            CustomGridLayoutManager(this, Global.columnCount)
         loadGallery(gallery, zoom) //if already has gallery
     }
 
@@ -136,10 +136,10 @@ class GalleryActivity : BaseActivity() {
         if (supportActionBar != null) {
             applyTitle()
         }
-        adapter = GalleryAdapter(this, gallery, Global.getColumnCount())
+        adapter = GalleryAdapter(this, gallery, Global.columnCount)
         recycler.adapter = adapter
         lookup()
-        if (zoom > 0 && Global.getDownloadPolicy() != Global.DataUsageType.NONE) {
+        if (zoom > 0 && Global.downloadPolicy != Global.DataUsageType.NONE) {
             val intent = Intent(this, ZoomActivity::class.java)
             intent.putExtra("$packageName.GALLERY", gallery)
             intent.putExtra("$packageName.DIRECTORY", adapter.directory)
@@ -161,7 +161,7 @@ class GalleryActivity : BaseActivity() {
         snack.setAction(R.string.resume) { v: View? ->
             Thread(Runnable {
                 runOnUiThread { recycler.scrollToPosition(page) }
-                if (Global.getColumnCount() != 1) return@Runnable
+                if (Global.columnCount != 1) return@Runnable
                 Utility.threadSleep(500)
                 runOnUiThread { recycler.scrollToPosition(page) }
             }).start()
@@ -330,14 +330,15 @@ class GalleryActivity : BaseActivity() {
     }
 
     private fun updateStatus() {
-        val statuses = StatusManager.getNames()
+        val statuses = StatusManager.names
         val builder = MaterialAlertDialogBuilder(this)
         statusString = Queries.StatusMangaTable.getStatus(gallery.id).name
         val adapter: ArrayAdapter<String?> = object :
             ArrayAdapter<String?>(this, android.R.layout.select_dialog_singlechoice, statuses) {
             override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
                 val textView = super.getView(position, convertView, parent) as CheckedTextView
-                textView.setTextColor(StatusManager.getByName(statuses[position]).opaqueColor())
+                StatusManager.getByName(statuses[position])
+                    ?.let { textView.setTextColor(it.opaqueColor()) }
                 return textView
             }
         }
@@ -446,7 +447,7 @@ class GalleryActivity : BaseActivity() {
     }
 
     private fun updateColumnCount(increase: Boolean) {
-        var x = Global.getColumnCount()
+        var x = Global.columnCount
         val manager = recycler.layoutManager as CustomGridLayoutManager? ?: return
         val item =
             (findViewById<View>(R.id.toolbar) as MaterialToolbar).menu.findItem(R.id.change_view)
@@ -456,7 +457,7 @@ class GalleryActivity : BaseActivity() {
             Global.updateColumnCount(this, x)
             recycler.layoutManager = CustomGridLayoutManager(this, x)
             LogUtility.download("Span count: " + manager.spanCount)
-            adapter.setColCount(Global.getColumnCount())
+            adapter.setColCount(Global.columnCount)
             recycler.adapter = adapter
             lookup()
             recycler.scrollToPosition(pos)

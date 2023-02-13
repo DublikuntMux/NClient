@@ -4,7 +4,7 @@ import android.os.Parcelable;
 
 import androidx.annotation.NonNull;
 
-import com.dublikunt.nclientv2.components.classes.Size;
+import com.dublikunt.nclientv2.classes.Size;
 import com.dublikunt.nclientv2.files.GalleryFolder;
 import com.dublikunt.nclientv2.utility.Utility;
 

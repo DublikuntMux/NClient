@@ -1,224 +1,165 @@
-package com.dublikunt.nclientv2.components.classes;
+package com.dublikunt.nclientv2.classes
 
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.ImageView;
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import android.view.ViewGroup.MarginLayoutParams
+import android.widget.ImageView
+import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.recyclerview.widget.RecyclerView
+import com.dublikunt.nclientv2.R
+import com.dublikunt.nclientv2.classes.MultichoiceAdapter.MultichoiceViewHolder
+import com.dublikunt.nclientv2.utility.LogUtility.download
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.constraintlayout.widget.ConstraintLayout;
-import androidx.recyclerview.widget.RecyclerView;
-
-import com.dublikunt.nclientv2.R;
-import com.dublikunt.nclientv2.utility.LogUtility;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-
-public abstract class MultichoiceAdapter<D, T extends RecyclerView.ViewHolder> extends RecyclerView.Adapter<MultichoiceAdapter.MultichoiceViewHolder<T>> {
-    private final List<MultichoiceListener> listeners = new ArrayList<>(3);
-    private Mode mode = Mode.NORMAL;
-    private final HashMap<Long, D> map = new HashMap<Long, D>() {
-        @Nullable
-        @Override
-        public D put(Long key, D value) {
-            D res = super.put(key, value);
-            if (size() == 1) startSelecting();
-            changeSelecting();
-            return res;
+abstract class MultichoiceAdapter<D, T : RecyclerView.ViewHolder?> :
+    RecyclerView.Adapter<MultichoiceViewHolder<T>>() {
+    private val listeners: MutableList<MultichoiceListener> = ArrayList(3)
+    var mode = Mode.NORMAL
+        private set
+    private val map: HashMap<Long, D> = object : HashMap<Long, D>() {
+        override fun put(key: Long, value: D): D? {
+            val res = super.put(key, value)
+            if (size == 1) startSelecting()
+            changeSelecting()
+            return res
         }
 
-        @Nullable
-        @Override
-        public D remove(@Nullable Object key) {
-            D res = super.remove(key);
-            if (isEmpty()) endSelecting();
-            changeSelecting();
-            return res;
+        override fun remove(key: Long): D? {
+            val res = super.remove(key)
+            if (isEmpty()) endSelecting()
+            changeSelecting()
+            return res
         }
 
-        @Override
-        public void clear() {
-            super.clear();
-            endSelecting();
-            changeSelecting();
+        override fun clear() {
+            super.clear()
+            endSelecting()
+            changeSelecting()
         }
-    };
-
-    public MultichoiceAdapter() {
-        setHasStableIds(true);
     }
 
-    private void changeSelecting() {
-        for (MultichoiceListener listener : listeners)
-            listener.choiceChanged();
+    init {
+        setHasStableIds(true)
+    }
+
+    private fun changeSelecting() {
+        for (listener in listeners) listener.choiceChanged()
     }
 
     /**
      * Used only to do a put
      */
-    protected abstract D getItemAt(int position);
-
-    protected abstract ViewGroup getMaster(T holder);
-
-    protected abstract void defaultMasterAction(int position);
-
-    protected abstract void onBindMultichoiceViewHolder(T holder, int position);
-
-    @NonNull
-    protected abstract T onCreateMultichoiceViewHolder(@NonNull ViewGroup parent, int viewType);
-
-    @Override
-    public abstract long getItemId(int position);
-
-    private void startSelecting() {
-        setMode(Mode.SELECTING);
-        for (MultichoiceListener listener : listeners)
-            listener.firstChoice();
+    protected abstract fun getItemAt(position: Int): D
+    protected abstract fun getMaster(holder: T): ViewGroup
+    protected abstract fun defaultMasterAction(position: Int)
+    protected abstract fun onBindMultichoiceViewHolder(holder: T, position: Int)
+    protected abstract fun onCreateMultichoiceViewHolder(parent: ViewGroup, viewType: Int): T
+    abstract override fun getItemId(position: Int): Long
+    private fun startSelecting() {
+        mode = Mode.SELECTING
+        for (listener in listeners) listener.firstChoice()
     }
 
-    private void endSelecting() {
-        setMode(Mode.NORMAL);
-        for (MultichoiceListener listener : listeners)
-            listener.noMoreChoices();
+    private fun endSelecting() {
+        mode = Mode.NORMAL
+        for (listener in listeners) listener.noMoreChoices()
     }
 
-    public void addListener(MultichoiceListener listener) {
-        this.listeners.add(listener);
+    fun addListener(listener: MultichoiceListener) {
+        listeners.add(listener)
     }
 
-    @NonNull
-    @Override
-    public final MultichoiceViewHolder<T> onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        T innerLayout = onCreateMultichoiceViewHolder(parent, viewType);
-        ViewGroup master = getMaster(innerLayout);
-        ConstraintLayout multiLayout = (ConstraintLayout) LayoutInflater.from(parent.getContext()).inflate(R.layout.multichoice_adapter, master, true);
-        return new MultichoiceViewHolder<>(multiLayout, innerLayout);
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MultichoiceViewHolder<T> {
+        val innerLayout = onCreateMultichoiceViewHolder(parent, viewType)
+        val master = getMaster(innerLayout)
+        val multiLayout = LayoutInflater.from(parent.context)
+            .inflate(R.layout.multichoice_adapter, master, true) as ConstraintLayout
+        return MultichoiceViewHolder(multiLayout, innerLayout)
     }
 
-    @Override
-    public final void onBindViewHolder(@NonNull MultichoiceViewHolder<T> holder, final int position) {
-        boolean isSelected = map.containsKey(getItemId(holder.getBindingAdapterPosition()));
-        View master = getMaster(holder.innerHolder);
-        updateLayoutParams(master, holder.censor, isSelected);
-        if (master != null) {
-            master.setOnClickListener(v -> {
-                switch (mode) {
-                    case SELECTING:
-                        toggleSelection(holder.getBindingAdapterPosition());
-                        break;
-                    case NORMAL:
-                        defaultMasterAction(holder.getBindingAdapterPosition());
-                        break;
-                }
-            });
-            master.setOnLongClickListener(v -> {
-                map.put(getItemId(holder.getBindingAdapterPosition()), getItemAt(holder.getBindingAdapterPosition()));
-                notifyItemChanged(holder.getBindingAdapterPosition());
-                return true;
-            });
+    override fun onBindViewHolder(holder: MultichoiceViewHolder<T>, position: Int) {
+        val isSelected = map.containsKey(getItemId(holder.bindingAdapterPosition))
+        val master: View = getMaster(holder.innerHolder)
+        updateLayoutParams(master, holder.censor, isSelected)
+        master.setOnClickListener {
+            when (mode) {
+                Mode.SELECTING -> toggleSelection(holder.bindingAdapterPosition)
+                Mode.NORMAL -> defaultMasterAction(holder.bindingAdapterPosition)
+            }
         }
-        holder.censor.setVisibility(isSelected ? View.VISIBLE : View.GONE);
-        holder.checkmark.setVisibility(isSelected ? View.VISIBLE : View.GONE);
-        holder.censor.setOnClickListener(v -> toggleSelection(holder.getBindingAdapterPosition()));
-        onBindMultichoiceViewHolder(holder.innerHolder, holder.getBindingAdapterPosition());
+        master.setOnLongClickListener { v: View? ->
+            map[getItemId(holder.bindingAdapterPosition)] =
+                getItemAt(holder.bindingAdapterPosition)
+            notifyItemChanged(holder.bindingAdapterPosition)
+            true
+        }
+        holder.censor.visibility = if (isSelected) View.VISIBLE else View.GONE
+        holder.checkmark.visibility = if (isSelected) View.VISIBLE else View.GONE
+        holder.censor.setOnClickListener { v: View? -> toggleSelection(holder.bindingAdapterPosition) }
+        onBindMultichoiceViewHolder(holder.innerHolder, holder.bindingAdapterPosition)
     }
 
-    private void updateLayoutParams(View master, View multichoiceHolder, boolean isSelected) {
-        if (master == null) return;
-        int margin = isSelected ? 8 : 0;
-        ViewGroup.MarginLayoutParams params = (ViewGroup.MarginLayoutParams) master.getLayoutParams();
-        params.setMargins(margin, margin, margin, margin);
-        master.setLayoutParams(params);
-
+    private fun updateLayoutParams(master: View?, multichoiceHolder: View?, isSelected: Boolean) {
+        if (master == null) return
+        val margin = if (isSelected) 8 else 0
+        val params = master.layoutParams as MarginLayoutParams
+        params.setMargins(margin, margin, margin, margin)
+        master.layoutParams = params
         if (isSelected && multichoiceHolder != null) {
-            master.post(() -> {
-                ViewGroup.LayoutParams multiParam = multichoiceHolder.getLayoutParams();
-                multiParam.width = master.getWidth();
-                multiParam.height = master.getHeight();
-                LogUtility.download("Multiparam: " + multiParam.width + ", " + multiParam.height);
-                multichoiceHolder.setLayoutParams(multiParam);
-            });
+            master.post(Runnable {
+                val multiParam = multichoiceHolder.layoutParams
+                multiParam.width = master.width
+                multiParam.height = master.height
+                download("Multiparam: " + multiParam.width + ", " + multiParam.height)
+                multichoiceHolder.layoutParams = multiParam
+            })
         }
     }
 
-    private void toggleSelection(int position) {
-        long id = getItemId(position);
-        if (map.containsKey(id))
-            map.remove(id);
-        else
-            map.put(id, getItemAt(position));
-        notifyItemChanged(position);
+    private fun toggleSelection(position: Int) {
+        val id = getItemId(position)
+        if (map.containsKey(id)) map.remove(id) else map[id] = getItemAt(position)
+        notifyItemChanged(position)
     }
 
-    public Mode getMode() {
-        return mode;
+    fun selectAll() {
+        val count = itemCount
+        for (i in 0 until count) map[getItemId(i)] = getItemAt(i)
+        notifyItemRangeChanged(0, count)
     }
 
-    private void setMode(Mode mode) {
-        this.mode = mode;
+    val selected: Collection<D>
+        get() = map.values
+
+    fun deselectAll() {
+        map.clear()
+        notifyItemRangeChanged(0, itemCount)
     }
 
-    public void selectAll() {
-        final int count = getItemCount();
-        for (int i = 0; i < count; i++)
-            map.put(getItemId(i), getItemAt(i));
-        notifyItemRangeChanged(0, count);
+    enum class Mode {
+        NORMAL, SELECTING
     }
 
-    public Collection<D> getSelected() {
-        return map.values();
+    interface MultichoiceListener {
+        fun firstChoice()
+        fun noMoreChoices()
+        fun choiceChanged()
     }
 
-    public void deselectAll() {
-        map.clear();
-        notifyItemRangeChanged(0, getItemCount());
+    open class DefaultMultichoiceListener : MultichoiceListener {
+        override fun firstChoice() {}
+        override fun noMoreChoices() {}
+        override fun choiceChanged() {}
     }
 
-    public enum Mode {NORMAL, SELECTING}
+    class MultichoiceViewHolder<T : RecyclerView.ViewHolder?>(
+        val multichoiceHolder: ConstraintLayout,
+        val innerHolder: T
+    ) : RecyclerView.ViewHolder(
+        innerHolder!!.itemView
+    ) {
+        val censor: View = multichoiceHolder.findViewById(R.id.censor)
+        val checkmark: ImageView = multichoiceHolder.findViewById(R.id.checkmark)
 
-    public interface MultichoiceListener {
-        void firstChoice();
-
-        void noMoreChoices();
-
-        void choiceChanged();
     }
-
-    public static class DefaultMultichoiceListener implements MultichoiceListener {
-
-        @Override
-        public void firstChoice() {
-
-        }
-
-        @Override
-        public void noMoreChoices() {
-
-        }
-
-        @Override
-        public void choiceChanged() {
-
-        }
-    }
-
-    public static class MultichoiceViewHolder<T extends RecyclerView.ViewHolder> extends RecyclerView.ViewHolder {
-        final T innerHolder;
-        final View censor;
-        final ImageView checkmark;
-        final ConstraintLayout multichoiceHolder;
-
-        public MultichoiceViewHolder(@NonNull ConstraintLayout multichoiceHolder, T holder) {
-            super(holder.itemView);
-            this.multichoiceHolder = multichoiceHolder;
-            this.innerHolder = holder;
-            this.censor = multichoiceHolder.findViewById(R.id.censor);
-            this.checkmark = multichoiceHolder.findViewById(R.id.checkmark);
-        }
-    }
-
 }

@@ -11,7 +11,7 @@ import com.dublikunt.nclientv2.BookmarkActivity
 import com.dublikunt.nclientv2.MainActivity
 import com.dublikunt.nclientv2.R
 import com.dublikunt.nclientv2.async.database.Queries
-import com.dublikunt.nclientv2.components.classes.Bookmark
+import com.dublikunt.nclientv2.classes.Bookmark
 import com.dublikunt.nclientv2.utility.IntentUtility.startAnotherActivity
 import com.google.android.material.button.MaterialButton
 

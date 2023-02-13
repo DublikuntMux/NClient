@@ -1,58 +1,58 @@
-package com.dublikunt.nclientv2.components.status;
+package com.dublikunt.nclientv2.components.status
 
-import androidx.annotation.Nullable;
+import com.dublikunt.nclientv2.async.database.Queries
 
-import com.dublikunt.nclientv2.async.database.Queries;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-
-public class StatusManager {
-    public static final String DEFAULT_STATUS = "None";
-    private static final HashMap<String, Status> statusMap = new HashMap<>();
-
-    public static Status getByName(String name) {
-        return statusMap.get(name);
+object StatusManager {
+    const val DEFAULT_STATUS = "None"
+    private val statusMap = HashMap<String, Status>()
+    @JvmStatic
+    fun getByName(name: String): Status? {
+        return statusMap[name]
     }
 
-    public static Status add(String name, int color) {
-        return add(new Status(color, name));
+    @JvmStatic
+    fun add(name: String, color: Int): Status {
+        return add(Status(color, name))
     }
 
-    static Status add(Status status) {
-        Queries.StatusTable.insert(status);
-        statusMap.put(status.name, status);
-        return status;
+    @JvmStatic
+    fun add(status: Status): Status {
+        Queries.StatusTable.insert(status)
+        statusMap[status.name] = status
+        return status
     }
 
-    public static void remove(Status status) {
-        Queries.StatusTable.remove(status.name);
-        statusMap.remove(status.name);
+    @JvmStatic
+    fun remove(status: Status) {
+        Queries.StatusTable.remove(status.name)
+        statusMap.remove(status.name)
     }
 
-    public static List<String> getNames() {
-        List<String> st = new ArrayList<>(statusMap.keySet());
-        st.sort(String::compareToIgnoreCase);
-        st.remove(DEFAULT_STATUS);
-        //st.add(0,DEFAULT_STATUS);
-        return st;
+    val names: List<String>
+        get() {
+            val st: MutableList<String> = java.util.ArrayList(statusMap.keys)
+            st.sortWith{ obj: String, str: String ->
+                obj.compareTo(str, true)
+            }
+            st.remove(DEFAULT_STATUS)
+            return st
+        }
+
+    fun toList(): List<Status> {
+        val statuses = ArrayList(statusMap.values)
+        statuses.sortWith{ o1: Status, o2: Status ->
+            o1.name.compareTo(o2.name, true)
+        }
+        statuses.remove(getByName(DEFAULT_STATUS))
+        return statuses
     }
 
-    public static List<Status> toList() {
-        ArrayList<Status> statuses = new ArrayList<>(statusMap.values());
-        statuses.sort((o1, o2) -> o1.name.compareToIgnoreCase(o2.name));
-        statuses.remove(getByName(DEFAULT_STATUS));
-        return statuses;
-    }
-
-    public static Status updateStatus(@Nullable Status oldStatus, String newName, int newColor) {
-        if (oldStatus == null)
-            return add(newName, newColor);
-        Status newStatus = new Status(newColor, newName);
-        Queries.StatusTable.update(oldStatus, newStatus);
-        statusMap.remove(oldStatus.name);
-        statusMap.put(newStatus.name, newStatus);
-        return newStatus;
+    fun updateStatus(oldStatus: Status?, newName: String, newColor: Int): Status {
+        if (oldStatus == null) return add(newName, newColor)
+        val newStatus = Status(newColor, newName)
+        Queries.StatusTable.update(oldStatus, newStatus)
+        statusMap.remove(oldStatus.name)
+        statusMap[newStatus.name] = newStatus
+        return newStatus
     }
 }

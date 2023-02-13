@@ -65,8 +65,8 @@ class ListAdapter(private val context: BaseActivity) :
         if (context is GalleryActivity) {
             val card = holder.layout.parent as MaterialCardView
             val params = card.layoutParams
-            params.width = Global.getGalleryWidth()
-            params.height = Global.getGalleryHeight()
+            params.width = Global.galleryWidth
+            params.height = Global.galleryHeight
             card.layoutParams = params
         }
         holder.overlay.visibility =

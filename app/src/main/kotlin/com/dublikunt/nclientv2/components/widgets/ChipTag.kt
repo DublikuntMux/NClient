@@ -1,80 +1,70 @@
-package com.dublikunt.nclientv2.components.widgets;
+package com.dublikunt.nclientv2.components.widgets
 
-import android.content.Context;
-import android.graphics.drawable.Drawable;
-import android.util.AttributeSet;
+import android.content.Context
+import android.util.AttributeSet
+import androidx.core.content.ContextCompat
+import com.dublikunt.nclientv2.R
+import com.dublikunt.nclientv2.api.components.Tag
+import com.dublikunt.nclientv2.api.enums.TagStatus
+import com.dublikunt.nclientv2.settings.Global
+import com.google.android.material.chip.Chip
 
-import androidx.core.content.ContextCompat;
+class ChipTag : Chip {
+    private var tag: Tag? = null
+    private var canBeAvoided = true
 
-import com.dublikunt.nclientv2.R;
-import com.dublikunt.nclientv2.api.components.Tag;
-import com.dublikunt.nclientv2.api.enums.TagStatus;
-import com.dublikunt.nclientv2.settings.Global;
-import com.google.android.material.chip.Chip;
-
-public class ChipTag extends Chip {
-    private Tag tag;
-    private boolean canBeAvoided = true;
-
-    public ChipTag(Context context) {
-        super(context);
+    constructor(context: Context?) : super(context) {}
+    constructor(context: Context?, attrs: AttributeSet?) : super(context, attrs) {}
+    constructor(context: Context?, attrs: AttributeSet?, defStyleAttr: Int) : super(
+        context,
+        attrs,
+        defStyleAttr
+    ) {
     }
 
-    public ChipTag(Context context, AttributeSet attrs) {
-        super(context, attrs);
+    fun init(t: Tag, close: Boolean, canBeAvoided: Boolean) {
+        setTag(t)
+        isCloseIconVisible = close
+        setCanBeAvoided(canBeAvoided)
     }
 
-    public ChipTag(Context context, AttributeSet attrs, int defStyleAttr) {
-        super(context, attrs, defStyleAttr);
+    private fun setCanBeAvoided(canBeAvoided: Boolean) {
+        this.canBeAvoided = canBeAvoided
     }
 
-    public void init(Tag t, boolean close, boolean canBeAvoided) {
-        setTag(t);
-        setCloseIconVisible(close);
-        setCanBeAvoided(canBeAvoided);
+    override fun getTag(): Tag {
+        return tag!!
     }
 
-    private void setCanBeAvoided(boolean canBeAvoided) {
-        this.canBeAvoided = canBeAvoided;
+    private fun setTag(tag: Tag) {
+        this.tag = tag
+        text = tag.name
+        loadStatusIcon()
     }
 
-    @Override
-    public Tag getTag() {
-        return tag;
+    fun changeStatus(status: TagStatus?) {
+        tag!!.status = status
+        loadStatusIcon()
     }
 
-    private void setTag(Tag tag) {
-        this.tag = tag;
-        setText(tag.getName());
-        loadStatusIcon();
-    }
-
-    public void changeStatus(TagStatus status) {
-        tag.setStatus(status);
-        loadStatusIcon();
-    }
-
-    public void updateStatus() {
-        switch (tag.getStatus()) {
-            case DEFAULT:
-                changeStatus(TagStatus.ACCEPTED);
-                break;
-            case ACCEPTED:
-                changeStatus(canBeAvoided ? TagStatus.AVOIDED : TagStatus.DEFAULT);
-                break;
-            case AVOIDED:
-                changeStatus(TagStatus.DEFAULT);
-                break;
+    fun updateStatus() {
+        when (tag!!.status) {
+            TagStatus.DEFAULT -> changeStatus(TagStatus.ACCEPTED)
+            TagStatus.ACCEPTED -> changeStatus(if (canBeAvoided) TagStatus.AVOIDED else TagStatus.DEFAULT)
+            TagStatus.AVOIDED -> changeStatus(TagStatus.DEFAULT)
         }
     }
 
-    private void loadStatusIcon() {
-        Drawable drawable = ContextCompat.getDrawable(getContext(), tag.getStatus() == TagStatus.ACCEPTED ? R.drawable.ic_check : tag.getStatus() == TagStatus.AVOIDED ? R.drawable.ic_close : R.drawable.ic_void);
+    private fun loadStatusIcon() {
+        val drawable = ContextCompat.getDrawable(
+            context,
+            if (tag!!.status == TagStatus.ACCEPTED) R.drawable.ic_check else if (tag!!.status == TagStatus.AVOIDED) R.drawable.ic_close else R.drawable.ic_void
+        )
         if (drawable == null) {
-            setChipIconResource(tag.getStatus() == TagStatus.ACCEPTED ? R.drawable.ic_check : tag.getStatus() == TagStatus.AVOIDED ? R.drawable.ic_close : R.drawable.ic_void);
-            return;
+            setChipIconResource(if (tag!!.status == TagStatus.ACCEPTED) R.drawable.ic_check else if (tag!!.status == TagStatus.AVOIDED) R.drawable.ic_close else R.drawable.ic_void)
+            return
         }
-        setChipIcon(drawable);
-        Global.setTint(getChipIcon());
+        chipIcon = drawable
+        Global.setTint(chipIcon)
     }
 }

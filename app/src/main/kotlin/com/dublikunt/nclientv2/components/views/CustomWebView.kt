@@ -1,110 +1,96 @@
-package com.dublikunt.nclientv2.components.views;
+package com.dublikunt.nclientv2.components.views
 
-import android.annotation.SuppressLint;
-import android.content.Context;
-import android.graphics.Bitmap;
-import android.util.AttributeSet;
-import android.webkit.JavascriptInterface;
-import android.webkit.WebView;
-import android.webkit.WebViewClient;
+import android.annotation.SuppressLint
+import android.content.*
+import android.graphics.Bitmap
+import android.util.AttributeSet
+import android.webkit.JavascriptInterface
+import android.webkit.WebView
+import android.webkit.WebViewClient
+import com.dublikunt.nclientv2.settings.Global
+import com.dublikunt.nclientv2.utility.LogUtility.download
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
+open class CustomWebView : WebView {
+    private val javaScriptInterface: MyJavaScriptInterface
 
-import com.dublikunt.nclientv2.settings.Global;
-import com.dublikunt.nclientv2.utility.LogUtility;
-
-import java.util.ArrayList;
-import java.util.List;
-
-public class CustomWebView extends WebView {
-    private final MyJavaScriptInterface javaScriptInterface;
-
-    public CustomWebView(Context context) {
-        super(context.getApplicationContext());
-        javaScriptInterface = new MyJavaScriptInterface(context.getApplicationContext());
-        initialize();
+    constructor(context: Context) : super(context.applicationContext) {
+        javaScriptInterface = MyJavaScriptInterface(context.applicationContext)
+        initialize()
     }
 
-    public CustomWebView(Context context, AttributeSet attrs) {
-        super(context, attrs);
-        javaScriptInterface = new MyJavaScriptInterface(context.getApplicationContext());
-        initialize();
+    constructor(context: Context, attrs: AttributeSet?) : super(context, attrs) {
+        javaScriptInterface = MyJavaScriptInterface(context.applicationContext)
+        initialize()
     }
 
-    public CustomWebView(Context context, AttributeSet attrs, int defStyleAttr) {
-        super(context, attrs, defStyleAttr);
-        javaScriptInterface = new MyJavaScriptInterface(context.getApplicationContext());
-        initialize();
+    constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : super(
+        context,
+        attrs,
+        defStyleAttr
+    ) {
+        javaScriptInterface = MyJavaScriptInterface(context.applicationContext)
+        initialize()
     }
 
-    @Override
-    public void loadUrl(String url) {
-        LogUtility.download("Loading url: " + url);
-        super.loadUrl(url);
+    override fun loadUrl(url: String) {
+        download("Loading url: $url")
+        super.loadUrl(url)
     }
 
-    @SuppressLint({"SetJavaScriptEnabled", "AddJavascriptInterface"})
-    //it only uses showHtml and Nhentai should be trusted if you use this app (I think)
-    private void initialize() {
-        getSettings().setJavaScriptEnabled(true);
-        getSettings().setUserAgentString(Global.getUserAgent());
-        addJavascriptInterface(javaScriptInterface, "HtmlViewer");
-        setWebViewClient(new WebViewClient() {
-            @Override
-            public void onPageStarted(WebView view, String url, Bitmap favicon) {
-                LogUtility.download("Started url: " + url);
-                super.onPageStarted(view, url, favicon);
+    @SuppressLint(
+        "SetJavaScriptEnabled",
+        "AddJavascriptInterface"
+    ) //it only uses showHtml and Nhentai should be trusted if you use this app (I think)
+    private fun initialize() {
+        settings.javaScriptEnabled = true
+        settings.userAgentString = Global.userAgent
+        addJavascriptInterface(javaScriptInterface, "HtmlViewer")
+        webViewClient = object : WebViewClient() {
+            override fun onPageStarted(view: WebView, url: String, favicon: Bitmap) {
+                download("Started url: $url")
+                super.onPageStarted(view, url, favicon)
             }
 
-            @Override
-            public void onPageFinished(WebView view, String url) {
-                String html = "javascript:window.HtmlViewer.showHTML" +
-                    "('" + url + "','<html>'+document.getElementsByTagName('html')[0].innerHTML+'</html>');";
-                loadUrl(html);
+            override fun onPageFinished(view: WebView, url: String) {
+                val html = "javascript:window.HtmlViewer.showHTML" +
+                        "('" + url + "','<html>'+document.getElementsByTagName('html')[0].innerHTML+'</html>');"
+                loadUrl(html)
             }
-
-        });
-
-        addFetcher((url, html) -> LogUtility.download("Fetch for url " + url + ": " + html));
+        }
+        addFetcher(object : HtmlFetcher {
+            override fun fetchUrl(url: String?, html: String?) {
+                download("Fetch for url $url: $html")
+            }
+        })
     }
 
-    public void addFetcher(@Nullable HtmlFetcher fetcher) {
-        if (fetcher == null) return;
-        javaScriptInterface.addFetcher(fetcher);
+    fun addFetcher(fetcher: HtmlFetcher?) {
+        if (fetcher == null) return
+        javaScriptInterface.addFetcher(fetcher)
     }
 
-    public void removeFetcher(@Nullable HtmlFetcher fetcher) {
-        if (fetcher == null) return;
-        javaScriptInterface.removeFetcher(fetcher);
+    fun removeFetcher(fetcher: HtmlFetcher?) {
+        if (fetcher == null) return
+        javaScriptInterface.removeFetcher(fetcher)
     }
 
-    public interface HtmlFetcher {
-        void fetchUrl(String url, String html);
+    interface HtmlFetcher {
+        fun fetchUrl(url: String?, html: String?)
     }
 
-    static class MyJavaScriptInterface {
-        List<HtmlFetcher> fetchers = new ArrayList<>(5);
-        Context ctx;
-
-        MyJavaScriptInterface(Context ctx) {
-            this.ctx = ctx;
+    internal class MyJavaScriptInterface(var ctx: Context) {
+        var fetchers: MutableList<HtmlFetcher> = ArrayList(5)
+        fun addFetcher(fetcher: HtmlFetcher) {
+            fetchers.add(fetcher)
         }
 
-        public void addFetcher(@NonNull HtmlFetcher fetcher) {
-            fetchers.add(fetcher);
-        }
-
-        public void removeFetcher(@NonNull HtmlFetcher fetcher) {
-            fetchers.remove(fetcher);
+        fun removeFetcher(fetcher: HtmlFetcher) {
+            fetchers.remove(fetcher)
         }
 
         @JavascriptInterface
-        public void showHTML(String url, String html) {
-            for (HtmlFetcher fetcher : fetchers)
-                fetcher.fetchUrl(url, html);
+        fun showHTML(url: String?, html: String?) {
+            for (fetcher in fetchers) fetcher.fetchUrl(url, html)
         }
     }
-
-
 }

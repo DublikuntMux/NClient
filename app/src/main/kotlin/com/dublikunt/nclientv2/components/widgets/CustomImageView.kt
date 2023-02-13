@@ -1,52 +1,39 @@
-package com.dublikunt.nclientv2.components.widgets;
+package com.dublikunt.nclientv2.components.widgets
 
-import android.content.Context;
-import android.graphics.Matrix;
-import android.graphics.drawable.Drawable;
-import android.util.AttributeSet;
+import android.content.Context
+import android.graphics.drawable.Drawable
+import android.util.AttributeSet
+import androidx.appcompat.widget.AppCompatImageView
 
-import androidx.annotation.Nullable;
-import androidx.appcompat.widget.AppCompatImageView;
+class CustomImageView : AppCompatImageView {
+    constructor(context: Context?) : super(context!!)
+    constructor(context: Context?, attrs: AttributeSet?) : super(
+        context!!, attrs
+    )
 
-public class CustomImageView extends AppCompatImageView {
+    constructor(context: Context?, attrs: AttributeSet?, defStyleAttr: Int) : super(
+        context!!, attrs, defStyleAttr
+    )
 
-    public CustomImageView(Context context) {
-        super(context);
+    override fun setImageDrawable(drawable: Drawable?) {
+        super.setImageDrawable(drawable)
+        invalidate()
     }
 
-    public CustomImageView(Context context, AttributeSet attrs) {
-        super(context, attrs);
-    }
-
-    public CustomImageView(Context context, AttributeSet attrs, int defStyleAttr) {
-        super(context, attrs, defStyleAttr);
-    }
-
-    @Override
-    public void setImageDrawable(@Nullable Drawable drawable) {
-        super.setImageDrawable(drawable);
-        invalidate();
-    }
-
-
-    @Override
-    protected boolean setFrame(int l, int t, int r, int b) {
-        final Matrix matrix = getImageMatrix();
-        float scale;
-        final int viewWidth = getWidth() - getPaddingLeft() - getPaddingRight();
-        final int viewHeight = getHeight() - getPaddingTop() - getPaddingBottom();
-        final int drawableWidth = getDrawable().getIntrinsicWidth();
-        final int drawableHeight = getDrawable().getIntrinsicHeight();
-
-        if (drawableWidth * viewHeight > drawableHeight * viewWidth) {
-            scale = (float) viewHeight / (float) drawableHeight;
+    override fun setFrame(l: Int, t: Int, r: Int, b: Int): Boolean {
+        val matrix = imageMatrix
+        val scale: Float
+        val viewWidth = width - paddingLeft - paddingRight
+        val viewHeight = height - paddingTop - paddingBottom
+        val drawableWidth = drawable.intrinsicWidth
+        val drawableHeight = drawable.intrinsicHeight
+        scale = if (drawableWidth * viewHeight > drawableHeight * viewWidth) {
+            viewHeight.toFloat() / drawableHeight.toFloat()
         } else {
-            scale = (float) viewWidth / (float) drawableWidth;
+            viewWidth.toFloat() / drawableWidth.toFloat()
         }
-
-        matrix.setScale(scale, scale);
-        setImageMatrix(matrix);
-
-        return super.setFrame(l, t, r, b);
+        matrix.setScale(scale, scale)
+        imageMatrix = matrix
+        return super.setFrame(l, t, r, b)
     }
 }

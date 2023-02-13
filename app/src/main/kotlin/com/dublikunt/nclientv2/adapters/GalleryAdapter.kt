@@ -25,7 +25,7 @@ import com.dublikunt.nclientv2.api.enums.SpecialTagIds
 import com.dublikunt.nclientv2.api.enums.TagType
 import com.dublikunt.nclientv2.api.local.LocalGallery
 import com.dublikunt.nclientv2.async.database.Queries
-import com.dublikunt.nclientv2.components.classes.Size
+import com.dublikunt.nclientv2.classes.Size
 import com.dublikunt.nclientv2.components.photoview.OnMatrixChangedListener
 import com.dublikunt.nclientv2.components.photoview.PhotoView
 import com.dublikunt.nclientv2.components.widgets.CustomGridLayoutManager
@@ -247,7 +247,7 @@ class GalleryAdapter(
         }
         if (policy == Policy.FULL) {
             val photoView = imgView as PhotoView
-            photoView.isZoomable = Global.isZoomOneColumn()
+            photoView.isZoomable = Global.isZoomOneColumn
             photoView.setOnMatrixChangeListener(object : OnMatrixChangedListener {
                 override fun onMatrixChanged(rect: RectF?) {
                     photoView.setAllowParentInterceptOnEdge(
@@ -322,7 +322,7 @@ class GalleryAdapter(
     }
 
     private fun startGallery(page: Int) {
-        if (!gallery.isLocal && Global.getDownloadPolicy() == Global.DataUsageType.NONE) {
+        if (!gallery.isLocal && Global.downloadPolicy == Global.DataUsageType.NONE) {
             context.runOnUiThread {
                 Toast.makeText(
                     context,

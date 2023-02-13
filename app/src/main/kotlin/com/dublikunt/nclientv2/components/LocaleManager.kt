@@ -1,20 +1,20 @@
-package com.dublikunt.nclientv2.components;
+package com.dublikunt.nclientv2.components
 
-import java.util.Locale;
+import java.util.*
 
-public class LocaleManager {
-    public static final Locale[] LANGUAGES = new Locale[]{
-        new Locale("en"),
-        new Locale("ar"),
-        new Locale("de"),
-        new Locale("es"),
-        new Locale("fr"),
-        new Locale("it"),
-        new Locale("ja"),
-        new Locale("ru"),
-        new Locale("tr"),
-        new Locale("uk"),
-        new Locale("zh", "CN"),
-        new Locale("zh", "TW"),
-    };
+object LocaleManager {
+    val LANGUAGES = arrayOf(
+        Locale("en"),
+        Locale("ar"),
+        Locale("de"),
+        Locale("es"),
+        Locale("fr"),
+        Locale("it"),
+        Locale("ja"),
+        Locale("ru"),
+        Locale("tr"),
+        Locale("uk"),
+        Locale("zh", "CN"),
+        Locale("zh", "TW")
+    )
 }

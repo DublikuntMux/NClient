@@ -1,109 +1,100 @@
-package com.dublikunt.nclientv2.components.widgets;
+package com.dublikunt.nclientv2.components.widgets
 
-import android.content.res.Configuration;
-import android.os.Bundle;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
+import android.content.res.Configuration
+import android.os.Bundle
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.RecyclerView
+import com.dublikunt.nclientv2.R
+import com.dublikunt.nclientv2.TagFilterActivity
+import com.dublikunt.nclientv2.adapters.TagsAdapter
+import com.dublikunt.nclientv2.api.enums.TagType
+import com.dublikunt.nclientv2.async.ScrapeTags
+import com.dublikunt.nclientv2.settings.Global
+import com.dublikunt.nclientv2.settings.TagV2
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.RecyclerView;
-
-import com.dublikunt.nclientv2.R;
-import com.dublikunt.nclientv2.TagFilterActivity;
-import com.dublikunt.nclientv2.adapters.TagsAdapter;
-import com.dublikunt.nclientv2.api.enums.TagType;
-import com.dublikunt.nclientv2.async.ScrapeTags;
-import com.dublikunt.nclientv2.settings.Global;
-import com.dublikunt.nclientv2.settings.TagV2;
-
-public class TagTypePage extends Fragment {
-    private TagType type;
-    private RecyclerView recyclerView;
-    private TagFilterActivity activity;
-    private String query;
-    private TagsAdapter adapter;
-
-    public TagTypePage() {
+class TagTypePage : Fragment() {
+    private var type: TagType? = null
+    var recyclerView: RecyclerView? = null
+        private set
+    private var activity: TagFilterActivity? = null
+    private var query: String? = null
+    private var adapter: TagsAdapter? = null
+    fun setQuery(query: String?) {
+        this.query = query
+        refilter(query)
     }
 
-    private static int getTag(int page) {
-        switch (page) {
-            case 0:
-                return TagType.UNKNOWN.getId();//tags with status
-            case 1:
-                return TagType.TAG.getId();
-            case 2:
-                return TagType.ARTIST.getId();
-            case 3:
-                return TagType.CHARACTER.getId();
-            case 4:
-                return TagType.PARODY.getId();
-            case 5:
-                return TagType.GROUP.getId();
-            case 6:
-                return TagType.CATEGORY.getId();//online blacklisted tags
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        activity = getActivity() as TagFilterActivity?
+        type = TagType.values[requireArguments().getInt("TAGTYPE")]
+        val rootView = inflater.inflate(R.layout.fragment_tag_filter, container, false)
+        recyclerView = rootView.findViewById(R.id.recycler)
+        Global.applyFastScroller(recyclerView)
+        loadTags()
+        return rootView
+    }
+
+    fun loadTags() {
+        recyclerView!!.layoutManager = CustomGridLayoutManager(
+            activity,
+            if (resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE) 4 else 2
+        )
+        adapter = if (type == TagType.UNKNOWN) TagsAdapter(
+            activity,
+            query,
+            false
+        ) else if (type == TagType.CATEGORY) TagsAdapter(activity, query, true) else TagsAdapter(
+            activity,
+            query,
+            type
+        )
+        recyclerView!!.adapter = adapter
+    }
+
+    fun refilter(newText: String?) {
+        if (activity != null) requireActivity().runOnUiThread { adapter!!.filter.filter(newText) }
+    }
+
+    fun reset() {
+        if (type == TagType.UNKNOWN) TagV2.resetAllStatus() else if (type != TagType.CATEGORY) {
+            ScrapeTags.startWork(activity)
         }
-        return -1;
+        val activity = getActivity() as AppCompatActivity?
+        if (activity == null || adapter == null) return
+        activity.runOnUiThread(Runnable { adapter!!.notifyDataSetChanged() })
     }
 
-    public static TagTypePage newInstance(int page) {
-        TagTypePage fragment = new TagTypePage();
-        Bundle args = new Bundle();
-        args.putInt("TAGTYPE", getTag(page));
-        fragment.setArguments(args);
-        return fragment;
+    fun changeSize() {
+        refilter(query)
     }
 
-    public void setQuery(String query) {
-        this.query = query;
-        refilter(query);
-    }
-
-    public RecyclerView getRecyclerView() {
-        return recyclerView;
-    }
-
-    @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-
-        activity = (TagFilterActivity) getActivity();
-        type = TagType.values[getArguments().getInt("TAGTYPE")];
-        View rootView = inflater.inflate(R.layout.fragment_tag_filter, container, false);
-        recyclerView = rootView.findViewById(R.id.recycler);
-        Global.applyFastScroller(recyclerView);
-        loadTags();
-        return rootView;
-    }
-
-    public void loadTags() {
-        recyclerView.setLayoutManager(new CustomGridLayoutManager(activity, getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE ? 4 : 2));
-        if (type.equals(TagType.UNKNOWN)) adapter = new TagsAdapter(activity, query, false);
-        else if (type.equals(TagType.CATEGORY)) adapter = new TagsAdapter(activity, query, true);
-        else adapter = new TagsAdapter(activity, query, type);
-        recyclerView.setAdapter(adapter);
-    }
-
-    public void refilter(String newText) {
-        if (activity != null) activity.runOnUiThread(() -> adapter.getFilter().filter(newText));
-    }
-
-    public void reset() {
-        if (type.equals(TagType.UNKNOWN)) TagV2.resetAllStatus();
-        else if (!type.equals(TagType.CATEGORY)) {
-            ScrapeTags.startWork(activity);
+    companion object {
+        private fun getTag(page: Int): Int {
+            when (page) {
+                0 -> return TagType.UNKNOWN.id.toInt() //tags with status
+                1 -> return TagType.TAG.id.toInt()
+                2 -> return TagType.ARTIST.id.toInt()
+                3 -> return TagType.CHARACTER.id.toInt()
+                4 -> return TagType.PARODY.id.toInt()
+                5 -> return TagType.GROUP.id.toInt()
+                6 -> return TagType.CATEGORY.id.toInt() //online blacklisted tags
+            }
+            return -1
         }
-        AppCompatActivity activity = (AppCompatActivity) getActivity();
-        if (activity == null || adapter == null) return;
-        activity.runOnUiThread(adapter::notifyDataSetChanged);
 
-    }
-
-    public void changeSize() {
-        refilter(query);
+        fun newInstance(page: Int): TagTypePage {
+            val fragment = TagTypePage()
+            val args = Bundle()
+            args.putInt("TAGTYPE", getTag(page))
+            fragment.arguments = args
+            return fragment
+        }
     }
 }
-

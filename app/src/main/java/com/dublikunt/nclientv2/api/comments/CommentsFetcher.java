@@ -49,10 +49,6 @@ public class CommentsFetcher extends Thread {
         try {
             Response response = Global.getClient().newCall(new Request.Builder().url(url).build()).execute();
             ResponseBody body = response.body();
-            if (body == null) {
-                response.close();
-                return;
-            }
             JsonReader reader = new JsonReader(new InputStreamReader(body.byteStream()));
             if (reader.peek() == JsonToken.BEGIN_ARRAY) {
                 reader.beginArray();

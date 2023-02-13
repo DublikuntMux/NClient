@@ -51,7 +51,7 @@ class TagFilterActivity : GeneralActivity() {
             override fun onPageSelected(position: Int) {
                 val page = getFragment(position)
                 if (page != null) {
-                    (page.recyclerView.adapter as TagsAdapter?)!!.addItem()
+                    (page.recyclerView?.adapter as TagsAdapter?)!!.addItem()
                 }
             }
         })

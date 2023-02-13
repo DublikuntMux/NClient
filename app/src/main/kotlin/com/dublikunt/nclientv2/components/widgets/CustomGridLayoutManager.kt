@@ -1,21 +1,20 @@
-package com.dublikunt.nclientv2.components.widgets;
+package com.dublikunt.nclientv2.components.widgets
 
-import android.content.Context;
+import android.content.Context
+import androidx.recyclerview.widget.GridLayoutManager
+import kotlin.math.max
 
-import androidx.recyclerview.widget.GridLayoutManager;
-
-public class CustomGridLayoutManager extends GridLayoutManager {
-
-    public CustomGridLayoutManager(Context context, int spanCount) {
-        super(context, Math.max(1, spanCount));
+class CustomGridLayoutManager : GridLayoutManager {
+    constructor(context: Context?, spanCount: Int) : super(context, max(1, spanCount)) {}
+    constructor(
+        context: Context?,
+        spanCount: Int,
+        orientation: Int,
+        reverseLayout: Boolean
+    ) : super(context, max(1, spanCount), orientation, reverseLayout) {
     }
 
-    public CustomGridLayoutManager(Context context, int spanCount, int orientation, boolean reverseLayout) {
-        super(context, Math.max(1, spanCount), orientation, reverseLayout);
-    }
-
-    @Override
-    public boolean supportsPredictiveItemAnimations() {
-        return false;
+    override fun supportsPredictiveItemAnimations(): Boolean {
+        return false
     }
 }

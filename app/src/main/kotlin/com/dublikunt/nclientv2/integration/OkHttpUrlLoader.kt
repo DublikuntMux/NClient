@@ -1,93 +1,67 @@
-package com.dublikunt.nclientv2.components.classes.integration;
+package com.dublikunt.nclientv2.integration
 
-import androidx.annotation.NonNull;
-
-import com.bumptech.glide.load.Options;
-import com.bumptech.glide.load.model.GlideUrl;
-import com.bumptech.glide.load.model.ModelLoader;
-import com.bumptech.glide.load.model.ModelLoaderFactory;
-import com.bumptech.glide.load.model.MultiModelLoaderFactory;
-import com.dublikunt.nclientv2.settings.CustomInterceptor;
-
-import java.io.InputStream;
-
-import okhttp3.Call;
-import okhttp3.OkHttpClient;
+import com.bumptech.glide.load.Options
+import com.bumptech.glide.load.model.GlideUrl
+import com.bumptech.glide.load.model.ModelLoader
+import com.bumptech.glide.load.model.ModelLoader.LoadData
+import com.bumptech.glide.load.model.ModelLoaderFactory
+import com.bumptech.glide.load.model.MultiModelLoaderFactory
+import com.dublikunt.nclientv2.settings.CustomInterceptor
+import okhttp3.Call
+import okhttp3.OkHttpClient
+import java.io.InputStream
 
 /**
  * A simple model loader for fetching media over http/https using OkHttp.
  */
-public class OkHttpUrlLoader implements ModelLoader<GlideUrl, InputStream> {
-
-    private final Call.Factory client;
-
-    // Public API.
-    @SuppressWarnings("WeakerAccess")
-    public OkHttpUrlLoader(@NonNull Call.Factory client) {
-        this.client = client;
+class OkHttpUrlLoader     // Public API.
+    (private val client:  Call.Factory) : ModelLoader<GlideUrl, InputStream> {
+    override fun handles(url: GlideUrl): Boolean {
+        return true
     }
 
-    @Override
-    public boolean handles(@NonNull GlideUrl url) {
-        return true;
+    override fun buildLoadData(
+        model: GlideUrl, width: Int, height: Int, options: Options
+    ): LoadData<InputStream>? {
+        return LoadData(model, OkHttpStreamFetcher(client, model))
     }
 
-    @Override
-    public LoadData<InputStream> buildLoadData(
-        @NonNull GlideUrl model, int width, int height, @NonNull Options options) {
-        return new LoadData<>(model, new OkHttpStreamFetcher(client, model));
-    }
-
+    class Factory
     /**
-     * The default factory for {@link OkHttpUrlLoader}s.
-     */
-    // Public API.
-    @SuppressWarnings("WeakerAccess")
-    public static class Factory implements ModelLoaderFactory<GlideUrl, InputStream> {
-        private static volatile Call.Factory internalClient;
-        private final Call.Factory client;
-
-        /**
-         * Constructor for a new Factory that runs requests using a static singleton client.
-         */
-        public Factory() {
-            this(getInternalClient());
-        }
-
+     * Constructor for a new Factory that runs requests using a static singleton client.
+     */ @JvmOverloads constructor(private val client: Call.Factory = internalClient!!) :
+        ModelLoaderFactory<GlideUrl, InputStream> {
         /**
          * Constructor for a new Factory that runs requests using given client.
          *
-         * @param client this is typically an instance of {@code OkHttpClient}.
+         * @param client this is typically an instance of `OkHttpClient`.
          */
-        public Factory(@NonNull Call.Factory client) {
-            this.client = client;
+        override fun build(multiFactory: MultiModelLoaderFactory): ModelLoader<GlideUrl, InputStream> {
+            return OkHttpUrlLoader(client)
         }
 
-        private static Call.Factory getInternalClient() {
-            if (internalClient == null) {
-                synchronized (Factory.class) {
-                    if (internalClient == null) {
-                        OkHttpClient.Builder builder = new OkHttpClient.Builder();
-                        builder.addInterceptor(new CustomInterceptor(false));
-                        OkHttpClient client = builder.build();
-                        client.dispatcher().setMaxRequests(25);
-                        client.dispatcher().setMaxRequestsPerHost(25);
-                        internalClient = (Call.Factory) client;
-                    }
-                }
-            }
-            return internalClient;
-        }
-
-        @NonNull
-        @Override
-        public ModelLoader<GlideUrl, InputStream> build(MultiModelLoaderFactory multiFactory) {
-            return new OkHttpUrlLoader(client);
-        }
-
-        @Override
-        public void teardown() {
+        override fun teardown() {
             // Do nothing, this instance doesn't own the client.
+        }
+
+        companion object {
+            @Volatile
+            private var internalClient: Call.Factory? = null
+                get() {
+                    if (field == null) {
+                        synchronized(Factory::class.java) {
+                            if (field == null) {
+                                val builder = OkHttpClient.Builder()
+                                builder.addInterceptor(CustomInterceptor(false))
+                                val client: OkHttpClient = builder.build()
+                                client.dispatcher.maxRequests = 25
+                                client.dispatcher.maxRequestsPerHost = 25
+                                field = client
+                            }
+                        }
+                    }
+                    return field
+                }
         }
     }
 }

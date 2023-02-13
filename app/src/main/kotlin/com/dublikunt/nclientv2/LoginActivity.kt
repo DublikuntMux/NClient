@@ -47,7 +47,7 @@ class LoginActivity : GeneralActivity() {
             }
         }
         webSettings.loadsImagesAutomatically = true
-        webSettings.userAgentString = Global.getUserAgent()
+        webSettings.userAgentString = Global.userAgent
         webView.loadUrl(Utility.getBaseUrl() + if (isCaptcha) "" else "login/")
         waiter = CookieWaiter()
         waiter.start()
@@ -96,7 +96,7 @@ class LoginActivity : GeneralActivity() {
                 Login.BASE_HTTP_URL,
                 "$key=$value; Max-Age=31449600; Path=/; SameSite=Lax"
             )
-            Global.client.cookieJar.saveFromResponse(
+            Global.client?.cookieJar?.saveFromResponse(
                 Login.BASE_HTTP_URL,
                 listOf(cookie) as List<Cookie>
             )

@@ -86,12 +86,10 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
     private var snackbar: Snackbar? = null
     private var showedCaptcha = false
     private var noNeedForCaptcha = false
-    private lateinit var pageSwitcher: PageSwitcher
     private val resetDataset: InspectorResponse = object : MainInspectorResponse() {
         override fun onSuccess(galleries: List<GenericGallery>) {
             super.onSuccess(galleries)
             adapter.restartDataset(galleries)
-            showPageSwitcher(inspector.page, inspector.pageCount)
             runOnUiThread { recycler.smoothScrollToPosition(0) }
         }
     }
@@ -115,11 +113,10 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
         initializeToolbar()
         initializeNavigationView()
         initializeRecyclerView()
-        initializePageSwitcherActions()
         loadStringLogin()
         refresher.setOnRefreshListener {
             inspector = inspector.cloneInspector(this@MainActivity, resetDataset)
-            if (Global.isInfiniteScrollMain()) inspector.page = 1
+            inspector.page = 1
             inspector.start()
         }
         manageDrawer()
@@ -162,16 +159,6 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
         bar.setTitle(com.franmontiel.persistentcookiejar.R.string.app_name)
     }
 
-    private fun initializePageSwitcherActions() {
-        pageSwitcher.setChanger(object : DefaultPageChanger() {
-            override fun pageChanged(switcher: PageSwitcher, page: Int) {
-                inspector = inspector.cloneInspector(this@MainActivity, resetDataset)
-                inspector.page = pageSwitcher.actualPage
-                inspector.start()
-            }
-        })
-    }
-
     private fun initializeRecyclerView() {
         adapter = ListAdapter(this)
         recycler.adapter = adapter
@@ -179,15 +166,7 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
         recycler.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                 if (inspecting) return
-                if (!Global.isInfiniteScrollMain()) return
-                if (refresher.isRefreshing) return
-                val manager = (recycler.layoutManager as CustomGridLayoutManager?)!!
-                if (!pageSwitcher.lastPageReached() && lastGalleryReached(manager)) {
-                    inspecting = true
-                    inspector = inspector.cloneInspector(this@MainActivity, addDataset)
-                    inspector.page = inspector.page + 1
-                    inspector.start()
-                }
+                return
             }
         })
         changeLayout(resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE)
@@ -218,7 +197,6 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
         navigationView = findViewById(R.id.nav_view)
         recycler = findViewById(R.id.recycler)
         refresher = findViewById(R.id.refresher)
-        pageSwitcher = findViewById(R.id.page_switcher)
         drawerLayout = findViewById(R.id.drawer_layout)
         loginItem = navigationView.menu.findItem(R.id.action_login)
         onlineFavoriteManager = navigationView.menu.findItem(R.id.online_favorite_manager)
@@ -319,7 +297,7 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
             tags = tagArrayList?.let { HashSet(it) }
         }
         inspector =
-            searchInspector(this, query, tags, 1, Global.getSortType(), ranges, resetDataset)
+            searchInspector(this, query, tags, 1, Global.sortType, ranges, resetDataset)
         modeType = ModeType.SEARCH
     }
 
@@ -338,7 +316,7 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
         val t = intent.getParcelableExtra<Tag>(
             "$packageName.TAG"
         )
-        inspector = tagInspector(this, t, 1, Global.getSortType(), resetDataset)
+        inspector = tagInspector(this, t, 1, Global.sortType, resetDataset)
         modeType = ModeType.TAG
     }
 
@@ -392,7 +370,7 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
     }
 
     private fun changeNavigationImage(navigationView: NavigationView?) {
-        val light = Global.getTheme() == ThemeScheme.LIGHT
+        val light = Global.theme == ThemeScheme.LIGHT
         val view = navigationView!!.getHeaderView(0)
         val imageView = view.findViewById<ImageView>(R.id.imageView)
         ImageDownloadUtility.loadImage(
@@ -426,17 +404,6 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
             }
         }
 
-    fun hidePageSwitcher() {
-        runOnUiThread { pageSwitcher.visibility = View.GONE }
-    }
-
-    fun showPageSwitcher(actualPage: Int, totalPage: Int) {
-        pageSwitcher.setPages(totalPage, actualPage)
-        if (Global.isInfiniteScrollMain()) {
-            hidePageSwitcher()
-        }
-    }
-
     private fun showLogoutForm() {
         val builder = MaterialAlertDialogBuilder(this)
         builder.setIcon(R.drawable.ic_exit_to_app).setTitle(R.string.logout)
@@ -468,14 +435,13 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
             Global.initFromShared(this) //restart all settings
             inspector = inspector.cloneInspector(this, resetDataset)
             inspector.start() //restart inspector
-            if (setting!!.theme != Global.getTheme() || setting!!.locale != Global.initLanguage(this)) {
+            if (setting!!.theme != Global.theme || setting!!.locale != Global.initLanguage(this)) {
                 val manager = GlideX.with(applicationContext)
                 manager?.pauseAllRequestsRecursive()
                 recreate()
             }
             adapter.notifyDataSetChanged() //restart adapter
             adapter.resetStatuses()
-            showPageSwitcher(inspector.page, inspector.pageCount) //restart page switcher
             changeLayout(resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE)
             setting = null
         } else if (filteringTag) {
@@ -524,7 +490,7 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
 
     private fun popularItemDispay(item: MenuItem) {
         item.title =
-            getString(R.string.sort_type_title_format, getString(Global.getSortType().nameId))
+            getString(R.string.sort_type_title_format, getString(Global.sortType.nameId))
         Global.setTint(item.icon)
     }
 
@@ -556,12 +522,12 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
 
     override val portraitColumnCount: Int
         get() {
-            return Global.getColPortMain()
+            return Global.colPortMain
         }
 
     override val landscapeColumnCount: Int
         get() {
-            return Global.getColLandMain()
+            return Global.colLandMain
         }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -600,7 +566,7 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
         val adapter = ArrayAdapter<String>(this, android.R.layout.select_dialog_singlechoice)
         val builder = MaterialAlertDialogBuilder(this)
         for (type in SortType.values()) adapter.add(getString(type.nameId))
-        temporaryType = Global.getSortType()
+        temporaryType = Global.sortType
         builder.setIcon(R.drawable.ic_sort).setTitle(R.string.sort_select_type)
         builder.setSingleChoiceItems(
             adapter, temporaryType.ordinal
@@ -782,7 +748,7 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
     }
 
     private inner class Setting internal constructor() {
-        val theme: ThemeScheme = Global.getTheme()
+        val theme: ThemeScheme = Global.theme
         val locale: Locale = Global.initLanguage(this@MainActivity)
 
     }
