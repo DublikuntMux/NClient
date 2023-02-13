@@ -1,106 +1,105 @@
-package com.dublikunt.nclientv2.adapters;
+package com.dublikunt.nclientv2.adapters
 
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.ImageButton;
-import android.widget.TextView;
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import android.widget.ImageButton
+import android.widget.TextView
+import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.recyclerview.widget.RecyclerView
+import com.dublikunt.nclientv2.R
+import com.dublikunt.nclientv2.SearchActivity
+import com.dublikunt.nclientv2.components.classes.History
+import com.dublikunt.nclientv2.settings.Global
+import com.dublikunt.nclientv2.utility.ImageDownloadUtility.loadImage
 
-import androidx.annotation.NonNull;
-import androidx.constraintlayout.widget.ConstraintLayout;
-import androidx.recyclerview.widget.RecyclerView;
+class HistoryAdapter(private val context: SearchActivity) :
+    RecyclerView.Adapter<HistoryAdapter.ViewHolder>() {
+    private val history: MutableList<History>?
+    private var remove = -1
 
-import com.dublikunt.nclientv2.R;
-import com.dublikunt.nclientv2.SearchActivity;
-import com.dublikunt.nclientv2.components.classes.History;
-import com.dublikunt.nclientv2.settings.Global;
-import com.dublikunt.nclientv2.utility.ImageDownloadUtility;
-
-import java.util.HashSet;
-import java.util.List;
-
-public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHolder> {
-    private final List<History> history;
-    private final SearchActivity context;
-    private int remove = -1;
-
-    public HistoryAdapter(SearchActivity context) {
-        this.context = context;
-        if (!Global.isKeepHistory())
-            context.getSharedPreferences("History", 0).edit().clear().apply();
-        history = Global.isKeepHistory() ? History.setToList(context.getSharedPreferences("History", 0).getStringSet("history", new HashSet<>())) : null;
+    init {
+        if (!Global.isKeepHistory()) context.getSharedPreferences("History", 0).edit().clear()
+            .apply()
+        history = if (Global.isKeepHistory()) History.setToList(
+            context.getSharedPreferences("History", 0).getStringSet("history", HashSet())
+        ) else null
     }
 
-    @NonNull
-    @Override
-    public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        return new ViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.entry_history, parent, false));
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
+        return ViewHolder(
+            LayoutInflater.from(parent.context).inflate(R.layout.entry_history, parent, false)
+        )
     }
 
-    @Override
-    public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        ImageDownloadUtility.loadImage(remove == holder.getBindingAdapterPosition() ? R.drawable.ic_close : R.drawable.ic_mode_edit, holder.imageButton);
-        String entry = history.get(holder.getBindingAdapterPosition()).getValue();
-        holder.text.setText(entry);
-        holder.master.setOnClickListener(v -> context.setQuery(entry, true));
-        holder.imageButton.setOnLongClickListener(v -> {
-            context.runOnUiThread(() -> {
-                if (remove == holder.getBindingAdapterPosition()) {
-                    remove = -1;
-                    notifyItemChanged(holder.getBindingAdapterPosition());
+    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+        loadImage(
+            if (remove == holder.bindingAdapterPosition) R.drawable.ic_close else R.drawable.ic_mode_edit,
+            holder.imageButton
+        )
+        val entry = history!![holder.bindingAdapterPosition].value
+        holder.text.text = entry
+        holder.master.setOnClickListener { context.setQuery(entry, true) }
+        holder.imageButton.setOnLongClickListener {
+            context.runOnUiThread {
+                if (remove == holder.bindingAdapterPosition) {
+                    remove = -1
+                    notifyItemChanged(holder.bindingAdapterPosition)
                 } else {
                     if (remove != -1) {
-                        int l = remove;
-                        remove = -1;
-                        notifyItemChanged(l);
+                        val l = remove
+                        remove = -1
+                        notifyItemChanged(l)
                     }
-                    remove = holder.getBindingAdapterPosition();
-                    notifyItemChanged(holder.getBindingAdapterPosition());
+                    remove = holder.bindingAdapterPosition
+                    notifyItemChanged(holder.bindingAdapterPosition)
                 }
-            });
-            return true;
-        });
-        holder.imageButton.setOnClickListener(v -> {
-            if (remove == holder.getBindingAdapterPosition()) {
-                removeHistory(remove);
-                remove = -1;
-            } else {
-                context.setQuery(entry, false);
             }
-        });
+            true
+        }
+        holder.imageButton.setOnClickListener {
+            if (remove == holder.bindingAdapterPosition) {
+                removeHistory(remove)
+                remove = -1
+            } else {
+                context.setQuery(entry, false)
+            }
+        }
     }
 
-    @Override
-    public int getItemCount() {
-        return history == null ? 0 : history.size();
+    override fun getItemCount(): Int {
+        return history?.size ?: 0
     }
 
-    public void addHistory(String value) {
-        if (!Global.isKeepHistory()) return;
-        History history = new History(value, false);
-        int pos = this.history.indexOf(history);
-        if (pos >= 0) this.history.set(pos, history);
-        else this.history.add(history);
-        context.getSharedPreferences("History", 0).edit().putStringSet("history", History.listToSet(this.history)).apply();
+    fun addHistory(value: String?) {
+        if (!Global.isKeepHistory()) return
+        val history = History(value, false)
+        val pos = this.history!!.indexOf(history)
+        if (pos >= 0) this.history[pos] = history else this.history.add(history)
+        context.getSharedPreferences("History", 0).edit()
+            .putStringSet("history", History.listToSet(this.history)).apply()
     }
 
-    public void removeHistory(int pos) {
-        if (pos < 0 || pos >= history.size()) return;
-        history.remove(pos);
-        context.getSharedPreferences("History", 0).edit().putStringSet("history", History.listToSet(this.history)).apply();
-        context.runOnUiThread(() -> notifyItemRemoved(pos));
+    fun removeHistory(pos: Int) {
+        if (pos < 0 || pos >= history!!.size) return
+        history.removeAt(pos)
+        context.getSharedPreferences("History", 0).edit().putStringSet(
+            "history", History.listToSet(
+                history
+            )
+        ).apply()
+        context.runOnUiThread { notifyItemRemoved(pos) }
     }
 
-    public static class ViewHolder extends RecyclerView.ViewHolder {
-        final ConstraintLayout master;
-        final TextView text;
-        final ImageButton imageButton;
+    class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+        val master: ConstraintLayout
+        val text: TextView
+        val imageButton: ImageButton
 
-        public ViewHolder(@NonNull View itemView) {
-            super(itemView);
-            this.master = itemView.findViewById(R.id.master_layout);
-            this.text = itemView.findViewById(R.id.text);
-            this.imageButton = itemView.findViewById(R.id.edit);
+        init {
+            master = itemView.findViewById(R.id.master_layout)
+            text = itemView.findViewById(R.id.text)
+            imageButton = itemView.findViewById(R.id.edit)
         }
     }
 }

@@ -1,213 +1,212 @@
-package com.dublikunt.nclientv2.adapters;
+package com.dublikunt.nclientv2.adapters
 
-import android.annotation.SuppressLint;
-import android.content.Intent;
-import android.database.Cursor;
-import android.text.Layout;
-import android.util.SparseIntArray;
-import android.view.LayoutInflater;
-import android.view.ViewGroup;
-import android.widget.Filter;
-import android.widget.Filterable;
+import android.annotation.SuppressLint
+import android.content.Intent
+import android.database.Cursor
+import android.util.SparseIntArray
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import android.widget.*
+import androidx.recyclerview.widget.RecyclerView
+import com.dublikunt.nclientv2.FavoriteActivity
+import com.dublikunt.nclientv2.FavoriteActivity.Companion.entryPerPage
+import com.dublikunt.nclientv2.GalleryActivity
+import com.dublikunt.nclientv2.R
+import com.dublikunt.nclientv2.api.components.Gallery
+import com.dublikunt.nclientv2.async.database.Queries
+import com.dublikunt.nclientv2.settings.Global
+import com.dublikunt.nclientv2.utility.ImageDownloadUtility.loadImage
+import com.dublikunt.nclientv2.utility.LogUtility.download
+import com.dublikunt.nclientv2.utility.LogUtility.error
+import com.dublikunt.nclientv2.utility.Utility
+import java.io.IOException
+import java.util.*
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.recyclerview.widget.RecyclerView;
+class FavoriteAdapter(private val activity: FavoriteActivity) :
+    RecyclerView.Adapter<GenericAdapter.ViewHolder>(), Filterable {
+    private val perPage = entryPerPage
+    private val statuses = SparseIntArray()
+    private lateinit var galleries: Array<Gallery?>
+    private var lastQuery: CharSequence = ""
+    private var cursor: Cursor? = null
+    private var force = false
+    private var sortByTitle = false
 
-import com.dublikunt.nclientv2.FavoriteActivity;
-import com.dublikunt.nclientv2.GalleryActivity;
-import com.dublikunt.nclientv2.R;
-import com.dublikunt.nclientv2.api.components.Gallery;
-import com.dublikunt.nclientv2.async.database.Queries;
-import com.dublikunt.nclientv2.settings.Global;
-import com.dublikunt.nclientv2.utility.ImageDownloadUtility;
-import com.dublikunt.nclientv2.utility.LogUtility;
-import com.dublikunt.nclientv2.utility.Utility;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Locale;
-
-public class FavoriteAdapter extends RecyclerView.Adapter<GenericAdapter.ViewHolder> implements Filterable {
-    private final int perPage = FavoriteActivity.getEntryPerPage();
-    private final SparseIntArray statuses = new SparseIntArray();
-    private final FavoriteActivity activity;
-    private Gallery[] galleries;
-    private CharSequence lastQuery;
-    private Cursor cursor;
-    private boolean force = false;
-    private boolean sortByTitle = false;
-
-    public FavoriteAdapter(FavoriteActivity activity) {
-        this.activity = activity;
-        this.lastQuery = "";
-        setHasStableIds(true);
+    init {
+        setHasStableIds(true)
     }
 
     @SuppressLint("Range")
-    @Override
-    public long getItemId(int position) {
-        cursor.moveToPosition(position);
-        return cursor.getInt(cursor.getColumnIndex(Queries.GalleryTable.IDGALLERY));
+    override fun getItemId(position: Int): Long {
+        cursor!!.moveToPosition(position)
+        return cursor!!.getInt(cursor!!.getColumnIndex(Queries.GalleryTable.IDGALLERY)).toLong()
     }
 
-    @NonNull
-    @Override
-    public GenericAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        return new GenericAdapter.ViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.entry_layout, parent, false));
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): GenericAdapter.ViewHolder {
+        return GenericAdapter.ViewHolder(
+            LayoutInflater.from(parent.context).inflate(R.layout.entry_layout, parent, false)
+        )
     }
 
-    @Nullable
-    private Gallery galleryFromPosition(int position) {
-        if (galleries[position] != null) return galleries[position];
-        cursor.moveToPosition(position);
-        try {
-            Gallery g = Queries.GalleryTable.cursorToGallery(cursor);
-            galleries[position] = g;
-            return g;
-        } catch (IOException e) {
-            e.printStackTrace();
-            return null;
+    private fun galleryFromPosition(position: Int): Gallery? {
+        if (galleries[position] != null) return galleries[position]
+        cursor!!.moveToPosition(position)
+        return try {
+            val g = Queries.GalleryTable.cursorToGallery(cursor)
+            galleries[position] = g
+            g
+        } catch (e: IOException) {
+            e.printStackTrace()
+            null
         }
     }
 
-    @Override
-    public void onBindViewHolder(@NonNull final GenericAdapter.ViewHolder holder, int position) {
-        final Gallery ent = galleryFromPosition(holder.getBindingAdapterPosition());
-        if (ent == null) return;
-        ImageDownloadUtility.loadImage(activity, ent.getThumbnail(), holder.imgView);
-        holder.pages.setText(String.format(Locale.US, "%d", ent.getPageCount()));
-        holder.title.setText(ent.getTitle());
-        holder.flag.setText(Global.getLanguageFlag(ent.getLanguage()));
-        holder.title.setOnClickListener(v -> {
-            Layout layout = holder.title.getLayout();
-            if (layout.getEllipsisCount(layout.getLineCount() - 1) > 0)
-                holder.title.setMaxLines(7);
-            else if (holder.title.getMaxLines() == 7) holder.title.setMaxLines(3);
-            else holder.layout.performClick();
-        });
-        holder.layout.setOnClickListener(v -> {
+    override fun onBindViewHolder(holder: GenericAdapter.ViewHolder, position: Int) {
+        val ent = galleryFromPosition(holder.bindingAdapterPosition) ?: return
+        loadImage(activity, ent.thumbnail, holder.imgView)
+        holder.pages.text = String.format(Locale.US, "%d", ent.pageCount)
+        holder.title.text = ent.title
+        holder.flag.text = Global.getLanguageFlag(ent.language)
+        holder.title.setOnClickListener { v: View? ->
+            val layout = holder.title.layout
+            if (layout.getEllipsisCount(layout.lineCount - 1) > 0) holder.title.maxLines =
+                7 else if (holder.title.maxLines == 7) holder.title.maxLines =
+                3 else holder.layout.performClick()
+        }
+        holder.layout.setOnClickListener { v: View? ->
             //Global.setLoadedGallery(ent);
-            startGallery(ent);
-        });
-        holder.layout.setOnLongClickListener(v -> {
-            holder.title.animate().alpha(holder.title.getAlpha() == 0f ? 1f : 0f).setDuration(100).start();
-            holder.flag.animate().alpha(holder.flag.getAlpha() == 0f ? 1f : 0f).setDuration(100).start();
-            holder.pages.animate().alpha(holder.pages.getAlpha() == 0f ? 1f : 0f).setDuration(100).start();
-            return true;
-        });
-        int statusColor = statuses.get(ent.getId(), 0);
-        if (statusColor == 0) {
-            statusColor = Queries.StatusMangaTable.getStatus(ent.getId()).color;
-            statuses.put(ent.getId(), statusColor);
+            startGallery(ent)
         }
-        holder.title.setBackgroundColor(statusColor);
+        holder.layout.setOnLongClickListener { v: View? ->
+            holder.title.animate().alpha(if (holder.title.alpha == 0f) 1f else 0f).setDuration(100)
+                .start()
+            holder.flag.animate().alpha(if (holder.flag.alpha == 0f) 1f else 0f).setDuration(100)
+                .start()
+            holder.pages.animate().alpha(if (holder.pages.alpha == 0f) 1f else 0f).setDuration(100)
+                .start()
+            true
+        }
+        var statusColor = statuses[ent.id, 0]
+        if (statusColor == 0) {
+            statusColor = Queries.StatusMangaTable.getStatus(ent.id).color
+            statuses.put(ent.id, statusColor)
+        }
+        holder.title.setBackgroundColor(statusColor)
     }
 
-    private void startGallery(Gallery ent) {
-        Intent intent = new Intent(activity, GalleryActivity.class);
-        LogUtility.download(ent + "");
-        intent.putExtra(activity.getPackageName() + ".GALLERY", ent);
-        intent.putExtra(activity.getPackageName() + ".UNKNOWN", true);
-        activity.startActivity(intent);
+    private fun startGallery(ent: Gallery?) {
+        val intent = Intent(activity, GalleryActivity::class.java)
+        download(ent.toString() + "")
+        intent.putExtra(activity.packageName + ".GALLERY", ent)
+        intent.putExtra(activity.packageName + ".UNKNOWN", true)
+        activity.startActivity(intent)
     }
 
-    public void changePage() {
-        forceReload();
+    fun changePage() {
+        forceReload()
     }
 
-    public void updateColor(int position) {
-        Gallery ent = galleryFromPosition(position);
-        if (ent == null) return;
-        int id = ent.getId();
-        statuses.put(id, Queries.StatusMangaTable.getStatus(id).color);
-        notifyItemChanged(position);
+    fun updateColor(position: Int) {
+        val ent = galleryFromPosition(position) ?: return
+        val id = ent.id
+        statuses.put(id, Queries.StatusMangaTable.getStatus(id).color)
+        notifyItemChanged(position)
     }
 
-    @Override
-    public int getItemCount() {
-        return cursor == null ? 0 : cursor.getCount();
+    override fun getItemCount(): Int {
+        return if (cursor == null) 0 else cursor!!.count
     }
 
-    @Override
-    public Filter getFilter() {
-        return new Filter() {
-            @Override
-            protected FilterResults performFiltering(CharSequence constraint) {
-                constraint = constraint.toString().toLowerCase(Locale.US);
-                if ((!force && lastQuery.equals(constraint))) return null;
-                LogUtility.download("FILTERING");
-                setRefresh(true);
-                FilterResults results = new FilterResults();
-                lastQuery = constraint.toString();
-                LogUtility.download(lastQuery + "LASTQERY");
-                force = false;
-                Cursor c = Queries.FavoriteTable.getAllFavoriteGalleriesCursor(lastQuery, sortByTitle, perPage, (activity.getActualPage() - 1) * perPage);
-                results.count = c.getCount();
-                results.values = c;
-                LogUtility.download("FILTERING3");
-                LogUtility.INSTANCE.error(results.count + ";" + results.values);
-                setRefresh(false);
-                return results;
+    override fun getFilter(): Filter {
+        return object : Filter() {
+            override fun performFiltering(constraint: CharSequence): FilterResults? {
+                var constraint = constraint
+                constraint = constraint.toString().lowercase()
+                if (!force && lastQuery == constraint) return null
+                download("FILTERING")
+                setRefresh(true)
+                val results = FilterResults()
+                lastQuery = constraint.toString()
+                download(lastQuery.toString() + "LASTQERY")
+                force = false
+                val c = Queries.FavoriteTable.getAllFavoriteGalleriesCursor(
+                    lastQuery,
+                    sortByTitle,
+                    perPage,
+                    (activity.actualPage - 1) * perPage
+                )
+                results.count = c.count
+                results.values = c
+                download("FILTERING3")
+                error(results.count.toString() + ";" + results.values)
+                setRefresh(false)
+                return results
             }
 
-            @Override
-            protected void publishResults(CharSequence constraint, FilterResults results) {
-                if (results == null) return;
-                setRefresh(true);
-                LogUtility.download("After called2");
-                final int oldSize = getItemCount(), newSize = results.count;
-                updateCursor((Cursor) results.values);
+            override fun publishResults(constraint: CharSequence, results: FilterResults) {
+                if (results == null) return
+                setRefresh(true)
+                download("After called2")
+                val oldSize = itemCount
+                val newSize = results.count
+                updateCursor(results.values as Cursor)
                 //not in runOnUIThread because is always executed on UI
-                if (oldSize > newSize) notifyItemRangeRemoved(newSize, oldSize - newSize);
-                else notifyItemRangeInserted(oldSize, newSize - oldSize);
-                notifyItemRangeChanged(0, Math.min(newSize, oldSize));
-
-                setRefresh(false);
+                if (oldSize > newSize) notifyItemRangeRemoved(
+                    newSize,
+                    oldSize - newSize
+                ) else notifyItemRangeInserted(oldSize, newSize - oldSize)
+                notifyItemRangeChanged(0, Math.min(newSize, oldSize))
+                setRefresh(false)
             }
-        };
+        }
     }
 
-    public void setSortByTitle(boolean sortByTitle) {
-        this.sortByTitle = sortByTitle;
-        forceReload();
+    fun setSortByTitle(sortByTitle: Boolean) {
+        this.sortByTitle = sortByTitle
+        forceReload()
     }
 
-    public void forceReload() {
-        force = true;
-        activity.runOnUiThread(() -> getFilter().filter(lastQuery));
+    fun forceReload() {
+        force = true
+        activity.runOnUiThread { filter.filter(lastQuery) }
     }
 
-    public void setRefresh(boolean refresh) {
-        activity.runOnUiThread(() -> activity.getRefresher().setRefreshing(refresh));
+    fun setRefresh(refresh: Boolean) {
+        activity.runOnUiThread { activity.refresher.isRefreshing = refresh }
     }
 
-    public void clearGalleries() {
-        Queries.FavoriteTable.removeAllFavorite();
-        int s = getItemCount();
-        updateCursor(null);
-        activity.runOnUiThread(() -> notifyItemRangeRemoved(0, s));
+    fun clearGalleries() {
+        Queries.FavoriteTable.removeAllFavorite()
+        val s = itemCount
+        updateCursor(null)
+        activity.runOnUiThread { notifyItemRangeRemoved(0, s) }
     }
 
-    private void updateCursor(@Nullable Cursor c) {
-        if (cursor != null) cursor.close();
-        galleries = new Gallery[c == null ? 0 : c.getCount()];
-        cursor = c;
-        statuses.clear();
+    private fun updateCursor(c: Cursor?) {
+        if (cursor != null) cursor!!.close()
+        galleries = arrayOfNulls(c?.count ?: 0)
+        cursor = c
+        statuses.clear()
     }
 
-    public Collection<Gallery> getAllGalleries() {
-        if (cursor == null) return Collections.emptyList();
-        int count = cursor.getCount();
-        ArrayList<Gallery> galleries = new ArrayList<>(count);
-        for (int i = 0; i < count; i++) galleries.add(galleryFromPosition(i));
-        return galleries;
-    }
+    val allGalleries: Collection<Gallery?>
+        get() {
+            if (cursor == null) return emptyList<Gallery>()
+            val count = cursor!!.count
+            val galleries = ArrayList<Gallery?>(count)
+            for (i in 0 until count) galleries.add(galleryFromPosition(i))
+            return galleries
+        }
 
-    public void randomGallery() {
-        if (cursor == null || cursor.getCount() < 1) return;
-        startGallery(galleryFromPosition(Utility.RANDOM.nextInt(cursor.getCount())));
+    fun randomGallery() {
+        if (cursor == null || cursor!!.count < 1) return
+        startGallery(
+            galleryFromPosition(
+                Utility.RANDOM.nextInt(
+                    cursor!!.count
+                )
+            )
+        )
     }
 }

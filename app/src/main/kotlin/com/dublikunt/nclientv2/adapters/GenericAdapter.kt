@@ -1,95 +1,88 @@
-package com.dublikunt.nclientv2.adapters;
+package com.dublikunt.nclientv2.adapters
 
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.Filter;
-import android.widget.Filterable;
-import android.widget.ImageView;
-import android.widget.TextView;
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import android.widget.Filter
+import android.widget.Filterable
+import android.widget.ImageView
+import android.widget.TextView
+import androidx.recyclerview.widget.RecyclerView
+import com.dublikunt.nclientv2.R
+import com.dublikunt.nclientv2.api.components.GenericGallery
 
-import androidx.annotation.NonNull;
-import androidx.recyclerview.widget.RecyclerView;
+abstract class GenericAdapter<T : GenericGallery?> internal constructor(val dataset: List<T>) :
+    RecyclerView.Adapter<GenericAdapter.ViewHolder>(), Filterable {
+    var filter: List<T>
+    var lastQuery = ""
 
-import com.dublikunt.nclientv2.R;
-import com.dublikunt.nclientv2.api.components.GenericGallery;
-
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Locale;
-
-public abstract class GenericAdapter<T extends GenericGallery> extends RecyclerView.Adapter<GenericAdapter.ViewHolder> implements Filterable {
-    final List<T> dataset;
-    List<T> filter;
-    String lastQuery = "";
-
-    GenericAdapter(List<T> dataset) {
-        this.dataset = dataset;
-        dataset.sort(Comparator.comparing(GenericGallery::getTitle));
-        filter = new ArrayList<>(dataset);
+    init {
+        dataset.sortedBy { obj: T -> obj!!.title }
+        filter = ArrayList(dataset)
     }
 
-    @NonNull
-    @Override
-    public GenericAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        return new GenericAdapter.ViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.entry_layout, parent, false));
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
+        return ViewHolder(
+            LayoutInflater.from(parent.context).inflate(R.layout.entry_layout, parent, false)
+        )
     }
 
-    @Override
-    public int getItemCount() {
-        return filter.size();
+    override fun getItemCount(): Int {
+        return filter.size
     }
 
-    @Override
-    public Filter getFilter() {
-        return new Filter() {
-            @Override
-            protected FilterResults performFiltering(CharSequence constraint) {
-                String query = constraint.toString().toLowerCase(Locale.US);
-                if (lastQuery.equals(query)) return null;
-                FilterResults results = new FilterResults();
-                results.count = filter.size();
-                lastQuery = query;
-                List<T> filter = new ArrayList<>();
-                for (T gallery : dataset)
-                    if (gallery.getTitle().toLowerCase(Locale.US).contains(query))
-                        filter.add(gallery);
-                results.values = filter;
-                return results;
+    override fun getFilter(): Filter {
+        return object : Filter() {
+            override fun performFiltering(constraint: CharSequence): FilterResults? {
+                val query = constraint.toString().lowercase()
+                if (lastQuery == query) return null
+                val results = FilterResults()
+                results.count = filter.size
+                lastQuery = query
+                val filter: MutableList<T> = ArrayList()
+                for (gallery in dataset) if (gallery!!.title.lowercase()
+                        .contains(query)
+                ) filter.add(gallery)
+                results.values = filter
+                return results
             }
 
-            @Override
-            protected void publishResults(CharSequence constraint, FilterResults results) {
-                if (results != null) {
-                    filter = (List<T>) results.values;
-                    if (filter.size() > results.count)
-                        notifyItemRangeInserted(results.count, filter.size() - results.count);
-                    else if (filter.size() < results.count)
-                        notifyItemRangeRemoved(filter.size(), results.count - filter.size());
-                    notifyItemRangeRemoved(filter.size(), results.count);
-                    notifyItemRangeChanged(0, filter.size() - 1);
-                }
+            override fun publishResults(constraint: CharSequence, results: FilterResults) {
+                filter = results.values as List<T>
+                if (filter.size > results.count) notifyItemRangeInserted(
+                    results.count,
+                    filter.size - results.count
+                ) else if (filter.size < results.count) notifyItemRangeRemoved(
+                    filter.size,
+                    results.count - filter.size
+                )
+                notifyItemRangeRemoved(filter.size, results.count)
+                notifyItemRangeChanged(0, filter.size - 1)
             }
-        };
-    }
-
-    static class ViewHolder extends RecyclerView.ViewHolder {
-        final ImageView imgView;
-        final View overlay;
-        final TextView title, pages, flag;
-        final View layout;
-
-        ViewHolder(View v) {
-            super(v);
-            imgView = v.findViewById(R.id.image);
-            title = v.findViewById(R.id.title);
-            pages = v.findViewById(R.id.pages);
-            layout = v.findViewById(R.id.master_layout);
-            flag = v.findViewById(R.id.flag);
-            overlay = v.findViewById(R.id.overlay);
         }
     }
 
+    class ViewHolder(v: View) : RecyclerView.ViewHolder(v) {
+        @JvmField
+        val imgView: ImageView
+        @JvmField
+        val overlay: View
+        @JvmField
+        val title: TextView
+        @JvmField
+        val pages: TextView
+        @JvmField
+        val flag: TextView
+        @JvmField
+        val layout: View
 
+        init {
+            imgView = v.findViewById(R.id.image)
+            title = v.findViewById(R.id.title)
+            pages = v.findViewById(R.id.pages)
+            layout = v.findViewById(R.id.master_layout)
+            flag = v.findViewById(R.id.flag)
+            overlay = v.findViewById(R.id.overlay)
+        }
+    }
 }

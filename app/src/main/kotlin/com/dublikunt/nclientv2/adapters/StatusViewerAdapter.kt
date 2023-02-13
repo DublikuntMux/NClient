@@ -1,120 +1,104 @@
-package com.dublikunt.nclientv2.adapters;
+package com.dublikunt.nclientv2.adapters
 
-import android.content.Intent;
-import android.database.Cursor;
-import android.text.Layout;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
+import android.content.Intent
+import android.database.Cursor
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import androidx.appcompat.app.AppCompatActivity
+import androidx.recyclerview.widget.RecyclerView
+import com.dublikunt.nclientv2.GalleryActivity
+import com.dublikunt.nclientv2.R
+import com.dublikunt.nclientv2.api.components.Gallery
+import com.dublikunt.nclientv2.async.database.Queries
+import com.dublikunt.nclientv2.settings.Global
+import com.dublikunt.nclientv2.utility.ImageDownloadUtility.loadImage
+import com.dublikunt.nclientv2.utility.LogUtility.download
+import java.io.IOException
+import java.util.*
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.RecyclerView;
+class StatusViewerAdapter(private val context: AppCompatActivity, private val statusName: String) :
+    RecyclerView.Adapter<GenericAdapter.ViewHolder>() {
+    private var query = ""
+    private var sortByTitle = false
+    private var galleries: Cursor? = null
 
-import com.dublikunt.nclientv2.GalleryActivity;
-import com.dublikunt.nclientv2.R;
-import com.dublikunt.nclientv2.api.components.Gallery;
-import com.dublikunt.nclientv2.async.database.Queries;
-import com.dublikunt.nclientv2.settings.Global;
-import com.dublikunt.nclientv2.utility.ImageDownloadUtility;
-import com.dublikunt.nclientv2.utility.LogUtility;
-
-import java.io.IOException;
-import java.util.Locale;
-
-public class StatusViewerAdapter extends RecyclerView.Adapter<GenericAdapter.ViewHolder> {
-    private final String statusName;
-    private final AppCompatActivity context;
-    @NonNull
-    private String query = "";
-    private boolean sortByTitle = false;
-    @Nullable
-    private Cursor galleries = null;
-
-    public StatusViewerAdapter(AppCompatActivity context, String statusName) {
-        this.statusName = statusName;
-        this.context = context;
-        reloadGalleries();
+    init {
+        reloadGalleries()
     }
 
-    @NonNull
-    @Override
-    public GenericAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(context).inflate(R.layout.entry_layout, parent, false);
-        return new GenericAdapter.ViewHolder(view);
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): GenericAdapter.ViewHolder {
+        val view = LayoutInflater.from(context).inflate(R.layout.entry_layout, parent, false)
+        return GenericAdapter.ViewHolder(view)
     }
 
-    @Override
-    public void onBindViewHolder(@NonNull GenericAdapter.ViewHolder holder, int position) {
-        Gallery ent = positionToGallery(holder.getBindingAdapterPosition());
-        if (ent == null) return;
-        ImageDownloadUtility.loadImage(context, ent.getThumbnail(), holder.imgView);
-        holder.pages.setText(String.format(Locale.US, "%d", ent.getPageCount()));
-        holder.title.setText(ent.getTitle());
-        holder.flag.setText(Global.getLanguageFlag(ent.getLanguage()));
-        holder.title.setOnClickListener(v -> {
-            Layout layout = holder.title.getLayout();
-            if (layout.getEllipsisCount(layout.getLineCount() - 1) > 0)
-                holder.title.setMaxLines(7);
-            else if (holder.title.getMaxLines() == 7) holder.title.setMaxLines(3);
-            else holder.layout.performClick();
-        });
-        holder.layout.setOnClickListener(v -> {
-            //Global.setLoadedGallery(ent);
-            Intent intent = new Intent(context, GalleryActivity.class);
-            LogUtility.download(ent + "");
-            intent.putExtra(context.getPackageName() + ".GALLERY", ent);
-            context.startActivity(intent);
-        });
-        holder.layout.setOnLongClickListener(v -> {
-            holder.title.animate().alpha(holder.title.getAlpha() == 0f ? 1f : 0f).setDuration(100).start();
-            holder.flag.animate().alpha(holder.flag.getAlpha() == 0f ? 1f : 0f).setDuration(100).start();
-            holder.pages.animate().alpha(holder.pages.getAlpha() == 0f ? 1f : 0f).setDuration(100).start();
-            return true;
-        });
-    }
-
-    @Nullable
-    private Gallery positionToGallery(int position) {
-        try {
-            if (galleries != null && galleries.moveToPosition(position)) {
-                return Queries.GalleryTable.cursorToGallery(galleries);
-            }
-        } catch (IOException ignore) {
+    override fun onBindViewHolder(holder: GenericAdapter.ViewHolder, position: Int) {
+        val ent = positionToGallery(holder.bindingAdapterPosition) ?: return
+        loadImage(context, ent.thumbnail, holder.imgView)
+        holder.pages.text = String.format(Locale.US, "%d", ent.pageCount)
+        holder.title.text = ent.title
+        holder.flag.text = Global.getLanguageFlag(ent.language)
+        holder.title.setOnClickListener {
+            val layout = holder.title.layout
+            if (layout.getEllipsisCount(layout.lineCount - 1) > 0) holder.title.maxLines =
+                7 else if (holder.title.maxLines == 7) holder.title.maxLines =
+                3 else holder.layout.performClick()
         }
-        return null;
+        holder.layout.setOnClickListener {
+            val intent = Intent(context, GalleryActivity::class.java)
+            download(ent.toString() + "")
+            intent.putExtra(context.packageName + ".GALLERY", ent)
+            context.startActivity(intent)
+        }
+        holder.layout.setOnLongClickListener {
+            holder.title.animate().alpha(if (holder.title.alpha == 0f) 1f else 0f).setDuration(100)
+                .start()
+            holder.flag.animate().alpha(if (holder.flag.alpha == 0f) 1f else 0f).setDuration(100)
+                .start()
+            holder.pages.animate().alpha(if (holder.pages.alpha == 0f) 1f else 0f).setDuration(100)
+                .start()
+            true
+        }
     }
 
-    @Override
-    public int getItemCount() {
-        return galleries != null ? galleries.getCount() : 0;
+    private fun positionToGallery(position: Int): Gallery? {
+        try {
+            if (galleries != null && galleries!!.moveToPosition(position)) {
+                return Queries.GalleryTable.cursorToGallery(galleries)
+            }
+        } catch (ignore: IOException) {
+        }
+        return null
     }
 
-    public void setGalleries(@Nullable Cursor galleries) {
-        if (this.galleries != null) this.galleries.close();
-        this.galleries = galleries;
-        context.runOnUiThread(this::notifyDataSetChanged);
+    override fun getItemCount(): Int {
+        return if (galleries != null) galleries!!.count else 0
     }
 
-    public void reloadGalleries() {
-        setGalleries(Queries.StatusMangaTable.getGalleryOfStatus(statusName, query, sortByTitle));
+    fun setGalleries(galleries: Cursor?) {
+        if (this.galleries != null) this.galleries!!.close()
+        this.galleries = galleries
+        context.runOnUiThread { notifyDataSetChanged() }
     }
 
-    public void setQuery(@Nullable String newQuery) {
-        query = newQuery == null ? "" : newQuery;
-        reloadGalleries();
+    fun reloadGalleries() {
+        setGalleries(Queries.StatusMangaTable.getGalleryOfStatus(statusName, query, sortByTitle))
     }
 
-    public void updateSort(boolean byTitle) {
-        sortByTitle = byTitle;
-        reloadGalleries();
+    fun setQuery(newQuery: String?) {
+        query = newQuery ?: ""
+        reloadGalleries()
     }
 
-    public void update(String newQuery, boolean byTitle) {
-        if (query.equals(newQuery) && byTitle == sortByTitle) return;
-        query = newQuery == null ? "" : newQuery;
-        sortByTitle = byTitle;
-        reloadGalleries();
+    fun updateSort(byTitle: Boolean) {
+        sortByTitle = byTitle
+        reloadGalleries()
+    }
+
+    fun update(newQuery: String?, byTitle: Boolean) {
+        if (query == newQuery && byTitle == sortByTitle) return
+        query = newQuery ?: ""
+        sortByTitle = byTitle
+        reloadGalleries()
     }
 }

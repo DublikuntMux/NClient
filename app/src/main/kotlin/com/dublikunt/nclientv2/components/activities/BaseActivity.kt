@@ -1,6 +1,7 @@
 package com.dublikunt.nclientv2.components.activities
 
 import android.content.res.Configuration
+import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
@@ -11,7 +12,7 @@ abstract class BaseActivity : GeneralActivity() {
         protected set
     lateinit var refresher: SwipeRefreshLayout
         protected set
-    lateinit var masterLayout: ViewGroup
+    var masterLayout: ViewGroup? = null
         protected set
     protected abstract val portraitColumnCount: Int
     protected abstract val landscapeColumnCount: Int
@@ -25,14 +26,14 @@ abstract class BaseActivity : GeneralActivity() {
     }
 
     protected open fun changeLayout(landscape: Boolean) {
-        val manager = recycler!!.layoutManager as CustomGridLayoutManager?
-        val adapter = recycler!!.adapter
+        val manager = recycler.layoutManager as CustomGridLayoutManager?
+        val adapter = recycler.adapter
         val count = if (landscape) landscapeColumnCount else portraitColumnCount
         var position = 0
         if (manager != null) position = manager.findFirstCompletelyVisibleItemPosition()
         val gridLayoutManager = CustomGridLayoutManager(this, count)
-        recycler!!.layoutManager = gridLayoutManager
-        recycler!!.adapter = adapter
-        recycler!!.scrollToPosition(position)
+        recycler.layoutManager = gridLayoutManager
+        recycler.adapter = adapter
+        recycler.scrollToPosition(position)
     }
 }

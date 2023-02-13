@@ -1,422 +1,412 @@
-package com.dublikunt.nclientv2.adapters;
+package com.dublikunt.nclientv2.adapters
 
-import android.content.Intent;
-import android.util.SparseIntArray;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
-import android.widget.ImageView;
-import android.widget.Toast;
+import android.content.DialogInterface
+import android.content.Intent
+import android.graphics.RectF
+import android.text.format.DateFormat
+import android.util.SparseIntArray
+import android.view.LayoutInflater
+import android.view.View
+import android.view.View.OnLongClickListener
+import android.view.ViewGroup
+import android.widget.ArrayAdapter
+import android.widget.ImageView
+import android.widget.Toast
+import androidx.recyclerview.widget.RecyclerView
+import com.dublikunt.nclientv2.CopyToClipboardActivity.Companion.copyTextToClipboard
+import com.dublikunt.nclientv2.GalleryActivity
+import com.dublikunt.nclientv2.MainActivity
+import com.dublikunt.nclientv2.R
+import com.dublikunt.nclientv2.ZoomActivity
+import com.dublikunt.nclientv2.api.components.Gallery
+import com.dublikunt.nclientv2.api.components.GalleryData
+import com.dublikunt.nclientv2.api.components.GenericGallery
+import com.dublikunt.nclientv2.api.enums.SpecialTagIds
+import com.dublikunt.nclientv2.api.enums.TagType
+import com.dublikunt.nclientv2.api.local.LocalGallery
+import com.dublikunt.nclientv2.async.database.Queries
+import com.dublikunt.nclientv2.components.classes.Size
+import com.dublikunt.nclientv2.components.photoview.OnMatrixChangedListener
+import com.dublikunt.nclientv2.components.photoview.PhotoView
+import com.dublikunt.nclientv2.components.widgets.CustomGridLayoutManager
+import com.dublikunt.nclientv2.files.GalleryFolder
+import com.dublikunt.nclientv2.settings.Global
+import com.dublikunt.nclientv2.utility.ImageDownloadUtility.downloadPage
+import com.dublikunt.nclientv2.utility.ImageDownloadUtility.loadImage
+import com.dublikunt.nclientv2.utility.ImageDownloadUtility.loadImageOp
+import com.dublikunt.nclientv2.utility.LogUtility.download
+import com.dublikunt.nclientv2.utility.Utility
+import com.google.android.material.chip.Chip
+import com.google.android.material.chip.ChipGroup
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.android.material.textview.MaterialTextView
+import java.io.File
+import java.util.*
 
-import androidx.annotation.NonNull;
-import androidx.recyclerview.widget.RecyclerView;
+class GalleryAdapter(
+    private val context: GalleryActivity,
+    private val gallery: GenericGallery,
+    colCount: Int
+) : RecyclerView.Adapter<GalleryAdapter.ViewHolder>() {
+    private val maxSize: Size = gallery.maxSize
+    private val minSize: Size = gallery.minSize
+    private val angles = SparseIntArray()
+    var directory: GalleryFolder? = null
+    private var maxImageSize: Size? = null
+    private var policy: Policy? = null
+    private var colCount = 0
 
-import com.dublikunt.nclientv2.CopyToClipboardActivity;
-import com.dublikunt.nclientv2.GalleryActivity;
-import com.dublikunt.nclientv2.MainActivity;
-import com.dublikunt.nclientv2.R;
-import com.dublikunt.nclientv2.ZoomActivity;
-import com.dublikunt.nclientv2.api.components.Gallery;
-import com.dublikunt.nclientv2.api.components.GalleryData;
-import com.dublikunt.nclientv2.api.components.GenericGallery;
-import com.dublikunt.nclientv2.api.components.Tag;
-import com.dublikunt.nclientv2.api.components.TagList;
-import com.dublikunt.nclientv2.api.enums.SpecialTagIds;
-import com.dublikunt.nclientv2.api.enums.TagType;
-import com.dublikunt.nclientv2.api.local.LocalGallery;
-import com.dublikunt.nclientv2.async.database.Queries;
-import com.dublikunt.nclientv2.components.classes.Size;
-import com.dublikunt.nclientv2.components.photoview.PhotoView;
-import com.dublikunt.nclientv2.components.widgets.CustomGridLayoutManager;
-import com.dublikunt.nclientv2.files.GalleryFolder;
-import com.dublikunt.nclientv2.settings.Global;
-import com.dublikunt.nclientv2.utility.ImageDownloadUtility;
-import com.dublikunt.nclientv2.utility.LogUtility;
-import com.dublikunt.nclientv2.utility.Utility;
-import com.google.android.material.chip.Chip;
-import com.google.android.material.chip.ChipGroup;
-import com.google.android.material.dialog.MaterialAlertDialogBuilder;
-import com.google.android.material.textview.MaterialTextView;
-
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Locale;
-
-public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.ViewHolder> {
-    private static final int[] TAG_NAMES = {
-        R.string.unknown,
-        R.string.tag_parody_gallery,
-        R.string.tag_character_gallery,
-        R.string.tag_tag_gallery,
-        R.string.tag_artist_gallery,
-        R.string.tag_group_gallery,
-        R.string.tag_language_gallery,
-        R.string.tag_category_gallery,
-    };
-    private static final int TOLERANCE = 1000;
-    private final Size maxSize;
-    private final Size minSize;
-    private final SparseIntArray angles = new SparseIntArray();
-    private final GalleryActivity context;
-    private final GenericGallery gallery;
-    private GalleryFolder directory = null;
-    private Size maxImageSize = null;
-    private Policy policy;
-    private int colCount;
-
-    public GalleryAdapter(GalleryActivity cont, GenericGallery gallery, int colCount) {
-        this.context = cont;
-        this.gallery = gallery;
-        maxSize = gallery.getMaxSize();
-        minSize = gallery.getMinSize();
-        setColCount(colCount);
+    init {
+        setColCount(colCount)
         try {
-            if (gallery instanceof LocalGallery) {
-                directory = gallery.getGalleryFolder();
-            } else if (Global.hasStoragePermission(cont)) {
-                if (gallery.getId() != -1) {
-                    File f = Global.findGalleryFolder(context, gallery.getId());
-                    if (f != null) directory = new GalleryFolder(f);
+            if (gallery is LocalGallery) {
+                directory = gallery.getGalleryFolder()
+            } else if (Global.hasStoragePermission(context)) {
+                if (gallery.id != -1) {
+                    val f = Global.findGalleryFolder(context, gallery.id)
+                    if (f != null) directory = GalleryFolder(f)
                 } else {
-                    directory = new GalleryFolder(gallery.getTitle());
+                    directory = GalleryFolder(gallery.title)
                 }
             }
-        } catch (IllegalArgumentException ignore) {
-            directory = null;
+        } catch (ignore: IllegalArgumentException) {
         }
-        LogUtility.download("Max maxSize: " + maxSize + ", min maxSize: " + gallery.getMinSize());
+        download("Max maxSize: " + maxSize + ", min maxSize: " + gallery.minSize)
     }
 
-    public Type positionToType(int pos) {
-        if (pos == 0) return Type.TAG;
-        if (pos > gallery.getPageCount()) return Type.RELATED;
-        return Type.PAGE;
+    fun positionToType(pos: Int): Type {
+        if (pos == 0) return Type.TAG
+        return if (pos > gallery.pageCount) Type.RELATED else Type.PAGE
     }
 
-    public void setColCount(int colCount) {
-        this.colCount = colCount;
-        applyProportionPolicy();
+    fun setColCount(colCount: Int) {
+        this.colCount = colCount
+        applyProportionPolicy()
     }
 
-    private void applyProportionPolicy() {
-        if (colCount == 1) policy = Policy.FULL;
-        else if (maxSize.getHeight() - minSize.getHeight() < TOLERANCE) policy = Policy.MAX;
-        else policy = Policy.PROPORTION;
-        LogUtility.download("NEW POLICY: " + policy);
+    private fun applyProportionPolicy() {
+        policy =
+            if (colCount == 1) Policy.FULL else if (maxSize.height - minSize.height < TOLERANCE) Policy.MAX else Policy.PROPORTION
+        download("NEW POLICY: $policy")
     }
 
-    public GalleryFolder getDirectory() {
-        return directory;
-    }
-
-    @NonNull
-    @Override
-    public GalleryAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        int id = 0;
-        switch (Type.values()[viewType]) {
-            case TAG:
-                id = R.layout.tags_layout;
-                break;
-            case PAGE:
-                switch (policy) {
-                    case MAX:
-                        id = R.layout.image_void;
-                        break;
-                    case FULL:
-                        id = R.layout.image_void_full;
-                        break;
-                    case PROPORTION:
-                        id = R.layout.image_void_static;
-                        break;
-                }
-                break;
-            case RELATED:
-                id = R.layout.related_recycler;
-                break;
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
+        var id = 0
+        when (Type.values()[viewType]) {
+            Type.TAG -> id = R.layout.tags_layout
+            Type.PAGE -> when (policy) {
+                Policy.MAX -> id = R.layout.image_void
+                Policy.FULL -> id = R.layout.image_void_full
+                Policy.PROPORTION -> id = R.layout.image_void_static
+                else -> {}
+            }
+            Type.RELATED -> id = R.layout.related_recycler
         }
-        return new GalleryAdapter.ViewHolder(LayoutInflater.from(parent.getContext()).inflate(id, parent, false), Type.values()[viewType]);
+        return ViewHolder(
+            LayoutInflater.from(parent.context).inflate(id, parent, false),
+            Type.values()[viewType]
+        )
     }
 
-    @Override
-    public void onBindViewHolder(@NonNull final GalleryAdapter.ViewHolder holder, int position) {
-
-        switch (positionToType(holder.getBindingAdapterPosition())) {
-            case TAG:
-                loadTagLayout(holder);
-                break;
-            case PAGE:
-                loadPageLayout(holder);
-                break;
-            case RELATED:
-                loadRelatedLayout(holder);
-                break;
+    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+        when (positionToType(holder.bindingAdapterPosition)) {
+            Type.TAG -> loadTagLayout(holder)
+            Type.PAGE -> loadPageLayout(holder)
+            Type.RELATED -> loadRelatedLayout(holder)
         }
     }
 
-    private void loadRelatedLayout(ViewHolder holder) {
-        LogUtility.download("Called RElated");
-        final RecyclerView recyclerView = holder.master.findViewById(R.id.recycler);
-        if (gallery.isLocal()) {
-            holder.master.setVisibility(View.GONE);
-            return;
+    private fun loadRelatedLayout(holder: ViewHolder) {
+        download("Called RElated")
+        val recyclerView = holder.master.findViewById<RecyclerView>(R.id.recycler)
+        if (gallery.isLocal) {
+            holder.master.visibility = View.GONE
+            return
         }
-        final Gallery gallery = (Gallery) this.gallery;
-        if (!gallery.isRelatedLoaded() || gallery.getRelated().size() == 0) {
-            holder.master.setVisibility(View.GONE);
-            return;
-        } else holder.master.setVisibility(View.VISIBLE);
-        recyclerView.setLayoutManager(new CustomGridLayoutManager(context, 1, RecyclerView.HORIZONTAL, false));
-        if (gallery.isRelatedLoaded()) {
-            ListAdapter adapter = new ListAdapter(context);
-            adapter.addGalleries(new ArrayList<>(gallery.getRelated()));
-            recyclerView.setAdapter(adapter);
+        val gallery = gallery as Gallery
+        if (!gallery.isRelatedLoaded || gallery.related.size == 0) {
+            holder.master.visibility = View.GONE
+            return
+        } else holder.master.visibility = View.VISIBLE
+        recyclerView.layoutManager =
+            CustomGridLayoutManager(context, 1, RecyclerView.HORIZONTAL, false)
+        if (gallery.isRelatedLoaded) {
+            val adapter = ListAdapter(context)
+            adapter.addGalleries(ArrayList<GenericGallery>(gallery.related))
+            recyclerView.adapter = adapter
         }
     }
 
-    private void loadTagLayout(ViewHolder holder) {
-        final ViewGroup vg = holder.master.findViewById(R.id.tag_master);
-        final MaterialTextView idContainer = holder.master.findViewById(R.id.id_num);
-        initializeIdContainer(idContainer);
+    private fun loadTagLayout(holder: ViewHolder) {
+        val vg = holder.master.findViewById<ViewGroup>(R.id.tag_master)
+        val idContainer = holder.master.findViewById<MaterialTextView>(R.id.id_num)
+        initializeIdContainer(idContainer)
         if (!hasTags()) {
-            ViewGroup.LayoutParams layoutParams = vg.getLayoutParams();
-            layoutParams.height = 0;
-            vg.setLayoutParams(layoutParams);
-            return;
+            val layoutParams = vg.layoutParams
+            layoutParams.height = 0
+            vg.layoutParams = layoutParams
+            return
         }
-        final LayoutInflater inflater = context.getLayoutInflater();
-
-        int tagCount, idStringTagName;
-        ViewGroup lay;
-        ChipGroup cg;
-        TagList tagList = this.gallery.getGalleryData().getTags();
-        for (TagType type : TagType.values) {
-            idStringTagName = TAG_NAMES[type.getId()];
-            tagCount = tagList.getCount(type);
-            lay = (ViewGroup) vg.getChildAt(type.getId());
-            cg = lay.findViewById(R.id.chip_group);
-            if (cg.getChildCount() != 0) continue;
-            lay.setVisibility(tagCount == 0 ? View.GONE : View.VISIBLE);
-            ((MaterialTextView) lay.findViewById(R.id.title)).setText(idStringTagName);
-            for (int a = 0; a < tagCount; a++) {
-                final Tag tag = tagList.getTag(type, a);
-                Chip c = (Chip) inflater.inflate(R.layout.chip_layout, cg, false);
-                c.setText(tag.getName());
-                c.setOnClickListener(v -> {
-                    Intent intent = new Intent(context, MainActivity.class);
-                    intent.putExtra(context.getPackageName() + ".TAG", tag);
-                    intent.putExtra(context.getPackageName() + ".ISBYTAG", true);
-                    context.startActivity(intent);
-                });
-                c.setOnLongClickListener(v -> {
-                    CopyToClipboardActivity.copyTextToClipboard(context, tag.getName());
-                    Toast.makeText(context, R.string.copied_to_clipboard, Toast.LENGTH_SHORT).show();
-                    return true;
-                });
-                cg.addView(c);
-            }
-            addInfoLayout(holder, gallery.getGalleryData());
-        }
-    }
-
-    private void initializeIdContainer(MaterialTextView idContainer) {
-        if (gallery.getId() <= 0) {
-            idContainer.setVisibility(View.GONE);
-            return;
-        }
-        String id = Integer.toString(gallery.getId());
-        idContainer.setText(id);
-        idContainer.setVisibility(gallery.getId() != SpecialTagIds.INVALID_ID ? View.VISIBLE : View.GONE);
-        idContainer.setOnClickListener(v -> {
-            CopyToClipboardActivity.copyTextToClipboard(context, id);
-            context.runOnUiThread(() ->
-                Toast.makeText(context, R.string.id_copied_to_clipboard, Toast.LENGTH_SHORT).show()
-            );
-        });
-    }
-
-    private void addInfoLayout(ViewHolder holder, GalleryData gallery) {
-        MaterialTextView text = holder.master.findViewById(R.id.page_count);
-        text.setText(context.getString(R.string.page_count_format, gallery.getPageCount()));
-        text = holder.master.findViewById(R.id.upload_date);
-        text.setText(
-            context.getString(R.string.upload_date_format,
-                android.text.format.DateFormat.getDateFormat(context).format(gallery.getUploadDate()),
-                android.text.format.DateFormat.getTimeFormat(context).format(gallery.getUploadDate())
-            ));
-        text = holder.master.findViewById(R.id.favorite_count);
-        text.setText(context.getString(R.string.favorite_count_format, gallery.getFavoriteCount()));
-
-    }
-
-    public void setMaxImageSize(Size maxImageSize) {
-        this.maxImageSize = maxImageSize;
-        context.runOnUiThread(() -> notifyItemRangeChanged(0, getItemCount()));
-    }
-
-    private void loadPageLayout(ViewHolder holder) {
-        final int pos = holder.getBindingAdapterPosition();
-        final ImageView imgView = holder.master.findViewById(R.id.image);
-
-        imgView.setOnClickListener(v -> startGallery(holder.getBindingAdapterPosition()));
-        imgView.setOnLongClickListener(null);
-        holder.master.setOnClickListener(v -> startGallery(holder.getBindingAdapterPosition()));
-        holder.master.setOnLongClickListener(null);
-
-        holder.pageNumber.setText(String.format(Locale.US, "%d", pos));
-
-
-        if (policy == Policy.MAX)
-            holder.itemView.post(() -> {//find the max size and apply proportion
-                if (maxImageSize != null) return;
-                int cellWidth = holder.itemView.getWidth();// this will give you cell width dynamically
-                LogUtility.download(String.format(Locale.US, "Setting: %d,%s", cellWidth, maxSize.toString()));
-                if (maxSize.getWidth() > 10 && maxSize.getHeight() > 10) {
-                    int hei = (maxSize.getHeight() * cellWidth) / maxSize.getWidth();
-                    if (hei >= 100)
-                        setMaxImageSize(new Size(cellWidth, hei));
+        val inflater = context.layoutInflater
+        var tagCount: Int
+        var idStringTagName: Int
+        var lay: ViewGroup
+        var cg: ChipGroup
+        val tagList = gallery.galleryData.tags
+        for (type in TagType.values) {
+            idStringTagName = TAG_NAMES[type.id.toInt()]
+            tagCount = tagList.getCount(type)
+            lay = vg.getChildAt(type.id.toInt()) as ViewGroup
+            cg = lay.findViewById(R.id.chip_group)
+            if (cg.childCount != 0) continue
+            lay.visibility = if (tagCount == 0) View.GONE else View.VISIBLE
+            (lay.findViewById<View>(R.id.title) as MaterialTextView).setText(idStringTagName)
+            for (a in 0 until tagCount) {
+                val tag = tagList.getTag(type, a)
+                val c = inflater.inflate(R.layout.chip_layout, cg, false) as Chip
+                c.text = tag.name
+                c.setOnClickListener {
+                    val intent = Intent(context, MainActivity::class.java)
+                    intent.putExtra(context.packageName + ".TAG", tag)
+                    intent.putExtra(context.packageName + ".ISBYTAG", true)
+                    context.startActivity(intent)
                 }
-            });
-
-        if (policy == Policy.MAX && maxImageSize != null) {
-            ViewGroup.LayoutParams params = imgView.getLayoutParams();
-            params.height = maxImageSize.getHeight();
-            params.width = maxImageSize.getWidth();
-            imgView.setLayoutParams(params);
-        }
-
-        if (policy == Policy.FULL) {
-            PhotoView photoView = (PhotoView) imgView;
-            photoView.setZoomable(Global.isZoomOneColumn());
-            photoView.setOnMatrixChangeListener(rect -> photoView.setAllowParentInterceptOnEdge(photoView.getScale() <= 1f));
-            photoView.setOnClickListener(v -> {
-                if (photoView.getScale() <= 1f)
-                    startGallery(holder.getBindingAdapterPosition());
-            });
-            View.OnLongClickListener listener = v -> {
-                optionDialog(imgView, pos);
-                return true;
-            };
-            imgView.setOnLongClickListener(listener);
-            holder.master.setOnLongClickListener(listener);
-        }
-
-        loadImageOnPolicy(imgView, pos);
-
-
-    }
-
-    private void optionDialog(ImageView imgView, final int pos) {
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(context, android.R.layout.select_dialog_item);
-        adapter.add(context.getString(R.string.share));
-        adapter.add(context.getString(R.string.rotate_image));
-        adapter.add(context.getString(R.string.bookmark_here));
-        if (Global.hasStoragePermission(context))
-            adapter.add(context.getString(R.string.save_page));
-        MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(context);
-        builder.setTitle(R.string.settings).setIcon(R.drawable.ic_share);
-        builder.setAdapter(adapter, (dialog, which) -> {
-            switch (which) {
-                case 0:
-                    openSendImageDialog(imgView, pos);
-                    break;
-                case 1:
-                    rotate(pos);
-                    break;
-                case 2:
-                    Queries.ResumeTable.insert(gallery.getId(), pos);
-                    break;
-                case 3:
-                    String name = String.format(Locale.US, "%d-%d.jpg", gallery.getId(), pos);
-                    Utility.saveImage(imgView.getDrawable(), new File(Global.SCREENFOLDER, name));
-                    break;
+                c.setOnLongClickListener {
+                    copyTextToClipboard(context, tag.name)
+                    Toast.makeText(context, R.string.copied_to_clipboard, Toast.LENGTH_SHORT).show()
+                    true
+                }
+                cg.addView(c)
             }
-        }).show();
+            addInfoLayout(holder, gallery.galleryData)
+        }
     }
 
-    private void openSendImageDialog(ImageView img, int pos) {
-        MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(context);
-        builder.setPositiveButton(R.string.yes, (dialog, which) -> sendImage(img, pos, true))
-            .setNegativeButton(R.string.no, (dialog, which) -> sendImage(img, pos, false))
+    private fun initializeIdContainer(idContainer: MaterialTextView) {
+        if (gallery.id <= 0) {
+            idContainer.visibility = View.GONE
+            return
+        }
+        val id = gallery.id.toString()
+        idContainer.text = id
+        idContainer.visibility =
+            if (gallery.id != SpecialTagIds.INVALID_ID.toInt()) View.VISIBLE else View.GONE
+        idContainer.setOnClickListener {
+            copyTextToClipboard(context, id)
+            context.runOnUiThread {
+                Toast.makeText(
+                    context,
+                    R.string.id_copied_to_clipboard,
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+        }
+    }
+
+    private fun addInfoLayout(holder: ViewHolder, gallery: GalleryData) {
+        var text = holder.master.findViewById<MaterialTextView>(R.id.page_count)
+        text.text = context.getString(R.string.page_count_format, gallery.pageCount)
+        text = holder.master.findViewById(R.id.upload_date)
+        text.text = context.getString(
+            R.string.upload_date_format,
+            DateFormat.getDateFormat(context).format(gallery.uploadDate),
+            DateFormat.getTimeFormat(context).format(gallery.uploadDate)
+        )
+        text = holder.master.findViewById(R.id.favorite_count)
+        text.text = context.getString(R.string.favorite_count_format, gallery.favoriteCount)
+    }
+
+    fun setMaxImageSize(maxImageSize: Size?) {
+        this.maxImageSize = maxImageSize
+        context.runOnUiThread { notifyItemRangeChanged(0, itemCount) }
+    }
+
+    private fun loadPageLayout(holder: ViewHolder) {
+        val pos = holder.bindingAdapterPosition
+        val imgView = holder.master.findViewById<ImageView>(R.id.image)
+        imgView.setOnClickListener { startGallery(holder.bindingAdapterPosition) }
+        imgView.setOnLongClickListener(null)
+        holder.master.setOnClickListener { startGallery(holder.bindingAdapterPosition) }
+        holder.master.setOnLongClickListener(null)
+        holder.pageNumber!!.text = String.format(Locale.US, "%d", pos)
+        if (policy == Policy.MAX) holder.itemView.post {
+            //find the max size and apply proportion
+            if (maxImageSize != null) return@post
+            val cellWidth = holder.itemView.width // this will give you cell width dynamically
+            download(String.format(Locale.US, "Setting: %d,%s", cellWidth, maxSize.toString()))
+            if (maxSize.width > 10 && maxSize.height > 10) {
+                val hei = maxSize.height * cellWidth / maxSize.width
+                if (hei >= 100) setMaxImageSize(Size(cellWidth, hei))
+            }
+        }
+        if (policy == Policy.MAX && maxImageSize != null) {
+            val params = imgView.layoutParams
+            params.height = maxImageSize!!.height
+            params.width = maxImageSize!!.width
+            imgView.layoutParams = params
+        }
+        if (policy == Policy.FULL) {
+            val photoView = imgView as PhotoView
+            photoView.isZoomable = Global.isZoomOneColumn()
+            photoView.setOnMatrixChangeListener(object : OnMatrixChangedListener {
+                override fun onMatrixChanged(rect: RectF?) {
+                    photoView.setAllowParentInterceptOnEdge(
+                        photoView.scale <= 1f
+                    )
+                }
+            })
+            photoView.setOnClickListener {
+                if (photoView.scale <= 1f) startGallery(
+                    holder.bindingAdapterPosition
+                )
+            }
+            val listener = OnLongClickListener {
+                optionDialog(imgView, pos)
+                true
+            }
+            imgView.setOnLongClickListener(listener)
+            holder.master.setOnLongClickListener(listener)
+        }
+        loadImageOnPolicy(imgView, pos)
+    }
+
+    private fun optionDialog(imgView: ImageView, pos: Int) {
+        val adapter = ArrayAdapter<String>(context, android.R.layout.select_dialog_item)
+        adapter.add(context.getString(R.string.share))
+        adapter.add(context.getString(R.string.rotate_image))
+        adapter.add(context.getString(R.string.bookmark_here))
+        if (Global.hasStoragePermission(context)) adapter.add(context.getString(R.string.save_page))
+        val builder = MaterialAlertDialogBuilder(context)
+        builder.setTitle(R.string.settings).setIcon(R.drawable.ic_share)
+        builder.setAdapter(adapter) { _: DialogInterface?, which: Int ->
+            when (which) {
+                0 -> openSendImageDialog(imgView, pos)
+                1 -> rotate(pos)
+                2 -> Queries.ResumeTable.insert(gallery.id, pos)
+                3 -> {
+                    val name = String.format(Locale.US, "%d-%d.jpg", gallery.id, pos)
+                    Utility.saveImage(imgView.drawable, File(Global.SCREENFOLDER, name))
+                }
+            }
+        }.show()
+    }
+
+    private fun openSendImageDialog(img: ImageView, pos: Int) {
+        val builder = MaterialAlertDialogBuilder(context)
+        builder.setPositiveButton(R.string.yes) { _: DialogInterface?, _: Int ->
+            sendImage(
+                img,
+                pos,
+                true
+            )
+        }
+            .setNegativeButton(R.string.no) { _: DialogInterface?, _: Int ->
+                sendImage(
+                    img,
+                    pos,
+                    false
+                )
+            }
             .setCancelable(true).setTitle(R.string.send_with_title)
             .setMessage(R.string.caption_send_with_title)
-            .show();
+            .show()
     }
 
-    private void sendImage(ImageView img, int pos, boolean text) {
-        Utility.sendImage(context, img.getDrawable(), text ? gallery.sharePageUrl(pos - 1) : null);
+    private fun sendImage(img: ImageView, pos: Int, text: Boolean) {
+        Utility.sendImage(context, img.drawable, if (text) gallery.sharePageUrl(pos - 1) else null)
     }
 
-    private void rotate(int pos) {
-        angles.append(pos, (angles.get(pos) + 270) % 360);
-        context.runOnUiThread(() -> notifyItemChanged(pos));
+    private fun rotate(pos: Int) {
+        angles.append(pos, (angles[pos] + 270) % 360)
+        context.runOnUiThread { notifyItemChanged(pos) }
     }
 
-    private void startGallery(int page) {
-        if (!gallery.isLocal() && Global.getDownloadPolicy() == Global.DataUsageType.NONE) {
-            context.runOnUiThread(() ->
-                Toast.makeText(context, R.string.enable_network_to_continue, Toast.LENGTH_SHORT).show()
-            );
-            return;
+    private fun startGallery(page: Int) {
+        if (!gallery.isLocal && Global.getDownloadPolicy() == Global.DataUsageType.NONE) {
+            context.runOnUiThread {
+                Toast.makeText(
+                    context,
+                    R.string.enable_network_to_continue,
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+            return
         }
-        Intent intent = new Intent(context, ZoomActivity.class);
-        intent.putExtra(context.getPackageName() + ".GALLERY", gallery);
-        intent.putExtra(context.getPackageName() + ".DIRECTORY", directory);
-        intent.putExtra(context.getPackageName() + ".PAGE", page);
-        context.startActivity(intent);
+        val intent = Intent(context, ZoomActivity::class.java)
+        intent.putExtra(context.packageName + ".GALLERY", gallery)
+        intent.putExtra(context.packageName + ".DIRECTORY", directory)
+        intent.putExtra(context.packageName + ".PAGE", page)
+        context.startActivity(intent)
     }
 
-    private void loadImageOnPolicy(ImageView imgView, int pos) {
-        final File file = directory == null ? null : directory.getPage(pos);
-        int angle = angles.get(pos);
-
+    private fun loadImageOnPolicy(imgView: ImageView, pos: Int) {
+        val file: File? = directory?.getPage(pos)
+        val angle = angles[pos]
         if (policy == Policy.FULL) {
-            if (file != null && file.exists())
-                ImageDownloadUtility.loadImageOp(context, imgView, file, angle);
-            else if (!gallery.isLocal()) {
-                Gallery ent = (Gallery) gallery;
-                ImageDownloadUtility.loadImageOp(context, imgView, ent, pos - 1, angle);
-            } else ImageDownloadUtility.loadImage(R.mipmap.ic_launcher, imgView);
+            if (file != null && file.exists()) loadImageOp(
+                context,
+                imgView,
+                file,
+                angle
+            ) else if (!gallery.isLocal) {
+                val ent = gallery as Gallery
+                loadImageOp(context, imgView, ent, pos - 1, angle)
+            } else loadImage(R.mipmap.ic_launcher, imgView)
         } else {
-            if (file != null && file.exists())
-                ImageDownloadUtility.loadImage(context, file, imgView);
-            else if (!gallery.isLocal()) {
-                Gallery ent = (Gallery) gallery;
-                ImageDownloadUtility.downloadPage(context, imgView, ent, pos - 1, false);
-            } else ImageDownloadUtility.loadImage(R.mipmap.ic_launcher, imgView);
+            if (file != null && file.exists()) loadImage(
+                context,
+                file,
+                imgView
+            ) else if (!gallery.isLocal) {
+                val ent = gallery as Gallery
+                downloadPage(context, imgView, ent, pos - 1, false)
+            } else loadImage(R.mipmap.ic_launcher, imgView)
         }
     }
 
-
-    private boolean hasTags() {
-        return gallery.hasGalleryData();
+    private fun hasTags(): Boolean {
+        return gallery.hasGalleryData()
     }
 
-    @Override
-    public int getItemViewType(int position) {
-        return positionToType(position).ordinal();
+    override fun getItemViewType(position: Int): Int {
+        return positionToType(position).ordinal
     }
 
-    @Override
-    public int getItemCount() {
-        return gallery.getPageCount() + 2;
+    override fun getItemCount(): Int {
+        return gallery.pageCount + 2
     }
 
-    public enum Type {TAG, PAGE, RELATED}
+    enum class Type {
+        TAG, PAGE, RELATED
+    }
 
-    public enum Policy {PROPORTION, MAX, FULL}
+    enum class Policy {
+        PROPORTION, MAX, FULL
+    }
 
-    static class ViewHolder extends RecyclerView.ViewHolder {
-        final View master;
-        final MaterialTextView pageNumber;
+    class ViewHolder(v: View, type: Type) : RecyclerView.ViewHolder(v) {
+        val master: View
+        var pageNumber: MaterialTextView? = null
 
-        ViewHolder(View v, Type type) {
-            super(v);
-            master = v.findViewById(R.id.master);
-            pageNumber = v.findViewById(R.id.page_number);
-            if (Global.useRtl()) v.setRotationY(180);
-            if (type == Type.RELATED) Global.applyFastScroller(master.findViewById(R.id.recycler));
+        init {
+            master = v.findViewById(R.id.master)
+            pageNumber = v.findViewById(R.id.page_number)
+            if (Global.useRtl()) v.rotationY = 180f
+            if (type == Type.RELATED) Global.applyFastScroller(master.findViewById(R.id.recycler))
         }
     }
 
+    companion object {
+        private val TAG_NAMES = intArrayOf(
+            R.string.unknown,
+            R.string.tag_parody_gallery,
+            R.string.tag_character_gallery,
+            R.string.tag_tag_gallery,
+            R.string.tag_artist_gallery,
+            R.string.tag_group_gallery,
+            R.string.tag_language_gallery,
+            R.string.tag_category_gallery
+        )
+        private const val TOLERANCE = 1000
+    }
 }

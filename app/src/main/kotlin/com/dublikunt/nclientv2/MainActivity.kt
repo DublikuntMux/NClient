@@ -243,9 +243,9 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
             return
         }
         if (listener == null) {
-            snackbar = Snackbar.make(masterLayout, text, Snackbar.LENGTH_SHORT)
+            snackbar = masterLayout?.let { Snackbar.make(it, text, Snackbar.LENGTH_SHORT) }
         } else {
-            snackbar = Snackbar.make(masterLayout, text, Snackbar.LENGTH_INDEFINITE)
+            snackbar = masterLayout?.let { Snackbar.make(it, text, Snackbar.LENGTH_INDEFINITE) }
             snackbar!!.setAction(R.string.retry, listener)
         }
         snackbar!!.show()

@@ -42,7 +42,7 @@ class LocalActivity : BaseActivity() {
         private set
     private var idGalleryPosition = -1
     private var folder = Global.MAINFOLDER
-    private lateinit var searchView: SearchView
+    private var searchView: SearchView? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.app_bar_main)
@@ -77,7 +77,7 @@ class LocalActivity : BaseActivity() {
         optionMenu = menu
         setMenuVisibility(menu)
         searchView = menu.findItem(R.id.search).actionView as SearchView
-        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+        searchView!!.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String): Boolean {
                 return true
             }
@@ -216,7 +216,7 @@ class LocalActivity : BaseActivity() {
 
     val query: String
         get() {
-            val query = searchView.query
+            val query = searchView?.query
             return query?.toString() ?: ""
         }
 }
