@@ -35,7 +35,6 @@ import com.dublikunt.nclientv2.async.downloader.DownloadGalleryV2
 import com.dublikunt.nclientv2.components.GlideX
 import com.dublikunt.nclientv2.components.activities.BaseActivity
 import com.dublikunt.nclientv2.components.views.PageSwitcher
-import com.dublikunt.nclientv2.components.views.PageSwitcher.DefaultPageChanger
 import com.dublikunt.nclientv2.components.widgets.CustomGridLayoutManager
 import com.dublikunt.nclientv2.settings.Global
 import com.dublikunt.nclientv2.settings.Global.ThemeScheme
@@ -86,10 +85,12 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
     private var snackbar: Snackbar? = null
     private var showedCaptcha = false
     private var noNeedForCaptcha = false
+    private lateinit var pageSwitcher: PageSwitcher
     private val resetDataset: InspectorResponse = object : MainInspectorResponse() {
         override fun onSuccess(galleries: List<GenericGallery>) {
             super.onSuccess(galleries)
             adapter.restartDataset(galleries)
+            showPageSwitcher(inspector.page, inspector.pageCount)
             runOnUiThread { recycler.smoothScrollToPosition(0) }
         }
     }
@@ -113,6 +114,7 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
         initializeToolbar()
         initializeNavigationView()
         initializeRecyclerView()
+        initializePageSwitcherActions()
         loadStringLogin()
         refresher.setOnRefreshListener {
             inspector = inspector.cloneInspector(this@MainActivity, resetDataset)
@@ -152,6 +154,16 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
         }
     }
 
+    private fun initializePageSwitcherActions() {
+        pageSwitcher.setChanger(object : PageSwitcher.DefaultPageChanger() {
+            override fun pageChanged(switcher: PageSwitcher, page: Int) {
+                inspector = inspector.cloneInspector(this@MainActivity, resetDataset)
+                inspector.page = pageSwitcher.getActualPage()
+                inspector.start()
+            }
+        })
+    }
+
     private fun initializeToolbar() {
         setSupportActionBar(toolbar)
         val bar = supportActionBar!!
@@ -166,10 +178,30 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
         recycler.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                 if (inspecting) return
-                return
+                if (!Global.isInfiniteScrollMain()) return
+                if (refresher.isRefreshing) return
+
+                val manager = (recycler.layoutManager as CustomGridLayoutManager?)!!
+                if (!pageSwitcher.lastPageReached() && lastGalleryReached(manager)) {
+                    inspecting = true
+                    inspector = inspector.cloneInspector(this@MainActivity, addDataset)
+                    inspector.page = inspector.page + 1
+                    inspector.start()
+                }
             }
         })
         changeLayout(resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE)
+    }
+
+    fun hidePageSwitcher() {
+        runOnUiThread { pageSwitcher.visibility = View.GONE }
+    }
+
+    fun showPageSwitcher(actualPage: Int, totalPage: Int) {
+        pageSwitcher.setPages(totalPage, actualPage)
+        if (Global.isInfiniteScrollMain()) {
+            hidePageSwitcher()
+        }
     }
 
     /**
@@ -197,6 +229,7 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
         navigationView = findViewById(R.id.nav_view)
         recycler = findViewById(R.id.recycler)
         refresher = findViewById(R.id.refresher)
+        pageSwitcher = findViewById(R.id.page_switcher)
         drawerLayout = findViewById(R.id.drawer_layout)
         loginItem = navigationView.menu.findItem(R.id.action_login)
         onlineFavoriteManager = navigationView.menu.findItem(R.id.online_favorite_manager)
@@ -442,6 +475,7 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
             }
             adapter.notifyDataSetChanged() //restart adapter
             adapter.resetStatuses()
+            showPageSwitcher(inspector.page, inspector.pageCount)
             changeLayout(resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE)
             setting = null
         } else if (filteringTag) {

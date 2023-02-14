@@ -1,28 +1,28 @@
 package com.dublikunt.nclientv2.components.views
 
+import android.app.Activity
 import android.content.Context
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.LinearLayout
-import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.AppCompatEditText
+import androidx.cardview.widget.CardView
 import com.dublikunt.nclientv2.R
 import com.dublikunt.nclientv2.settings.DefaultDialogs
-import com.dublikunt.nclientv2.settings.DefaultDialogs.CustomDialogResults
 import com.google.android.material.button.MaterialButton
-import com.google.android.material.card.MaterialCardView
 import java.util.*
 import kotlin.math.max
 import kotlin.math.min
 
-class PageSwitcher : MaterialCardView {
-    private var prev: MaterialButton? = null
-    private var next: MaterialButton? = null
-    private var text: AppCompatEditText? = null
-    private var changer: PageChanger? = null
+class PageSwitcher : CardView {
+    private lateinit var master: LinearLayout
+    private lateinit var prev: MaterialButton
+    private lateinit var next: MaterialButton
+    private lateinit var text: AppCompatEditText
+    private lateinit var changer: PageChanger
     private var totalPage = 0
-    var actualPage = 0
+    private var actualPage = 0
 
     constructor(context: Context) : super(context) {
         init(context)
@@ -41,7 +41,7 @@ class PageSwitcher : MaterialCardView {
         init(context)
     }
 
-    fun setChanger(changer: PageChanger?) {
+    fun setChanger(changer: PageChanger) {
         this.changer = changer
     }
 
@@ -52,7 +52,7 @@ class PageSwitcher : MaterialCardView {
         if (this.totalPage == totalPage && !pageChanged) return
         this.totalPage = totalPage
         this.actualPage = actualPage
-        if (pageChanged && changer != null) changer!!.pageChanged(this, actualPage)
+        if (pageChanged) changer.pageChanged(this, actualPage)
         updateViews()
     }
 
@@ -61,19 +61,26 @@ class PageSwitcher : MaterialCardView {
     }
 
     private fun updateViews() {
-        (context as AppCompatActivity).runOnUiThread {
+        (context as Activity).runOnUiThread {
             visibility = if (totalPage <= 1) GONE else VISIBLE
-            prev!!.alpha = if (actualPage > 1) 1f else .5f
-            prev!!.isEnabled = actualPage > 1
-            next!!.alpha = if (actualPage < totalPage) 1f else .5f
-            next!!.isEnabled = actualPage < totalPage
-            text!!.setText(String.format(Locale.US, "%d / %d", actualPage, totalPage))
+            prev.alpha = if (actualPage > 1) 1f else .5f
+            prev.isEnabled = actualPage > 1
+            next.alpha = if (actualPage < totalPage) 1f else .5f
+            next.isEnabled = actualPage < totalPage
+            text.setText(
+                String.format(
+                    Locale.US,
+                    "%d / %d",
+                    actualPage,
+                    totalPage
+                )
+            )
         }
     }
 
     private fun init(context: Context) {
-        val master = LayoutInflater.from(context).inflate(R.layout.page_switcher, this, true)
-            .findViewById<LinearLayout>(R.id.master_layout)
+        master = (LayoutInflater.from(context).inflate(R.layout.page_switcher, this, true)
+            .findViewById<View>(R.id.master_layout) as LinearLayout?)!!
         prev = master.findViewById(R.id.prev)
         next = master.findViewById(R.id.next)
         text = master.findViewById(R.id.page_index)
@@ -81,9 +88,25 @@ class PageSwitcher : MaterialCardView {
     }
 
     private fun addViewListeners() {
-        next!!.setOnClickListener { if (changer != null) changer!!.onNextClicked(this) }
-        prev!!.setOnClickListener { if (changer != null) changer!!.onPrevClicked(this) }
-        text!!.setOnClickListener { loadDialog() }
+        next.setOnClickListener {
+            changer.onNextClicked(
+                this
+            )
+        }
+        prev.setOnClickListener {
+            changer.onPrevClicked(
+                this
+            )
+        }
+        text.setOnClickListener { loadDialog() }
+    }
+
+    fun getActualPage(): Int {
+        return actualPage
+    }
+
+    fun setActualPage(actualPage: Int) {
+        setPages(totalPage, actualPage)
     }
 
     fun lastPageReached(): Boolean {
@@ -98,9 +121,9 @@ class PageSwitcher : MaterialCardView {
                 .setMax(totalPage)
                 .setTitle(R.string.change_page)
                 .setDrawable(R.drawable.ic_find_in_page)
-                .setDialogs(object : CustomDialogResults() {
+                .setDialogs(object : DefaultDialogs.CustomDialogResults() {
                     override fun positive(actual: Int) {
-                        actualPage = actual
+                        setActualPage(actual)
                     }
                 })
         )
@@ -114,12 +137,13 @@ class PageSwitcher : MaterialCardView {
 
     open class DefaultPageChanger : PageChanger {
         override fun pageChanged(switcher: PageSwitcher, page: Int) {}
+
         override fun onPrevClicked(switcher: PageSwitcher) {
-            switcher.actualPage --
+            switcher.setActualPage(switcher.getActualPage() - 1)
         }
 
         override fun onNextClicked(switcher: PageSwitcher) {
-            switcher.actualPage ++
+            switcher.setActualPage(switcher.getActualPage() + 1)
         }
     }
 }

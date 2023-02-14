@@ -145,6 +145,8 @@ object Global {
     var offscreenLimit = 0
         private set
     private var screenSize: Point? = null
+    private var infiniteScrollMain: Boolean = false
+    private var infiniteScrollFavorite: Boolean = false
     @JvmStatic
     fun recursiveSize(path: File): Long {
         if (path.isFile) return path.length()
@@ -163,6 +165,14 @@ object Global {
         if (context != null) lastVersion =
             context.getSharedPreferences("Settings", 0).getString("last_version", "0.0.0")
         return lastVersion
+    }
+
+    fun isInfiniteScrollMain(): Boolean {
+        return infiniteScrollMain
+    }
+
+    fun isInfiniteScrollFavorite(): Boolean {
+        return infiniteScrollFavorite
     }
 
     fun setLastVersion(context: Context) {
@@ -284,6 +294,8 @@ object Global {
             shared.getBoolean(context.getString(R.string.key_change_page_buttons), true)
         isLockScreen = shared.getBoolean(context.getString(R.string.key_disable_lock), false)
         hideMultitask = shared.getBoolean(context.getString(R.string.key_hide_multitasking), true)
+        infiniteScrollFavorite = shared.getBoolean(context.getString(R.string.key_infinite_scroll_favo), false)
+        infiniteScrollMain = shared.getBoolean(context.getString(R.string.key_infinite_scroll_main), false)
         maxId = shared.getInt(context.getString(R.string.key_max_id), 300000)
         offscreenLimit =
             max(1, shared.getInt(context.getString(R.string.key_offscreen_limit), 5))

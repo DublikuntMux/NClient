@@ -771,10 +771,10 @@ public class Queries {
          * @param orderByTitle true if order by title, false order by latest
          * @return cursor which points to the galleries
          */
-        public static Cursor getAllFavoriteGalleriesCursor(CharSequence query, boolean orderByTitle, int limit) {
+        public static Cursor getAllFavoriteGalleriesCursor(CharSequence query, boolean orderByTitle, int limit, int offset) {
             String order = orderByTitle ? titleTypeToColumn(Global.getTitleType()) : FavoriteTable.TIME + " DESC";
             String param = "%" + query + "%";
-            String limitString = String.format(Locale.US, " 0, %d ", limit);
+            String limitString = String.format(Locale.US, " %d, %d ", offset, limit);
             return db.query(FAVORITE_JOIN_GALLERY, null, TITLE_CLAUSE, new String[]{param, param, param}, null, null, order, limitString);
         }
 

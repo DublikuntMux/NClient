@@ -13,7 +13,6 @@ import com.dublikunt.nclientv2.async.database.Queries
 import com.dublikunt.nclientv2.async.downloader.DownloadGalleryV2
 import com.dublikunt.nclientv2.components.activities.BaseActivity
 import com.dublikunt.nclientv2.components.views.PageSwitcher
-import com.dublikunt.nclientv2.components.views.PageSwitcher.DefaultPageChanger
 import com.dublikunt.nclientv2.settings.Global
 import com.dublikunt.nclientv2.utility.Utility
 import com.google.android.material.appbar.MaterialToolbar
@@ -22,6 +21,7 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 class FavoriteActivity : BaseActivity() {
     private lateinit var adapter: FavoriteAdapter
     private var sortByTitle = false
+    private lateinit var pageSwitcher: PageSwitcher
     private var searchView: SearchView? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -34,11 +34,26 @@ class FavoriteActivity : BaseActivity() {
         supportActionBar!!.setTitle(R.string.favorite_manga)
         recycler = findViewById(R.id.recycler)
         refresher = findViewById(R.id.refresher)
+        pageSwitcher = findViewById(R.id.page_switcher)
         refresher.isRefreshing = true
         adapter = FavoriteAdapter(this)
         refresher.setOnRefreshListener { adapter.forceReload() }
         changeLayout(resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE)
         recycler.adapter = adapter
+        pageSwitcher.setChanger(object : PageSwitcher.DefaultPageChanger() {
+            override fun pageChanged(switcher: PageSwitcher, page: Int) {
+                adapter.changePage()
+            }
+        })
+        pageSwitcher.setPages(1, 1)
+    }
+
+    fun getActualPage(): Int {
+        return pageSwitcher.getActualPage()
+    }
+
+    fun changePages(totalPages: Int, actualPages: Int) {
+        pageSwitcher.setPages(totalPages, actualPages)
     }
 
     override val portraitColumnCount: Int
@@ -63,6 +78,7 @@ class FavoriteActivity : BaseActivity() {
         refresher.isEnabled = true
         refresher.isRefreshing = true
         val query = searchView?.query.toString()
+        pageSwitcher.setTotalPage(calculatePages(query))
         adapter.forceReload()
         super.onResume()
     }
@@ -81,6 +97,7 @@ class FavoriteActivity : BaseActivity() {
             }
 
             override fun onQueryTextChange(newText: String): Boolean {
+                pageSwitcher.setTotalPage(calculatePages(newText))
                 adapter.filter.filter(newText)
                 return true
             }

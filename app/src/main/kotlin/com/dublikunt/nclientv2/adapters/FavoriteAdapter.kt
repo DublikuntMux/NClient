@@ -130,10 +130,11 @@ class FavoriteAdapter(private val activity: FavoriteActivity) :
                 lastQuery = constraint.toString()
                 download(lastQuery.toString() + "LASTQERY")
                 force = false
-                val c = Queries.FavoriteTable.getAllFavoriteGalleriesCursor(
+                val c: Cursor = Queries.FavoriteTable.getAllFavoriteGalleriesCursor(
                     lastQuery,
                     sortByTitle,
-                    perPage
+                    perPage,
+                    (activity.getActualPage() - 1) * perPage
                 )
                 results.count = c.count
                 results.values = c
