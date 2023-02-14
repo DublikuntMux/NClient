@@ -1,9 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <full-backup-content>
     <!--
-    ./adb shell bmgr fullbackup com.dublikunt.nclientv2
-    ./adb shell bmgr restore com.dublikunt.nclientv2
-    -->
+    ./adb shell bmgr fullbackup nclient   ./adb shell bmgr restore nclient   -->
     <include
         domain="sharedpref"
         path="." />

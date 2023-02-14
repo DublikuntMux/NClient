@@ -119,7 +119,7 @@
 
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.dublikunt.nclientv2.MainActivity" />
+                android:value="com.dublikunt.nclient.MainActivity" />
         </activity>
         <activity
             android:name=".ZoomActivity"
@@ -157,7 +157,7 @@
 
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.dublikunt.nclientv2.MainActivity" />
+                android:value="com.dublikunt.nclient.MainActivity" />
         </activity>
         <activity android:name=".SettingsActivity" />
         <activity
@@ -189,7 +189,7 @@
             android:parentActivityName=".MainActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.dublikunt.nclientv2.MainActivity" />
+                android:value="com.dublikunt.nclient.MainActivity" />
         </activity>
 
         <provider

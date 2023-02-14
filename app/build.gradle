@@ -6,7 +6,7 @@ android {
     compileSdk 33
     buildToolsVersion '34.0.0 rc1'
     defaultConfig {
-        applicationId 'com.dublikunt.nclientv2'
+        applicationId 'com.dublikunt.nclient'
         minSdk 24
         targetSdk 33
         versionCode 203
@@ -43,7 +43,7 @@ android {
         abortOnError false
         checkReleaseBuilds false
     }
-    namespace 'com.dublikunt.nclientv2'
+    namespace 'com.dublikunt.nclient'
     ndkVersion '25.2.9519653'
     packagingOptions {
         exclude "**/*.kotlin_builtins"
