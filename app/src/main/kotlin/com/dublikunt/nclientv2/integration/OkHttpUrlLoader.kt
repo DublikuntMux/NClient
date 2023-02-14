@@ -22,7 +22,7 @@ class OkHttpUrlLoader     // Public API.
 
     override fun buildLoadData(
         model: GlideUrl, width: Int, height: Int, options: Options
-    ): LoadData<InputStream>? {
+    ): LoadData<InputStream> {
         return LoadData(model, OkHttpStreamFetcher(client, model))
     }
 
