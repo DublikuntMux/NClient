@@ -12,6 +12,7 @@ object TagV2 {
     @JvmStatic
     var minCount = 0
         private set
+    @JvmStatic
     var isSortedByName = false
         private set
 
@@ -35,8 +36,8 @@ object TagV2 {
         )
     }
 
+    @JvmStatic
     fun updateStatus(t: Tag): TagStatus {
-        val old = t.status
         when (t.status) {
             TagStatus.ACCEPTED -> t.status = TagStatus.AVOIDED
             TagStatus.AVOIDED -> t.status = TagStatus.DEFAULT
@@ -59,6 +60,7 @@ object TagV2 {
         return Queries.TagTable.getStatus(tag)
     }
 
+    @JvmStatic
     fun maxTagReached(): Boolean {
         return getListPrefer(removeAvoidedGalleries()).size >= MAXTAGS
     }

@@ -21,6 +21,7 @@ import okhttp3.HttpUrl.Companion.toHttpUrl
 object Login {
     const val LOGIN_COOKIE = "sessionid"
     lateinit var BASE_HTTP_URL: HttpUrl
+    @JvmStatic
     var user: User? = null
         private set
     private var accountTag = false
@@ -82,11 +83,13 @@ object Login {
         cookieJar.clearSession()
     }
 
+    @JvmStatic
     fun addOnlineTag(tag: Tag) {
         Queries.TagTable.insert(tag)
         Queries.TagTable.updateBlacklistedTag(tag, true)
     }
 
+    @JvmStatic
     fun removeOnlineTag(tag: Tag) {
         Queries.TagTable.updateBlacklistedTag(tag, false)
     }
@@ -129,6 +132,7 @@ object Login {
         //return sessionId!=null;
     }
 
+    @JvmStatic
     fun isLogged(): Boolean {
         return isLogged(null)
     }
@@ -137,6 +141,7 @@ object Login {
         Login.user = user
     }
 
+    @JvmStatic
     fun isOnlineTags(tag: Tag): Boolean {
         return Queries.TagTable.isBlackListed(tag)
     }

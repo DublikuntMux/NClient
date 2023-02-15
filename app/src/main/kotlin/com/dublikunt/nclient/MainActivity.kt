@@ -15,11 +15,9 @@ import android.view.View
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.ImageView
-import androidx.activity.OnBackPressedCallback
 import androidx.annotation.StringRes
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.widget.SearchView
-import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.recyclerview.widget.RecyclerView
 import com.dublikunt.nclient.adapters.ListAdapter
@@ -105,7 +103,6 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        onBackPressedDispatcher.addCallback(this, onBackPressedCallback)
 
         selectStartMode(intent, packageName)
         LogUtility.download("Main started with mode $modeType")
@@ -427,15 +424,6 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
             CHANGE_LANGUAGE_DELAY.toLong()
         )
     }
-
-    private val onBackPressedCallback: OnBackPressedCallback =
-        object : OnBackPressedCallback(true) {
-            override fun handleOnBackPressed() {
-                if (drawerLayout.isDrawerOpen(GravityCompat.START)) drawerLayout.closeDrawer(
-                    GravityCompat.START
-                )
-            }
-        }
 
     private fun showLogoutForm() {
         val builder = MaterialAlertDialogBuilder(this)

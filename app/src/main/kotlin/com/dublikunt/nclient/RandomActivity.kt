@@ -8,7 +8,6 @@ import android.view.MenuItem
 import android.view.View
 import android.widget.ImageButton
 import android.widget.TextView
-import androidx.activity.OnBackPressedCallback
 import androidx.core.widget.ImageViewCompat
 import com.dublikunt.nclient.api.RandomLoader
 import com.dublikunt.nclient.api.components.Gallery
@@ -32,7 +31,6 @@ class RandomActivity : GeneralActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_random)
         loader = RandomLoader(this)
-        onBackPressedDispatcher.addCallback(this, onBackPressedCallback)
 
         //init components id
         val toolbar = findViewById<MaterialToolbar>(R.id.toolbar)
@@ -114,14 +112,6 @@ class RandomActivity : GeneralActivity() {
             Global.setTint(favorite.drawable)
         }
     }
-
-
-    private val onBackPressedCallback: OnBackPressedCallback =
-        object : OnBackPressedCallback(true) {
-            override fun handleOnBackPressed() {
-                loadedGallery
-            }
-        }
 
     companion object {
         @JvmField

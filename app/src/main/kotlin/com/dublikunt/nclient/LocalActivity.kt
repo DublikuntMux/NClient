@@ -9,7 +9,6 @@ import android.view.MenuItem
 import android.view.View
 import android.widget.ArrayAdapter
 import android.widget.LinearLayout
-import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.widget.SearchView
 import com.dublikunt.nclient.adapters.LocalAdapter
 import com.dublikunt.nclient.api.local.FakeInspector
@@ -48,7 +47,6 @@ class LocalActivity : BaseActivity() {
         setContentView(R.layout.app_bar_main)
         toolbar = findViewById(R.id.toolbar)
         setSupportActionBar(toolbar)
-        onBackPressedDispatcher.addCallback(this, onBackPressedCallback)
         supportActionBar!!.setDisplayHomeAsUpEnabled(true)
         supportActionBar!!.setDisplayShowTitleEnabled(true)
         supportActionBar!!.setTitle(R.string.downloaded_manga)
@@ -164,13 +162,6 @@ class LocalActivity : BaseActivity() {
         }
         return super.onOptionsItemSelected(item)
     }
-
-    private val onBackPressedCallback: OnBackPressedCallback =
-        object : OnBackPressedCallback(true) {
-            override fun handleOnBackPressed() {
-                if (adapter != null && adapter!!.mode == MultichoiceAdapter.Mode.SELECTING) adapter!!.deselectAll()
-            }
-        }
 
     private fun showDialogFolderChoose() {
         val strings = Global.getUsableFolders(this)

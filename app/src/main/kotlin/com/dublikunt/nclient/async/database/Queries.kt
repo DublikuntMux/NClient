@@ -268,6 +268,7 @@ object Queries {
         /**
          * Convert a [Cursor] row to a [Tag]
          */
+        @JvmStatic
         fun cursorToTag(cursor: Cursor): Tag {
             return Tag(
                 cursor.getString(cursor.getColumnIndex(NAME)),
@@ -302,6 +303,7 @@ object Queries {
          * @param online     Retrieve only tags which have been blacklisted from the main site
          * @param sortByName sort by name or by count
          */
+        @JvmStatic
         fun getFilterCursor(
             query: String,
             type: TagType?,
