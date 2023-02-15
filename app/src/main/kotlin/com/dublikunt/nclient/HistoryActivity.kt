@@ -26,7 +26,7 @@ class HistoryActivity : BaseActivity() {
         recycler = findViewById(R.id.recycler)
         masterLayout = findViewById(R.id.master_layout)
         adapter = ListAdapter(this)
-        adapter.addGalleries(ArrayList<GenericGallery>(Queries.HistoryTable.getHistory()))
+        adapter.addGalleries(ArrayList<GenericGallery>(Queries.HistoryTable.history))
         changeLayout(resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE)
         recycler.adapter = adapter
     }

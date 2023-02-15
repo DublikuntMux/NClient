@@ -208,7 +208,7 @@ object Global {
             getDefaultFileParent(context)
         )
         MAINFOLDER = File(ROOTFOLDER, MAINFOLDER_NAME)
-        download(MAINFOLDER!!)
+        download(MAINFOLDER)
         OLD_GALLERYFOLDER =
             File(context.getExternalFilesDir(Environment.DIRECTORY_PICTURES), MAINFOLDER_NAME)
         DOWNLOADFOLDER = File(MAINFOLDER, DOWNLOADFOLDER_NAME)
@@ -462,7 +462,7 @@ object Global {
         if (!hasStoragePermission(context)) return
         initFilesTree(context)
         val bools = booleanArrayOf(
-            MAINFOLDER!!.mkdirs(),
+            MAINFOLDER.mkdirs(),
             DOWNLOADFOLDER!!.mkdir(),
             PDFFOLDER!!.mkdir(),
             UPDATEFOLDER!!.mkdir(),

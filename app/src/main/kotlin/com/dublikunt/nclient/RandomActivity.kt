@@ -70,7 +70,7 @@ class RandomActivity : GeneralActivity() {
             if (loadedGallery != null) {
                 if (isFavorite) {
                     if (Favorites.removeFavorite(loadedGallery!!)) isFavorite = false
-                } else if (Favorites.addFavorite(loadedGallery)) isFavorite = true
+                } else if (Favorites.addFavorite(loadedGallery!!)) isFavorite = true
             }
             favoriteUpdateButton()
         }
@@ -95,7 +95,7 @@ class RandomActivity : GeneralActivity() {
     fun loadGallery(gallery: Gallery) {
         loadedGallery = gallery
         if (Global.isDestroyed(this)) return
-        ImageDownloadUtility.loadImage(this, gallery!!.cover, thumbnail)
+        ImageDownloadUtility.loadImage(this, gallery.cover, thumbnail)
         language.text = Global.getLanguageFlag(gallery.language)
         isFavorite = Favorites.isFavorite(loadedGallery)
         favoriteUpdateButton()

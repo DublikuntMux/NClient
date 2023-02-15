@@ -1,259 +1,222 @@
-package com.dublikunt.nclient.api.local;
+package com.dublikunt.nclient.api.local
 
-import android.graphics.BitmapFactory;
-import android.os.Parcel;
-import android.util.JsonReader;
+import android.graphics.BitmapFactory
+import android.os.Parcel
+import android.os.Parcelable.Creator
+import android.util.JsonReader
+import com.dublikunt.nclient.api.components.GalleryData
+import com.dublikunt.nclient.api.components.GenericGallery
+import com.dublikunt.nclient.api.enums.SpecialTagIds
+import com.dublikunt.nclient.classes.Size
+import com.dublikunt.nclient.files.GalleryFolder
+import com.dublikunt.nclient.utility.LogUtility.download
+import java.io.File
+import java.io.FileReader
+import java.util.*
+import java.util.regex.Pattern
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
+class LocalGallery : GenericGallery {
+    private val folder: GalleryFolder
+    private val galleryData: GalleryData
+    private val title: String
+    val trueTitle: String?
+    private val valid: Boolean
+    private var hasAdvancedData = true
+    private var maxSize = Size(0, 0)
+    private var minSize = Size(Int.MAX_VALUE, Int.MAX_VALUE)
 
-import com.dublikunt.nclient.api.components.GalleryData;
-import com.dublikunt.nclient.api.components.GenericGallery;
-import com.dublikunt.nclient.api.enums.SpecialTagIds;
-import com.dublikunt.nclient.classes.Size;
-import com.dublikunt.nclient.files.GalleryFolder;
-import com.dublikunt.nclient.files.PageFile;
-import com.dublikunt.nclient.utility.LogUtility;
-
-import java.io.File;
-import java.io.FileReader;
-import java.util.Locale;
-import java.util.Objects;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-public class LocalGallery extends GenericGallery {
-    public static final Creator<LocalGallery> CREATOR = new Creator<LocalGallery>() {
-        @Override
-        public LocalGallery createFromParcel(Parcel in) {
-            return new LocalGallery(in);
+    @JvmOverloads
+    constructor(file: File, jumpDataRetrieve: Boolean = false) {
+        val folder1: GalleryFolder? = try {
+            GalleryFolder(file)
+        } catch (ignore: IllegalArgumentException) {
+            null
         }
-
-        @Override
-        public LocalGallery[] newArray(int size) {
-            return new LocalGallery[size];
-        }
-    };
-    private static final Pattern DUP_PATTERN = Pattern.compile("^(.*)\\.DUP\\d+$");
-    private final GalleryFolder folder;
-    @NonNull
-    private final GalleryData galleryData;
-    private final String title, trueTitle;
-    private final boolean valid;
-    private boolean hasAdvancedData = true;
-    @NonNull
-    private Size maxSize = new Size(0, 0), minSize = new Size(Integer.MAX_VALUE, Integer.MAX_VALUE);
-
-    public LocalGallery(@NonNull File file, boolean jumpDataRetrieve) {
-        GalleryFolder folder1;
-        try {
-            folder1 = new GalleryFolder(file);
-        } catch (IllegalArgumentException ignore) {
-            folder1 = null;
-
-        }
-        folder = folder1;
-        trueTitle = file.getName();
-        title = createTitle(file);
+        folder = folder1!!
+        trueTitle = file.name
+        title = createTitle(file)
         if (jumpDataRetrieve) {
-            galleryData = GalleryData.fakeData();
+            galleryData = GalleryData.fakeData()
         } else {
-            galleryData = readGalleryData();
-            if (galleryData.getId() == SpecialTagIds.INVALID_ID)
-                galleryData.setId(getId());
+            galleryData = readGalleryData()
+            if (galleryData.id == SpecialTagIds.INVALID_ID.toInt()) galleryData.id = id
         }
-        //Start search pages
-        //Find page with max number
-        if (folder != null)
-            galleryData.setPageCount(folder.getMax());
-        valid = folder != null && folder.getPageCount() > 0;
+        galleryData.pageCount = folder.max
+        valid = true && folder.pageCount > 0
     }
 
-    public LocalGallery(@NonNull File file) {
-        this(file, false);
+    private constructor(`in`: Parcel) {
+        galleryData = Objects.requireNonNull(
+            `in`.readParcelable(
+                GalleryData::class.java.classLoader
+            )
+        )
+        maxSize = Objects.requireNonNull(
+            `in`.readParcelable(
+                Size::class.java.classLoader
+            )
+        )
+        minSize = Objects.requireNonNull(
+            `in`.readParcelable(
+                Size::class.java.classLoader
+            )
+        )
+        trueTitle = `in`.readString()
+        title = `in`.readString()!!
+        hasAdvancedData = `in`.readByte().toInt() == 1
+        folder = `in`.readParcelable(GalleryFolder::class.java.classLoader)!!
+        valid = true
     }
 
-    private LocalGallery(Parcel in) {
-        galleryData = Objects.requireNonNull(in.readParcelable(GalleryData.class.getClassLoader()));
-        maxSize = Objects.requireNonNull(in.readParcelable(Size.class.getClassLoader()));
-        minSize = Objects.requireNonNull(in.readParcelable(Size.class.getClassLoader()));
-        trueTitle = in.readString();
-        title = in.readString();
-        hasAdvancedData = in.readByte() == 1;
-        folder = in.readParcelable(GalleryFolder.class.getClassLoader());
-        valid = true;
+    override fun getGalleryFolder(): GalleryFolder {
+        return folder
     }
 
-    private static int getPageFromFile(File f) {
-        String n = f.getName();
-        return Integer.parseInt(n.substring(0, n.indexOf('.')));
-    }
-
-    private static String createTitle(File file) {
-        String name = file.getName();
-        Matcher matcher = DUP_PATTERN.matcher(name);
-        if (!matcher.matches()) return name;
-        String title = matcher.group(1);
-        return title == null ? name : title;
-    }
-
-    /**
-     * @return null if not found or the file if found
-     */
-    public static File getPage(File dir, int page) {
-        if (dir == null || !dir.exists()) return null;
-        String pag = String.format(Locale.US, "%03d.", page);
-        File x;
-        x = new File(dir, pag + "jpg");
-        if (x.exists()) return x;
-        x = new File(dir, pag + "png");
-        if (x.exists()) return x;
-        x = new File(dir, pag + "gif");
-        if (x.exists()) return x;
-        return null;
-    }
-
-    @Override
-    public GalleryFolder getGalleryFolder() {
-        return folder;
-    }
-
-    @NonNull
-    private GalleryData readGalleryData() {
-        if (folder == null) return GalleryData.fakeData();
-        File nomedia = folder.getGalleryDataFile();
-        try (JsonReader reader = new JsonReader(new FileReader(nomedia))) {
-            return new GalleryData(reader);
-        } catch (Exception ignore) {
+    private fun readGalleryData(): GalleryData {
+        val nomedia = folder.galleryDataFile
+        try {
+            JsonReader(FileReader(nomedia)).use { reader -> return GalleryData(reader) }
+        } catch (ignore: Exception) {
         }
-        hasAdvancedData = false;
-        return GalleryData.fakeData();
+        hasAdvancedData = false
+        return GalleryData.fakeData()
     }
 
-    public void calculateSizes() {
-        for (PageFile f : folder)
-            checkSize(f);
+    fun calculateSizes() {
+        for (f in folder) checkSize(f)
     }
 
-    private void checkSize(File f) {
-        LogUtility.download("Decoding: " + f);
-        BitmapFactory.Options options = new BitmapFactory.Options();
-        options.inJustDecodeBounds = true;
-        BitmapFactory.decodeFile(f.getAbsolutePath(), options);
-        if (options.outWidth > maxSize.getWidth()) maxSize.setWidth(options.outWidth);
-        if (options.outWidth < minSize.getWidth()) minSize.setWidth(options.outWidth);
-        if (options.outHeight > maxSize.getHeight()) maxSize.setHeight(options.outHeight);
-        if (options.outHeight < minSize.getHeight()) minSize.setHeight(options.outHeight);
+    private fun checkSize(f: File) {
+        download("Decoding: $f")
+        val options = BitmapFactory.Options()
+        options.inJustDecodeBounds = true
+        BitmapFactory.decodeFile(f.absolutePath, options)
+        if (options.outWidth > maxSize.width) maxSize.width = options.outWidth
+        if (options.outWidth < minSize.width) minSize.width = options.outWidth
+        if (options.outHeight > maxSize.height) maxSize.height = options.outHeight
+        if (options.outHeight < minSize.height) minSize.height = options.outHeight
     }
 
-    @NonNull
-    @Override
-    public Size getMaxSize() {
-        return maxSize;
+    override fun getMaxSize(): Size {
+        return maxSize
     }
 
-    @NonNull
-    @Override
-    public Size getMinSize() {
-        return minSize;
+    override fun getMinSize(): Size {
+        return minSize
     }
 
-    public String getTrueTitle() {
-        return trueTitle;
+    override fun hasGalleryData(): Boolean {
+        return hasAdvancedData
     }
 
-    @Override
-    public boolean hasGalleryData() {
-        return hasAdvancedData;
+    override fun getGalleryData(): GalleryData {
+        return galleryData
     }
 
-    @Override
-    @NonNull
-    public GalleryData getGalleryData() {
-        return galleryData;
+    override fun getType(): Type {
+        return Type.LOCAL
     }
 
-    @Override
-    public Type getType() {
-        return Type.LOCAL;
+    override fun isValid(): Boolean {
+        return valid
     }
 
-    @Override
-    public boolean isValid() {
-        return valid;
+    override fun getId(): Int {
+        return folder.id
     }
 
-    @Override
-    public int getId() {
-        return folder == null ? SpecialTagIds.INVALID_ID : folder.getId();
+    override fun getPageCount(): Int {
+        return galleryData.pageCount
     }
 
-    @Override
-    public int getPageCount() {
-        return galleryData.getPageCount();
+    override fun getTitle(): String {
+        return title
     }
 
-    @Override
-    @NonNull
-    public String getTitle() {
-        return title;
+    val min: Int
+        get() = folder.min
+    val directory: File
+        get() = folder.folder
+
+    fun getPage(index: Int): File? {
+        return folder.getPage(index)
     }
 
-    public int getMin() {
-        return folder.getMin();
+    override fun describeContents(): Int {
+        return 0
     }
 
-    @NonNull
-    public File getDirectory() {
-        return folder.getFolder();
+    override fun writeToParcel(dest: Parcel, flags: Int) {
+        dest.writeParcelable(galleryData, flags)
+        dest.writeParcelable(maxSize, flags)
+        dest.writeParcelable(minSize, flags)
+        dest.writeString(trueTitle)
+        dest.writeString(title)
+        dest.writeByte((if (hasAdvancedData) 1 else 0).toByte())
+        dest.writeParcelable(folder, flags)
     }
 
-    @Nullable
-    public File getPage(int index) {
-        return folder.getPage(index);
+    override fun equals(o: Any?): Boolean {
+        if (this === o) return true
+        if (o == null || javaClass != o.javaClass) return false
+        val gallery = o as LocalGallery
+        return folder == gallery.folder
     }
 
-    @Override
-    public int describeContents() {
-        return 0;
+    override fun hashCode(): Int {
+        return folder.hashCode()
     }
 
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeParcelable(galleryData, flags);
-        dest.writeParcelable(maxSize, flags);
-        dest.writeParcelable(minSize, flags);
-        dest.writeString(trueTitle);
-        dest.writeString(title);
-        dest.writeByte((byte) (hasAdvancedData ? 1 : 0));
-        dest.writeParcelable(folder, flags);
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        LocalGallery gallery = (LocalGallery) o;
-
-        return folder.equals(gallery.folder);
-    }
-
-    @Override
-    public int hashCode() {
-        return folder.hashCode();
-    }
-
-    @NonNull
-    @Override
-    public String toString() {
+    override fun toString(): String {
         return "LocalGallery{" +
-            "galleryData=" + galleryData +
-            ", title='" + title + '\'' +
-            ", folder=" + folder +
-            ", valid=" + valid +
-            ", maxSize=" + maxSize +
-            ", minSize=" + minSize +
-            '}';
+                "galleryData=" + galleryData +
+                ", title='" + title + '\'' +
+                ", folder=" + folder +
+                ", valid=" + valid +
+                ", maxSize=" + maxSize +
+                ", minSize=" + minSize +
+                '}'
+    }
+
+    companion object {
+        @JvmField
+        val CREATOR: Creator<LocalGallery?> = object : Creator<LocalGallery?> {
+            override fun createFromParcel(`in`: Parcel): LocalGallery {
+                return LocalGallery(`in`)
+            }
+
+            override fun newArray(size: Int): Array<LocalGallery?> {
+                return arrayOfNulls(size)
+            }
+        }
+        private val DUP_PATTERN = Pattern.compile("^(.*)\\.DUP\\d+$")
+        private fun getPageFromFile(f: File): Int {
+            val n = f.name
+            return n.substring(0, n.indexOf('.')).toInt()
+        }
+
+        private fun createTitle(file: File): String {
+            val name = file.name
+            val matcher = DUP_PATTERN.matcher(name)
+            if (!matcher.matches()) return name
+            val title = matcher.group(1)
+            return title ?: name
+        }
+
+        /**
+         * @return null if not found or the file if found
+         */
+        @JvmStatic
+        fun getPage(dir: File?, page: Int): File? {
+            if (dir == null || !dir.exists()) return null
+            val pag = String.format(Locale.US, "%03d.", page)
+            var x: File
+            x = File(dir, pag + "jpg")
+            if (x.exists()) return x
+            x = File(dir, pag + "png")
+            if (x.exists()) return x
+            x = File(dir, pag + "gif")
+            return if (x.exists()) x else null
+        }
     }
 }

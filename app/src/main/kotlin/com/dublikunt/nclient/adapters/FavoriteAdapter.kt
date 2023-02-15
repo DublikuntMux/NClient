@@ -53,7 +53,7 @@ class FavoriteAdapter(private val activity: FavoriteActivity) :
         if (galleries[position] != null) return galleries[position]
         cursor!!.moveToPosition(position)
         return try {
-            val g = Queries.GalleryTable.cursorToGallery(cursor)
+            val g = Queries.GalleryTable.cursorToGallery(cursor!!)
             galleries[position] = g
             g
         } catch (e: IOException) {

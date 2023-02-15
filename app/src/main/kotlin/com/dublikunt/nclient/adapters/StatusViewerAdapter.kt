@@ -63,7 +63,7 @@ class StatusViewerAdapter(private val context: AppCompatActivity, private val st
     private fun positionToGallery(position: Int): Gallery? {
         try {
             if (galleries != null && galleries!!.moveToPosition(position)) {
-                return Queries.GalleryTable.cursorToGallery(galleries)
+                return Queries.GalleryTable.cursorToGallery(galleries!!)
             }
         } catch (ignore: IOException) {
         }

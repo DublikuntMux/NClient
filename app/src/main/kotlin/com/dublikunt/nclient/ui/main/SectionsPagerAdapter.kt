@@ -13,7 +13,7 @@ import com.dublikunt.nclient.components.status.StatusManager
 class SectionsPagerAdapter(context: StatusViewerActivity) :
     FragmentStateAdapter(context.supportFragmentManager, context.lifecycle) {
     private var statuses: List<String> = StatusManager.names
-    private var counts: HashMap<String, Int> = Queries.StatusMangaTable.getCountsPerStatus()
+    private var counts: HashMap<String, Int> = Queries.StatusMangaTable.countsPerStatus
 
     fun getPageTitle(position: Int): CharSequence? {
         val status = statuses[position]

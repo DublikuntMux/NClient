@@ -1,35 +1,29 @@
-package com.dublikunt.nclient.async.database.export;
+package com.dublikunt.nclient.async.database.export
 
-import android.content.Context;
-import android.content.SharedPreferences;
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
-import android.net.Uri;
-import android.text.format.DateFormat;
-import android.util.JsonWriter;
+import android.content.Context
+import android.database.Cursor
+import android.net.Uri
+import android.text.format.DateFormat
+import android.util.JsonWriter
+import com.dublikunt.nclient.SettingsActivity
+import com.dublikunt.nclient.async.database.Queries
+import com.dublikunt.nclient.settings.Database.database
+import com.dublikunt.nclient.utility.LogUtility.error
+import java.io.IOException
+import java.io.OutputStream
+import java.io.OutputStreamWriter
+import java.util.*
+import java.util.zip.Deflater
+import java.util.zip.ZipEntry
+import java.util.zip.ZipOutputStream
 
-import com.dublikunt.nclient.SettingsActivity;
-import com.dublikunt.nclient.async.database.Queries;
-import com.dublikunt.nclient.settings.Database;
-import com.dublikunt.nclient.utility.LogUtility;
-
-import java.io.IOException;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.util.Date;
-import java.util.Map;
-import java.util.Set;
-import java.util.zip.Deflater;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipOutputStream;
-
-public class Exporter {
-    static final String DB_ZIP_FILE = "Database.json";
-    private static final String[] SHARED_FILES = new String[]{
+object Exporter {
+    const val DB_ZIP_FILE = "Database.json"
+    private val SHARED_FILES = arrayOf(
         "Settings",
-        "ScrapedTags",
-    };
-    private static final String[] SCHEMAS = new String[]{
+        "ScrapedTags"
+    )
+    private val SCHEMAS = arrayOf(
         Queries.GalleryTable.TABLE_NAME,
         Queries.TagTable.TABLE_NAME,
         Queries.GalleryBridgeTable.TABLE_NAME,
@@ -39,114 +33,116 @@ public class Exporter {
         Queries.FavoriteTable.TABLE_NAME,
         Queries.ResumeTable.TABLE_NAME,
         Queries.StatusTable.TABLE_NAME,
-        Queries.StatusMangaTable.TABLE_NAME,
-    };
+        Queries.StatusMangaTable.TABLE_NAME
+    )
 
-    private static void dumpDB(OutputStream stream) throws IOException {
-        SQLiteDatabase db = Database.getDatabase();
-        JsonWriter writer = new JsonWriter(new OutputStreamWriter(stream));
-        writer.beginObject();
-        for (String s : SCHEMAS) {
-            Cursor cur = db.query(s, null, null, null, null, null, null);
-            writer.name(s).beginArray();
+    @Throws(IOException::class)
+    private fun dumpDB(stream: OutputStream) {
+        val db = database
+        val writer = JsonWriter(OutputStreamWriter(stream))
+        writer.beginObject()
+        for (s in SCHEMAS) {
+            val cur = db!!.query(s, null, null, null, null, null, null)
+            writer.name(s).beginArray()
             if (cur.moveToFirst()) {
                 do {
-                    writer.beginObject();
-                    for (int i = 0; i < cur.getColumnCount(); i++) {
-                        writer.name(cur.getColumnName(i));
+                    writer.beginObject()
+                    for (i in 0 until cur.columnCount) {
+                        writer.name(cur.getColumnName(i))
                         if (cur.isNull(i)) {
-                            writer.nullValue();
+                            writer.nullValue()
                         } else {
-                            switch (cur.getType(i)) {
-                                case Cursor.FIELD_TYPE_INTEGER:
-                                    writer.value(cur.getLong(i));
-                                    break;
-                                case Cursor.FIELD_TYPE_FLOAT:
-                                    writer.value(cur.getDouble(i));
-                                    break;
-                                case Cursor.FIELD_TYPE_STRING:
-                                    writer.value(cur.getString(i));
-                                    break;
-                                case Cursor.FIELD_TYPE_BLOB:
-                                case Cursor.FIELD_TYPE_NULL:
-                                    break;
+                            when (cur.getType(i)) {
+                                Cursor.FIELD_TYPE_INTEGER -> writer.value(cur.getLong(i))
+                                Cursor.FIELD_TYPE_FLOAT -> writer.value(cur.getDouble(i))
+                                Cursor.FIELD_TYPE_STRING -> writer.value(cur.getString(i))
+                                Cursor.FIELD_TYPE_BLOB, Cursor.FIELD_TYPE_NULL -> {}
                             }
                         }
                     }
-                    writer.endObject();
-                } while (cur.moveToNext());
+                    writer.endObject()
+                } while (cur.moveToNext())
             }
-            writer.endArray();
-            cur.close();
+            writer.endArray()
+            cur.close()
         }
-        writer.endObject();
-        writer.flush();
+        writer.endObject()
+        writer.flush()
     }
 
-    public static String defaultExportName(SettingsActivity context) {
-        Date actualTime = new Date();
-        String date = DateFormat.getDateFormat(context).format(actualTime).replaceAll("\\D*", "");
-        String time = DateFormat.getTimeFormat(context).format(actualTime).replaceAll("\\D*", "");
-        return String.format("Backup_%s_%s.zip", date, time);
+    fun defaultExportName(context: SettingsActivity?): String {
+        val actualTime = Date()
+        val date =
+            DateFormat.getDateFormat(context).format(actualTime).replace("\\D*".toRegex(), "")
+        val time =
+            DateFormat.getTimeFormat(context).format(actualTime).replace("\\D*".toRegex(), "")
+        return String.format("Backup_%s_%s.zip", date, time)
     }
 
-    public static void exportData(SettingsActivity context, Uri selectedFile) throws IOException {
-
-        OutputStream outputStream = context.getContentResolver().openOutputStream(selectedFile);
-        ZipOutputStream zip = new ZipOutputStream(outputStream);
-        zip.setLevel(Deflater.BEST_COMPRESSION);
-
-        zip.putNextEntry(new ZipEntry(DB_ZIP_FILE));
-        dumpDB(zip);
-        zip.closeEntry();
-
-        for (String shared : SHARED_FILES) {
-            zip.putNextEntry(new ZipEntry(shared + ".json"));
-            exportSharedPreferences(context, shared, zip);
-            zip.closeEntry();
+    @Throws(IOException::class)
+    fun exportData(context: SettingsActivity, selectedFile: Uri?) {
+        val outputStream = context.contentResolver.openOutputStream(selectedFile!!)
+        val zip = ZipOutputStream(outputStream)
+        zip.setLevel(Deflater.BEST_COMPRESSION)
+        zip.putNextEntry(ZipEntry(DB_ZIP_FILE))
+        dumpDB(zip)
+        zip.closeEntry()
+        for (shared in SHARED_FILES) {
+            zip.putNextEntry(ZipEntry("$shared.json"))
+            exportSharedPreferences(context, shared, zip)
+            zip.closeEntry()
         }
-
-        zip.close();
-
+        zip.close()
     }
 
-    private static void exportSharedPreferences(Context context, String sharedName, OutputStream stream) throws IOException {
-        JsonWriter writer = new JsonWriter(new OutputStreamWriter(stream));
-        SharedPreferences pref = context.getSharedPreferences(sharedName, 0);
-        Map<String, ?> map = pref.getAll();
-        writer.beginObject();
-        for (Map.Entry<String, ?> o : map.entrySet()) {
-            Object val = o.getValue();
-            writer.name(o.getKey());
-            if (val instanceof String) {
-                writer.beginObject().name(SharedType.STRING.name()).value((String) val).endObject();
-            } else if (val instanceof Boolean) {
-                writer.beginObject().name(SharedType.BOOLEAN.name()).value((Boolean) val).endObject();
-            } else if (val instanceof Integer) {
-                writer.beginObject().name(SharedType.INT.name()).value((Integer) val).endObject();
-            } else if (val instanceof Float) {
-                writer.beginObject().name(SharedType.FLOAT.name()).value((Float) val).endObject();
-            } else if (val instanceof Set) {
-                writer.beginObject().name(SharedType.STRING_SET.name());
-                writer.beginArray();
-                for (String s : (Set<String>) val) {
-                    writer.value(s);
+    @Throws(IOException::class)
+    private fun exportSharedPreferences(
+        context: Context,
+        sharedName: String,
+        stream: OutputStream
+    ) {
+        val writer = JsonWriter(OutputStreamWriter(stream))
+        val pref = context.getSharedPreferences(sharedName, 0)
+        val map = pref.all
+        writer.beginObject()
+        for ((key, value) in map) {
+            val `val` = value!!
+            writer.name(key)
+            when (`val`) {
+                is String -> {
+                    writer.beginObject().name(SharedType.STRING.name).value(`val`).endObject()
                 }
-                writer.endArray();
-                writer.endObject();
-            } else if (val instanceof Long) {
-                writer.beginObject().name(SharedType.LONG.name()).value((Long) val).endObject();
-            } else {
-                LogUtility.INSTANCE.error("Missing export class: " + val.getClass().getName());
+                is Boolean -> {
+                    writer.beginObject().name(SharedType.BOOLEAN.name).value(`val`).endObject()
+                }
+                is Int -> {
+                    writer.beginObject().name(SharedType.INT.name).value(`val`).endObject()
+                }
+                is Float -> {
+                    writer.beginObject().name(SharedType.FLOAT.name).value(`val`).endObject()
+                }
+                is Set<*> -> {
+                    writer.beginObject().name(SharedType.STRING_SET.name)
+                    writer.beginArray()
+                    for (s in `val` as Set<String>) {
+                        writer.value(s)
+                    }
+                    writer.endArray()
+                    writer.endObject()
+                }
+                is Long -> {
+                    writer.beginObject().name(SharedType.LONG.name).value(`val`).endObject()
+                }
+                else -> {
+                    error("Missing export class: " + `val`.javaClass.name)
+                }
             }
         }
-        writer.endObject();
-        writer.flush();
+        writer.endObject()
+        writer.flush()
     }
 
-    enum SharedType {
+    internal enum class SharedType {
         FLOAT, INT, LONG, STRING_SET, STRING, BOOLEAN
     }
-
-
 }

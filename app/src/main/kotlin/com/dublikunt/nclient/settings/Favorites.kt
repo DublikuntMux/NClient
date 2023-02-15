@@ -5,7 +5,7 @@ import com.dublikunt.nclient.api.components.GenericGallery
 import com.dublikunt.nclient.async.database.Queries
 
 object Favorites {
-    fun addFavorite(gallery: Gallery?): Boolean {
+    fun addFavorite(gallery: Gallery): Boolean {
         Queries.FavoriteTable.addFavorite(gallery)
         return true
     }

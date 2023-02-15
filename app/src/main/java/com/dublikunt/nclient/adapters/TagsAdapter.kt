@@ -95,7 +95,7 @@ class TagsAdapter : RecyclerView.Adapter<TagsAdapter.ViewHolder>, Filterable {
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         cursor!!.moveToPosition(position)
-        val ent = Queries.TagTable.cursorToTag(cursor)
+        val ent = Queries.TagTable.cursorToTag(cursor!!)
         holder.title.text = ent.name
         holder.count.text = String.format(Locale.US, "%d", ent.count)
         holder.master.setOnClickListener { v: View? ->

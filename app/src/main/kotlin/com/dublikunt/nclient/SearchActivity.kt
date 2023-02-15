@@ -46,7 +46,7 @@ class SearchActivity : GeneralActivity() {
     private lateinit var groups: Array<ChipGroup?>
     private lateinit var searchView: SearchView
     private lateinit var autoComplete: MaterialAutoCompleteTextView
-    private var loadedTag: TagType? = null
+    private lateinit var loadedTag: TagType
     private lateinit var adapter: HistoryAdapter
     private var advanced = false
     private var temporaryUnit: Ranges.TimeUnit? = null
@@ -289,7 +289,7 @@ class SearchActivity : GeneralActivity() {
             )) addChipTag(t, close = true, canBeAvoided = true)
         }
         //add already filtered tags
-        for (t in Queries.TagTable.getAllFiltered()) if (!tagAlreadyExist(t)) addChipTag(
+        for (t in Queries.TagTable.allFiltered) if (!tagAlreadyExist(t)) addChipTag(
             t,
             close = true,
             canBeAvoided = true
@@ -309,7 +309,7 @@ class SearchActivity : GeneralActivity() {
             addChipTag(t, false, canBeAvoided = false)
         }
         //add online tags
-        if (Login.useAccountTag()) for (t in Queries.TagTable.getAllOnlineBlacklisted()) if (!tagAlreadyExist(
+        if (Login.useAccountTag()) for (t in Queries.TagTable.allOnlineBlacklisted) if (!tagAlreadyExist(
                 t
             )
         ) addChipTag(t, true, canBeAvoided = true)

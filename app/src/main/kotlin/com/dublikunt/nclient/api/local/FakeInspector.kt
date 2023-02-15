@@ -1,57 +1,53 @@
-package com.dublikunt.nclient.api.local;
+package com.dublikunt.nclient.api.local
 
-import com.dublikunt.nclient.LocalActivity;
-import com.dublikunt.nclient.adapters.LocalAdapter;
-import com.dublikunt.nclient.components.ThreadAsyncTask;
-import com.dublikunt.nclient.utility.LogUtility;
+import com.dublikunt.nclient.LocalActivity
+import com.dublikunt.nclient.adapters.LocalAdapter
+import com.dublikunt.nclient.components.ThreadAsyncTask
+import com.dublikunt.nclient.utility.LogUtility.download
+import com.dublikunt.nclient.utility.LogUtility.error
+import java.io.File
 
-import java.io.File;
-import java.util.ArrayList;
+class FakeInspector(activity: LocalActivity, folder: File) :
+    ThreadAsyncTask<LocalActivity, LocalActivity, LocalActivity>(
+        activity
+    ) {
+    private val galleries: ArrayList<LocalGallery>
+    private val invalidPaths: ArrayList<String>
+    private val folder: File
 
-public class FakeInspector extends ThreadAsyncTask<LocalActivity, LocalActivity, LocalActivity> {
-    private final ArrayList<LocalGallery> galleries;
-    private final ArrayList<String> invalidPaths;
-    private final File folder;
-
-    public FakeInspector(LocalActivity activity, File folder) {
-        super(activity);
-        this.folder = new File(folder, "Download");
-        galleries = new ArrayList<>();
-        invalidPaths = new ArrayList<>();
+    init {
+        this.folder = File(folder, "Download")
+        galleries = ArrayList()
+        invalidPaths = ArrayList()
     }
 
-
-    @Override
-    protected LocalActivity doInBackground(LocalActivity... voids) {
-        if (!this.folder.exists()) return voids[0];
-        publishProgress(voids[0]);
-        File parent = this.folder;
-        parent.mkdirs();
-        File[] files = parent.listFiles();
-        if (files == null) return voids[0];
-        for (File f : files) if (f.isDirectory()) createGallery(f);
-        for (String x : invalidPaths) LogUtility.download("Invalid path: " + x);
-        return voids[0];
+    override fun doInBackground(vararg params: LocalActivity): LocalActivity {
+        if (!folder.exists()) return params[0]
+        publishProgress(params[0])
+        val parent = folder
+        parent.mkdirs()
+        val files = parent.listFiles() ?: return params[0]
+        for (f in files) if (f.isDirectory) createGallery(f)
+        for (x in invalidPaths) download("Invalid path: $x")
+        return params[0]
     }
 
-    @Override
-    protected void onProgressUpdate(LocalActivity... values) {
-        values[0].getRefresher().setRefreshing(true);
+    override fun onProgressUpdate(vararg values: LocalActivity) {
+        values[0].refresher.isRefreshing = true
     }
 
-    @Override
-    protected void onPostExecute(LocalActivity aVoid) {
-        aVoid.getRefresher().setRefreshing(false);
-        aVoid.setAdapter(new LocalAdapter(aVoid, galleries));
+    override fun onPostExecute(result: LocalActivity) {
+        result.refresher.isRefreshing = false
+        result.setAdapter(LocalAdapter(result, galleries))
     }
 
-    private void createGallery(final File file) {
-        LocalGallery lg = new LocalGallery(file, true);
-        if (lg.isValid()) {
-            galleries.add(lg);
+    private fun createGallery(file: File) {
+        val lg = LocalGallery(file, true)
+        if (lg.isValid) {
+            galleries.add(lg)
         } else {
-            LogUtility.INSTANCE.error(lg);
-            invalidPaths.add(file.getAbsolutePath());
+            error(lg)
+            invalidPaths.add(file.absolutePath)
         }
     }
 }

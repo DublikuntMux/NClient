@@ -1,38 +1,22 @@
-package com.dublikunt.nclient.async.database.export;
+package com.dublikunt.nclient.async.database.export
 
-import android.net.Uri;
+import android.net.Uri
+import com.dublikunt.nclient.SettingsActivity
+import com.dublikunt.nclient.utility.LogUtility.error
+import java.io.IOException
 
-import androidx.annotation.NonNull;
-
-import com.dublikunt.nclient.SettingsActivity;
-import com.dublikunt.nclient.utility.LogUtility;
-
-import java.io.IOException;
-
-public class Manager extends Thread {
-    @NonNull
-    private final Uri file;
-    @NonNull
-    private final SettingsActivity context;
-    private final boolean export;
-    private final Runnable end;
-
-    public Manager(@NonNull Uri file, @NonNull SettingsActivity context, boolean export, Runnable end) {
-        this.file = file;
-        this.context = context;
-        this.export = export;
-        this.end = end;
-    }
-
-
-    @Override
-    public void run() {
+class Manager(
+    private val file: Uri,
+    private val context: SettingsActivity,
+    private val export: Boolean,
+    private val end: Runnable
+) : Thread() {
+    override fun run() {
         try {
-            if (export) Exporter.exportData(context, file);
-            else Importer.importData(context, file);
-            context.runOnUiThread(end);
-        } catch (IOException e) {
-            LogUtility.INSTANCE.error(e, e);
+            if (export) Exporter.exportData(context, file) else Importer.importData(context, file)
+            context.runOnUiThread(end)
+        } catch (e: IOException) {
+            error(e)
         }
     }
 }

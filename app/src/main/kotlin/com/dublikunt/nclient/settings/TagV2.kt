@@ -15,11 +15,11 @@ object TagV2 {
     var isSortedByName = false
         private set
 
-    fun getTagSet(type: TagType?): List<Tag> {
+    fun getTagSet(type: TagType): List<Tag> {
         return Queries.TagTable.getAllTagOfType(type)
     }
 
-    fun getTagStatus(status: TagStatus?): List<Tag> {
+    fun getTagStatus(status: TagStatus): List<Tag> {
         return Queries.TagTable.getAllStatus(status)
     }
 
@@ -30,7 +30,7 @@ object TagV2 {
     }
 
     fun getListPrefer(removeIgnoredGalleries: Boolean): List<Tag> {
-        return if (removeIgnoredGalleries) Queries.TagTable.getAllFiltered() else Queries.TagTable.getAllStatus(
+        return if (removeIgnoredGalleries) Queries.TagTable.allFiltered else Queries.TagTable.getAllStatus(
             TagStatus.ACCEPTED
         )
     }
@@ -55,7 +55,7 @@ object TagV2 {
         return false
     }
 
-    fun getStatus(tag: Tag?): TagStatus? {
+    fun getStatus(tag: Tag): TagStatus? {
         return Queries.TagTable.getStatus(tag)
     }
 

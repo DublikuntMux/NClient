@@ -17,6 +17,6 @@ object Database {
         }
 
     private fun setDBForTables(database: SQLiteDatabase) {
-        Queries.setDb(database)
+        Queries.db = database
     }
 }

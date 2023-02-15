@@ -1,140 +1,142 @@
-package com.dublikunt.nclient.async.database;
+package com.dublikunt.nclient.async.database
 
-import android.annotation.SuppressLint;
-import android.content.Context;
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteOpenHelper;
-import android.graphics.Color;
+import android.annotation.SuppressLint
+import android.content.Context
+import android.database.sqlite.SQLiteDatabase
+import android.database.sqlite.SQLiteOpenHelper
+import android.graphics.Color
+import com.dublikunt.nclient.R
+import com.dublikunt.nclient.api.components.Tag
+import com.dublikunt.nclient.api.enums.SpecialTagIds
+import com.dublikunt.nclient.api.enums.TagStatus
+import com.dublikunt.nclient.api.enums.TagType
+import com.dublikunt.nclient.components.status.StatusManager
+import com.dublikunt.nclient.components.status.StatusManager.add
+import com.dublikunt.nclient.settings.Database.database
+import com.dublikunt.nclient.utility.LogUtility.download
+import java.io.IOException
+import java.util.*
 
-import com.dublikunt.nclient.R;
-import com.dublikunt.nclient.api.components.Gallery;
-import com.dublikunt.nclient.api.components.Tag;
-import com.dublikunt.nclient.api.enums.SpecialTagIds;
-import com.dublikunt.nclient.api.enums.TagStatus;
-import com.dublikunt.nclient.api.enums.TagType;
-import com.dublikunt.nclient.components.status.StatusManager;
-import com.dublikunt.nclient.settings.Database;
-import com.dublikunt.nclient.utility.LogUtility;
-
-import java.io.IOException;
-import java.util.Date;
-import java.util.List;
-
-@SuppressWarnings("deprecation")
-public class DatabaseHelper extends SQLiteOpenHelper {
-    static final String DATABASE_NAME = "Entries.db";
-    private static final int DATABASE_VERSION = 13;
-    private final Context context;
-
-    public DatabaseHelper(Context context1) {
-        super(context1, DATABASE_NAME, null, DATABASE_VERSION);
-        this.context = context1;
-    }
-
-    @Override
-    public void onCreate(SQLiteDatabase db) {
-        createAllTables(db);
-        Database.setDatabase(db);
-        insertLanguageTags();
-        insertCategoryTags();
-        insertDefaultStatus();
+class DatabaseHelper(private val context: Context) : SQLiteOpenHelper(
+    context, DATABASE_NAME, null, DATABASE_VERSION
+) {
+    override fun onCreate(db: SQLiteDatabase) {
+        createAllTables(db)
+        database = db
+        insertLanguageTags()
+        insertCategoryTags()
+        insertDefaultStatus()
         //Queries.DebugDatabase.dumpDatabase(db);
     }
 
-    private void createAllTables(SQLiteDatabase db) {
-        db.execSQL(Queries.GalleryTable.CREATE_TABLE);
-        db.execSQL(Queries.TagTable.CREATE_TABLE);
-        db.execSQL(Queries.GalleryBridgeTable.CREATE_TABLE);
-        db.execSQL(Queries.BookmarkTable.CREATE_TABLE);
-        db.execSQL(Queries.DownloadTable.CREATE_TABLE);
-        db.execSQL(Queries.HistoryTable.CREATE_TABLE);
-        db.execSQL(Queries.FavoriteTable.CREATE_TABLE);
-        db.execSQL(Queries.ResumeTable.CREATE_TABLE);
-        db.execSQL(Queries.StatusTable.CREATE_TABLE);
-        db.execSQL(Queries.StatusMangaTable.CREATE_TABLE);
-
-    }
-    // TODO: 28/10/20 Add search history to DB instead of shared
-
-    private void insertCategoryTags() {
-        Tag[] types = {
-            new Tag("doujinshi", 0, 33172, TagType.CATEGORY, TagStatus.DEFAULT),
-            new Tag("manga", 0, 33173, TagType.CATEGORY, TagStatus.DEFAULT),
-            new Tag("misc", 0, 97152, TagType.CATEGORY, TagStatus.DEFAULT),
-            new Tag("western", 0, 34125, TagType.CATEGORY, TagStatus.DEFAULT),
-            new Tag("non-h", 0, 34065, TagType.CATEGORY, TagStatus.DEFAULT),
-            new Tag("artistcg", 0, 36320, TagType.CATEGORY, TagStatus.DEFAULT),
-        };
-        for (Tag t : types) Queries.TagTable.insert(t);
+    private fun createAllTables(db: SQLiteDatabase) {
+        db.execSQL(Queries.GalleryTable.CREATE_TABLE)
+        db.execSQL(Queries.TagTable.CREATE_TABLE)
+        db.execSQL(Queries.GalleryBridgeTable.CREATE_TABLE)
+        db.execSQL(Queries.BookmarkTable.CREATE_TABLE)
+        db.execSQL(Queries.DownloadTable.CREATE_TABLE)
+        db.execSQL(Queries.HistoryTable.CREATE_TABLE)
+        db.execSQL(Queries.FavoriteTable.CREATE_TABLE)
+        db.execSQL(Queries.ResumeTable.CREATE_TABLE)
+        db.execSQL(Queries.StatusTable.CREATE_TABLE)
+        db.execSQL(Queries.StatusMangaTable.CREATE_TABLE)
     }
 
-    private void insertLanguageTags() {
-        Tag[] languages = {
-            new Tag("english", 0, SpecialTagIds.LANGUAGE_ENGLISH, TagType.LANGUAGE, TagStatus.DEFAULT),
-            new Tag("japanese", 0, SpecialTagIds.LANGUAGE_JAPANESE, TagType.LANGUAGE, TagStatus.DEFAULT),
-            new Tag("chinese", 0, SpecialTagIds.LANGUAGE_CHINESE, TagType.LANGUAGE, TagStatus.DEFAULT),
-        };
-        for (Tag t : languages) Queries.TagTable.insert(t);
+    private fun insertCategoryTags() {
+        val types = arrayOf(
+            Tag("doujinshi", 0, 33172, TagType.CATEGORY, TagStatus.DEFAULT),
+            Tag("manga", 0, 33173, TagType.CATEGORY, TagStatus.DEFAULT),
+            Tag("misc", 0, 97152, TagType.CATEGORY, TagStatus.DEFAULT),
+            Tag("western", 0, 34125, TagType.CATEGORY, TagStatus.DEFAULT),
+            Tag("non-h", 0, 34065, TagType.CATEGORY, TagStatus.DEFAULT),
+            Tag("artistcg", 0, 36320, TagType.CATEGORY, TagStatus.DEFAULT)
+        )
+        for (t in types) Queries.TagTable.insert(t)
     }
 
-    @Override
-    public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        Database.setDatabase(db);
-        if (oldVersion == 2) insertLanguageTags();
-        if (oldVersion <= 3) insertCategoryTags();
-        if (oldVersion <= 4) db.execSQL(Queries.BookmarkTable.CREATE_TABLE);
-        if (oldVersion <= 5) updateGalleryWithSizes(db);
-        if (oldVersion <= 6) db.execSQL(Queries.DownloadTable.CREATE_TABLE);
-        if (oldVersion <= 7) db.execSQL(Queries.HistoryTable.CREATE_TABLE);
-        if (oldVersion <= 8) insertFavorite(db);
-        if (oldVersion <= 9) addRangeColumn(db);
-        if (oldVersion <= 10) db.execSQL(Queries.ResumeTable.CREATE_TABLE);
-        if (oldVersion <= 11) updateFavoriteTable(db);
-        if (oldVersion <= 12) addStatusTables(db);
-
+    private fun insertLanguageTags() {
+        val languages = arrayOf(
+            Tag(
+                "english",
+                0,
+                SpecialTagIds.LANGUAGE_ENGLISH.toInt(),
+                TagType.LANGUAGE,
+                TagStatus.DEFAULT
+            ),
+            Tag(
+                "japanese",
+                0,
+                SpecialTagIds.LANGUAGE_JAPANESE.toInt(),
+                TagType.LANGUAGE,
+                TagStatus.DEFAULT
+            ),
+            Tag(
+                "chinese",
+                0,
+                SpecialTagIds.LANGUAGE_CHINESE.toInt(),
+                TagType.LANGUAGE,
+                TagStatus.DEFAULT
+            )
+        )
+        for (t in languages) Queries.TagTable.insert(t)
     }
 
-    private void addStatusTables(SQLiteDatabase db) {
-        db.execSQL(Queries.StatusTable.CREATE_TABLE);
-        db.execSQL(Queries.StatusMangaTable.CREATE_TABLE);
-        insertDefaultStatus();
+    override fun onUpgrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) {
+        database = db
+        if (oldVersion == 2) insertLanguageTags()
+        if (oldVersion <= 3) insertCategoryTags()
+        if (oldVersion <= 4) db.execSQL(Queries.BookmarkTable.CREATE_TABLE)
+        if (oldVersion <= 5) updateGalleryWithSizes(db)
+        if (oldVersion <= 6) db.execSQL(Queries.DownloadTable.CREATE_TABLE)
+        if (oldVersion <= 7) db.execSQL(Queries.HistoryTable.CREATE_TABLE)
+        if (oldVersion <= 8) insertFavorite(db)
+        if (oldVersion <= 9) addRangeColumn(db)
+        if (oldVersion <= 10) db.execSQL(Queries.ResumeTable.CREATE_TABLE)
+        if (oldVersion <= 11) updateFavoriteTable(db)
+        if (oldVersion <= 12) addStatusTables(db)
     }
 
-    private void insertDefaultStatus() {
-        StatusManager.add(context.getString(R.string.default_status_1), Color.BLUE);
-        StatusManager.add(context.getString(R.string.default_status_2), Color.GREEN);
-        StatusManager.add(context.getString(R.string.default_status_3), Color.YELLOW);
-        StatusManager.add(context.getString(R.string.default_status_4), Color.RED);
-        StatusManager.add(context.getString(R.string.default_status_5), Color.GRAY);
-        StatusManager.add(StatusManager.DEFAULT_STATUS, Color.BLACK);
+    private fun addStatusTables(db: SQLiteDatabase) {
+        db.execSQL(Queries.StatusTable.CREATE_TABLE)
+        db.execSQL(Queries.StatusMangaTable.CREATE_TABLE)
+        insertDefaultStatus()
     }
 
-    private void updateFavoriteTable(SQLiteDatabase db) {
-        db.execSQL("ALTER TABLE Favorite ADD COLUMN `time` INT NOT NULL DEFAULT " + new Date().getTime());
+    private fun insertDefaultStatus() {
+        add(context.getString(R.string.default_status_1), Color.BLUE)
+        add(context.getString(R.string.default_status_2), Color.GREEN)
+        add(context.getString(R.string.default_status_3), Color.YELLOW)
+        add(context.getString(R.string.default_status_4), Color.RED)
+        add(context.getString(R.string.default_status_5), Color.GRAY)
+        add(StatusManager.DEFAULT_STATUS, Color.BLACK)
     }
 
-    private void addRangeColumn(SQLiteDatabase db) {
-        db.execSQL("ALTER TABLE Downloads ADD COLUMN `range_start` INT NOT NULL DEFAULT -1");
-        db.execSQL("ALTER TABLE Downloads ADD COLUMN `range_end`   INT NOT NULL DEFAULT -1");
+    private fun updateFavoriteTable(db: SQLiteDatabase) {
+        db.execSQL("ALTER TABLE Favorite ADD COLUMN `time` INT NOT NULL DEFAULT " + Date().time)
+    }
+
+    private fun addRangeColumn(db: SQLiteDatabase) {
+        db.execSQL("ALTER TABLE Downloads ADD COLUMN `range_start` INT NOT NULL DEFAULT -1")
+        db.execSQL("ALTER TABLE Downloads ADD COLUMN `range_end`   INT NOT NULL DEFAULT -1")
     }
 
     /**
      * Add all item which are favorite into the favorite table
      */
-    @SuppressLint("Range")
-    private int[] getAllFavoriteIndex() {
-        Cursor c = Queries.GalleryTable.getAllFavoriteCursorDeprecated("%", false);
-        int[] favorites = new int[c.getCount()];
-        int i = 0;
-        if (c.moveToFirst()) {
-            do {
-                favorites[i++] = c.getInt(c.getColumnIndex(Queries.GalleryTable.IDGALLERY));
-            } while (c.moveToNext());
+    @get:SuppressLint("Range")
+    private val allFavoriteIndex: IntArray
+        get() {
+            val c = Queries.GalleryTable.getAllFavoriteCursorDeprecated("%", false)
+            val favorites = IntArray(c.count)
+            var i = 0
+            if (c.moveToFirst()) {
+                do {
+                    favorites[i++] = c.getInt(c.getColumnIndex(Queries.GalleryTable.IDGALLERY))
+                } while (c.moveToNext())
+            }
+            c.close()
+            return favorites
         }
-        c.close();
-        return favorites;
-    }
 
     /**
      * Create favorite table
@@ -144,41 +146,44 @@ public class DatabaseHelper extends SQLiteOpenHelper {
      * insert all galleries again
      * populate favorite
      */
-    private void insertFavorite(SQLiteDatabase db) {
-        Database.setDatabase(db);
-        db.execSQL(Queries.FavoriteTable.CREATE_TABLE);
+    private fun insertFavorite(db: SQLiteDatabase) {
+        database = db
+        db.execSQL(Queries.FavoriteTable.CREATE_TABLE)
         try {
-            int[] favorites = getAllFavoriteIndex();
-            List<Gallery> allGalleries = Queries.GalleryTable.getAllGalleries();
-            db.execSQL(Queries.GalleryTable.DROP_TABLE);
-            db.execSQL(Queries.GalleryTable.CREATE_TABLE);
-            for (Gallery g : allGalleries) Queries.GalleryTable.insert(g);
-            for (int i : favorites) Queries.FavoriteTable.insert(i);
-        } catch (IOException e) {
-            e.printStackTrace();
+            val favorites = allFavoriteIndex
+            val allGalleries = Queries.GalleryTable.allGalleries
+            db.execSQL(Queries.GalleryTable.DROP_TABLE)
+            db.execSQL(Queries.GalleryTable.CREATE_TABLE)
+            for (g in allGalleries) Queries.GalleryTable.insert(g)
+            for (i in favorites) Queries.FavoriteTable.insert(i)
+        } catch (e: IOException) {
+            e.printStackTrace()
         }
     }
 
     /**
      * Add the columns which contains the sizes of the images
      */
-    private void updateGalleryWithSizes(SQLiteDatabase db) {
-        db.execSQL("ALTER TABLE Gallery ADD COLUMN `maxW` INT NOT NULL DEFAULT 0");
-        db.execSQL("ALTER TABLE Gallery ADD COLUMN `maxH` INT NOT NULL DEFAULT 0");
-        db.execSQL("ALTER TABLE Gallery ADD COLUMN `minW` INT NOT NULL DEFAULT 0");
-        db.execSQL("ALTER TABLE Gallery ADD COLUMN `minH` INT NOT NULL DEFAULT 0");
+    private fun updateGalleryWithSizes(db: SQLiteDatabase) {
+        db.execSQL("ALTER TABLE Gallery ADD COLUMN `maxW` INT NOT NULL DEFAULT 0")
+        db.execSQL("ALTER TABLE Gallery ADD COLUMN `maxH` INT NOT NULL DEFAULT 0")
+        db.execSQL("ALTER TABLE Gallery ADD COLUMN `minW` INT NOT NULL DEFAULT 0")
+        db.execSQL("ALTER TABLE Gallery ADD COLUMN `minH` INT NOT NULL DEFAULT 0")
     }
 
-    @Override
-    public void onDowngrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        LogUtility.download("Downgrading database from " + oldVersion + " to " + newVersion);
-        onCreate(db);
+    override fun onDowngrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) {
+        download("Downgrading database from $oldVersion to $newVersion")
+        onCreate(db)
     }
 
-    @Override
-    public void onOpen(SQLiteDatabase db) {
-        super.onOpen(db);
-        Database.setDatabase(db);
-        Queries.GalleryTable.clearGalleries();
+    override fun onOpen(db: SQLiteDatabase) {
+        super.onOpen(db)
+        database = db
+        Queries.GalleryTable.clearGalleries()
+    }
+
+    companion object {
+        const val DATABASE_NAME = "Entries.db"
+        private const val DATABASE_VERSION = 13
     }
 }

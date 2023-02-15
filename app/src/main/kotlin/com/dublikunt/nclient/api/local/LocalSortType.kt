@@ -1,50 +1,48 @@
-package com.dublikunt.nclient.api.local;
+package com.dublikunt.nclient.api.local
 
-import androidx.annotation.NonNull;
+class LocalSortType {
+    @JvmField
+    val type: Type
+    @JvmField
+    val descending: Boolean
 
-public class LocalSortType {
-    public static final byte MASK_DESCENDING = (byte) (1 << 7);         //10000000
-    private static final byte MASK_TYPE = (byte) (MASK_DESCENDING - 1);  //01111111
-    @NonNull
-    public final Type type;
-    public final boolean descending;
-
-    public LocalSortType(@NonNull Type type, boolean ascending) {
-        this.type = type;
-        this.descending = ascending;
+    constructor(type: Type, ascending: Boolean) {
+        this.type = type
+        descending = ascending
     }
 
-    public LocalSortType(int hash) {
-        this.type = Type.values()[(hash & MASK_TYPE) % Type.values().length];
-        this.descending = (hash & MASK_DESCENDING) != 0;
+    constructor(hash: Int) {
+        type = Type.values()[(hash and MASK_TYPE.toInt()) % Type.values().size]
+        descending = hash and MASK_DESCENDING.toInt() != 0
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        LocalSortType that = (LocalSortType) o;
-
-        return this.type == that.type && this.descending == that.descending;
+    override fun equals(o: Any?): Boolean {
+        if (this === o) return true
+        if (o == null || javaClass != o.javaClass) return false
+        val that = o as LocalSortType
+        return type == that.type && descending == that.descending
     }
 
-    @Override
-    public int hashCode() {
-        int hash = type.ordinal();
-        if (descending) hash |= MASK_DESCENDING;
-        return hash;
+    override fun hashCode(): Int {
+        var hash = type.ordinal
+        if (descending) hash = hash or MASK_DESCENDING.toInt()
+        return hash
     }
 
-    @NonNull
-    @Override
-    public String toString() {
+    override fun toString(): String {
         return "LocalSortType{" +
-            "type=" + type +
-            ", descending=" + descending +
-            ", hash=" + hashCode() +
-            '}';
+                "type=" + type +
+                ", descending=" + descending +
+                ", hash=" + hashCode() +
+                '}'
     }
 
-    public enum Type {TITLE, DATE, PAGE_COUNT, RANDOM}
+    enum class Type {
+        TITLE, DATE, PAGE_COUNT, RANDOM
+    }
+
+    companion object {
+        const val MASK_DESCENDING = (1 shl 7).toByte() //10000000
+        private const val MASK_TYPE = (MASK_DESCENDING - 1).toByte() //01111111
+    }
 }

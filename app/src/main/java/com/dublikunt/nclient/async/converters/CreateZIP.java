@@ -29,8 +29,6 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
 public class CreateZIP extends JobIntentService {
-    // TODO: 11/04/20 REFACTOR CREATE ZIP AND PDF
-
     private final byte[] buffer = new byte[1024];
     private int notId;
     private NotificationCompat.Builder notification;

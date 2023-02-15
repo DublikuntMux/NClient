@@ -46,7 +46,7 @@ object Login {
 
     fun removeCloudflareCookies() {
         val cookieJar = client!!.cookieJar as CustomCookieJar
-        val cookies = cookieJar.loadForRequest(BASE_HTTP_URL!!)
+        val cookies = cookieJar.loadForRequest(BASE_HTTP_URL)
         for (cookie in cookies) {
             if (cookie.name == LOGIN_COOKIE) {
                 continue
@@ -82,18 +82,18 @@ object Login {
         cookieJar.clearSession()
     }
 
-    fun addOnlineTag(tag: Tag?) {
+    fun addOnlineTag(tag: Tag) {
         Queries.TagTable.insert(tag)
         Queries.TagTable.updateBlacklistedTag(tag, true)
     }
 
-    fun removeOnlineTag(tag: Tag?) {
+    fun removeOnlineTag(tag: Tag) {
         Queries.TagTable.updateBlacklistedTag(tag, false)
     }
 
     fun hasCookie(name: String): Boolean {
         val cookies = client!!.cookieJar.loadForRequest(
-            BASE_HTTP_URL!!
+            BASE_HTTP_URL
         )
         for (c in cookies) {
             if (c.name == name) {
@@ -105,7 +105,7 @@ object Login {
 
     fun isLogged(context: Context?): Boolean {
         val cookies = client!!.cookieJar.loadForRequest(
-            BASE_HTTP_URL!!
+            BASE_HTTP_URL
         )
         download("Cookies: $cookies")
         if (hasCookie(LOGIN_COOKIE)) {
@@ -137,7 +137,7 @@ object Login {
         Login.user = user
     }
 
-    fun isOnlineTags(tag: Tag?): Boolean {
+    fun isOnlineTags(tag: Tag): Boolean {
         return Queries.TagTable.isBlackListed(tag)
     }
 }

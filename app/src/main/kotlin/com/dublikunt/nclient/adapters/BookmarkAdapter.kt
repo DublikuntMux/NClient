@@ -17,7 +17,7 @@ import com.google.android.material.button.MaterialButton
 
 class BookmarkAdapter(private val bookmarkActivity: BookmarkActivity) :
     RecyclerView.Adapter<BookmarkAdapter.ViewHolder>() {
-    private val bookmarks: MutableList<Bookmark> = Queries.BookmarkTable.getBookmarks()
+    private val bookmarks: MutableList<Bookmark> = Queries.BookmarkTable.bookmarks as MutableList<Bookmark>
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         return ViewHolder(LayoutInflater.from(parent.context).inflate(LAYOUT, parent, false))

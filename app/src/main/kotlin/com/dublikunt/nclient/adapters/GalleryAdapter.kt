@@ -60,7 +60,7 @@ class GalleryAdapter(
         setColCount(colCount)
         try {
             if (gallery is LocalGallery) {
-                directory = gallery.getGalleryFolder()
+                directory = gallery.galleryFolder
             } else if (Global.hasStoragePermission(context)) {
                 if (gallery.id != -1) {
                     val f = Global.findGalleryFolder(context, gallery.id)
