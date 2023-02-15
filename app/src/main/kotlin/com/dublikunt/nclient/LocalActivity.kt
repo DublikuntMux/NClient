@@ -179,7 +179,7 @@ class LocalActivity : BaseActivity() {
         val builder = MaterialAlertDialogBuilder(this)
         builder.setTitle(R.string.choose_directory).setIcon(R.drawable.ic_folder)
         builder.setAdapter(adapter) { _: DialogInterface?, which: Int ->
-            folder = File(strings[which], "NClientV2")
+            folder = File(strings[which], "NClient")
             FakeInspector(this, folder).execute(this)
         }.setNegativeButton(R.string.cancel, null).show()
     }

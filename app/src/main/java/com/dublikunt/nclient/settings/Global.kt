@@ -50,7 +50,7 @@ object Global {
     const val CHANNEL_ID1 = "download_gallery"
     const val CHANNEL_ID2 = "create_pdf"
     const val CHANNEL_ID3 = "create_zip"
-    private const val MAINFOLDER_NAME = "NClientV2"
+    private const val MAINFOLDER_NAME = "NClient"
     private const val DOWNLOADFOLDER_NAME = "Download"
     private const val SCREENFOLDER_NAME = "Screen"
     private const val PDFFOLDER_NAME = "PDF"
@@ -187,7 +187,7 @@ object Global {
 
     @JvmStatic
     val userAgent: String
-        get() = "NClientV2 " + getLastVersion(null)
+        get() = "NClient " + getLastVersion(null)
 
     fun getDefaultFileParent(context: Context): String {
         val f: File? = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
