@@ -17,7 +17,7 @@ class MainApplication : Application() {
         DynamicColors.applyToActivitiesIfAvailable(this)
         AppCompatDelegate.setCompatVectorFromResourcesEnabled(true)
         Global.initStorage(this)
-        Database.setDatabase(DatabaseHelper(applicationContext).writableDatabase)
+        Database.database = DatabaseHelper(applicationContext).writableDatabase
         Global.initFromShared(this)
         NetworkUtil.initConnectivity(this)
         TagV2.initMinCount(this)

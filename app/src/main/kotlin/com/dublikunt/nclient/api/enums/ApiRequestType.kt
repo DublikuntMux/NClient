@@ -1,45 +1,48 @@
-package com.dublikunt.nclient.api.enums;
+package com.dublikunt.nclient.api.enums
 
-public class ApiRequestType {
-    public static final ApiRequestType BYALL = new ApiRequestType(0, false);
-    public static final ApiRequestType BYTAG = new ApiRequestType(1, false);
-    public static final ApiRequestType BYSEARCH = new ApiRequestType(2, false);
-    public static final ApiRequestType BYSINGLE = new ApiRequestType(3, true);
-    public static final ApiRequestType RELATED = new ApiRequestType(4, false);
-    public static final ApiRequestType FAVORITE = new ApiRequestType(5, false);
-    public static final ApiRequestType RANDOM = new ApiRequestType(6, true);
-    public static final ApiRequestType RANDOM_FAVORITE = new ApiRequestType(7, true);
-    public static final ApiRequestType[] values = {
-        BYALL, BYTAG, BYSEARCH, BYSINGLE, RELATED, FAVORITE, RANDOM, RANDOM_FAVORITE
-    };
-    private final byte id;
-    private final boolean single;
+class ApiRequestType private constructor(id: Int, single: Boolean) {
+    private val id: Byte
+    val isSingle: Boolean
 
-    private ApiRequestType(int id, boolean single) {
-        this.id = (byte) id;
-        this.single = single;
+    init {
+        this.id = id.toByte()
+        isSingle = single
     }
 
-    public byte ordinal() {
-        return id;
+    fun ordinal(): Byte {
+        return id
     }
 
-    public boolean isSingle() {
-        return single;
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other == null || javaClass != other.javaClass) return false
+        val that = other as ApiRequestType
+        return id == that.id
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        ApiRequestType that = (ApiRequestType) o;
-
-        return id == that.id;
+    override fun hashCode(): Int {
+        return id.toInt()
     }
 
-    @Override
-    public int hashCode() {
-        return id;
+    companion object {
+        @JvmField
+        val BYALL = ApiRequestType(0, false)
+        @JvmField
+        val BYTAG = ApiRequestType(1, false)
+        @JvmField
+        val BYSEARCH = ApiRequestType(2, false)
+        @JvmField
+        val BYSINGLE = ApiRequestType(3, true)
+        val RELATED = ApiRequestType(4, false)
+        @JvmField
+        val FAVORITE = ApiRequestType(5, false)
+        @JvmField
+        val RANDOM = ApiRequestType(6, true)
+        @JvmField
+        val RANDOM_FAVORITE = ApiRequestType(7, true)
+        @JvmField
+        val values = arrayOf(
+            BYALL, BYTAG, BYSEARCH, BYSINGLE, RELATED, FAVORITE, RANDOM, RANDOM_FAVORITE
+        )
     }
 }

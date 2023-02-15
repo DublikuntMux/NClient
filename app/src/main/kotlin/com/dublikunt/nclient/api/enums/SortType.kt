@@ -1,47 +1,32 @@
-package com.dublikunt.nclient.api.enums;
+package com.dublikunt.nclient.api.enums
 
-import androidx.annotation.Nullable;
+import com.dublikunt.nclient.R
 
-import com.dublikunt.nclient.R;
-
-public enum SortType {
-    RECENT_ALL_TIME(R.string.sort_recent, null),
-    POPULAR_ALL_TIME(R.string.sort_popular_all_time, "popular"),
-    POPULAR_WEEKLY(R.string.sort_popular_week, "popular-week"),
-    POPULAR_DAILY(R.string.sort_popular_day, "popular-today"),
+enum class SortType(val nameId: Int, val urlAddition: String?) {
+    RECENT_ALL_TIME(R.string.sort_recent, null), POPULAR_ALL_TIME(
+        R.string.sort_popular_all_time,
+        "popular"
+    ),
+    POPULAR_WEEKLY(
+        R.string.sort_popular_week,
+        "popular-week"
+    ),
+    POPULAR_DAILY(
+        R.string.sort_popular_day,
+        "popular-today"
+    ),
     POPULAR_MONTH(R.string.sort_popoular_month, "popular-month");
 
-
-    private final int nameId;
-    @Nullable
-    private final String urlAddition;
-
-    SortType(int nameId, @Nullable String urlAddition) {
-        this.nameId = nameId;
-        this.urlAddition = urlAddition;
-    }
-
-
-    public static SortType findFromAddition(@Nullable String addition) {
-        if (addition == null)
-            return SortType.RECENT_ALL_TIME;
-
-        for (SortType t : SortType.values()) {
-            String url = t.getUrlAddition();
-            if (url != null && addition.contains(url)) {
-                return t;
+    companion object {
+        fun findFromAddition(addition: String?): SortType {
+            if (addition == null) return RECENT_ALL_TIME
+            for (t in values()) {
+                val url = t.urlAddition
+                if (url != null && addition.contains(url)) {
+                    return t
+                }
             }
+            return RECENT_ALL_TIME
         }
-
-        return SortType.RECENT_ALL_TIME;
-    }
-
-    public int getNameId() {
-        return nameId;
-    }
-
-    @Nullable
-    public String getUrlAddition() {
-        return urlAddition;
     }
 }

@@ -236,8 +236,8 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
     }
 
     private fun loadStringLogin() {
-        if (Login.getUser() != null) loginItem.title =
-            getString(R.string.login_formatted, Login.getUser().username) else loginItem.setTitle(
+        if (Login.user != null) loginItem.title =
+            getString(R.string.login_formatted, Login.user!!.username) else loginItem.setTitle(
             if (Login.isLogged()) R.string.logout else R.string.login
         )
     }

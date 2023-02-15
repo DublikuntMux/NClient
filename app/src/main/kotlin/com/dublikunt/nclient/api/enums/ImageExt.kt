@@ -1,21 +1,6 @@
-package com.dublikunt.nclient.api.enums;
+package com.dublikunt.nclient.api.enums
 
-public enum ImageExt {
+enum class ImageExt(name: String) {
     JPG("jpg"), PNG("png"), GIF("gif");
-
-    private final char firstLetter;
-    private final String name;
-
-    ImageExt(String name) {
-        this.name = name;
-        this.firstLetter = name.charAt(0);
-    }
-
-    public char getFirstLetter() {
-        return firstLetter;
-    }
-
-    public String getName() {
-        return name;
-    }
+    val firstLetter: Char = name[0]
 }

@@ -101,8 +101,8 @@ class TagFilterActivity : GeneralActivity() {
         }
 
     private fun updateSortItem(item: MenuItem) {
-        item.setIcon(if (TagV2.isSortedByName()) R.drawable.ic_sort_by_alpha else R.drawable.ic_sort)
-        item.setTitle(if (TagV2.isSortedByName()) R.string.sort_by_title else R.string.sort_by_popular)
+        item.setIcon(if (TagV2.isSortedByName) R.drawable.ic_sort_by_alpha else R.drawable.ic_sort)
+        item.setTitle(if (TagV2.isSortedByName) R.string.sort_by_title else R.string.sort_by_popular)
         Global.setTint(item.icon)
     }
 
@@ -154,7 +154,7 @@ class TagFilterActivity : GeneralActivity() {
     }
 
     private fun minCountBuild() {
-        val min = TagV2.getMinCount()
+        val min = TagV2.minCount
         val builder = DefaultDialogs.Builder(this)
         builder.setActual(min).setMax(100).setMin(2)
         builder.setYesbtn(R.string.ok).setNobtn(R.string.cancel)

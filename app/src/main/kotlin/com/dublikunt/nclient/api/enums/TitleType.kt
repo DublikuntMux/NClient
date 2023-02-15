@@ -1,5 +1,5 @@
-package com.dublikunt.nclient.api.enums;
+package com.dublikunt.nclient.api.enums
 
-public enum TitleType {
+enum class TitleType {
     JAPANESE, PRETTY, ENGLISH
 }

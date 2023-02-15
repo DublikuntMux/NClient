@@ -1,30 +1,22 @@
-package com.dublikunt.nclient.settings;
+package com.dublikunt.nclient.settings
 
-import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteDatabase
+import com.dublikunt.nclient.async.database.Queries
+import com.dublikunt.nclient.utility.LogUtility.download
 
-import androidx.annotation.NonNull;
+object Database {
+    @JvmStatic
+    var database: SQLiteDatabase? = null
+        set(database) {
+            field = database
+            download("SETTED database$database")
+            if (database != null) {
+                setDBForTables(database)
+            }
+            Queries.StatusTable.initStatuses()
+        }
 
-import com.dublikunt.nclient.async.database.Queries;
-import com.dublikunt.nclient.utility.LogUtility;
-
-public class Database {
-    @NonNull
-    private static SQLiteDatabase database;
-
-    @NonNull
-    public static SQLiteDatabase getDatabase() {
-        return database;
+    private fun setDBForTables(database: SQLiteDatabase) {
+        Queries.setDb(database)
     }
-
-    public static void setDatabase(SQLiteDatabase database) {
-        Database.database = database;
-        LogUtility.download("SETTED database" + database);
-        setDBForTables(database);
-        Queries.StatusTable.initStatuses();
-    }
-
-    private static void setDBForTables(SQLiteDatabase database) {
-        Queries.setDb(database);
-    }
-
 }

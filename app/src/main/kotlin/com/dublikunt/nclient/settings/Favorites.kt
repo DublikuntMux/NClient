@@ -1,26 +1,23 @@
-package com.dublikunt.nclient.settings;
+package com.dublikunt.nclient.settings
 
-import com.dublikunt.nclient.api.components.Gallery;
-import com.dublikunt.nclient.api.components.GenericGallery;
-import com.dublikunt.nclient.async.database.Queries;
+import com.dublikunt.nclient.api.components.Gallery
+import com.dublikunt.nclient.api.components.GenericGallery
+import com.dublikunt.nclient.async.database.Queries
 
-public class Favorites {
-
-
-    public static boolean addFavorite(Gallery gallery) {
-        Queries.FavoriteTable.addFavorite(gallery);
-        return true;
+object Favorites {
+    fun addFavorite(gallery: Gallery?): Boolean {
+        Queries.FavoriteTable.addFavorite(gallery)
+        return true
     }
 
-    public static boolean removeFavorite(GenericGallery gallery) {
-        Queries.FavoriteTable.removeFavorite(gallery.getId());
-        return true;
+    fun removeFavorite(gallery: GenericGallery): Boolean {
+        Queries.FavoriteTable.removeFavorite(gallery.id)
+        return true
     }
 
-    public static boolean isFavorite(GenericGallery gallery) {
-        if (gallery == null || !gallery.isValid()) return false;
-        return Queries.FavoriteTable.isFavorite(gallery.getId());
+    fun isFavorite(gallery: GenericGallery?): Boolean {
+        return if (gallery == null || !gallery.isValid) false else Queries.FavoriteTable.isFavorite(
+            gallery.id
+        )
     }
-
-
 }

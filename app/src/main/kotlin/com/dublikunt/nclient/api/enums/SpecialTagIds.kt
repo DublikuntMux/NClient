@@ -1,8 +1,8 @@
-package com.dublikunt.nclient.api.enums;
+package com.dublikunt.nclient.api.enums
 
-public class SpecialTagIds {
-    public static final short LANGUAGE_JAPANESE = 6346;
-    public static final short LANGUAGE_ENGLISH = 12227;
-    public static final short LANGUAGE_CHINESE = 29963;
-    public static final short INVALID_ID = -1;
+object SpecialTagIds {
+    const val LANGUAGE_JAPANESE: Short = 6346
+    const val LANGUAGE_ENGLISH: Short = 12227
+    const val LANGUAGE_CHINESE: Short = 29963
+    const val INVALID_ID: Short = -1
 }

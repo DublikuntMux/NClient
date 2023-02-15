@@ -69,7 +69,7 @@ class RandomActivity : GeneralActivity() {
         favorite.setOnClickListener {
             if (loadedGallery != null) {
                 if (isFavorite) {
-                    if (Favorites.removeFavorite(loadedGallery)) isFavorite = false
+                    if (Favorites.removeFavorite(loadedGallery!!)) isFavorite = false
                 } else if (Favorites.addFavorite(loadedGallery)) isFavorite = true
             }
             favoriteUpdateButton()

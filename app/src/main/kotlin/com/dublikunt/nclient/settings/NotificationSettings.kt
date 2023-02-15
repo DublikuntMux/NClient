@@ -1,54 +1,50 @@
-package com.dublikunt.nclient.settings;
+package com.dublikunt.nclient.settings
 
-import android.app.Notification;
-import android.content.Context;
+import android.app.Notification
+import android.content.Context
+import androidx.core.app.NotificationManagerCompat
+import com.dublikunt.nclient.R
+import com.dublikunt.nclient.utility.LogUtility.download
+import java.util.concurrent.CopyOnWriteArrayList
 
-import androidx.core.app.NotificationManagerCompat;
+class NotificationSettings private constructor(private val notificationManager: NotificationManagerCompat) {
+    companion object {
+        private val notificationArray: MutableList<Int> = CopyOnWriteArrayList()
+        private var notificationSettings: NotificationSettings? = null
+        @JvmStatic
+        var notificationId = 999
+            get() = field++
+            private set
+        private var maximumNotification = 0
+        fun initializeNotificationManager(context: Context) {
+            notificationSettings =
+                NotificationSettings(NotificationManagerCompat.from(context.applicationContext))
+            maximumNotification = context.getSharedPreferences("Settings", 0)
+                .getInt(context.getString(R.string.key_maximum_notification), 25)
+            trimArray()
+        }
 
-import com.dublikunt.nclient.R;
-import com.dublikunt.nclient.utility.LogUtility;
+        @JvmStatic
+        fun notify(channel: String?, notificationId: Int, notification: Notification?) {
+            if (maximumNotification == 0) return
+            notificationArray.remove(Integer.valueOf(notificationId))
+            notificationArray.add(notificationId)
+            trimArray()
+            download("Notification count: " + notificationArray.size)
+            notificationSettings!!.notificationManager.notify(notificationId, notification!!)
+        }
 
-import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
+        @JvmStatic
+        fun cancel(channel: String?, notificationId: Int) {
+            notificationSettings!!.notificationManager.cancel(notificationId)
+            notificationArray.remove(Integer.valueOf(notificationId))
+        }
 
-public class NotificationSettings {
-    private static final List<Integer> notificationArray = new CopyOnWriteArrayList<>();
-    private static NotificationSettings notificationSettings;
-    private static int notificationId = 999, maximumNotification;
-    private final NotificationManagerCompat notificationManager;
-
-    private NotificationSettings(NotificationManagerCompat notificationManager) {
-        this.notificationManager = notificationManager;
-    }
-
-    public static int getNotificationId() {
-        return notificationId++;
-    }
-
-    public static void initializeNotificationManager(Context context) {
-        notificationSettings = new NotificationSettings(NotificationManagerCompat.from(context.getApplicationContext()));
-        maximumNotification = context.getSharedPreferences("Settings", 0).getInt(context.getString(R.string.key_maximum_notification), 25);
-        trimArray();
-    }
-
-    public static void notify(String channel, int notificationId, Notification notification) {
-        if (maximumNotification == 0) return;
-        notificationArray.remove(Integer.valueOf(notificationId));
-        notificationArray.add(notificationId);
-        trimArray();
-        LogUtility.download("Notification count: " + notificationArray.size());
-        notificationSettings.notificationManager.notify(notificationId, notification);
-    }
-
-    public static void cancel(String channel, int notificationId) {
-        notificationSettings.notificationManager.cancel(notificationId);
-        notificationArray.remove(Integer.valueOf(notificationId));
-    }
-
-    private static void trimArray() {
-        while (notificationArray.size() > maximumNotification) {
-            int first = notificationArray.remove(0);
-            notificationSettings.notificationManager.cancel(first);
+        private fun trimArray() {
+            while (notificationArray.size > maximumNotification) {
+                val first = notificationArray.removeAt(0)
+                notificationSettings!!.notificationManager.cancel(first)
+            }
         }
     }
 }

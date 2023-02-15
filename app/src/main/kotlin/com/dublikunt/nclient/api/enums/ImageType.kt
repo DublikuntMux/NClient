@@ -1,5 +1,5 @@
-package com.dublikunt.nclient.api.enums;
+package com.dublikunt.nclient.api.enums
 
-public enum ImageType {
+enum class ImageType {
     PAGE, COVER, THUMBNAIL
 }

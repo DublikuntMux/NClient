@@ -1,84 +1,76 @@
-package com.dublikunt.nclient.api.enums;
+package com.dublikunt.nclient.api.enums
 
-import android.os.Parcel;
-import android.os.Parcelable;
+import android.os.Parcel
+import android.os.Parcelable
+import android.os.Parcelable.Creator
 
-public class TagType implements Parcelable {
-    public static final TagType UNKNOWN = new TagType(0, "", null);
-    public static final TagType PARODY = new TagType(1, "parody", "parodies");
-    public static final TagType CHARACTER = new TagType(2, "character", "characters");
-    public static final TagType TAG = new TagType(3, "tag", "tags");
-    public static final TagType ARTIST = new TagType(4, "artist", "artists");
-    public static final TagType GROUP = new TagType(5, "group", "groups");
-    public static final TagType LANGUAGE = new TagType(6, "language", null);
-    public static final TagType CATEGORY = new TagType(7, "category", null);
-    public static final TagType[] values = new TagType[]{UNKNOWN, PARODY, CHARACTER, TAG, ARTIST, GROUP, LANGUAGE, CATEGORY};
-    public static final Creator<TagType> CREATOR = new Creator<TagType>() {
-        @Override
-        public TagType createFromParcel(Parcel in) {
-            return new TagType(in);
-        }
+class TagType : Parcelable {
+    val id: Byte
+    val single: String?
+    val plural: String?
 
-        @Override
-        public TagType[] newArray(int size) {
-            return new TagType[size];
-        }
-    };
-    private final byte id;
-    private final String single, plural;
-
-    private TagType(int id, String single, String plural) {
-        this.id = (byte) id;
-        this.single = single;
-        this.plural = plural;
+    private constructor(id: Int, single: String, plural: String?) {
+        this.id = id.toByte()
+        this.single = single
+        this.plural = plural
     }
 
-    protected TagType(Parcel in) {
-        id = in.readByte();
-        single = in.readString();
-        plural = in.readString();
+    protected constructor(`in`: Parcel) {
+        id = `in`.readByte()
+        single = `in`.readString()
+        plural = `in`.readString()
     }
 
-    public static TagType typeByName(String name) {
-        for (TagType t : values) if (t.getSingle().equals(name)) return t;
-        return UNKNOWN;
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other == null || javaClass != other.javaClass) return false
+        val type = other as TagType
+        return id == type.id
     }
 
-    public byte getId() {
-        return id;
-    }
-
-    public String getSingle() {
-        return single;
-    }
-
-    public String getPlural() {
-        return plural;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        TagType type = (TagType) o;
-        return id == type.id;
-    }
-
-    @Override
-    public int hashCode() {
-        return id;
+    override fun hashCode(): Int {
+        return id.toInt()
     }
 
     //start parcelable implementation
-    @Override
-    public int describeContents() {
-        return 0;
+    override fun describeContents(): Int {
+        return 0
     }
 
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeByte(id);
-        dest.writeString(single);
-        dest.writeString(plural);
+    override fun writeToParcel(dest: Parcel, flags: Int) {
+        dest.writeByte(id)
+        dest.writeString(single)
+        dest.writeString(plural)
+    }
+
+    companion object {
+        val UNKNOWN = TagType(0, "", null)
+        val PARODY = TagType(1, "parody", "parodies")
+        val CHARACTER = TagType(2, "character", "characters")
+        val TAG = TagType(3, "tag", "tags")
+        val ARTIST = TagType(4, "artist", "artists")
+        val GROUP = TagType(5, "group", "groups")
+        @JvmField
+        val LANGUAGE = TagType(6, "language", null)
+        @JvmField
+        val CATEGORY = TagType(7, "category", null)
+        @JvmField
+        val values = arrayOf(UNKNOWN, PARODY, CHARACTER, TAG, ARTIST, GROUP, LANGUAGE, CATEGORY)
+        @JvmField
+        val CREATOR: Creator<TagType?> = object : Creator<TagType?> {
+            override fun createFromParcel(`in`: Parcel): TagType {
+                return TagType(`in`)
+            }
+
+            override fun newArray(size: Int): Array<TagType?> {
+                return arrayOfNulls(size)
+            }
+        }
+
+        @JvmStatic
+        fun typeByName(name: String): TagType {
+            for (t in values) if (t.single == name) return t
+            return UNKNOWN
+        }
     }
 }

@@ -46,15 +46,23 @@ class TagTypePage : Fragment() {
             activity,
             if (resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE) 4 else 2
         )
-        adapter = if (type == TagType.UNKNOWN) TagsAdapter(
-            activity,
-            query,
-            false
-        ) else if (type == TagType.CATEGORY) TagsAdapter(activity, query, true) else TagsAdapter(
-            activity,
-            query,
-            type
-        )
+        adapter = when (type) {
+            TagType.UNKNOWN -> activity?.let {
+                TagsAdapter(
+                    it,
+                    query,
+                    false
+                )
+            }
+            TagType.CATEGORY -> activity?.let { TagsAdapter(it, query, true) }
+            else -> activity?.let {
+                TagsAdapter(
+                    it,
+                    query,
+                    type
+                )
+            }
+        }
         recyclerView!!.adapter = adapter
     }
 

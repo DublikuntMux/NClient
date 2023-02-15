@@ -33,7 +33,7 @@ class ListAdapter(private val context: BaseActivity) :
     init {
         mDataset = ArrayList()
         Global.hasStoragePermission(context)
-        queryString = TagV2.getAvoidedTags()
+        queryString = TagV2.avoidedTags
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): GenericAdapter.ViewHolder {

@@ -48,10 +48,10 @@ class LoadTags(private val adapter: TagsAdapter?) : Thread() {
 
     override fun run() {
         super.run()
-        if (Login.getUser() == null) return
+        if (Login.user == null) return
         val url = String.format(
             Locale.US, Utility.getBaseUrl() + "users/%s/%s/blacklist",
-            Login.getUser().id, Login.getUser().codename
+            Login.user!!.id, Login.user!!.codename
         )
         download(url)
         try {

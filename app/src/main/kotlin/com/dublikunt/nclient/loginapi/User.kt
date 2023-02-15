@@ -50,7 +50,7 @@ class User private constructor(val username: String, id: String, codename: Strin
                             user = User(username, y[2], y[3])
                         }
                         Login.updateUser(user)
-                        createUser?.onCreateUser(Login.getUser())
+                        createUser?.onCreateUser(Login.user)
                     }
                 })
         }

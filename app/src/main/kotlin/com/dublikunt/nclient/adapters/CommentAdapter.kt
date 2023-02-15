@@ -35,8 +35,8 @@ class CommentAdapter(
     init {
         this.galleryId = galleryId
         this.comments = comments as MutableList<Comment>
-        userId = if (Login.isLogged() && Login.getUser() != null) {
-            Login.getUser().id
+        userId = if (Login.isLogged() && Login.user != null) {
+            Login.user!!.id
         } else -1
     }
 

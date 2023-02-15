@@ -50,7 +50,7 @@ public class PageFile extends File implements Parcelable {
     private static @Nullable
     PageFile fastThumbnail(File folder) {
         for (ImageExt ext : ImageExt.values()) {
-            String name = "001." + ext.getName();
+            String name = "001." + ext.name();
             File file = new File(folder, name);
             if (file.exists()) return new PageFile(ext, file, 1);
         }
