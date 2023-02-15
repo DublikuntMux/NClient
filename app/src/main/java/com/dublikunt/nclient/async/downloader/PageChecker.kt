@@ -1,9 +1,7 @@
-package com.dublikunt.nclient.async.downloader;
+package com.dublikunt.nclient.async.downloader
 
-public class PageChecker extends Thread {
-    @Override
-    public void run() {
-        for (GalleryDownloaderV2 g : DownloadQueue.getDownloaders())
-            if (g.hasData()) g.initDownload();
+class PageChecker : Thread() {
+    override fun run() {
+        for (g in DownloadQueue.downloaders) if (g!!.hasData()) g.initDownload()
     }
 }

@@ -1,13 +1,9 @@
-package com.dublikunt.nclient.async.downloader;
+package com.dublikunt.nclient.async.downloader
 
-public interface DownloadObserver {
-    void triggerStartDownload(GalleryDownloaderV2 downloader);
-
-    void triggerUpdateProgress(GalleryDownloaderV2 downloader, int reach, int total);
-
-    void triggerEndDownload(GalleryDownloaderV2 downloader);
-
-    void triggerCancelDownload(GalleryDownloaderV2 downloader);
-
-    void triggerPauseDownload(GalleryDownloaderV2 downloader);
+interface DownloadObserver {
+    fun triggerStartDownload(downloader: GalleryDownloaderV2)
+    fun triggerUpdateProgress(downloader: GalleryDownloaderV2?, reach: Int, total: Int)
+    fun triggerEndDownload(downloader: GalleryDownloaderV2?)
+    fun triggerCancelDownload(downloader: GalleryDownloaderV2)
+    fun triggerPauseDownload(downloader: GalleryDownloaderV2?)
 }

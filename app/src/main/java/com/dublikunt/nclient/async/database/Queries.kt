@@ -644,7 +644,7 @@ object Queries {
 
         @JvmStatic
         @Throws(IOException::class)
-        fun getAllDownloads(context: Context?): List<GalleryDownloaderManager> {
+        fun getAllDownloads(context: Context): List<GalleryDownloaderManager> {
             val q = "SELECT * FROM %s INNER JOIN %s ON %s=%s"
             val query = String.format(
                 Locale.US,

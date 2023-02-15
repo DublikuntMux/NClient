@@ -1,376 +1,334 @@
-package com.dublikunt.nclient.async.downloader;
+package com.dublikunt.nclient.async.downloader
 
-import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.net.Uri;
+import android.content.Context
+import android.graphics.BitmapFactory
+import android.net.Uri
+import com.dublikunt.nclient.R
+import com.dublikunt.nclient.api.InspectorV3
+import com.dublikunt.nclient.api.components.Gallery
+import com.dublikunt.nclient.api.local.LocalGallery
+import com.dublikunt.nclient.async.database.Queries.DownloadTable.addGallery
+import com.dublikunt.nclient.async.database.Queries.DownloadTable.removeGallery
+import com.dublikunt.nclient.settings.Global
+import com.dublikunt.nclient.settings.Global.client
+import com.dublikunt.nclient.settings.Global.isJPEGCorrupted
+import com.dublikunt.nclient.settings.Global.recursiveDelete
+import com.dublikunt.nclient.utility.LogUtility.download
+import com.dublikunt.nclient.utility.LogUtility.error
+import com.dublikunt.nclient.utility.Utility
+import okhttp3.Request
+import java.io.File
+import java.io.FileWriter
+import java.io.IOException
+import java.util.*
+import java.util.concurrent.CopyOnWriteArraySet
+import java.util.regex.Pattern
+import kotlin.math.max
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
+class GalleryDownloaderV2(
+    private val context: Context,
+    title: String?,
+    var thumbnail: Uri?,
+    val id: Int
+) {
+    private val observers = CopyOnWriteArraySet<DownloadObserver>()
+    private val urls: MutableList<PageContainer?> = ArrayList()
+    var status = Status.NOT_STARTED
+    var truePathTitle: String
+        private set
+    var start = -1
+        private set
+    var end = -1
+        private set
+    lateinit var gallery: Gallery
+        private set
+    var folder: File? = null
+        private set
+    private var initialized = false
 
-import com.dublikunt.nclient.R;
-import com.dublikunt.nclient.api.InspectorV3;
-import com.dublikunt.nclient.api.components.Gallery;
-import com.dublikunt.nclient.api.local.LocalGallery;
-import com.dublikunt.nclient.async.database.Queries;
-import com.dublikunt.nclient.settings.Global;
-import com.dublikunt.nclient.utility.LogUtility;
-import com.dublikunt.nclient.utility.Utility;
-
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
-import java.util.Objects;
-import java.util.concurrent.CopyOnWriteArraySet;
-import java.util.regex.Pattern;
-
-import okhttp3.Request;
-import okhttp3.Response;
-
-public class GalleryDownloaderV2 {
-    public static final String DUPLICATE_EXTENSION = ".DUP";
-    public static final Pattern ID_FILE = Pattern.compile("^\\.\\d{1,6}$");
-    private final Context context;
-    private final int id;
-    private final CopyOnWriteArraySet<DownloadObserver> observers = new CopyOnWriteArraySet<>();
-    private final List<PageContainer> urls = new ArrayList<>();
-    private Status status = Status.NOT_STARTED;
-    private String title;
-    private Uri thumbnail;
-    private int start = -1, end = -1;
-    private Gallery gallery;
-    private File folder;
-    private boolean initialized = false;
-
-    public GalleryDownloaderV2(Context context, @Nullable String title, @Nullable Uri thumbnail, int id) {
-        this.context = context;
-        this.id = id;
-        this.thumbnail = thumbnail;
-        this.title = Gallery.getPathTitle(title, context.getString(R.string.download_gallery));
+    init {
+        truePathTitle = Gallery.getPathTitle(title, context.getString(R.string.download_gallery))
     }
 
-    public GalleryDownloaderV2(Context context, Gallery gallery, int start, int end) {
-        this(context, gallery.getTitle(), gallery.getCover(), gallery.getId());
-        this.start = start;
-        this.end = end;
-        setGallery(gallery);
+    constructor(context: Context, gallery: Gallery, start: Int, end: Int) : this(
+        context,
+        gallery.title,
+        gallery.cover,
+        gallery.id
+    ) {
+        this.start = start
+        this.end = end
+        setGallery(gallery)
     }
 
-    private static File findFolder(File downloadfolder, String pathTitle, int id) {
-        File folder = new File(downloadfolder, pathTitle);
-        if (usableFolder(folder, id)) return folder;
-        int i = 1;
-        do {
-            folder = new File(downloadfolder, pathTitle + DUPLICATE_EXTENSION + (i++));
-        } while (!usableFolder(folder, id));
-        return folder;
+    fun hasData(): Boolean {
+        return gallery != null
     }
 
-    private static boolean usableFolder(File file, int id) {
-        if (!file.exists()) return true;//folder not exists
-        if (new File(file, "." + id).exists()) return true;//same id
-        File[] files = file.listFiles((dir, name) -> ID_FILE.matcher(name).matches());
-        if (files != null && files.length > 0) return false;//has id but not equal
-        LocalGallery localGallery = new LocalGallery(file);//read id from metadata
-        return localGallery.getId() == id;
+    fun removeObserver(observer: DownloadObserver) {
+        observers.remove(observer)
     }
 
-    public boolean hasData() {
-        return gallery != null;
+    private fun setGallery(gallery: Gallery) {
+        this.gallery = gallery
+        truePathTitle = gallery.pathTitle
+        thumbnail = gallery.thumbnail
+        addGallery(this)
+        if (start == -1) start = 0
+        if (end == -1) end = gallery.pageCount - 1
     }
 
-    public void removeObserver(DownloadObserver observer) {
-        observers.remove(observer);
+    private val totalPage: Int
+        get() = max(1, end - start + 1)
+    val percentage: Int
+        get() = if (urls.size == 0) 0 else (totalPage - urls.size) * 100 / totalPage
+
+    private fun onStart() {
+        setStatus(Status.DOWNLOADING)
+        for (observer in observers) observer.triggerStartDownload(this)
     }
 
-    public File getFolder() {
-        return folder;
+    private fun onEnd() {
+        setStatus(Status.FINISHED)
+        for (observer in observers) observer.triggerEndDownload(this)
+        download("Delete 75: $id")
+        removeGallery(id)
     }
 
-    public Gallery getGallery() {
-        return gallery;
+    private fun onUpdate() {
+        val total = totalPage
+        val reach = total - urls.size
+        for (observer in observers) observer.triggerUpdateProgress(this, reach, total)
     }
 
-    private void setGallery(Gallery gallery) {
-        this.gallery = gallery;
-        title = gallery.getPathTitle();
-        thumbnail = gallery.getThumbnail();
-        Queries.DownloadTable.addGallery(this);
-        if (start == -1) start = 0;
-        if (end == -1) end = gallery.getPageCount() - 1;
+    private fun onCancel() {
+        for (observer in observers) observer.triggerCancelDownload(this)
     }
 
-    private int getTotalPage() {
-        return Math.max(1, end - start + 1);
+    private fun onPause() {
+        for (observer in observers) observer.triggerPauseDownload(this)
     }
 
-    public int getPercentage() {
-        if (gallery == null || urls.size() == 0) return 0;
-        return ((getTotalPage() - urls.size()) * 100) / getTotalPage();
+    fun localGallery(): LocalGallery? {
+        return if (status != Status.FINISHED || folder == null) null else LocalGallery(folder!!)
     }
 
-    private void onStart() {
-        setStatus(Status.DOWNLOADING);
-        for (DownloadObserver observer : observers) observer.triggerStartDownload(this);
-    }
-
-    private void onEnd() {
-        setStatus(Status.FINISHED);
-        for (DownloadObserver observer : observers) observer.triggerEndDownload(this);
-        LogUtility.download("Delete 75: " + id);
-        Queries.DownloadTable.removeGallery(id);
-    }
-
-    private void onUpdate() {
-        int total = getTotalPage();
-        int reach = total - urls.size();
-        for (DownloadObserver observer : observers)
-            observer.triggerUpdateProgress(this, reach, total);
-    }
-
-    private void onCancel() {
-        for (DownloadObserver observer : observers) observer.triggerCancelDownload(this);
-    }
-
-    private void onPause() {
-        for (DownloadObserver observer : observers) observer.triggerPauseDownload(this);
-    }
-
-    public LocalGallery localGallery() {
-        if (status != Status.FINISHED || folder == null) return null;
-        return new LocalGallery(folder);
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public void addObserver(DownloadObserver observer) {
-        if (observer == null) return;
-        observers.add(observer);
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public int getStart() {
-        return start;
-    }
-
-    public int getEnd() {
-        return end;
-    }
-
-    @NonNull
-    public String getPathTitle() {
-        return title;
-    }
-
-    @NonNull
-    public String getTruePathTitle() {
-        return title;
+    fun addObserver(observer: DownloadObserver?) {
+        if (observer == null) return
+        observers.add(observer)
     }
 
     /**
      * @return true if the download has been completed, false otherwise
      */
-    public boolean downloadGalleryData() {
-        if (this.gallery != null) return true;
-        InspectorV3 inspector = InspectorV3.galleryInspector(context, id, null);
-        try {
-            inspector.createDocument();
-            inspector.parseDocument();
-            if (inspector.getGalleries() == null || inspector.getGalleries().size() == 0)
-                return false;
-            Gallery g = (Gallery) inspector.getGalleries().get(0);
-            if (g.isValid())
-                setGallery(g);
-            return g.isValid();
-        } catch (Exception e) {
-            LogUtility.INSTANCE.error("Error while downloading", e);
-            return false;
+    fun downloadGalleryData(): Boolean {
+        if (gallery != null) return true
+        val inspector = InspectorV3.galleryInspector(context, id, null)
+        return try {
+            inspector.createDocument()
+            inspector.parseDocument()
+            if (inspector.galleries == null || inspector.galleries.size == 0) return false
+            val g = inspector.galleries[0] as Gallery
+            if (g.isValid) setGallery(g)
+            g.isValid
+        } catch (e: Exception) {
+            error("Error while downloading")
+            false
         }
     }
 
-    public Uri getThumbnail() {
-        return thumbnail;
+    fun canBeFetched(): Boolean {
+        return status != Status.FINISHED && status != Status.PAUSED
     }
 
-    public boolean canBeFetched() {
-        return status != Status.FINISHED && status != Status.PAUSED;
-    }
-
-    public Status getStatus() {
-        return status;
-    }
-
-    public void setStatus(Status status) {
-        if (this.status == status) return;
-        this.status = status;
+    @JvmName("setStatusNormal")
+    fun setStatus(status: Status) {
+        if (this.status == status) return
+        this.status = status
         if (status == Status.CANCELED) {
-            LogUtility.download("Delete 95: " + id);
-            onCancel();
-            Global.recursiveDelete(folder);
-            Queries.DownloadTable.removeGallery(id);
+            download("Delete 95: $id")
+            onCancel()
+            recursiveDelete(folder)
+            removeGallery(id)
         }
     }
 
-    public void download() {
-        initDownload();
-        onStart();
-        while (!urls.isEmpty()) {
-            downloadPage(urls.get(0));
-            Utility.threadSleep(50);
+    fun download() {
+        initDownload()
+        onStart()
+        while (urls.isNotEmpty()) {
+            downloadPage(urls[0])
+            Utility.threadSleep(50)
             if (status == Status.PAUSED) {
-                onPause();
-                return;
+                onPause()
+                return
             }
             if (status == Status.CANCELED) {
-                onCancel();
-                return;
+                onCancel()
+                return
             }
         }
-        onEnd();
+        onEnd()
     }
 
-    private void downloadPage(PageContainer page) {
+    private fun downloadPage(page: PageContainer?) {
         if (savePage(page)) {
-            urls.remove(page);
-            onUpdate();
+            urls.remove(page)
+            onUpdate()
         }
     }
 
-    private boolean isCorrupted(File file) {
-        String path = file.getAbsolutePath();
+    private fun isCorrupted(file: File): Boolean {
+        val path = file.absolutePath
         if (path.endsWith(".jpg") || path.endsWith(".jpeg")) {
-            return Global.isJPEGCorrupted(path);
+            return isJPEGCorrupted(path)
         }
-        BitmapFactory.Options options = new BitmapFactory.Options();
-        options.inSampleSize = 256;
-        Bitmap bitmap = BitmapFactory.decodeFile(path, options);
-        boolean x = bitmap == null;
-        if (!x) bitmap.recycle();
-        bitmap = null;
-        return x;
+        val options = BitmapFactory.Options()
+        options.inSampleSize = 256
+        val bitmap = BitmapFactory.decodeFile(path, options)
+        val x = bitmap == null
+        if (!x) bitmap!!.recycle()
+        return x
     }
 
-    private boolean savePage(PageContainer page) {
-        if (page == null) return true;
-        File filePath = new File(folder, page.getPageName());
-        LogUtility.download("Saving into: " + filePath + "," + page.url);
-        if (filePath.exists() && !isCorrupted(filePath)) return true;
+    private fun savePage(page: PageContainer?): Boolean {
+        if (page == null) return true
+        val filePath = File(folder, page.pageName)
+        download("Saving into: " + filePath + "," + page.url)
+        if (filePath.exists() && !isCorrupted(filePath)) return true
         try {
-            Response r = Global.getClient().newCall(new Request.Builder().url(page.url).build()).execute();
-            if (r.code() != 200) {
-                r.close();
-                return false;
+            val r = client!!.newCall(Request.Builder().url(page.url).build()).execute()
+            if (r.code != 200) {
+                r.close()
+                return false
             }
-            long expectedSize = Integer.parseInt(r.header("Content-Length", "-1"));
-            long len = r.body().contentLength();
+            val expectedSize = r.header("Content-Length", "-1")!!.toInt().toLong()
+            val len = r.body.contentLength()
             if (len < 0 || expectedSize != len) {
-                r.close();
-                return false;
+                r.close()
+                return false
             }
-            long written = Utility.writeStreamToFile(r.body().byteStream(), filePath);
-            r.close();
+            val written = Utility.writeStreamToFile(r.body.byteStream(), filePath)
+            r.close()
             if (written != len) {
-                filePath.delete();
-                return false;
+                filePath.delete()
+                return false
             }
-            return true;
-        } catch (IOException | NumberFormatException e) {
-            LogUtility.INSTANCE.error(e, e);
+            return true
+        } catch (e: IOException) {
+            error(e)
+        } catch (e: NumberFormatException) {
+            error(e)
         }
-        return false;
+        return false
     }
 
-
-    public void initDownload() {
-        if (initialized) return;
-        initialized = true;
-        createFolder();
-        createPages();
-        checkPages();
+    fun initDownload() {
+        if (initialized) return
+        initialized = true
+        createFolder()
+        createPages()
+        checkPages()
     }
 
-    private void checkPages() {
-        File filePath;
-        for (int i = 0; i < urls.size(); i++) {
-            if (urls.get(i) == null) {
-                urls.remove(i--);
-                continue;
+    private fun checkPages() {
+        var filePath: File
+        var i = 0
+        while (i < urls.size) {
+            if (urls[i] == null) {
+                urls.removeAt(i--)
+                i++
+                continue
             }
-            filePath = new File(folder, urls.get(i).getPageName());
-            if (filePath.exists() && !isCorrupted(filePath))
-                urls.remove(i--);
+            filePath = File(folder, urls[i]!!.pageName)
+            if (filePath.exists() && !isCorrupted(filePath)) urls.removeAt(i--)
+            i++
         }
     }
 
-    private void createPages() {
-        for (int i = start; i <= end && i < gallery.getPageCount(); i++)
-            urls.add(new PageContainer(i + 1, gallery.getHighPage(i).toString(), gallery.getPageExtension(i)));
+    private fun createPages() {
+        var i = start
+        while (i <= end && i < gallery!!.pageCount) {
+            urls.add(
+                PageContainer(
+                    i + 1,
+                    gallery!!.getHighPage(i).toString(),
+                    gallery!!.getPageExtension(i)
+                )
+            )
+            i++
+        }
     }
 
-    private void createFolder() {
-        folder = findFolder(Global.DOWNLOADFOLDER, title, id);
-        folder.mkdirs();
+    private fun createFolder() {
+        folder = findFolder(Global.DOWNLOADFOLDER, truePathTitle, id)
+        folder!!.mkdirs()
         try {
-            writeNoMedia();
-            createIdFile();
-        } catch (IOException e) {
-            e.printStackTrace();
+            writeNoMedia()
+            createIdFile()
+        } catch (e: IOException) {
+            e.printStackTrace()
         }
     }
 
-    private void createIdFile() throws IOException {
-        File idFile = new File(folder, "." + id);
-        idFile.createNewFile();
+    @Throws(IOException::class)
+    private fun createIdFile() {
+        val idFile = File(folder, ".$id")
+        idFile.createNewFile()
     }
 
-    private void writeNoMedia() throws IOException {
-        File nomedia = new File(folder, ".nomedia");
-        LogUtility.download("NOMEDIA: " + nomedia + " for id " + id);
-        FileWriter writer = new FileWriter(nomedia);
-        gallery.jsonWrite(writer);
-        writer.close();
+    @Throws(IOException::class)
+    private fun writeNoMedia() {
+        val nomedia = File(folder, ".nomedia")
+        download("NOMEDIA: $nomedia for id $id")
+        val writer = FileWriter(nomedia)
+        gallery!!.jsonWrite(writer)
+        writer.close()
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        GalleryDownloaderV2 that = (GalleryDownloaderV2) o;
-
-        if (id != that.id) return false;
-        return Objects.equals(folder, that.folder);
+    override fun equals(o: Any?): Boolean {
+        if (this === o) return true
+        if (o == null || javaClass != o.javaClass) return false
+        val that = o as GalleryDownloaderV2
+        return if (id != that.id) false else folder == that.folder
     }
 
-    @Override
-    public int hashCode() {
-        int result = id;
-        result = 31 * result + (folder != null ? folder.hashCode() : 0);
-        return result;
+    override fun hashCode(): Int {
+        var result = id
+        result = 31 * result + if (folder != null) folder.hashCode() else 0
+        return result
     }
 
-    public enum Status {NOT_STARTED, DOWNLOADING, PAUSED, FINISHED, CANCELED}
+    enum class Status {
+        NOT_STARTED, DOWNLOADING, PAUSED, FINISHED, CANCELED
+    }
 
-    public static class PageContainer {
-        public final int page;
-        public final String url, ext;
+    class PageContainer(val page: Int, val url: String, val ext: String) {
+        val pageName: String
+            get() = String.format(Locale.US, "%03d.%s", page, ext)
+    }
 
-        public PageContainer(int page, String url, String ext) {
-            this.page = page;
-            this.url = url;
-            this.ext = ext;
+    companion object {
+        private const val DUPLICATE_EXTENSION = ".DUP"
+        private val ID_FILE: Pattern = Pattern.compile("^\\.\\d{1,6}$")
+        private fun findFolder(downloadfolder: File?, pathTitle: String, id: Int): File {
+            var folder = File(downloadfolder, pathTitle)
+            if (usableFolder(folder, id)) return folder
+            var i = 1
+            do {
+                folder = File(downloadfolder, pathTitle + DUPLICATE_EXTENSION + i++)
+            } while (!usableFolder(folder, id))
+            return folder
         }
 
-        public String getPageName() {
-            return String.format(Locale.US, "%03d.%s", page, ext);
+        private fun usableFolder(file: File, id: Int): Boolean {
+            if (!file.exists()) return true //folder not exists
+            if (File(file, ".$id").exists()) return true //same id
+            val files =
+                file.listFiles { _: File?, name: String? -> ID_FILE.matcher(name).matches() }
+            if (files != null && files.isNotEmpty()) return false //has id but not equal
+            val localGallery = LocalGallery(file) //read id from metadata
+            return localGallery.id == id
         }
     }
 }

@@ -54,8 +54,8 @@ public class LocalAdapter extends MultichoiceAdapter<Object, LocalAdapter.ViewHo
         if (o1 == o2) return 0;
         boolean b1 = o1 instanceof LocalGallery;
         boolean b2 = o2 instanceof LocalGallery;
-        String s1 = b1 ? ((LocalGallery) o1).getTitle() : ((GalleryDownloaderV2) o1).getPathTitle();
-        String s2 = b2 ? ((LocalGallery) o2).getTitle() : ((GalleryDownloaderV2) o2).getPathTitle();
+        String s1 = b1 ? ((LocalGallery) o1).getTitle() : ((GalleryDownloaderV2) o1).getTruePathTitle();
+        String s2 = b2 ? ((LocalGallery) o2).getTitle() : ((GalleryDownloaderV2) o2).getTruePathTitle();
         return s1.compareTo(s2);
     };
     private final Comparator<Object> comparatorBySize = (o1, o2) -> {
@@ -81,8 +81,8 @@ public class LocalAdapter extends MultichoiceAdapter<Object, LocalAdapter.ViewHo
             long res = ((LocalGallery) o1).getDirectory().lastModified() - ((LocalGallery) o2).getDirectory().lastModified();
             if (res != 0) return res < 0 ? -1 : 1;
         }
-        String s1 = b1 ? ((LocalGallery) o1).getTitle() : ((GalleryDownloaderV2) o1).getPathTitle();
-        String s2 = b2 ? ((LocalGallery) o2).getTitle() : ((GalleryDownloaderV2) o2).getPathTitle();
+        String s1 = b1 ? ((LocalGallery) o1).getTitle() : ((GalleryDownloaderV2) o1).getTruePathTitle();
+        String s2 = b2 ? ((LocalGallery) o2).getTitle() : ((GalleryDownloaderV2) o2).getTruePathTitle();
         return s1.compareTo(s2);
     };
 
@@ -173,7 +173,7 @@ public class LocalAdapter extends MultichoiceAdapter<Object, LocalAdapter.ViewHo
         }
 
         for (GalleryDownloaderV2 gall : galleryDownloaders) {
-            if (gall != null && gall.getPathTitle().toLowerCase(Locale.US).contains(lastQuery))
+            if (gall != null && gall.getTruePathTitle().toLowerCase(Locale.US).contains(lastQuery))
                 hashMap.put(gall.getTruePathTitle(), gall);
         }
 
@@ -285,9 +285,8 @@ public class LocalAdapter extends MultichoiceAdapter<Object, LocalAdapter.ViewHo
 
     private void bindDownload(@NonNull final ViewHolder holder, int position, GalleryDownloaderV2 downloader) {
         int percentage = downloader.getPercentage();
-        //if (!downloader.hasData())return;
         ImageDownloadUtility.loadImage(context, downloader.getThumbnail(), holder.imgView);
-        holder.title.setText(downloader.getPathTitle());
+        holder.title.setText(downloader.getTruePathTitle());
         holder.cancelButton.setOnClickListener(v -> removeDownloader(downloader));
         switch (downloader.getStatus()) {
             case PAUSED:
@@ -365,7 +364,7 @@ public class LocalAdapter extends MultichoiceAdapter<Object, LocalAdapter.ViewHo
         StringBuilder builder = new StringBuilder();
         for (Object o : getSelected()) {
             if (o instanceof LocalGallery) builder.append(((LocalGallery) o).getTitle());
-            else builder.append(((GalleryDownloaderV2) o).getTitle());
+            else builder.append(((GalleryDownloaderV2) o).getTruePathTitle());
             builder.append('\n');
         }
         return builder.toString();

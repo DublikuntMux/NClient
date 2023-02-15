@@ -1,177 +1,219 @@
-package com.dublikunt.nclient.async.downloader;
+package com.dublikunt.nclient.async.downloader
 
-import android.annotation.SuppressLint;
-import android.app.PendingIntent;
-import android.content.Context;
-import android.content.Intent;
-import android.net.Uri;
+import android.annotation.SuppressLint
+import android.app.PendingIntent
+import android.content.Context
+import android.content.Intent
+import android.net.Uri
+import android.os.Build
+import androidx.core.app.NotificationCompat
+import com.dublikunt.nclient.GalleryActivity
+import com.dublikunt.nclient.R
+import com.dublikunt.nclient.api.components.Gallery
+import com.dublikunt.nclient.settings.Global
+import com.dublikunt.nclient.settings.Global.recursiveDelete
+import com.dublikunt.nclient.settings.NotificationSettings
+import com.dublikunt.nclient.settings.NotificationSettings.Companion.cancel
+import com.dublikunt.nclient.settings.NotificationSettings.Companion.notify
+import java.util.*
 
-import androidx.core.app.NotificationCompat;
-
-import com.dublikunt.nclient.GalleryActivity;
-import com.dublikunt.nclient.R;
-import com.dublikunt.nclient.api.components.Gallery;
-import com.dublikunt.nclient.settings.Global;
-import com.dublikunt.nclient.settings.NotificationSettings;
-
-import java.util.ConcurrentModificationException;
-import java.util.Locale;
-
-public class GalleryDownloaderManager {
-    private final int notificationId = NotificationSettings.getNotificationId();
-    private final GalleryDownloaderV2 downloaderV2;
-    private final Context context;
-    private NotificationCompat.Builder notification;
-    private Gallery gallery;
-
-    private final DownloadObserver observer = new DownloadObserver() {
-        @Override
-        public void triggerStartDownload(GalleryDownloaderV2 downloader) {
-            gallery = downloader.getGallery();
-            prepareNotification();
-            addActionToNotification(false);
-            notificationUpdate();
+class GalleryDownloaderManager {
+    private val notificationId = NotificationSettings.notificationId
+    private val downloaderV2: GalleryDownloaderV2
+    private val context: Context
+    private var notification: NotificationCompat.Builder? = null
+    private var gallery: Gallery? = null
+    private val observer: DownloadObserver = object : DownloadObserver {
+        override fun triggerStartDownload(downloader: GalleryDownloaderV2) {
+            gallery = downloader.gallery
+            prepareNotification()
+            addActionToNotification(false)
+            notificationUpdate()
         }
 
-        @Override
-        public void triggerUpdateProgress(GalleryDownloaderV2 downloader, int reach, int total) {
-            setPercentage(reach, total);
-            notificationUpdate();
+        override fun triggerUpdateProgress(
+            downloader: GalleryDownloaderV2?,
+            reach: Int,
+            total: Int
+        ) {
+            setPercentage(reach, total)
+            notificationUpdate()
         }
 
-        @Override
-        public void triggerEndDownload(GalleryDownloaderV2 downloader) {
-            endNotification();
-            addClickListener();
-            notificationUpdate();
-            DownloadQueue.remove(downloader, false);
+        override fun triggerEndDownload(downloader: GalleryDownloaderV2?) {
+            endNotification()
+            addClickListener()
+            notificationUpdate()
+            DownloadQueue.remove(downloader, false)
         }
 
-        @Override
-        public void triggerCancelDownload(GalleryDownloaderV2 downloader) {
-            cancelNotification();
-            Global.recursiveDelete(downloader.getFolder());
+        override fun triggerCancelDownload(downloader: GalleryDownloaderV2) {
+            cancelNotification()
+            recursiveDelete(downloader.folder)
         }
 
-        @Override
-        public void triggerPauseDownload(GalleryDownloaderV2 downloader) {
-            addActionToNotification(true);
-            notificationUpdate();
+        override fun triggerPauseDownload(downloader: GalleryDownloaderV2?) {
+            addActionToNotification(true)
+            notificationUpdate()
         }
-    };
-
-    public GalleryDownloaderManager(Context context, Gallery gallery, int start, int end) {
-        this.context = context;
-        this.gallery = gallery;
-        this.downloaderV2 = new GalleryDownloaderV2(context, gallery, start, end);
-        this.downloaderV2.addObserver(observer);
     }
 
-    public GalleryDownloaderManager(Context context, String title, Uri thumbnail, int id) {
-        this.context = context;
-        this.downloaderV2 = new GalleryDownloaderV2(context, title, thumbnail, id);
-        this.downloaderV2.addObserver(observer);
+    constructor(context: Context, gallery: Gallery, start: Int, end: Int) {
+        this.context = context
+        this.gallery = gallery
+        downloaderV2 = GalleryDownloaderV2(context, gallery, start, end)
+        downloaderV2.addObserver(observer)
     }
 
-    private void cancelNotification() {
-        NotificationSettings.cancel(context.getString(R.string.channel1_name), notificationId);
+    constructor(context: Context, title: String?, thumbnail: Uri?, id: Int) {
+        this.context = context
+        downloaderV2 = GalleryDownloaderV2(context, title, thumbnail, id)
+        downloaderV2.addObserver(observer)
     }
 
-    private void addClickListener() {
-        Intent notifyIntent = new Intent(context, GalleryActivity.class);
-        notifyIntent.putExtra(context.getPackageName() + ".GALLERY", downloaderV2.localGallery());
-        notifyIntent.putExtra(context.getPackageName() + ".ISLOCAL", true);
+    private fun cancelNotification() {
+        cancel(context.getString(R.string.channel1_name), notificationId)
+    }
+
+    private fun addClickListener() {
+        val notifyIntent = Intent(context, GalleryActivity::class.java)
+        notifyIntent.putExtra(context.packageName + ".GALLERY", downloaderV2.localGallery())
+        notifyIntent.putExtra(context.packageName + ".ISLOCAL", true)
         // Create the PendingIntent
-
-        PendingIntent notifyPendingIntent;
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S) {
-            notifyPendingIntent = PendingIntent.getActivity(
-                context, 0, notifyIntent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_MUTABLE
-            );
+        val notifyPendingIntent: PendingIntent = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            PendingIntent.getActivity(
+                context,
+                0,
+                notifyIntent,
+                PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_MUTABLE
+            )
         } else {
-            notifyPendingIntent = PendingIntent.getActivity(
+            PendingIntent.getActivity(
                 context, 0, notifyIntent, PendingIntent.FLAG_UPDATE_CURRENT
-            );
+            )
         }
-        notification.setContentIntent(notifyPendingIntent);
+        notification!!.setContentIntent(notifyPendingIntent)
     }
 
-    public GalleryDownloaderV2 downloader() {
-        return downloaderV2;
+    fun downloader(): GalleryDownloaderV2 {
+        return downloaderV2
     }
 
-    private void endNotification() {
-        clearNotificationAction();
-        hidePercentage();
-        if (downloaderV2.getStatus() != GalleryDownloaderV2.Status.CANCELED) {
-            notification.setSmallIcon(R.drawable.ic_check);
-            notification.setContentTitle(String.format(Locale.US, context.getString(R.string.completed_format), gallery.getTitle()));
+    private fun endNotification() {
+        clearNotificationAction()
+        hidePercentage()
+        if (downloaderV2.status != GalleryDownloaderV2.Status.CANCELED) {
+            notification!!.setSmallIcon(R.drawable.ic_check)
+            notification!!.setContentTitle(
+                String.format(
+                    Locale.US,
+                    context.getString(R.string.completed_format),
+                    gallery!!.title
+                )
+            )
         } else {
-            notification.setSmallIcon(R.drawable.ic_close);
-            notification.setContentTitle(String.format(Locale.US, context.getString(R.string.cancelled_format), gallery.getTitle()));
+            notification!!.setSmallIcon(R.drawable.ic_close)
+            notification!!.setContentTitle(
+                String.format(
+                    Locale.US,
+                    context.getString(R.string.cancelled_format),
+                    gallery!!.title
+                )
+            )
         }
     }
 
-    private void hidePercentage() {
-        setPercentage(0, 0);
+    private fun hidePercentage() {
+        setPercentage(0, 0)
     }
 
-    private void setPercentage(int reach, int total) {
-        notification.setProgress(total, reach, false);
+    private fun setPercentage(reach: Int, total: Int) {
+        notification!!.setProgress(total, reach, false)
     }
 
-    private void prepareNotification() {
-        notification = new NotificationCompat.Builder(context.getApplicationContext(), Global.CHANNEL_ID1);
-        notification.setOnlyAlertOnce(true)
-
-            .setContentTitle(String.format(Locale.US, context.getString(R.string.downloading_format), gallery.getTitle()))
-            .setProgress(gallery.getPageCount(), 0, false)
-            .setSmallIcon(R.drawable.ic_file);
-        setPercentage(0, 1);
+    private fun prepareNotification() {
+        notification = NotificationCompat.Builder(context.applicationContext, Global.CHANNEL_ID1)
+        notification!!.setOnlyAlertOnce(true)
+            .setContentTitle(
+                String.format(
+                    Locale.US,
+                    context.getString(R.string.downloading_format),
+                    gallery!!.title
+                )
+            )
+            .setProgress(gallery!!.pageCount, 0, false)
+            .setSmallIcon(R.drawable.ic_file)
+        setPercentage(0, 1)
     }
 
     @SuppressLint("RestrictedApi")
-    private void clearNotificationAction() {
-        notification.mActions.clear();
+    private fun clearNotificationAction() {
+        notification!!.mActions.clear()
     }
 
-    private void addActionToNotification(boolean pauseMode) {
-        clearNotificationAction();
-        Intent startIntent = new Intent(context, DownloadGalleryV2.class);
-        Intent stopIntent = new Intent(context, DownloadGalleryV2.class);
-        Intent pauseIntent = new Intent(context, DownloadGalleryV2.class);
-
-        stopIntent.putExtra(context.getPackageName() + ".ID", downloaderV2.getId());
-        pauseIntent.putExtra(context.getPackageName() + ".ID", downloaderV2.getId());
-        startIntent.putExtra(context.getPackageName() + ".ID", downloaderV2.getId());
-
-        stopIntent.putExtra(context.getPackageName() + ".MODE", "STOP");
-        pauseIntent.putExtra(context.getPackageName() + ".MODE", "PAUSE");
-        startIntent.putExtra(context.getPackageName() + ".MODE", "START");
-        PendingIntent pStop;
-        PendingIntent pPause;
-        PendingIntent pStart;
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S) {
-            pStop = PendingIntent.getService(context, 0, stopIntent, PendingIntent.FLAG_MUTABLE | PendingIntent.FLAG_CANCEL_CURRENT);
-            pPause = PendingIntent.getService(context, 1, pauseIntent, PendingIntent.FLAG_MUTABLE | PendingIntent.FLAG_CANCEL_CURRENT);
-            pStart = PendingIntent.getService(context, 2, startIntent, PendingIntent.FLAG_MUTABLE | PendingIntent.FLAG_CANCEL_CURRENT);
+    private fun addActionToNotification(pauseMode: Boolean) {
+        clearNotificationAction()
+        val startIntent = Intent(context, DownloadGalleryV2::class.java)
+        val stopIntent = Intent(context, DownloadGalleryV2::class.java)
+        val pauseIntent = Intent(context, DownloadGalleryV2::class.java)
+        stopIntent.putExtra(context.packageName + ".ID", downloaderV2.id)
+        pauseIntent.putExtra(context.packageName + ".ID", downloaderV2.id)
+        startIntent.putExtra(context.packageName + ".ID", downloaderV2.id)
+        stopIntent.putExtra(context.packageName + ".MODE", "STOP")
+        pauseIntent.putExtra(context.packageName + ".MODE", "PAUSE")
+        startIntent.putExtra(context.packageName + ".MODE", "START")
+        val pStop: PendingIntent
+        val pPause: PendingIntent
+        val pStart: PendingIntent
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            pStop = PendingIntent.getService(
+                context,
+                0,
+                stopIntent,
+                PendingIntent.FLAG_MUTABLE or PendingIntent.FLAG_CANCEL_CURRENT
+            )
+            pPause = PendingIntent.getService(
+                context,
+                1,
+                pauseIntent,
+                PendingIntent.FLAG_MUTABLE or PendingIntent.FLAG_CANCEL_CURRENT
+            )
+            pStart = PendingIntent.getService(
+                context,
+                2,
+                startIntent,
+                PendingIntent.FLAG_MUTABLE or PendingIntent.FLAG_CANCEL_CURRENT
+            )
         } else {
-            pStop = PendingIntent.getService(context, 0, stopIntent, PendingIntent.FLAG_CANCEL_CURRENT);
-            pPause = PendingIntent.getService(context, 1, pauseIntent, PendingIntent.FLAG_CANCEL_CURRENT);
-            pStart = PendingIntent.getService(context, 2, startIntent, PendingIntent.FLAG_CANCEL_CURRENT);
+            pStop =
+                PendingIntent.getService(context, 0, stopIntent, PendingIntent.FLAG_CANCEL_CURRENT)
+            pPause =
+                PendingIntent.getService(context, 1, pauseIntent, PendingIntent.FLAG_CANCEL_CURRENT)
+            pStart =
+                PendingIntent.getService(context, 2, startIntent, PendingIntent.FLAG_CANCEL_CURRENT)
         }
-        if (pauseMode)
-            notification.addAction(R.drawable.ic_play, context.getString(R.string.resume), pStart);
-        else notification.addAction(R.drawable.ic_pause, context.getString(R.string.pause), pPause);
-        notification.addAction(R.drawable.ic_close, context.getString(R.string.cancel), pStop);
+        if (pauseMode) notification!!.addAction(
+            R.drawable.ic_play,
+            context.getString(R.string.resume),
+            pStart
+        ) else notification!!.addAction(
+            R.drawable.ic_pause,
+            context.getString(R.string.pause),
+            pPause
+        )
+        notification!!.addAction(R.drawable.ic_close, context.getString(R.string.cancel), pStop)
     }
 
-
-    private synchronized void notificationUpdate() {
+    @Synchronized
+    private fun notificationUpdate() {
         try {
-            NotificationSettings.notify(context.getString(R.string.channel1_name), notificationId, notification.build());
-        } catch (NullPointerException | ConcurrentModificationException ignore) {
+            notify(
+                context.getString(R.string.channel1_name),
+                notificationId,
+                notification!!.build()
+            )
+        } catch (ignore: NullPointerException) {
+        } catch (ignore: ConcurrentModificationException) {
         }
     }
-
 }

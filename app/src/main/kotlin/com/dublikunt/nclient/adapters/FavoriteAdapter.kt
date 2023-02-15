@@ -57,7 +57,6 @@ class FavoriteAdapter(private val activity: FavoriteActivity) :
             galleries[position] = g
             g
         } catch (e: IOException) {
-            e.printStackTrace()
             null
         }
     }
@@ -68,17 +67,16 @@ class FavoriteAdapter(private val activity: FavoriteActivity) :
         holder.pages.text = String.format(Locale.US, "%d", ent.pageCount)
         holder.title.text = ent.title
         holder.flag.text = Global.getLanguageFlag(ent.language)
-        holder.title.setOnClickListener { v: View? ->
+        holder.title.setOnClickListener {
             val layout = holder.title.layout
             if (layout.getEllipsisCount(layout.lineCount - 1) > 0) holder.title.maxLines =
                 7 else if (holder.title.maxLines == 7) holder.title.maxLines =
                 3 else holder.layout.performClick()
         }
-        holder.layout.setOnClickListener { v: View? ->
-            //Global.setLoadedGallery(ent);
+        holder.layout.setOnClickListener {
             startGallery(ent)
         }
-        holder.layout.setOnLongClickListener { v: View? ->
+        holder.layout.setOnLongClickListener {
             holder.title.animate().alpha(if (holder.title.alpha == 0f) 1f else 0f).setDuration(100)
                 .start()
             holder.flag.animate().alpha(if (holder.flag.alpha == 0f) 1f else 0f).setDuration(100)
@@ -145,7 +143,6 @@ class FavoriteAdapter(private val activity: FavoriteActivity) :
             }
 
             override fun publishResults(constraint: CharSequence, results: FilterResults) {
-                if (results == null) return
                 setRefresh(true)
                 download("After called2")
                 val oldSize = itemCount

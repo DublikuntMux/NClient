@@ -8,7 +8,9 @@ import android.widget.SeekBar.OnSeekBarChangeListener
 import com.dublikunt.nclient.R
 import com.dublikunt.nclient.api.components.Gallery
 import com.dublikunt.nclient.async.downloader.DownloadGalleryV2
+import com.google.android.material.button.MaterialButton
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.android.material.textview.MaterialTextView
 
 class RangeSelector(context: Context, private val gallery: Gallery) :
     MaterialAlertDialogBuilder(context) {
@@ -54,9 +56,9 @@ class RangeSelector(context: Context, private val gallery: Gallery) :
     }
 
     private fun applyLogic(layout: LinearLayout, start: Boolean) {
-        val prev = layout.findViewById<ImageButton>(R.id.prev)
-        val next = layout.findViewById<ImageButton>(R.id.next)
-        val pages = layout.findViewById<TextView>(R.id.pages)
+        val prev = layout.findViewById<MaterialButton>(R.id.prev)
+        val next = layout.findViewById<MaterialButton>(R.id.next)
+        val pages = layout.findViewById<MaterialTextView>(R.id.pages)
         val seekBar = layout.findViewById<SeekBar>(R.id.seekBar)
         prev.setOnClickListener(getPrevListener(seekBar))
         next.setOnClickListener(getNextListener(seekBar))

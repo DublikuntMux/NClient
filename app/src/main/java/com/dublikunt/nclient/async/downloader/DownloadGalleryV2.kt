@@ -1,139 +1,130 @@
-package com.dublikunt.nclient.async.downloader;
+package com.dublikunt.nclient.async.downloader
 
-import android.content.Context;
-import android.content.Intent;
-import android.net.Uri;
+import android.content.Context
+import android.content.Intent
+import android.net.Uri
+import androidx.core.app.JobIntentService
+import com.dublikunt.nclient.api.SimpleGallery
+import com.dublikunt.nclient.api.components.Gallery
+import com.dublikunt.nclient.api.components.GenericGallery
+import com.dublikunt.nclient.async.database.Queries.DownloadTable.getAllDownloads
+import com.dublikunt.nclient.utility.LogUtility.download
+import com.dublikunt.nclient.utility.LogUtility.error
+import com.dublikunt.nclient.utility.Utility
+import java.io.IOException
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.core.app.JobIntentService;
-
-import com.dublikunt.nclient.api.SimpleGallery;
-import com.dublikunt.nclient.api.components.Gallery;
-import com.dublikunt.nclient.api.components.GenericGallery;
-import com.dublikunt.nclient.async.database.Queries;
-import com.dublikunt.nclient.utility.LogUtility;
-import com.dublikunt.nclient.utility.Utility;
-
-import java.io.IOException;
-import java.util.List;
-
-public class DownloadGalleryV2 extends JobIntentService {
-    private static final Object lock = new Object();
-    private static final int JOB_DOWNLOAD_GALLERY_ID = 9999;
-
-    public static void downloadGallery(Context context, GenericGallery gallery) {
-        if (gallery.isValid() && gallery instanceof Gallery)
-            downloadGallery(context, (Gallery) gallery);
-        if (gallery.getId() > 0) {
-            if (gallery instanceof SimpleGallery) {
-                SimpleGallery simple = (SimpleGallery) gallery;
-                downloadGallery(context, gallery.getTitle(), simple.getThumbnail(), simple.getId());
-            } else downloadGallery(context, null, null, gallery.getId());
-        }
-    }
-
-    private static void downloadGallery(Context context, String title, Uri thumbnail, int id) {
-        if (id < 1) return;
-        DownloadQueue.add(new GalleryDownloaderManager(context, title, thumbnail, id));
-        startWork(context);
-    }
-
-    private static void downloadGallery(Context context, Gallery gallery) {
-        downloadGallery(context, gallery, 0, gallery.getPageCount() - 1);
-    }
-
-    private static void downloadGallery(Context context, Gallery gallery, int start, int end) {
-        DownloadQueue.add(new GalleryDownloaderManager(context, gallery, start, end));
-        startWork(context);
-    }
-
-    public static void loadDownloads(Context context) {
-        try {
-            List<GalleryDownloaderManager> g = Queries.DownloadTable.getAllDownloads(context);
-            for (GalleryDownloaderManager gg : g) {
-                gg.downloader().setStatus(GalleryDownloaderV2.Status.PAUSED);
-                DownloadQueue.add(gg);
-            }
-            new PageChecker().start();
-            startWork(context);
-        } catch (IOException e) {
-            LogUtility.INSTANCE.error(e, e);
-        }
-    }
-
-    public static void downloadRange(Context context, Gallery gallery, int start, int end) {
-        downloadGallery(context, gallery, start, end);
-    }
-
-    public static void startWork(@Nullable Context context) {
-        if (context != null)
-            enqueueWork(context, DownloadGalleryV2.class, JOB_DOWNLOAD_GALLERY_ID, new Intent());
-        synchronized (lock) {
-            lock.notify();
-        }
-    }
-
-    @Override
-    public int onStartCommand(@Nullable Intent intent, int flags, int startId) {
-        int startCommand = super.onStartCommand(intent, flags, startId);
+class DownloadGalleryV2 : JobIntentService() {
+    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        val startCommand = super.onStartCommand(intent, flags, startId)
         if (intent != null) {
-            int id = intent.getIntExtra(getPackageName() + ".ID", -1);
-            String mode = intent.getStringExtra(getPackageName() + ".MODE");
-            LogUtility.download("" + mode);
-            GalleryDownloaderManager manager = DownloadQueue.managerFromId(id);
+            val id = intent.getIntExtra("$packageName.ID", -1)
+            val mode = intent.getStringExtra("$packageName.MODE")
+            download("" + mode)
+            val manager = DownloadQueue.managerFromId(id)
             if (manager != null) {
-                LogUtility.download("IntentAction: " + mode + " for id " + id);
-                assert mode != null;
-                switch (mode) {
-                    case "STOP":
-                        DownloadQueue.remove(id, true);
-                        break;
-                    case "PAUSE":
-                        manager.downloader().setStatus(GalleryDownloaderV2.Status.PAUSED);
-                        break;
-                    case "START":
-                        manager.downloader().setStatus(GalleryDownloaderV2.Status.NOT_STARTED);
-                        DownloadQueue.givePriority(manager.downloader());
-                        startWork(this);
-                        break;
-                }
-            }
-        }
-        return startCommand;
-    }
-
-    @Override
-    protected void onHandleWork(@NonNull Intent intent) {
-        for (; ; ) {
-            obtainData();
-            GalleryDownloaderManager entry = DownloadQueue.fetch();
-            if (entry == null) {
-                synchronized (lock) {
-                    try {
-                        lock.wait();
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
+                download("IntentAction: $mode for id $id")
+                assert(mode != null)
+                when (mode) {
+                    "STOP" -> DownloadQueue.remove(id, true)
+                    "PAUSE" -> manager.downloader().status = GalleryDownloaderV2.Status.PAUSED
+                    "START" -> {
+                        manager.downloader().status =
+                            GalleryDownloaderV2.Status.NOT_STARTED
+                        DownloadQueue.givePriority(manager.downloader())
+                        startWork(this)
                     }
                 }
-                continue;
             }
-            LogUtility.download("Downloading: " + entry.downloader().getId());
+        }
+        return startCommand
+    }
+
+    override fun onHandleWork(intent: Intent) {
+        while (true) {
+            obtainData()
+            val entry = DownloadQueue.fetch()
+            if (entry == null) {
+                synchronized(lock) {
+                    try {
+                        lock
+                    } catch (e: InterruptedException) {
+                        e.printStackTrace()
+                    }
+                }
+                continue
+            }
+            download("Downloading: " + entry.downloader().id)
             if (entry.downloader().downloadGalleryData()) {
-                entry.downloader().download();
+                entry.downloader().download()
             }
-            Utility.threadSleep(1000);
+            Utility.threadSleep(1000)
         }
     }
 
-    private void obtainData() {
-        GalleryDownloaderV2 downloader = DownloadQueue.fetchForData();
+    private fun obtainData() {
+        var downloader = DownloadQueue.fetchForData()
         while (downloader != null) {
-            downloader.downloadGalleryData();
-            Utility.threadSleep(100);
-            downloader = DownloadQueue.fetchForData();
+            downloader.downloadGalleryData()
+            Utility.threadSleep(100)
+            downloader = DownloadQueue.fetchForData()
         }
     }
 
+    companion object {
+        private val lock = Any()
+        private const val JOB_DOWNLOAD_GALLERY_ID = 9999
+        fun downloadGallery(context: Context, gallery: GenericGallery) {
+            if (gallery.isValid && gallery is Gallery) downloadGallery(context, gallery)
+            if (gallery.id > 0) {
+                if (gallery is SimpleGallery) {
+                    downloadGallery(context, gallery.getTitle(), gallery.thumbnail, gallery.id)
+                } else downloadGallery(context, null, null, gallery.id)
+            }
+        }
 
+        private fun downloadGallery(context: Context, title: String?, thumbnail: Uri?, id: Int) {
+            if (id < 1) return
+            DownloadQueue.add(GalleryDownloaderManager(context, title, thumbnail, id))
+            startWork(context)
+        }
+
+        private fun downloadGallery(
+            context: Context,
+            gallery: Gallery,
+            start: Int = 0,
+            end: Int = gallery.pageCount - 1
+        ) {
+            DownloadQueue.add(GalleryDownloaderManager(context, gallery, start, end))
+            startWork(context)
+        }
+
+        fun loadDownloads(context: Context) {
+            try {
+                val g = getAllDownloads(context)
+                for (gg in g) {
+                    gg.downloader().status = GalleryDownloaderV2.Status.PAUSED
+                    DownloadQueue.add(gg)
+                }
+                PageChecker().start()
+                startWork(context)
+            } catch (e: IOException) {
+                error(e)
+            }
+        }
+
+        fun downloadRange(context: Context, gallery: Gallery, start: Int, end: Int) {
+            downloadGallery(context, gallery, start, end)
+        }
+
+        @JvmStatic
+        fun startWork(context: Context?) {
+            if (context != null) enqueueWork(
+                context,
+                DownloadGalleryV2::class.java,
+                JOB_DOWNLOAD_GALLERY_ID,
+                Intent()
+            )
+            synchronized(lock) { lock }
+        }
+    }
 }

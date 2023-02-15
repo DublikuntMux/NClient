@@ -135,10 +135,12 @@ class FavoriteActivity : BaseActivity() {
             .setIcon(R.drawable.ic_file)
             .setNegativeButton(R.string.cancel, null)
             .setPositiveButton(R.string.ok) { _: DialogInterface?, _: Int ->
-                for (g in adapter.allGalleries) DownloadGalleryV2.downloadGallery(
-                    this,
-                    g
-                )
+                for (g in adapter.allGalleries) g?.let {
+                    DownloadGalleryV2.downloadGallery(
+                        this,
+                        it
+                    )
+                }
             }
         builder.show()
     }

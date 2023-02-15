@@ -1,118 +1,112 @@
-package com.dublikunt.nclient.async;
+package com.dublikunt.nclient.async
 
-import android.content.Context;
-import android.content.Intent;
-import android.content.SharedPreferences;
-import android.util.JsonReader;
+import android.content.Context
+import android.content.Intent
+import android.util.JsonReader
+import androidx.core.app.JobIntentService
+import com.dublikunt.nclient.api.components.Tag
+import com.dublikunt.nclient.api.enums.TagStatus
+import com.dublikunt.nclient.api.enums.TagType
+import com.dublikunt.nclient.async.database.Queries.TagTable.allFiltered
+import com.dublikunt.nclient.async.database.Queries.TagTable.insertScrape
+import com.dublikunt.nclient.async.database.Queries.TagTable.updateStatus
+import com.dublikunt.nclient.settings.Global.client
+import com.dublikunt.nclient.utility.LogUtility.download
+import com.dublikunt.nclient.utility.LogUtility.error
+import okhttp3.Request
+import java.io.IOException
+import java.util.*
 
-import androidx.annotation.Nullable;
-import androidx.core.app.JobIntentService;
-
-import com.dublikunt.nclient.api.components.Tag;
-import com.dublikunt.nclient.api.enums.TagStatus;
-import com.dublikunt.nclient.api.enums.TagType;
-import com.dublikunt.nclient.async.database.Queries;
-import com.dublikunt.nclient.settings.Global;
-import com.dublikunt.nclient.utility.LogUtility;
-
-import java.io.IOException;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
-
-import okhttp3.Request;
-import okhttp3.Response;
-import okhttp3.ResponseBody;
-
-public class ScrapeTags extends JobIntentService {
-    private static final int DAYS_UNTIL_SCRAPE = 7;
-    private static final String DATA_FOLDER = "https://raw.githubusercontent.com/Dar9586/NClientV2/master/data/";
-    private static final String TAGS = DATA_FOLDER + "tags.json";
-    private static final String VERSION = DATA_FOLDER + "tagsVersion";
-
-    public ScrapeTags() {
-    }
-
-    public static void startWork(Context context) {
-        enqueueWork(context, ScrapeTags.class, 2000, new Intent());
-    }
-
-    private int getNewVersionCode() throws IOException {
-        Response x = Global.getClient().newCall(new Request.Builder().url(VERSION).build()).execute();
-        ResponseBody body = x.body();
-        try {
-            int k = Integer.parseInt(body.string().trim());
-            LogUtility.download("Found version: " + k);
-            x.close();
-            return k;
-        } catch (NumberFormatException e) {
-            LogUtility.INSTANCE.error("Unable to convert", e);
+class ScrapeTags : JobIntentService() {
+    @get:Throws(IOException::class)
+    private val newVersionCode: Int
+        get() {
+            val x = client!!.newCall(Request.Builder().url(VERSION).build()).execute()
+            val body = x.body
+            try {
+                val k = body.string().trim { it <= ' ' }.toInt()
+                download("Found version: $k")
+                x.close()
+                return k
+            } catch (e: NumberFormatException) {
+                error("Unable to convert")
+            }
+            return -1
         }
-        return -1;
-    }
 
-    @Override
-    protected void onHandleWork(@Nullable Intent intent) {
-        SharedPreferences preferences = getApplicationContext().getSharedPreferences("Settings", 0);
-        Date nowTime = new Date();
-        Date lastTime = new Date(preferences.getLong("lastSync", nowTime.getTime()));
-        int lastVersion = preferences.getInt("lastTagsVersion", -1), newVersion = -1;
-        if (!enoughDayPassed(nowTime, lastTime)) return;
-
-        LogUtility.download("Scraping tags");
+    override fun onHandleWork(intent: Intent) {
+        val preferences = applicationContext.getSharedPreferences("Settings", 0)
+        val nowTime = Date()
+        val lastTime = Date(preferences.getLong("lastSync", nowTime.time))
+        val lastVersion = preferences.getInt("lastTagsVersion", -1)
+        var newVersion = -1
+        if (!enoughDayPassed(nowTime, lastTime)) return
+        download("Scraping tags")
         try {
-            newVersion = getNewVersionCode();
-            if (lastVersion > -1 && lastVersion >= newVersion) return;
-            List<Tag> tags = Queries.TagTable.getAllFiltered();
-            fetchTags();
-            for (Tag t : tags) Queries.TagTable.updateStatus(t.getId(), t.getStatus());
-        } catch (IOException e) {
-            e.printStackTrace();
+            newVersion = newVersionCode
+            if (lastVersion > -1 && lastVersion >= newVersion) return
+            val tags = allFiltered
+            fetchTags()
+            for (t in tags) updateStatus(t.id, t.status)
+        } catch (e: IOException) {
+            e.printStackTrace()
         }
-        LogUtility.download("End scraping");
+        download("End scraping")
         preferences.edit()
-            .putLong("lastSync", nowTime.getTime())
+            .putLong("lastSync", nowTime.time)
             .putInt("lastTagsVersion", newVersion)
-            .apply();
+            .apply()
     }
 
-    private void fetchTags() throws IOException {
-        Response x = Global.getClient().newCall(new Request.Builder().url(TAGS).build()).execute();
-        ResponseBody body = x.body();
-        JsonReader reader = new JsonReader(body.charStream());
-        reader.beginArray();
+    @Throws(IOException::class)
+    private fun fetchTags() {
+        val x = client!!.newCall(Request.Builder().url(TAGS).build()).execute()
+        val body = x.body
+        val reader = JsonReader(body.charStream())
+        reader.beginArray()
         while (reader.hasNext()) {
-            Tag tag = readTag(reader);
-            Queries.TagTable.insertScrape(tag, true);
+            val tag = readTag(reader)
+            insertScrape(tag, true)
         }
-        reader.close();
-        x.close();
+        reader.close()
+        x.close()
     }
 
-    private Tag readTag(JsonReader reader) throws IOException {
-        reader.beginArray();
-        int id = reader.nextInt();
-        String name = reader.nextString();
-        int count = reader.nextInt();
-        TagType type = TagType.values[reader.nextInt()];
-        reader.endArray();
-        return new Tag(name, count, id, type, TagStatus.DEFAULT);
+    @Throws(IOException::class)
+    private fun readTag(reader: JsonReader): Tag {
+        reader.beginArray()
+        val id = reader.nextInt()
+        val name = reader.nextString()
+        val count = reader.nextInt()
+        val type = TagType.values[reader.nextInt()]
+        reader.endArray()
+        return Tag(name, count, id, type, TagStatus.DEFAULT)
     }
 
-    private boolean enoughDayPassed(Date nowTime, Date lastTime) {
-        //first start or never completed
-        if (nowTime.getTime() == lastTime.getTime()) return true;
-        int daysBetween = 0;
-        Calendar now = Calendar.getInstance(), last = Calendar.getInstance();
-        now.setTime(nowTime);
-        last.setTime(lastTime);
+    private fun enoughDayPassed(nowTime: Date, lastTime: Date): Boolean {
+        if (nowTime.time == lastTime.time) return true
+        var daysBetween = 0
+        val now = Calendar.getInstance()
+        val last = Calendar.getInstance()
+        now.time = nowTime
+        last.time = lastTime
         while (last.before(now)) {
-            last.add(Calendar.DAY_OF_MONTH, 1);
-            daysBetween++;
-            if (daysBetween > DAYS_UNTIL_SCRAPE)
-                return true;
+            last.add(Calendar.DAY_OF_MONTH, 1)
+            daysBetween++
+            if (daysBetween > DAYS_UNTIL_SCRAPE) return true
         }
-        LogUtility.download("Passed " + daysBetween + " days since last scrape");
-        return false;
+        download("Passed $daysBetween days since last scrape")
+        return false
+    }
+
+    companion object {
+        private const val DAYS_UNTIL_SCRAPE = 7
+        private const val DATA_FOLDER =
+            "https://raw.githubusercontent.com/Dar9586/NClientV2/master/data/"
+        private const val TAGS = DATA_FOLDER + "tags.json"
+        private const val VERSION = DATA_FOLDER + "tagsVersion"
+        fun startWork(context: Context?) {
+            enqueueWork(context!!, ScrapeTags::class.java, 2000, Intent())
+        }
     }
 }

@@ -11,7 +11,7 @@ import com.dublikunt.nclient.R
 import com.dublikunt.nclient.classes.MultichoiceAdapter.MultichoiceViewHolder
 import com.dublikunt.nclient.utility.LogUtility.download
 
-abstract class MultichoiceAdapter<D, T : RecyclerView.ViewHolder?> :
+abstract class MultichoiceAdapter<D, T : RecyclerView.ViewHolder> :
     RecyclerView.Adapter<MultichoiceViewHolder<T>>() {
     private val listeners: MutableList<MultichoiceListener> = ArrayList(3)
     var mode = Mode.NORMAL
@@ -87,7 +87,7 @@ abstract class MultichoiceAdapter<D, T : RecyclerView.ViewHolder?> :
                 Mode.NORMAL -> defaultMasterAction(holder.bindingAdapterPosition)
             }
         }
-        master.setOnLongClickListener { v: View? ->
+        master.setOnLongClickListener {
             map[getItemId(holder.bindingAdapterPosition)] =
                 getItemAt(holder.bindingAdapterPosition)
             notifyItemChanged(holder.bindingAdapterPosition)
@@ -95,7 +95,7 @@ abstract class MultichoiceAdapter<D, T : RecyclerView.ViewHolder?> :
         }
         holder.censor.visibility = if (isSelected) View.VISIBLE else View.GONE
         holder.checkmark.visibility = if (isSelected) View.VISIBLE else View.GONE
-        holder.censor.setOnClickListener { v: View? -> toggleSelection(holder.bindingAdapterPosition) }
+        holder.censor.setOnClickListener { toggleSelection(holder.bindingAdapterPosition) }
         onBindMultichoiceViewHolder(holder.innerHolder, holder.bindingAdapterPosition)
     }
 
@@ -152,11 +152,11 @@ abstract class MultichoiceAdapter<D, T : RecyclerView.ViewHolder?> :
         override fun choiceChanged() {}
     }
 
-    class MultichoiceViewHolder<T : RecyclerView.ViewHolder?>(
-        val multichoiceHolder: ConstraintLayout,
+    class MultichoiceViewHolder<T : RecyclerView.ViewHolder>(
+        multichoiceHolder: ConstraintLayout,
         val innerHolder: T
     ) : RecyclerView.ViewHolder(
-        innerHolder!!.itemView
+        innerHolder.itemView
     ) {
         val censor: View = multichoiceHolder.findViewById(R.id.censor)
         val checkmark: ImageView = multichoiceHolder.findViewById(R.id.checkmark)
