@@ -3,6 +3,7 @@ package com.dublikunt.nclient.api.local
 class LocalSortType {
     @JvmField
     val type: Type
+
     @JvmField
     val descending: Boolean
 
@@ -31,10 +32,10 @@ class LocalSortType {
 
     override fun toString(): String {
         return "LocalSortType{" +
-                "type=" + type +
-                ", descending=" + descending +
-                ", hash=" + hashCode() +
-                '}'
+            "type=" + type +
+            ", descending=" + descending +
+            ", hash=" + hashCode() +
+            '}'
     }
 
     enum class Type {

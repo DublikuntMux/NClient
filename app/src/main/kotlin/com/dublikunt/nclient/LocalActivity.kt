@@ -16,10 +16,10 @@ import com.dublikunt.nclient.api.local.LocalGallery
 import com.dublikunt.nclient.api.local.LocalSortType
 import com.dublikunt.nclient.async.converters.CreatePDF
 import com.dublikunt.nclient.async.downloader.GalleryDownloaderV2
-import com.dublikunt.nclient.components.activities.BaseActivity
 import com.dublikunt.nclient.classes.MultichoiceAdapter
 import com.dublikunt.nclient.classes.MultichoiceAdapter.DefaultMultichoiceListener
 import com.dublikunt.nclient.classes.MultichoiceAdapter.MultichoiceListener
+import com.dublikunt.nclient.components.activities.BaseActivity
 import com.dublikunt.nclient.settings.Global
 import com.dublikunt.nclient.utility.Utility
 import com.google.android.material.appbar.MaterialToolbar

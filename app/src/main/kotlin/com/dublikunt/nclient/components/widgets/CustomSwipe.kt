@@ -13,7 +13,7 @@ class CustomSwipe : SwipeRefreshLayout {
         try {
             throw Exception()
         } catch (e: Exception) {
-           error("NEW VALUE: " + refreshing + ",," + e.localizedMessage)
+            error("NEW VALUE: " + refreshing + ",," + e.localizedMessage)
         }
         super.setRefreshing(refreshing)
     }

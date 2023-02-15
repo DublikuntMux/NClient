@@ -21,6 +21,7 @@ import okhttp3.HttpUrl.Companion.toHttpUrl
 object Login {
     const val LOGIN_COOKIE = "sessionid"
     lateinit var BASE_HTTP_URL: HttpUrl
+
     @JvmStatic
     var user: User? = null
         private set

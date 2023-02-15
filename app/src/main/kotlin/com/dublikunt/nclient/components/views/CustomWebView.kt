@@ -1,7 +1,7 @@
 package com.dublikunt.nclient.components.views
 
 import android.annotation.SuppressLint
-import android.content.*
+import android.content.Context
 import android.graphics.Bitmap
 import android.util.AttributeSet
 import android.webkit.JavascriptInterface
@@ -53,7 +53,7 @@ open class CustomWebView : WebView {
 
             override fun onPageFinished(view: WebView, url: String) {
                 val html = "javascript:window.HtmlViewer.showHTML" +
-                        "('" + url + "','<html>'+document.getElementsByTagName('html')[0].innerHTML+'</html>');"
+                    "('" + url + "','<html>'+document.getElementsByTagName('html')[0].innerHTML+'</html>');"
                 loadUrl(html)
             }
         }

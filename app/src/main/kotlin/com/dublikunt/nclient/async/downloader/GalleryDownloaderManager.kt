@@ -80,18 +80,19 @@ class GalleryDownloaderManager {
         notifyIntent.putExtra(context.packageName + ".GALLERY", downloaderV2.localGallery())
         notifyIntent.putExtra(context.packageName + ".ISLOCAL", true)
         // Create the PendingIntent
-        val notifyPendingIntent: PendingIntent = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-            PendingIntent.getActivity(
-                context,
-                0,
-                notifyIntent,
-                PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_MUTABLE
-            )
-        } else {
-            PendingIntent.getActivity(
-                context, 0, notifyIntent, PendingIntent.FLAG_UPDATE_CURRENT
-            )
-        }
+        val notifyPendingIntent: PendingIntent =
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                PendingIntent.getActivity(
+                    context,
+                    0,
+                    notifyIntent,
+                    PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_MUTABLE
+                )
+            } else {
+                PendingIntent.getActivity(
+                    context, 0, notifyIntent, PendingIntent.FLAG_UPDATE_CURRENT
+                )
+            }
         notification!!.setContentIntent(notifyPendingIntent)
     }
 

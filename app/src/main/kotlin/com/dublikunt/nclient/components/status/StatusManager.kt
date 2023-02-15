@@ -5,6 +5,7 @@ import com.dublikunt.nclient.async.database.Queries
 object StatusManager {
     const val DEFAULT_STATUS = "None"
     private val statusMap = HashMap<String, Status>()
+
     @JvmStatic
     fun getByName(name: String): Status? {
         return statusMap[name]
@@ -31,7 +32,7 @@ object StatusManager {
     val names: List<String>
         get() {
             val st: MutableList<String> = java.util.ArrayList(statusMap.keys)
-            st.sortWith{ obj: String, str: String ->
+            st.sortWith { obj: String, str: String ->
                 obj.compareTo(str, true)
             }
             st.remove(DEFAULT_STATUS)
@@ -40,7 +41,7 @@ object StatusManager {
 
     fun toList(): List<Status> {
         val statuses = ArrayList(statusMap.values)
-        statuses.sortWith{ o1: Status, o2: Status ->
+        statuses.sortWith { o1: Status, o2: Status ->
             o1.name.compareTo(o2.name, true)
         }
         statuses.remove(getByName(DEFAULT_STATUS))

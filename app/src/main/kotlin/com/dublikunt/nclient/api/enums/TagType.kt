@@ -50,12 +50,16 @@ class TagType : Parcelable {
         val TAG = TagType(3, "tag", "tags")
         val ARTIST = TagType(4, "artist", "artists")
         val GROUP = TagType(5, "group", "groups")
+
         @JvmField
         val LANGUAGE = TagType(6, "language", null)
+
         @JvmField
         val CATEGORY = TagType(7, "category", null)
+
         @JvmField
         val values = arrayOf(UNKNOWN, PARODY, CHARACTER, TAG, ARTIST, GROUP, LANGUAGE, CATEGORY)
+
         @JvmField
         val CREATOR: Creator<TagType?> = object : Creator<TagType?> {
             override fun createFromParcel(`in`: Parcel): TagType {

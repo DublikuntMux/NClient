@@ -23,7 +23,7 @@ import java.util.zip.Deflater
 import java.util.zip.ZipEntry
 import java.util.zip.ZipOutputStream
 
-class CreateZIP: JobIntentService() {
+class CreateZIP : JobIntentService() {
     private val buffer = ByteArray(1024)
     private var notId = 0
     private lateinit var notification: NotificationCompat.Builder

@@ -3,8 +3,11 @@ package com.dublikunt.nclient.components.views
 import android.content.Context
 import android.content.DialogInterface
 import android.view.View
-import android.widget.*
+import android.widget.LinearLayout
+import android.widget.SeekBar
 import android.widget.SeekBar.OnSeekBarChangeListener
+import android.widget.TextView
+import android.widget.Toast
 import com.dublikunt.nclient.R
 import com.dublikunt.nclient.api.components.Gallery
 import com.dublikunt.nclient.async.downloader.DownloadGalleryV2

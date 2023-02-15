@@ -29,9 +29,9 @@ open class Size : Parcelable {
 
     override fun toString(): String {
         return "Size{" +
-                "width=" + width +
-                ", height=" + height +
-                '}'
+            "width=" + width +
+            ", height=" + height +
+            '}'
     }
 
     companion object CREATOR : Creator<Size> {

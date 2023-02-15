@@ -169,13 +169,13 @@ class LocalGallery : GenericGallery {
 
     override fun toString(): String {
         return "LocalGallery{" +
-                "galleryData=" + galleryData +
-                ", title='" + title + '\'' +
-                ", folder=" + folder +
-                ", valid=" + valid +
-                ", maxSize=" + maxSize +
-                ", minSize=" + minSize +
-                '}'
+            "galleryData=" + galleryData +
+            ", title='" + title + '\'' +
+            ", folder=" + folder +
+            ", valid=" + valid +
+            ", maxSize=" + maxSize +
+            ", minSize=" + minSize +
+            '}'
     }
 
     companion object {

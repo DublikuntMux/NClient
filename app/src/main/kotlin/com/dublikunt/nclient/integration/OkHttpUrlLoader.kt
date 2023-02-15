@@ -15,7 +15,7 @@ import java.io.InputStream
  * A simple model loader for fetching media over http/https using OkHttp.
  */
 class OkHttpUrlLoader     // Public API.
-    (private val client:  Call.Factory) : ModelLoader<GlideUrl, InputStream> {
+    (private val client: Call.Factory) : ModelLoader<GlideUrl, InputStream> {
     override fun handles(url: GlideUrl): Boolean {
         return true
     }

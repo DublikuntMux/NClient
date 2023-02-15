@@ -38,7 +38,9 @@ public class RandomLoader {
             galleryHasBeenRequested = false;
         }
         loadRandomGallery();
-    }    private final InspectorV3.InspectorResponse response = new InspectorV3.DefaultInspectorResponse() {
+    }
+
+    private final InspectorV3.InspectorResponse response = new InspectorV3.DefaultInspectorResponse() {
         @Override
         public void onFailure(Exception e) {
             loadRandomGallery();
@@ -58,8 +60,6 @@ public class RandomLoader {
             else if (galleries.size() < MAXLOADED) loadRandomGallery();
         }
     };
-
-
 
 
 }

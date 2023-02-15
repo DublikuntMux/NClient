@@ -11,6 +11,7 @@ class NotificationSettings private constructor(private val notificationManager: 
     companion object {
         private val notificationArray: MutableList<Int> = CopyOnWriteArrayList()
         private var notificationSettings: NotificationSettings? = null
+
         @JvmStatic
         var notificationId = 999
             get() = field++

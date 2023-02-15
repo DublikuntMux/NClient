@@ -9,9 +9,11 @@ import com.dublikunt.nclient.settings.Global.removeAvoidedGalleries
 
 object TagV2 {
     const val MAXTAGS = 100
+
     @JvmStatic
     var minCount = 0
         private set
+
     @JvmStatic
     var isSortedByName = false
         private set

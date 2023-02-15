@@ -57,27 +57,27 @@ object Queries {
         const val MIN_WIDTH = "minW"
         const val MIN_HEIGHT = "minH"
         const val CREATE_TABLE = "CREATE TABLE IF NOT EXISTS `Gallery` ( " +
-                "`idGallery`      INT               NOT NULL PRIMARY KEY , " +
-                "`title_eng`      TINYTEXT          NOT NULL, " +
-                "`title_jp`       TINYTEXT          NOT NULL, " +
-                "`title_pretty`   TINYTEXT          NOT NULL, " +
-                "`favorite_count` INT               NOT NULL, " +
-                "`mediaId`        INT               NOT NULL, " +
-                "`pages`          TEXT              NOT NULL," +
-                "`upload`         UNSIGNED BIG INT  NOT NULL," +  //Date
-                "`maxW`           INT               NOT NULL," +
-                "`maxH`           INT               NOT NULL," +
-                "`minW`           INT               NOT NULL," +
-                "`minH`           INT               NOT NULL" +
-                ");"
+            "`idGallery`      INT               NOT NULL PRIMARY KEY , " +
+            "`title_eng`      TINYTEXT          NOT NULL, " +
+            "`title_jp`       TINYTEXT          NOT NULL, " +
+            "`title_pretty`   TINYTEXT          NOT NULL, " +
+            "`favorite_count` INT               NOT NULL, " +
+            "`mediaId`        INT               NOT NULL, " +
+            "`pages`          TEXT              NOT NULL," +
+            "`upload`         UNSIGNED BIG INT  NOT NULL," +  //Date
+            "`maxW`           INT               NOT NULL," +
+            "`maxH`           INT               NOT NULL," +
+            "`minW`           INT               NOT NULL," +
+            "`minH`           INT               NOT NULL" +
+            ");"
 
         fun clearGalleries() {
             db.delete(
                 TABLE_NAME, String.format(
                     Locale.US,
                     "%s NOT IN (SELECT %s FROM %s) AND " +
-                            "%s NOT IN (SELECT %s FROM %s) AND " +
-                            "%s NOT IN (SELECT %s FROM %s)",
+                        "%s NOT IN (SELECT %s FROM %s) AND " +
+                        "%s NOT IN (SELECT %s FROM %s)",
                     IDGALLERY, DownloadTable.ID_GALLERY, DownloadTable.TABLE_NAME,
                     IDGALLERY, FavoriteTable.ID_GALLERY, FavoriteTable.TABLE_NAME,
                     IDGALLERY, StatusMangaTable.GALLERY, StatusMangaTable.TABLE_NAME
@@ -136,11 +136,11 @@ object Queries {
             info("FILTER IN: $query;;$online")
             val cursor: Cursor
             var sql = "SELECT * FROM " + TABLE_NAME + " WHERE (" +
-                    FAVORITE + " =? OR " + FAVORITE + "=3)"
+                FAVORITE + " =? OR " + FAVORITE + "=3)"
             if (query != null && query.isNotEmpty()) {
                 sql += " AND (" + TITLE_ENG + " LIKE ? OR " +
-                        TITLE_JP + " LIKE ? OR " +
-                        TITLE_PRETTY + " LIKE ? )"
+                    TITLE_JP + " LIKE ? OR " +
+                    TITLE_PRETTY + " LIKE ? )"
                 val q = "%$query%"
                 cursor = db.rawQuery(sql, arrayOf("" + if (online) 2 else 1, q, q, q))
             } else cursor = db.rawQuery(sql, arrayOf("" + if (online) 2 else 1))
@@ -252,12 +252,12 @@ object Queries {
     object TagTable {
         const val TABLE_NAME = "Tags"
         const val CREATE_TABLE = "CREATE TABLE IF NOT EXISTS `Tags` (" +
-                " `idTag` INT  NOT NULL PRIMARY KEY," +
-                " `name` TEXT NOT NULL , " +
-                "`type` TINYINT(1) NOT NULL , " +
-                "`count` INT NOT NULL," +
-                "`status` TINYINT(1) NOT NULL," +
-                "`online` TINYINT(1) NOT NULL DEFAULT 0);"
+            " `idTag` INT  NOT NULL PRIMARY KEY," +
+            " `name` TEXT NOT NULL , " +
+            "`type` TINYINT(1) NOT NULL , " +
+            "`count` INT NOT NULL," +
+            "`status` TINYINT(1) NOT NULL," +
+            "`online` TINYINT(1) NOT NULL DEFAULT 0);"
         const val IDTAG = "idTag"
         const val NAME = "name"
         const val TYPE = "type"
@@ -527,7 +527,7 @@ object Queries {
          */
         fun getStatus(tag: Tag): TagStatus? {
             val query = "SELECT " + STATUS + " FROM " + TABLE_NAME +
-                    " WHERE " + IDTAG + " =?"
+                " WHERE " + IDTAG + " =?"
             val c = db.rawQuery(query, arrayOf("" + tag.id))
             var status: TagStatus? = null
             if (c.moveToFirst()) {
@@ -620,11 +620,11 @@ object Queries {
         const val RANGE_END = "range_end"
         const val TABLE_NAME = "Downloads"
         const val CREATE_TABLE = "CREATE TABLE IF NOT EXISTS `Downloads` (" +
-                "`id_gallery`  INT NOT NULL PRIMARY KEY , " +
-                "`range_start` INT NOT NULL," +
-                "`range_end`   INT NOT NULL," +
-                "FOREIGN KEY(`id_gallery`) REFERENCES `Gallery`(`idGallery`) ON UPDATE CASCADE ON DELETE CASCADE" +
-                "); "
+            "`id_gallery`  INT NOT NULL PRIMARY KEY , " +
+            "`range_start` INT NOT NULL," +
+            "`range_end`   INT NOT NULL," +
+            "FOREIGN KEY(`id_gallery`) REFERENCES `Gallery`(`idGallery`) ON UPDATE CASCADE ON DELETE CASCADE" +
+            "); "
 
         @JvmStatic
         fun addGallery(downloader: GalleryDownloaderV2) {
@@ -686,12 +686,12 @@ object Queries {
         const val TIME = "time"
         const val TABLE_NAME = "History"
         const val CREATE_TABLE = "CREATE TABLE IF NOT EXISTS `History`(" +
-                "`id` INT NOT NULL PRIMARY KEY," +
-                "`mediaId` INT NOT NULL," +
-                "`title` TEXT NOT NULL," +
-                "`thumbType` TINYINT(1) NOT NULL," +
-                "`time` INT NOT NULL" +
-                ");"
+            "`id` INT NOT NULL PRIMARY KEY," +
+            "`mediaId` INT NOT NULL," +
+            "`title` TEXT NOT NULL," +
+            "`thumbType` TINYINT(1) NOT NULL," +
+            "`time` INT NOT NULL" +
+            ");"
 
         fun addGallery(gallery: SimpleGallery) {
             if (gallery.id <= 0) return
@@ -748,11 +748,11 @@ object Queries {
         const val TYPE = "type"
         const val TAG_ID = "tagId"
         const val CREATE_TABLE = "CREATE TABLE IF NOT EXISTS `Bookmark`(" +
-                "`url` TEXT NOT NULL UNIQUE," +
-                "`page` INT NOT NULL," +
-                "`type` INT NOT NULL," +
-                "`tagId` INT NOT NULL" +
-                ");"
+            "`url` TEXT NOT NULL UNIQUE," +
+            "`page` INT NOT NULL," +
+            "`type` INT NOT NULL," +
+            "`tagId` INT NOT NULL" +
+            ");"
 
         fun deleteBookmark(url: String) {
             download("Deleted: " + db.delete(TABLE_NAME, "$URL=?", arrayOf(url)))
@@ -795,11 +795,11 @@ object Queries {
     object GalleryBridgeTable {
         const val TABLE_NAME = "GalleryTags"
         const val CREATE_TABLE = "CREATE TABLE IF NOT EXISTS `GalleryTags` (" +
-                "`id_gallery` INT NOT NULL , " +
-                "`id_tag` INT NOT NULL ," +
-                "PRIMARY KEY (`id_gallery`, `id_tag`), " +
-                "FOREIGN KEY(`id_gallery`) REFERENCES `Gallery`(`idGallery`) ON UPDATE CASCADE ON DELETE CASCADE , " +
-                "FOREIGN KEY(`id_tag`) REFERENCES `Tags`(`idTag`) ON UPDATE CASCADE ON DELETE RESTRICT );"
+            "`id_gallery` INT NOT NULL , " +
+            "`id_tag` INT NOT NULL ," +
+            "PRIMARY KEY (`id_gallery`, `id_tag`), " +
+            "FOREIGN KEY(`id_gallery`) REFERENCES `Gallery`(`idGallery`) ON UPDATE CASCADE ON DELETE CASCADE , " +
+            "FOREIGN KEY(`id_tag`) REFERENCES `Tags`(`idTag`) ON UPDATE CASCADE ON DELETE RESTRICT );"
         const val ID_GALLERY = "id_gallery"
         const val ID_TAG = "id_tag"
         fun insert(galleryId: Int, tagId: Int) {
@@ -838,9 +838,9 @@ object Queries {
     object FavoriteTable {
         const val TABLE_NAME = "Favorite"
         const val CREATE_TABLE = "CREATE TABLE IF NOT EXISTS `Favorite` (" +
-                "`id_gallery` INT NOT NULL PRIMARY KEY , " +
-                "`time` INT NOT NULL," +
-                "FOREIGN KEY(`id_gallery`) REFERENCES `Gallery`(`idGallery`) ON UPDATE CASCADE ON DELETE CASCADE);"
+            "`id_gallery` INT NOT NULL PRIMARY KEY , " +
+            "`time` INT NOT NULL," +
+            "FOREIGN KEY(`id_gallery`) REFERENCES `Gallery`(`idGallery`) ON UPDATE CASCADE ON DELETE CASCADE);"
         const val ID_GALLERY = "id_gallery"
         const val TIME = "time"
         private val TITLE_CLAUSE = String.format(
@@ -985,9 +985,9 @@ object Queries {
     object ResumeTable {
         const val TABLE_NAME = "Resume"
         const val CREATE_TABLE = "CREATE TABLE IF NOT EXISTS `Resume` (" +
-                "`id_gallery` INT NOT NULL PRIMARY KEY , " +
-                "`page` INT NOT NULL" +
-                ");"
+            "`id_gallery` INT NOT NULL PRIMARY KEY , " +
+            "`page` INT NOT NULL" +
+            ");"
         const val ID_GALLERY = "id_gallery"
         const val PAGE = "page"
         fun insert(id: Int, page: Int) {
@@ -1025,12 +1025,12 @@ object Queries {
         const val TABLE_NAME = "StatusManga"
         const val DROP_TABLE = "DROP TABLE IF EXISTS $TABLE_NAME"
         const val CREATE_TABLE = "CREATE TABLE IF NOT EXISTS `StatusManga` (" +
-                "`gallery` INT NOT NULL PRIMARY KEY, " +
-                "`name` TINYTEXT NOT NULL, " +
-                "`time` INT NOT NULL," +
-                "FOREIGN KEY(`gallery`) REFERENCES `" + GalleryTable.TABLE_NAME + "`(`" + GalleryTable.IDGALLERY + "`) ON UPDATE CASCADE ON DELETE CASCADE," +
-                "FOREIGN KEY(`name`) REFERENCES `" + StatusTable.TABLE_NAME + "`(`" + StatusTable.NAME + "`) ON UPDATE CASCADE ON DELETE CASCADE" +
-                ");"
+            "`gallery` INT NOT NULL PRIMARY KEY, " +
+            "`name` TINYTEXT NOT NULL, " +
+            "`time` INT NOT NULL," +
+            "FOREIGN KEY(`gallery`) REFERENCES `" + GalleryTable.TABLE_NAME + "`(`" + GalleryTable.IDGALLERY + "`) ON UPDATE CASCADE ON DELETE CASCADE," +
+            "FOREIGN KEY(`name`) REFERENCES `" + StatusTable.TABLE_NAME + "`(`" + StatusTable.NAME + "`) ON UPDATE CASCADE ON DELETE CASCADE" +
+            ");"
         const val NAME = "name"
         const val GALLERY = "gallery"
         const val TIME = "time"
@@ -1123,9 +1123,9 @@ object Queries {
     object StatusTable {
         const val TABLE_NAME = "Status"
         const val CREATE_TABLE = "CREATE TABLE IF NOT EXISTS `Status` (" +
-                "`name` TINYTEXT NOT NULL PRIMARY KEY, " +
-                "`color` INT NOT NULL " +
-                ");"
+            "`name` TINYTEXT NOT NULL PRIMARY KEY, " +
+            "`color` INT NOT NULL " +
+            ");"
         const val NAME = "name"
         const val COLOR = "color"
         fun insert(status: Status?) {

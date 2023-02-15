@@ -60,7 +60,7 @@ class ZoomFragment : Fragment() {
         val activity = activity
         if (height < width * 2) return Global.getDefaultZoom()
         var finalSize = Global.getDeviceWidth(activity as AppCompatActivity?).toFloat() * height /
-                (Global.getDeviceHeight(activity).toFloat() * width)
+            (Global.getDeviceHeight(activity).toFloat() * width)
         finalSize = max(finalSize, Global.getDefaultZoom())
         finalSize = min(finalSize, MAX_SCALE)
         download("Final scale: $finalSize")

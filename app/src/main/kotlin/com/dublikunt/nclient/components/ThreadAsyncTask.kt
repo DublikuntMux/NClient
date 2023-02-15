@@ -14,6 +14,7 @@ abstract class ThreadAsyncTask<Params, Progress, Result>(private val activity: A
     protected open fun onPostExecute(result: Result) {}
     protected open fun onProgressUpdate(vararg values: Progress) {}
     protected abstract fun doInBackground(vararg params: Params): Result
+
     @SafeVarargs
     protected fun publishProgress(vararg values: Progress) {
         if (!Global.isDestroyed(activity)) activity.runOnUiThread { onProgressUpdate(*values) }

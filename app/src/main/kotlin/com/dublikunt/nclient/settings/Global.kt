@@ -59,27 +59,34 @@ object Global {
     private const val BACKUPFOLDER_NAME = "Backup"
     private const val TORRENTFOLDER_NAME = "Torrents"
     private val lastDisplay = DisplayMetrics()
+
     @JvmStatic
     var client: OkHttpClient? = null
     var OLD_GALLERYFOLDER: File? = null
     lateinit var MAINFOLDER: File
+
     @JvmField
     var DOWNLOADFOLDER: File? = null
     var SCREENFOLDER: File? = null
+
     @JvmField
     var PDFFOLDER: File? = null
     var UPDATEFOLDER: File? = null
+
     @JvmField
     var ZIPFOLDER: File? = null
     var TORRENTFOLDER: File? = null
     var BACKUPFOLDER: File? = null
     private var onlyLanguage: Language? = null
+
     @JvmStatic
     var titleType: TitleType? = null
         private set
+
     @JvmStatic
     lateinit var sortType: SortType
         private set
+
     @JvmStatic
     lateinit var localSortType: LocalSortType
         private set
@@ -95,6 +102,7 @@ object Global {
         private set
     var isLockScreen = false
         private set
+
     @JvmStatic
     var isOnlyTag = false
         private set
@@ -106,14 +114,17 @@ object Global {
     private var usageMobile: DataUsageType? = null
     private var usageWifi: DataUsageType? = null
     private var lastVersion: String? = null
+
     @JvmStatic
     var mirror: String? = null
         private set
+
     @JvmStatic
     var maxHistory = 0
         private set
     var columnCount = 0
         private set
+
     @JvmStatic
     var maxId = 0
         private set
@@ -147,6 +158,7 @@ object Global {
     private var screenSize: Point? = null
     private var infiniteScrollMain: Boolean = false
     private var infiniteScrollFavorite: Boolean = false
+
     @JvmStatic
     fun recursiveSize(path: File): Long {
         if (path.isFile) return path.length()
@@ -294,8 +306,10 @@ object Global {
             shared.getBoolean(context.getString(R.string.key_change_page_buttons), true)
         isLockScreen = shared.getBoolean(context.getString(R.string.key_disable_lock), false)
         hideMultitask = shared.getBoolean(context.getString(R.string.key_hide_multitasking), true)
-        infiniteScrollFavorite = shared.getBoolean(context.getString(R.string.key_infinite_scroll_favo), false)
-        infiniteScrollMain = shared.getBoolean(context.getString(R.string.key_infinite_scroll_main), false)
+        infiniteScrollFavorite =
+            shared.getBoolean(context.getString(R.string.key_infinite_scroll_favo), false)
+        infiniteScrollMain =
+            shared.getBoolean(context.getString(R.string.key_infinite_scroll_main), false)
         maxId = shared.getInt(context.getString(R.string.key_max_id), 300000)
         offscreenLimit =
             max(1, shared.getInt(context.getString(R.string.key_offscreen_limit), 5))

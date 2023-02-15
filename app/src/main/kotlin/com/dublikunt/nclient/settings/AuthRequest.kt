@@ -32,7 +32,8 @@ class AuthRequest(
                     .addHeader("X-Requested-With", "XMLHttpRequest")
                     .method(method, body)
                     .build()
-            ).enqueue(callback)}, referer).start()
+            ).enqueue(callback)
+        }, referer).start()
     }
 
     companion object {

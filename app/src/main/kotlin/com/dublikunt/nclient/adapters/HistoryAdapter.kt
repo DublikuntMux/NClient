@@ -21,7 +21,8 @@ class HistoryAdapter(private val context: SearchActivity) :
     init {
         if (!Global.isKeepHistory) context.getSharedPreferences("History", 0).edit().clear()
             .apply()
-        history = if (Global.isKeepHistory) context.getSharedPreferences("History", 0).getStringSet("history", HashSet())
+        history = if (Global.isKeepHistory) context.getSharedPreferences("History", 0)
+            .getStringSet("history", HashSet())
             ?.let {
                 History.setToList(
                     it
