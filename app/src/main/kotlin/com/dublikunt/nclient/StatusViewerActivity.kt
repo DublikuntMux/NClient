@@ -18,7 +18,7 @@ import com.google.android.material.tabs.TabLayoutMediator
 
 class StatusViewerActivity : GeneralActivity() {
     private var sortByTitle = false
-    private var query: String? = null
+    private lateinit var query: String
     private lateinit var viewPager: ViewPager2
     private lateinit var sectionsPagerAdapter: SectionsPagerAdapter
     override fun onCreate(savedInstanceState: Bundle?) {

@@ -13,4 +13,4 @@ output.json
 /app/schemas
 .externalNativeBuild
 /crowdin.properties
-
+/app/google-services.json

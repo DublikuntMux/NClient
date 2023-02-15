@@ -15,7 +15,7 @@ class SectionsPagerAdapter(context: StatusViewerActivity) :
     private var statuses: List<String> = StatusManager.names
     private var counts: HashMap<String, Int> = Queries.StatusMangaTable.countsPerStatus
 
-    fun getPageTitle(position: Int): CharSequence? {
+    fun getPageTitle(position: Int): CharSequence {
         val status = statuses[position]
         var count = 0
         if (counts.containsKey(status)) {

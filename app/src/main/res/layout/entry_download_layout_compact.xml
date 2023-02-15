@@ -70,7 +70,7 @@
                     app:layout_constraintStart_toEndOf="@+id/progress"
                     app:layout_constraintTop_toTopOf="@+id/playButton" />
 
-                <com.google.android.material.button.MaterialButton
+                <ImageButton
                     android:id="@+id/playButton"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
@@ -88,7 +88,7 @@
                     app:layout_constraintEnd_toStartOf="@+id/cancelButton"
                     app:layout_constraintTop_toTopOf="parent" />
 
-                <com.google.android.material.button.MaterialButton
+                <ImageButton
                     android:id="@+id/cancelButton"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"

@@ -1,6 +1,9 @@
 apply plugin: 'com.android.application'
 apply plugin: 'org.jetbrains.kotlin.android'
 apply plugin: 'kotlin-kapt'
+apply plugin: 'com.google.gms.google-services'
+apply plugin: 'com.google.firebase.crashlytics'
+apply plugin: 'com.google.firebase.firebase-perf'
 
 android {
     compileSdk 33
@@ -9,9 +12,9 @@ android {
         applicationId 'com.dublikunt.nclient'
         minSdk 24
         targetSdk 33
-        versionCode 203
+        versionCode 204
         multiDexEnabled true
-        versionName '2.0.3'
+        versionName '2.0.4'
         vectorDrawables.useSupportLibrary true
         proguardFiles 'proguard-rules.pro'
     }
@@ -30,7 +33,6 @@ android {
             }
         }
         debug {
-            applicationIdSuffix ".debug"
             versionNameSuffix "-debug"
             resValue "string", "app_name", "NClient Debug"
         }
@@ -48,6 +50,7 @@ android {
     packagingOptions {
         exclude "**/*.kotlin_builtins"
         exclude "**/*.kotlin_module"
+        exclude "**/*.properties"
     }
 }
 
@@ -68,6 +71,10 @@ dependencies {
     implementation 'me.zhanghai.android.fastscroll:library:1.2.0'
 
     implementation 'com.github.bumptech.glide:glide:4.14.2'
-    implementation "com.github.bumptech.glide:okhttp3-integration:4.12.0"
+    implementation 'com.github.bumptech.glide:okhttp3-integration:4.14.2'
     kapt 'com.github.bumptech.glide:compiler:4.14.2'
+
+    implementation 'com.google.firebase:firebase-crashlytics-ktx:18.3.4'
+    implementation 'com.google.firebase:firebase-analytics-ktx:21.2.0'
+    implementation 'com.google.firebase:firebase-perf-ktx:20.3.1'
 }

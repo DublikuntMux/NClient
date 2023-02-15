@@ -46,7 +46,7 @@ class PlaceholderFragment : Fragment() {
         val root = inflater.inflate(R.layout.fragment_status_viewer, container, false)
         recycler = root.findViewById(R.id.recycler)
         refresher = root.findViewById(R.id.refresher)
-        adapter = (activity as AppCompatActivity?)?.let {
+        adapter = (activity as AppCompatActivity).let {
             requireArguments().getString("STATUS_NAME")?.let { it1 ->
                 StatusViewerAdapter(
                     it,
@@ -63,7 +63,7 @@ class PlaceholderFragment : Fragment() {
         return root
     }
 
-    fun changeQuery(newQuery: String?) {
+    fun changeQuery(newQuery: String) {
         adapter.setQuery(newQuery)
     }
 
@@ -71,12 +71,12 @@ class PlaceholderFragment : Fragment() {
         adapter.updateSort(byTitle)
     }
 
-    fun reload(query: String?, sortByTitle: Boolean) {
+    fun reload(query: String, sortByTitle: Boolean) {
         adapter.update(query, sortByTitle)
     }
 
     companion object {
-        fun newInstance(statusName: String?): PlaceholderFragment {
+        fun newInstance(statusName: String): PlaceholderFragment {
             val fragment = PlaceholderFragment()
             val bundle = Bundle()
             bundle.putString("STATUS_NAME", statusName)
