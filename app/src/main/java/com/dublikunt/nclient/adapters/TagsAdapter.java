@@ -24,7 +24,7 @@ import com.dublikunt.nclient.async.database.Queries;
 import com.dublikunt.nclient.settings.AuthRequest;
 import com.dublikunt.nclient.settings.Global;
 import com.dublikunt.nclient.settings.Login;
-import com.dublikunt.nclient.settings.TagV2;
+import com.dublikunt.nclient.settings.Tags;
 import com.dublikunt.nclient.utility.ImageDownloadUtility;
 import com.dublikunt.nclient.utility.LogUtility;
 import com.dublikunt.nclient.utility.Utility;
@@ -80,10 +80,10 @@ public class TagsAdapter extends RecyclerView.Adapter<TagsAdapter.ViewHolder> im
                 FilterResults results = new FilterResults();
                 if (constraint == null) constraint = "";
                 force = false;
-                wasSortedByName = TagV2.isSortedByName();
+                wasSortedByName = Tags.isSortedByName();
 
                 lastQuery = constraint.toString();
-                Cursor tags = Queries.TagTable.getFilterCursor(lastQuery, type, tagMode == TagMode.ONLINE, TagV2.isSortedByName());
+                Cursor tags = Queries.TagTable.getFilterCursor(lastQuery, type, tagMode == TagMode.ONLINE, Tags.isSortedByName());
                 results.count = tags.getCount();
                 results.values = tags;
 
@@ -121,10 +121,10 @@ public class TagsAdapter extends RecyclerView.Adapter<TagsAdapter.ViewHolder> im
             switch (tagMode) {
                 case OFFLINE:
                 case TYPE:
-                    if (TagV2.maxTagReached() && ent.getStatus() == TagStatus.DEFAULT) {
-                        context.runOnUiThread(() -> Toast.makeText(context, context.getString(R.string.tags_max_reached, TagV2.MAXTAGS), Toast.LENGTH_LONG).show());
+                    if (Tags.maxTagReached() && ent.getStatus() == TagStatus.DEFAULT) {
+                        context.runOnUiThread(() -> Toast.makeText(context, context.getString(R.string.tags_max_reached, Tags.MAXTAGS), Toast.LENGTH_LONG).show());
                     } else {
-                        TagV2.updateStatus(ent);
+                        Tags.updateStatus(ent);
                         updateLogo(holder.imgView, ent.getStatus());
                     }
                     break;

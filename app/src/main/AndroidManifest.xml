@@ -203,7 +203,7 @@
         </provider>
 
         <service
-            android:name=".async.downloader.DownloadGalleryV2"
+            android:name=".async.downloader.DownloadGallery"
             android:enabled="true"
             android:exported="true"
             android:permission="android.permission.BIND_JOB_SERVICE" />

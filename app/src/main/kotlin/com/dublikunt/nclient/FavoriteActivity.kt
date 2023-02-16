@@ -10,7 +10,7 @@ import android.view.MenuItem
 import androidx.appcompat.widget.SearchView
 import com.dublikunt.nclient.adapters.FavoriteAdapter
 import com.dublikunt.nclient.async.database.Queries
-import com.dublikunt.nclient.async.downloader.DownloadGalleryV2
+import com.dublikunt.nclient.async.downloader.DownloadGallery
 import com.dublikunt.nclient.components.activities.BaseActivity
 import com.dublikunt.nclient.components.views.PageSwitcher
 import com.dublikunt.nclient.settings.Global
@@ -136,7 +136,7 @@ class FavoriteActivity : BaseActivity() {
             .setNegativeButton(R.string.cancel, null)
             .setPositiveButton(R.string.ok) { _: DialogInterface?, _: Int ->
                 for (g in adapter.allGalleries) g?.let {
-                    DownloadGalleryV2.downloadGallery(
+                    DownloadGallery.downloadGallery(
                         this,
                         it
                     )

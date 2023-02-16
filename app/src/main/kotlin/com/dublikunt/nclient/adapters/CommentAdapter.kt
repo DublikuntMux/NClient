@@ -4,7 +4,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageButton
-import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.RecyclerView
@@ -15,6 +14,8 @@ import com.dublikunt.nclient.settings.Global
 import com.dublikunt.nclient.settings.Login
 import com.dublikunt.nclient.utility.ImageDownloadUtility.loadImage
 import com.dublikunt.nclient.utility.Utility
+import com.google.android.material.button.MaterialButton
+import com.google.android.material.textview.MaterialTextView
 import okhttp3.Call
 import okhttp3.Callback
 import okhttp3.Response
@@ -94,10 +95,10 @@ class CommentAdapter(
 
     class ViewHolder(v: View) : RecyclerView.ViewHolder(v) {
         val userImage: ImageButton
-        val close: ImageButton
-        val user: TextView
-        val body: TextView
-        val date: TextView
+        val close: MaterialButton
+        val user: MaterialTextView
+        val body: MaterialTextView
+        val date: MaterialTextView
         val layout: ConstraintLayout
 
         init {

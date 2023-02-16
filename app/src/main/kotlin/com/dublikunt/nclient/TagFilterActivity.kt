@@ -19,7 +19,7 @@ import com.dublikunt.nclient.settings.DefaultDialogs
 import com.dublikunt.nclient.settings.DefaultDialogs.CustomDialogResults
 import com.dublikunt.nclient.settings.Global
 import com.dublikunt.nclient.settings.Login
-import com.dublikunt.nclient.settings.TagV2
+import com.dublikunt.nclient.settings.Tags
 import com.dublikunt.nclient.utility.LogUtility
 import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -101,8 +101,8 @@ class TagFilterActivity : GeneralActivity() {
         }
 
     private fun updateSortItem(item: MenuItem) {
-        item.setIcon(if (TagV2.isSortedByName) R.drawable.ic_sort_by_alpha else R.drawable.ic_sort)
-        item.setTitle(if (TagV2.isSortedByName) R.string.sort_by_title else R.string.sort_by_popular)
+        item.setIcon(if (Tags.isSortedByName) R.drawable.ic_sort_by_alpha else R.drawable.ic_sort)
+        item.setTitle(if (Tags.isSortedByName) R.string.sort_by_title else R.string.sort_by_popular)
         Global.setTint(item.icon)
     }
 
@@ -145,7 +145,7 @@ class TagFilterActivity : GeneralActivity() {
             R.id.reset_tags -> createDialog()
             R.id.set_min_count -> minCountBuild()
             R.id.sort_by_name -> {
-                TagV2.updateSortByName(this)
+                Tags.updateSortByName(this)
                 updateSortItem(item)
                 page?.refilter(searchView.query.toString())
             }
@@ -154,14 +154,14 @@ class TagFilterActivity : GeneralActivity() {
     }
 
     private fun minCountBuild() {
-        val min = TagV2.minCount
+        val min = Tags.minCount
         val builder = DefaultDialogs.Builder(this)
         builder.setActual(min).setMax(100).setMin(2)
         builder.setYesbtn(R.string.ok).setNobtn(R.string.cancel)
         builder.setTitle(R.string.set_minimum_count).setDialogs(object : CustomDialogResults() {
             override fun positive(actual: Int) {
                 LogUtility.download("ACTUAL: $actual")
-                TagV2.updateMinCount(this@TagFilterActivity, actual)
+                Tags.updateMinCount(this@TagFilterActivity, actual)
                 actualFragment?.changeSize()
             }
         })

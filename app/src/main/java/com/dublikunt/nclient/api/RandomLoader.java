@@ -23,7 +23,7 @@ public class RandomLoader {
 
     private void loadRandomGallery() {
         if (galleries.size() >= MAXLOADED) return;
-        InspectorV3.randomInspector(activity, response, false).start();
+        Inspector.randomInspector(activity, response, false).start();
     }
 
     public void requestGallery() {
@@ -40,7 +40,7 @@ public class RandomLoader {
         loadRandomGallery();
     }
 
-    private final InspectorV3.InspectorResponse response = new InspectorV3.DefaultInspectorResponse() {
+    private final Inspector.InspectorResponse response = new Inspector.DefaultInspectorResponse() {
         @Override
         public void onFailure(Exception e) {
             loadRandomGallery();

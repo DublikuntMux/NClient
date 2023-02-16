@@ -15,7 +15,7 @@ import com.dublikunt.nclient.api.local.FakeInspector
 import com.dublikunt.nclient.api.local.LocalGallery
 import com.dublikunt.nclient.api.local.LocalSortType
 import com.dublikunt.nclient.async.converters.CreatePDF
-import com.dublikunt.nclient.async.downloader.GalleryDownloaderV2
+import com.dublikunt.nclient.async.downloader.GalleryDownloader
 import com.dublikunt.nclient.classes.MultichoiceAdapter
 import com.dublikunt.nclient.classes.MultichoiceAdapter.DefaultMultichoiceListener
 import com.dublikunt.nclient.classes.MultichoiceAdapter.MultichoiceListener
@@ -98,7 +98,7 @@ class LocalActivity : BaseActivity() {
         var hasDownloads = false
         if (mode == MultichoiceAdapter.Mode.SELECTING) {
             hasGallery = adapter!!.hasSelectedClass(LocalGallery::class.java)
-            hasDownloads = adapter!!.hasSelectedClass(GalleryDownloaderV2::class.java)
+            hasDownloads = adapter!!.hasSelectedClass(GalleryDownloader::class.java)
         }
         menu.findItem(R.id.search).isVisible = mode == MultichoiceAdapter.Mode.NORMAL
         menu.findItem(R.id.sort_by_name).isVisible = mode == MultichoiceAdapter.Mode.NORMAL

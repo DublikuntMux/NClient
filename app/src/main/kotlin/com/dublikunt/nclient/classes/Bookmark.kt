@@ -2,8 +2,8 @@ package com.dublikunt.nclient.classes
 
 import android.content.Context
 import android.net.Uri
-import com.dublikunt.nclient.api.InspectorV3
-import com.dublikunt.nclient.api.InspectorV3.InspectorResponse
+import com.dublikunt.nclient.api.Inspector
+import com.dublikunt.nclient.api.Inspector.InspectorResponse
 import com.dublikunt.nclient.api.components.Tag
 import com.dublikunt.nclient.api.enums.*
 import com.dublikunt.nclient.async.database.Queries
@@ -34,16 +34,16 @@ class Bookmark(url: String, page: Int, requestType: ApiRequestType, tag: Int) {
         uri = Uri.parse(url)
     }
 
-    fun createInspector(context: Context?, response: InspectorResponse?): InspectorV3? {
+    fun createInspector(context: Context?, response: InspectorResponse?): Inspector? {
         val query = uri.getQueryParameter("q")
         val popular = SortType.findFromAddition(uri.getQueryParameter("sort"))
-        if (requestType === ApiRequestType.FAVORITE) return InspectorV3.favoriteInspector(
+        if (requestType === ApiRequestType.FAVORITE) return Inspector.favoriteInspector(
             context,
             query,
             page,
             response
         )
-        if (requestType === ApiRequestType.BYSEARCH) return InspectorV3.searchInspector(
+        if (requestType === ApiRequestType.BYSEARCH) return Inspector.searchInspector(
             context,
             query,
             null,
@@ -52,7 +52,7 @@ class Bookmark(url: String, page: Int, requestType: ApiRequestType, tag: Int) {
             null,
             response
         )
-        if (requestType === ApiRequestType.BYALL) return InspectorV3.searchInspector(
+        if (requestType === ApiRequestType.BYALL) return Inspector.searchInspector(
             context,
             "",
             null,
@@ -61,7 +61,7 @@ class Bookmark(url: String, page: Int, requestType: ApiRequestType, tag: Int) {
             null,
             response
         )
-        return if (requestType === ApiRequestType.BYTAG) InspectorV3.searchInspector(
+        return if (requestType === ApiRequestType.BYTAG) Inspector.searchInspector(
             context,
             "",
             setOf(tagVal),

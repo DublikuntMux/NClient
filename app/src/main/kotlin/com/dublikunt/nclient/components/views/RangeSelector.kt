@@ -10,7 +10,7 @@ import android.widget.TextView
 import android.widget.Toast
 import com.dublikunt.nclient.R
 import com.dublikunt.nclient.api.components.Gallery
-import com.dublikunt.nclient.async.downloader.DownloadGalleryV2
+import com.dublikunt.nclient.async.downloader.DownloadGallery
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.textview.MaterialTextView
@@ -28,7 +28,7 @@ class RangeSelector(context: Context, private val gallery: Gallery) :
         applyLogic(l1, true)
         applyLogic(l2, false)
         setPositiveButton(R.string.ok) { _: DialogInterface?, which: Int ->
-            if (s1!!.progress <= s2!!.progress) DownloadGalleryV2.downloadRange(
+            if (s1!!.progress <= s2!!.progress) DownloadGallery.downloadRange(
                 context,
                 gallery,
                 s1!!.progress,

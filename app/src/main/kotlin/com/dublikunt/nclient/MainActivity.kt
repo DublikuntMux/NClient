@@ -21,15 +21,15 @@ import androidx.appcompat.widget.SearchView
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.recyclerview.widget.RecyclerView
 import com.dublikunt.nclient.adapters.ListAdapter
-import com.dublikunt.nclient.api.InspectorV3
-import com.dublikunt.nclient.api.InspectorV3.*
+import com.dublikunt.nclient.api.Inspector
+import com.dublikunt.nclient.api.Inspector.*
 import com.dublikunt.nclient.api.components.Gallery
 import com.dublikunt.nclient.api.components.GenericGallery
 import com.dublikunt.nclient.api.components.Ranges
 import com.dublikunt.nclient.api.components.Tag
 import com.dublikunt.nclient.api.enums.*
 import com.dublikunt.nclient.async.database.Queries
-import com.dublikunt.nclient.async.downloader.DownloadGalleryV2
+import com.dublikunt.nclient.async.downloader.DownloadGallery
 import com.dublikunt.nclient.components.GlideX
 import com.dublikunt.nclient.components.activities.BaseActivity
 import com.dublikunt.nclient.components.views.PageSwitcher
@@ -37,7 +37,7 @@ import com.dublikunt.nclient.components.widgets.CustomGridLayoutManager
 import com.dublikunt.nclient.settings.Global
 import com.dublikunt.nclient.settings.Global.ThemeScheme
 import com.dublikunt.nclient.settings.Login
-import com.dublikunt.nclient.settings.TagV2
+import com.dublikunt.nclient.settings.Tags
 import com.dublikunt.nclient.utility.ImageDownloadUtility
 import com.dublikunt.nclient.utility.LogUtility
 import com.dublikunt.nclient.utility.Utility
@@ -73,7 +73,7 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
     lateinit var loginItem: MenuItem
     private lateinit var onlineFavoriteManager: MenuItem
     private var failCount = 0
-    private lateinit var inspector: InspectorV3
+    private lateinit var inspector: Inspector
     private lateinit var navigationView: NavigationView
     private var modeType = ModeType.UNKNOWN
     private var idOpenedGallery = -1 //Position in the recycler of the opened gallery
@@ -576,7 +576,7 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
         } else if (item.itemId == R.id.add_bookmark) {
             Queries.BookmarkTable.addBookmark(inspector)
         } else if (item.itemId == R.id.tag_manager) {
-            val ts = TagV2.updateStatus(inspector.tag)
+            val ts = Tags.updateStatus(inspector.tag)
             updateTagStatus(item, ts)
         } else if (item.itemId == android.R.id.home) {
             finish()
@@ -628,7 +628,7 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
             .setPositiveButton(
                 R.string.ok
             ) { _: DialogInterface?, _: Int ->
-                for (g in inspector.galleries) DownloadGalleryV2.downloadGallery(
+                for (g in inspector.galleries) DownloadGallery.downloadGallery(
                     this@MainActivity,
                     g
                 )

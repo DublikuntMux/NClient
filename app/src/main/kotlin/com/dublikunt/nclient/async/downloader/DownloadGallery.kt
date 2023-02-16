@@ -13,7 +13,7 @@ import com.dublikunt.nclient.utility.LogUtility.error
 import com.dublikunt.nclient.utility.Utility
 import java.io.IOException
 
-class DownloadGalleryV2 : JobIntentService() {
+class DownloadGallery : JobIntentService() {
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         val startCommand = super.onStartCommand(intent, flags, startId)
         if (intent != null) {
@@ -26,10 +26,10 @@ class DownloadGalleryV2 : JobIntentService() {
                 assert(mode != null)
                 when (mode) {
                     "STOP" -> DownloadQueue.remove(id, true)
-                    "PAUSE" -> manager.downloader().status = GalleryDownloaderV2.Status.PAUSED
+                    "PAUSE" -> manager.downloader().status = GalleryDownloader.Status.PAUSED
                     "START" -> {
                         manager.downloader().status =
-                            GalleryDownloaderV2.Status.NOT_STARTED
+                            GalleryDownloader.Status.NOT_STARTED
                         DownloadQueue.givePriority(manager.downloader())
                         startWork(this)
                     }
@@ -102,7 +102,7 @@ class DownloadGalleryV2 : JobIntentService() {
             try {
                 val g = getAllDownloads(context)
                 for (gg in g) {
-                    gg.downloader().status = GalleryDownloaderV2.Status.PAUSED
+                    gg.downloader().status = GalleryDownloader.Status.PAUSED
                     DownloadQueue.add(gg)
                 }
                 PageChecker().start()
@@ -120,7 +120,7 @@ class DownloadGalleryV2 : JobIntentService() {
         fun startWork(context: Context?) {
             if (context != null) enqueueWork(
                 context,
-                DownloadGalleryV2::class.java,
+                DownloadGallery::class.java,
                 JOB_DOWNLOAD_GALLERY_ID,
                 Intent()
             )

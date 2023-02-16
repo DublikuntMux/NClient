@@ -5,7 +5,7 @@ import android.content.ContentValues
 import android.content.Context
 import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
-import com.dublikunt.nclient.api.InspectorV3
+import com.dublikunt.nclient.api.Inspector
 import com.dublikunt.nclient.api.SimpleGallery
 import com.dublikunt.nclient.api.components.*
 import com.dublikunt.nclient.api.enums.ApiRequestType
@@ -13,7 +13,7 @@ import com.dublikunt.nclient.api.enums.TagStatus
 import com.dublikunt.nclient.api.enums.TagType
 import com.dublikunt.nclient.api.enums.TitleType
 import com.dublikunt.nclient.async.downloader.GalleryDownloaderManager
-import com.dublikunt.nclient.async.downloader.GalleryDownloaderV2
+import com.dublikunt.nclient.async.downloader.GalleryDownloader
 import com.dublikunt.nclient.classes.Bookmark
 import com.dublikunt.nclient.components.status.Status
 import com.dublikunt.nclient.components.status.StatusManager
@@ -21,7 +21,7 @@ import com.dublikunt.nclient.components.status.StatusManager.add
 import com.dublikunt.nclient.components.status.StatusManager.getByName
 import com.dublikunt.nclient.settings.Global.maxHistory
 import com.dublikunt.nclient.settings.Global.titleType
-import com.dublikunt.nclient.settings.TagV2.minCount
+import com.dublikunt.nclient.settings.Tags.minCount
 import com.dublikunt.nclient.utility.LogUtility.download
 import com.dublikunt.nclient.utility.LogUtility.error
 import com.dublikunt.nclient.utility.LogUtility.info
@@ -627,7 +627,7 @@ object Queries {
             "); "
 
         @JvmStatic
-        fun addGallery(downloader: GalleryDownloaderV2) {
+        fun addGallery(downloader: GalleryDownloader) {
             val gallery = downloader.gallery
             GalleryTable.insert(gallery)
             val values = ContentValues(3)
@@ -758,7 +758,7 @@ object Queries {
             download("Deleted: " + db.delete(TABLE_NAME, "$URL=?", arrayOf(url)))
         }
 
-        fun addBookmark(inspector: InspectorV3) {
+        fun addBookmark(inspector: Inspector) {
             val tag = inspector.tag
             val values = ContentValues(4)
             values.put(URL, inspector.url)

@@ -30,7 +30,7 @@ class SettingsActivity : GeneralActivity() {
     private var IMPORT_ZIP: ActivityResultLauncher<String>? = null
     private var SAVE_SETTINGS: ActivityResultLauncher<String>? = null
     private var REQUEST_STORAGE_MANAGER: ActivityResultLauncher<Any?>? = null
-    private val selectedItem = 0
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         registerActivities()

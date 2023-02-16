@@ -18,8 +18,8 @@ import androidx.core.content.FileProvider
 import androidx.recyclerview.widget.GridLayoutManager.SpanSizeLookup
 import com.dublikunt.nclient.CopyToClipboardActivity.Companion.copyTextToClipboard
 import com.dublikunt.nclient.adapters.GalleryAdapter
-import com.dublikunt.nclient.api.InspectorV3
-import com.dublikunt.nclient.api.InspectorV3.DefaultInspectorResponse
+import com.dublikunt.nclient.api.Inspector
+import com.dublikunt.nclient.api.Inspector.DefaultInspectorResponse
 import com.dublikunt.nclient.api.components.Gallery
 import com.dublikunt.nclient.api.components.GenericGallery
 import com.dublikunt.nclient.async.database.Queries
@@ -105,7 +105,7 @@ class GalleryActivity : BaseActivity() {
                     0
                 }
             }
-            InspectorV3.galleryInspector(this, id, object : DefaultInspectorResponse() {
+            Inspector.galleryInspector(this, id, object : DefaultInspectorResponse() {
                 override fun onSuccess(galleries: List<GenericGallery>) {
                     if (galleries.isNotEmpty()) {
                         val intent = Intent(this@GalleryActivity, GalleryActivity::class.java)
@@ -476,7 +476,7 @@ class GalleryActivity : BaseActivity() {
 
     private fun toInternet() {
         refresher.isEnabled = true
-        InspectorV3.galleryInspector(this, gallery.id, object : DefaultInspectorResponse() {
+        Inspector.galleryInspector(this, gallery.id, object : DefaultInspectorResponse() {
             override fun onSuccess(galleries: List<GenericGallery>) {
                 if (galleries.isEmpty()) return
                 val intent = Intent(this@GalleryActivity, GalleryActivity::class.java)

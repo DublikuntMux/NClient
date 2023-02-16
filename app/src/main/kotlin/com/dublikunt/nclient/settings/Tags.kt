@@ -7,7 +7,7 @@ import com.dublikunt.nclient.api.enums.TagType
 import com.dublikunt.nclient.async.database.Queries
 import com.dublikunt.nclient.settings.Global.removeAvoidedGalleries
 
-object TagV2 {
+object Tags {
     const val MAXTAGS = 100
 
     @JvmStatic

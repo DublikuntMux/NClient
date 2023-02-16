@@ -9,15 +9,15 @@ import androidx.recyclerview.widget.RecyclerView
 import com.dublikunt.nclient.GalleryActivity
 import com.dublikunt.nclient.MainActivity
 import com.dublikunt.nclient.R
-import com.dublikunt.nclient.api.InspectorV3
-import com.dublikunt.nclient.api.InspectorV3.DefaultInspectorResponse
+import com.dublikunt.nclient.api.Inspector
+import com.dublikunt.nclient.api.Inspector.DefaultInspectorResponse
 import com.dublikunt.nclient.api.SimpleGallery
 import com.dublikunt.nclient.api.components.GenericGallery
 import com.dublikunt.nclient.api.enums.Language
 import com.dublikunt.nclient.async.database.Queries
 import com.dublikunt.nclient.components.activities.BaseActivity
 import com.dublikunt.nclient.settings.Global
-import com.dublikunt.nclient.settings.TagV2
+import com.dublikunt.nclient.settings.Tags
 import com.dublikunt.nclient.utility.ImageDownloadUtility.loadImage
 import com.dublikunt.nclient.utility.LogUtility.download
 import com.google.android.material.card.MaterialCardView
@@ -33,7 +33,7 @@ class ListAdapter(private val context: BaseActivity) :
     init {
         mDataset = ArrayList()
         Global.hasStoragePermission(context)
-        queryString = TagV2.avoidedTags
+        queryString = Tags.avoidedTags
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): GenericAdapter.ViewHolder {
@@ -122,7 +122,7 @@ class ListAdapter(private val context: BaseActivity) :
     }
 
     private fun downloadGallery(ent: SimpleGallery) {
-        InspectorV3.galleryInspector(context, ent.id, object : DefaultInspectorResponse() {
+        Inspector.galleryInspector(context, ent.id, object : DefaultInspectorResponse() {
             override fun onFailure(e: Exception) {
                 super.onFailure(e)
                 val file = Global.findGalleryFolder(context, ent.id)

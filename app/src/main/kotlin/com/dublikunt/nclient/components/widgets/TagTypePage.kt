@@ -14,7 +14,7 @@ import com.dublikunt.nclient.adapters.TagsAdapter
 import com.dublikunt.nclient.api.enums.TagType
 import com.dublikunt.nclient.async.ScrapeTags
 import com.dublikunt.nclient.settings.Global
-import com.dublikunt.nclient.settings.TagV2
+import com.dublikunt.nclient.settings.Tags
 
 class TagTypePage : Fragment() {
     private var type: TagType? = null
@@ -71,7 +71,7 @@ class TagTypePage : Fragment() {
     }
 
     fun reset() {
-        if (type == TagType.UNKNOWN) TagV2.resetAllStatus() else if (type != TagType.CATEGORY) {
+        if (type == TagType.UNKNOWN) Tags.resetAllStatus() else if (type != TagType.CATEGORY) {
             ScrapeTags.startWork(activity)
         }
         val activity = getActivity() as AppCompatActivity?

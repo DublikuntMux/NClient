@@ -6,7 +6,6 @@ import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.LinearLayout
-import androidx.appcompat.widget.AppCompatEditText
 import androidx.cardview.widget.CardView
 import com.dublikunt.nclient.R
 import com.dublikunt.nclient.settings.DefaultDialogs

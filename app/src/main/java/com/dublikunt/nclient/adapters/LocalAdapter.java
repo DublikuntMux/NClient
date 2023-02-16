@@ -24,10 +24,10 @@ import com.dublikunt.nclient.api.local.LocalSortType;
 import com.dublikunt.nclient.async.converters.CreatePDF;
 import com.dublikunt.nclient.async.converters.CreateZIP;
 import com.dublikunt.nclient.async.database.Queries;
-import com.dublikunt.nclient.async.downloader.DownloadGalleryV2;
+import com.dublikunt.nclient.async.downloader.DownloadGallery;
 import com.dublikunt.nclient.async.downloader.DownloadObserver;
 import com.dublikunt.nclient.async.downloader.DownloadQueue;
-import com.dublikunt.nclient.async.downloader.GalleryDownloaderV2;
+import com.dublikunt.nclient.async.downloader.GalleryDownloader;
 import com.dublikunt.nclient.classes.MultichoiceAdapter;
 import com.dublikunt.nclient.settings.Global;
 import com.dublikunt.nclient.utility.ImageDownloadUtility;
@@ -49,13 +49,13 @@ public class LocalAdapter extends MultichoiceAdapter<Object, LocalAdapter.ViewHo
     private final SparseIntArray statuses = new SparseIntArray();
     private final LocalActivity context;
     private final List<LocalGallery> dataset;
-    private final List<GalleryDownloaderV2> galleryDownloaders;
+    private final List<GalleryDownloader> galleryDownloaders;
     private final Comparator<Object> comparatorByName = (o1, o2) -> {
         if (o1 == o2) return 0;
         boolean b1 = o1 instanceof LocalGallery;
         boolean b2 = o2 instanceof LocalGallery;
-        String s1 = b1 ? ((LocalGallery) o1).getTitle() : ((GalleryDownloaderV2) o1).getTruePathTitle();
-        String s2 = b2 ? ((LocalGallery) o2).getTitle() : ((GalleryDownloaderV2) o2).getTruePathTitle();
+        String s1 = b1 ? ((LocalGallery) o1).getTitle() : ((GalleryDownloader) o1).getTruePathTitle();
+        String s2 = b2 ? ((LocalGallery) o2).getTitle() : ((GalleryDownloader) o2).getTruePathTitle();
         return s1.compareTo(s2);
     };
     private final Comparator<Object> comparatorBySize = (o1, o2) -> {
@@ -81,8 +81,8 @@ public class LocalAdapter extends MultichoiceAdapter<Object, LocalAdapter.ViewHo
             long res = ((LocalGallery) o1).getDirectory().lastModified() - ((LocalGallery) o2).getDirectory().lastModified();
             if (res != 0) return res < 0 ? -1 : 1;
         }
-        String s1 = b1 ? ((LocalGallery) o1).getTitle() : ((GalleryDownloaderV2) o1).getTruePathTitle();
-        String s2 = b2 ? ((LocalGallery) o2).getTitle() : ((GalleryDownloaderV2) o2).getTruePathTitle();
+        String s1 = b1 ? ((LocalGallery) o1).getTitle() : ((GalleryDownloader) o1).getTruePathTitle();
+        String s2 = b2 ? ((LocalGallery) o2).getTitle() : ((GalleryDownloader) o2).getTruePathTitle();
         return s1.compareTo(s2);
     };
 
@@ -90,23 +90,23 @@ public class LocalAdapter extends MultichoiceAdapter<Object, LocalAdapter.ViewHo
     @NonNull
     private String lastQuery;
     private final DownloadObserver observer = new DownloadObserver() {
-        private void updatePosition(GalleryDownloaderV2 downloader) {
+        private void updatePosition(GalleryDownloader downloader) {
             final int id = filter.indexOf(downloader);
             if (id >= 0) context.runOnUiThread(() -> notifyItemChanged(id));
         }
 
         @Override
-        public void triggerStartDownload(GalleryDownloaderV2 downloader) {
+        public void triggerStartDownload(GalleryDownloader downloader) {
             updatePosition(downloader);
         }
 
         @Override
-        public void triggerUpdateProgress(GalleryDownloaderV2 downloader, int reach, int total) {
+        public void triggerUpdateProgress(GalleryDownloader downloader, int reach, int total) {
             updatePosition(downloader);
         }
 
         @Override
-        public void triggerEndDownload(GalleryDownloaderV2 downloader) {
+        public void triggerEndDownload(GalleryDownloader downloader) {
             LocalGallery l = downloader.localGallery();
             galleryDownloaders.remove(downloader);
             if (l != null) {
@@ -119,12 +119,12 @@ public class LocalAdapter extends MultichoiceAdapter<Object, LocalAdapter.ViewHo
         }
 
         @Override
-        public void triggerCancelDownload(GalleryDownloaderV2 downloader) {
+        public void triggerCancelDownload(GalleryDownloader downloader) {
             removeDownloader(downloader);
         }
 
         @Override
-        public void triggerPauseDownload(GalleryDownloaderV2 downloader) {
+        public void triggerPauseDownload(GalleryDownloader downloader) {
             context.runOnUiThread(() -> notifyItemChanged(filter.indexOf(downloader)));
         }
     };
@@ -165,14 +165,14 @@ public class LocalAdapter extends MultichoiceAdapter<Object, LocalAdapter.ViewHo
         return filter.get(position);
     }
 
-    private CopyOnWriteArrayList<Object> createHash(List<GalleryDownloaderV2> galleryDownloaders, List<LocalGallery> dataset) {
+    private CopyOnWriteArrayList<Object> createHash(List<GalleryDownloader> galleryDownloaders, List<LocalGallery> dataset) {
         HashMap<String, Object> hashMap = new HashMap<>(dataset.size() + galleryDownloaders.size());
         for (LocalGallery gall : dataset) {
             if (gall != null && gall.getTitle().toLowerCase(Locale.US).contains(lastQuery))
                 hashMap.put(gall.getTrueTitle(), gall);
         }
 
-        for (GalleryDownloaderV2 gall : galleryDownloaders) {
+        for (GalleryDownloader gall : galleryDownloaders) {
             if (gall != null && gall.getTruePathTitle().toLowerCase(Locale.US).contains(lastQuery))
                 hashMap.put(gall.getTruePathTitle(), gall);
         }
@@ -283,7 +283,7 @@ public class LocalAdapter extends MultichoiceAdapter<Object, LocalAdapter.ViewHo
         context.setIdGalleryPosition(lg.getId());
     }
 
-    private void bindDownload(@NonNull final ViewHolder holder, int position, GalleryDownloaderV2 downloader) {
+    private void bindDownload(@NonNull final ViewHolder holder, int position, GalleryDownloader downloader) {
         int percentage = downloader.getPercentage();
         ImageDownloadUtility.loadImage(context, downloader.getThumbnail(), holder.imgView);
         holder.title.setText(downloader.getTruePathTitle());
@@ -292,15 +292,15 @@ public class LocalAdapter extends MultichoiceAdapter<Object, LocalAdapter.ViewHo
             case PAUSED:
                 holder.playButton.setImageResource(R.drawable.ic_play);
                 holder.playButton.setOnClickListener(v -> {
-                    downloader.setStatus(GalleryDownloaderV2.Status.NOT_STARTED);
-                    DownloadGalleryV2.startWork(context);
+                    downloader.setStatus(GalleryDownloader.Status.NOT_STARTED);
+                    DownloadGallery.startWork(context);
                     notifyItemChanged(position);
                 });
                 break;
             case DOWNLOADING:
                 holder.playButton.setImageResource(R.drawable.ic_pause);
                 holder.playButton.setOnClickListener(v -> {
-                    downloader.setStatus(GalleryDownloaderV2.Status.PAUSED);
+                    downloader.setStatus(GalleryDownloader.Status.PAUSED);
                     notifyItemChanged(position);
                 });
                 break;
@@ -310,14 +310,14 @@ public class LocalAdapter extends MultichoiceAdapter<Object, LocalAdapter.ViewHo
                 break;
         }
         holder.progress.setText(context.getString(R.string.percentage_format, percentage));
-        holder.progress.setVisibility(downloader.getStatus() == GalleryDownloaderV2.Status.NOT_STARTED ? View.GONE : View.VISIBLE);
+        holder.progress.setVisibility(downloader.getStatus() == GalleryDownloader.Status.NOT_STARTED ? View.GONE : View.VISIBLE);
         holder.progressBar.setProgress(percentage);
-        holder.progressBar.setIndeterminate(downloader.getStatus() == GalleryDownloaderV2.Status.NOT_STARTED);
+        holder.progressBar.setIndeterminate(downloader.getStatus() == GalleryDownloader.Status.NOT_STARTED);
         Global.setTint(holder.playButton.getDrawable());
         Global.setTint(holder.cancelButton.getDrawable());
     }
 
-    private void removeDownloader(GalleryDownloaderV2 downloader) {
+    private void removeDownloader(GalleryDownloader downloader) {
         int position = filter.indexOf(downloader);
         if (position < 0) return;
         filter.remove(position);
@@ -338,7 +338,7 @@ public class LocalAdapter extends MultichoiceAdapter<Object, LocalAdapter.ViewHo
         if (filter.get(position) instanceof LocalGallery)
             bindGallery(holder, position, (LocalGallery) filter.get(position));
         else
-            bindDownload(holder, position, (GalleryDownloaderV2) filter.get(position));
+            bindDownload(holder, position, (GalleryDownloader) filter.get(position));
     }
 
     private void showDialogDelete() {
@@ -351,8 +351,8 @@ public class LocalAdapter extends MultichoiceAdapter<Object, LocalAdapter.ViewHo
                 if (o instanceof LocalGallery) {
                     dataset.remove(o);
                     Global.recursiveDelete(((LocalGallery) o).getDirectory());
-                } else if (o instanceof DownloadGalleryV2) {
-                    DownloadQueue.remove((GalleryDownloaderV2) o, true);
+                } else if (o instanceof DownloadGallery) {
+                    DownloadQueue.remove((GalleryDownloader) o, true);
                 }
             }
             context.runOnUiThread(this::notifyDataSetChanged);
@@ -364,7 +364,7 @@ public class LocalAdapter extends MultichoiceAdapter<Object, LocalAdapter.ViewHo
         StringBuilder builder = new StringBuilder();
         for (Object o : getSelected()) {
             if (o instanceof LocalGallery) builder.append(((LocalGallery) o).getTitle());
-            else builder.append(((GalleryDownloaderV2) o).getTruePathTitle());
+            else builder.append(((GalleryDownloader) o).getTruePathTitle());
             builder.append('\n');
         }
         return builder.toString();
@@ -446,19 +446,19 @@ public class LocalAdapter extends MultichoiceAdapter<Object, LocalAdapter.ViewHo
 
     public void startSelected() {
         for (Object o : getSelected()) {
-            if (!(o instanceof GalleryDownloaderV2)) continue;
-            GalleryDownloaderV2 d = (GalleryDownloaderV2) o;
-            if (d.getStatus() == GalleryDownloaderV2.Status.PAUSED)
-                d.setStatus(GalleryDownloaderV2.Status.NOT_STARTED);
+            if (!(o instanceof GalleryDownloader)) continue;
+            GalleryDownloader d = (GalleryDownloader) o;
+            if (d.getStatus() == GalleryDownloader.Status.PAUSED)
+                d.setStatus(GalleryDownloader.Status.NOT_STARTED);
         }
         context.runOnUiThread(this::notifyDataSetChanged);
     }
 
     public void pauseSelected() {
         for (Object o : getSelected()) {
-            if (!(o instanceof GalleryDownloaderV2)) continue;
-            GalleryDownloaderV2 d = (GalleryDownloaderV2) o;
-            d.setStatus(GalleryDownloaderV2.Status.PAUSED);
+            if (!(o instanceof GalleryDownloader)) continue;
+            GalleryDownloader d = (GalleryDownloader) o;
+            d.setStatus(GalleryDownloader.Status.PAUSED);
         }
         context.runOnUiThread(this::notifyDataSetChanged);
     }

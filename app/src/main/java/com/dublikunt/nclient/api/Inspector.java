@@ -41,16 +41,16 @@ import java.util.Set;
 import okhttp3.Request;
 import okhttp3.Response;
 
-public class InspectorV3 extends Thread implements Parcelable {
-    public static final Creator<InspectorV3> CREATOR = new Creator<InspectorV3>() {
+public class Inspector extends Thread implements Parcelable {
+    public static final Creator<Inspector> CREATOR = new Creator<Inspector>() {
         @Override
-        public InspectorV3 createFromParcel(Parcel in) {
-            return new InspectorV3(in);
+        public Inspector createFromParcel(Parcel in) {
+            return new Inspector(in);
         }
 
         @Override
-        public InspectorV3[] newArray(int size) {
-            return new InspectorV3[size];
+        public Inspector[] newArray(int size) {
+            return new Inspector[size];
         }
     };
     private SortType sortType;
@@ -65,7 +65,7 @@ public class InspectorV3 extends Thread implements Parcelable {
     private WeakReference<Context> context;
     private Document htmlDocument;
 
-    protected InspectorV3(Parcel in) {
+    protected Inspector(Parcel in) {
         sortType = SortType.values()[in.readByte()];
         custom = in.readByte() != 0;
         page = in.readInt();
@@ -91,15 +91,15 @@ public class InspectorV3 extends Thread implements Parcelable {
         ranges = in.readParcelable(Ranges.class.getClassLoader());
     }
 
-    private InspectorV3(Context context, InspectorResponse response) {
+    private Inspector(Context context, InspectorResponse response) {
         initialize(context, response);
     }
 
     /**
      * This method will not run, but a WebView inside MainActivity will do it in its place
      */
-    public static InspectorV3 favoriteInspector(Context context, String query, int page, InspectorResponse response) {
-        InspectorV3 inspector = new InspectorV3(context, response);
+    public static Inspector favoriteInspector(Context context, String query, int page, InspectorResponse response) {
+        Inspector inspector = new Inspector(context, response);
         inspector.page = page;
         inspector.pageCount = 0;
         inspector.query = query == null ? "" : query;
@@ -112,26 +112,26 @@ public class InspectorV3 extends Thread implements Parcelable {
     /**
      * @param favorite true if random online favorite, false for general random manga
      */
-    public static InspectorV3 randomInspector(Context context, InspectorResponse response, boolean favorite) {
-        InspectorV3 inspector = new InspectorV3(context, response);
+    public static Inspector randomInspector(Context context, InspectorResponse response, boolean favorite) {
+        Inspector inspector = new Inspector(context, response);
         inspector.requestType = favorite ? ApiRequestType.RANDOM_FAVORITE : ApiRequestType.RANDOM;
         inspector.createUrl();
         return inspector;
     }
 
-    public static InspectorV3 galleryInspector(Context context, int id, InspectorResponse response) {
-        InspectorV3 inspector = new InspectorV3(context, response);
+    public static Inspector galleryInspector(Context context, int id, InspectorResponse response) {
+        Inspector inspector = new Inspector(context, response);
         inspector.id = id;
         inspector.requestType = ApiRequestType.BYSINGLE;
         inspector.createUrl();
         return inspector;
     }
 
-    public static InspectorV3 basicInspector(Context context, int page, InspectorResponse response) {
+    public static Inspector basicInspector(Context context, int page, InspectorResponse response) {
         return searchInspector(context, null, null, page, Global.getSortType(), null, response);
     }
 
-    public static InspectorV3 tagInspector(Context context, Tag tag, int page, SortType sortType, InspectorResponse response) {
+    public static Inspector tagInspector(Context context, Tag tag, int page, SortType sortType, InspectorResponse response) {
         Collection<Tag> tags;
         if (!Global.isOnlyTag()) {
             tags = getDefaultTags();
@@ -142,8 +142,8 @@ public class InspectorV3 extends Thread implements Parcelable {
         return searchInspector(context, null, tags, page, sortType, null, response);
     }
 
-    public static InspectorV3 searchInspector(Context context, String query, Collection<Tag> tags, int page, SortType sortType, @Nullable Ranges ranges, InspectorResponse response) {
-        InspectorV3 inspector = new InspectorV3(context, response);
+    public static Inspector searchInspector(Context context, String query, Collection<Tag> tags, int page, SortType sortType, @Nullable Ranges ranges, InspectorResponse response) {
+        Inspector inspector = new Inspector(context, response);
         inspector.custom = tags != null;
         inspector.tags = inspector.custom ? new HashSet<>(tags) : getDefaultTags();
         inspector.tags.addAll(getLanguageTags(Global.getOnlyLanguage()));
@@ -239,19 +239,19 @@ public class InspectorV3 extends Thread implements Parcelable {
         return response;
     }
 
-    public InspectorV3 cloneInspector(Context context, InspectorResponse response) {
-        InspectorV3 inspectorV3 = new InspectorV3(context, response);
-        inspectorV3.query = query;
-        inspectorV3.url = url;
-        inspectorV3.tags = tags;
-        inspectorV3.requestType = requestType;
-        inspectorV3.sortType = sortType;
-        inspectorV3.pageCount = pageCount;
-        inspectorV3.page = page;
-        inspectorV3.id = id;
-        inspectorV3.custom = custom;
-        inspectorV3.ranges = ranges;
-        return inspectorV3;
+    public Inspector cloneInspector(Context context, InspectorResponse response) {
+        Inspector inspector = new Inspector(context, response);
+        inspector.query = query;
+        inspector.url = url;
+        inspector.tags = tags;
+        inspector.requestType = requestType;
+        inspector.sortType = sortType;
+        inspector.pageCount = pageCount;
+        inspector.page = page;
+        inspector.id = id;
+        inspector.custom = custom;
+        inspector.ranges = ranges;
+        return inspector;
     }
 
     private void tryByAllPopular() {
@@ -458,7 +458,7 @@ public class InspectorV3 extends Thread implements Parcelable {
     }
 
     public interface InspectorResponse {
-        boolean shouldStart(InspectorV3 inspector);
+        boolean shouldStart(Inspector inspector);
 
         void onSuccess(List<GenericGallery> galleries);
 
@@ -477,7 +477,7 @@ public class InspectorV3 extends Thread implements Parcelable {
 
     public static abstract class DefaultInspectorResponse implements InspectorResponse {
         @Override
-        public boolean shouldStart(InspectorV3 inspector) {
+        public boolean shouldStart(Inspector inspector) {
             return true;
         }
 

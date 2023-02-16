@@ -4,7 +4,7 @@ import android.content.Context
 import android.graphics.BitmapFactory
 import android.net.Uri
 import com.dublikunt.nclient.R
-import com.dublikunt.nclient.api.InspectorV3
+import com.dublikunt.nclient.api.Inspector
 import com.dublikunt.nclient.api.components.Gallery
 import com.dublikunt.nclient.api.local.LocalGallery
 import com.dublikunt.nclient.async.database.Queries.DownloadTable.addGallery
@@ -25,7 +25,7 @@ import java.util.concurrent.CopyOnWriteArraySet
 import java.util.regex.Pattern
 import kotlin.math.max
 
-class GalleryDownloaderV2(
+class GalleryDownloader(
     private val context: Context,
     title: String?,
     var thumbnail: Uri?,
@@ -123,7 +123,7 @@ class GalleryDownloaderV2(
      */
     fun downloadGalleryData(): Boolean {
         if (gallery != null) return true
-        val inspector = InspectorV3.galleryInspector(context, id, null)
+        val inspector = Inspector.galleryInspector(context, id, null)
         return try {
             inspector.createDocument()
             inspector.parseDocument()
@@ -289,7 +289,7 @@ class GalleryDownloaderV2(
     override fun equals(o: Any?): Boolean {
         if (this === o) return true
         if (o == null || javaClass != o.javaClass) return false
-        val that = o as GalleryDownloaderV2
+        val that = o as GalleryDownloader
         return if (id != that.id) false else folder == that.folder
     }
 

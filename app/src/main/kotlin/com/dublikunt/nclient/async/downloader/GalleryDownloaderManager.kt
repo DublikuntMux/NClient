@@ -19,12 +19,12 @@ import java.util.*
 
 class GalleryDownloaderManager {
     private val notificationId = NotificationSettings.notificationId
-    private val downloaderV2: GalleryDownloaderV2
+    private val downloaderV2: GalleryDownloader
     private val context: Context
     private var notification: NotificationCompat.Builder? = null
     private var gallery: Gallery? = null
     private val observer: DownloadObserver = object : DownloadObserver {
-        override fun triggerStartDownload(downloader: GalleryDownloaderV2) {
+        override fun triggerStartDownload(downloader: GalleryDownloader) {
             gallery = downloader.gallery
             prepareNotification()
             addActionToNotification(false)
@@ -32,7 +32,7 @@ class GalleryDownloaderManager {
         }
 
         override fun triggerUpdateProgress(
-            downloader: GalleryDownloaderV2?,
+            downloader: GalleryDownloader?,
             reach: Int,
             total: Int
         ) {
@@ -40,19 +40,19 @@ class GalleryDownloaderManager {
             notificationUpdate()
         }
 
-        override fun triggerEndDownload(downloader: GalleryDownloaderV2?) {
+        override fun triggerEndDownload(downloader: GalleryDownloader?) {
             endNotification()
             addClickListener()
             notificationUpdate()
             DownloadQueue.remove(downloader, false)
         }
 
-        override fun triggerCancelDownload(downloader: GalleryDownloaderV2) {
+        override fun triggerCancelDownload(downloader: GalleryDownloader) {
             cancelNotification()
             recursiveDelete(downloader.folder)
         }
 
-        override fun triggerPauseDownload(downloader: GalleryDownloaderV2?) {
+        override fun triggerPauseDownload(downloader: GalleryDownloader?) {
             addActionToNotification(true)
             notificationUpdate()
         }
@@ -61,13 +61,13 @@ class GalleryDownloaderManager {
     constructor(context: Context, gallery: Gallery, start: Int, end: Int) {
         this.context = context
         this.gallery = gallery
-        downloaderV2 = GalleryDownloaderV2(context, gallery, start, end)
+        downloaderV2 = GalleryDownloader(context, gallery, start, end)
         downloaderV2.addObserver(observer)
     }
 
     constructor(context: Context, title: String?, thumbnail: Uri?, id: Int) {
         this.context = context
-        downloaderV2 = GalleryDownloaderV2(context, title, thumbnail, id)
+        downloaderV2 = GalleryDownloader(context, title, thumbnail, id)
         downloaderV2.addObserver(observer)
     }
 
@@ -96,14 +96,14 @@ class GalleryDownloaderManager {
         notification!!.setContentIntent(notifyPendingIntent)
     }
 
-    fun downloader(): GalleryDownloaderV2 {
+    fun downloader(): GalleryDownloader {
         return downloaderV2
     }
 
     private fun endNotification() {
         clearNotificationAction()
         hidePercentage()
-        if (downloaderV2.status != GalleryDownloaderV2.Status.CANCELED) {
+        if (downloaderV2.status != GalleryDownloader.Status.CANCELED) {
             notification!!.setSmallIcon(R.drawable.ic_check)
             notification!!.setContentTitle(
                 String.format(
@@ -154,9 +154,9 @@ class GalleryDownloaderManager {
 
     private fun addActionToNotification(pauseMode: Boolean) {
         clearNotificationAction()
-        val startIntent = Intent(context, DownloadGalleryV2::class.java)
-        val stopIntent = Intent(context, DownloadGalleryV2::class.java)
-        val pauseIntent = Intent(context, DownloadGalleryV2::class.java)
+        val startIntent = Intent(context, DownloadGallery::class.java)
+        val stopIntent = Intent(context, DownloadGallery::class.java)
+        val pauseIntent = Intent(context, DownloadGallery::class.java)
         stopIntent.putExtra(context.packageName + ".ID", downloaderV2.id)
         pauseIntent.putExtra(context.packageName + ".ID", downloaderV2.id)
         startIntent.putExtra(context.packageName + ".ID", downloaderV2.id)
