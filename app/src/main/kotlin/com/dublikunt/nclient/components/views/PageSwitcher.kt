@@ -11,6 +11,7 @@ import androidx.cardview.widget.CardView
 import com.dublikunt.nclient.R
 import com.dublikunt.nclient.settings.DefaultDialogs
 import com.google.android.material.button.MaterialButton
+import com.google.android.material.textfield.TextInputEditText
 import java.util.*
 import kotlin.math.max
 import kotlin.math.min
@@ -19,7 +20,7 @@ class PageSwitcher : CardView {
     private lateinit var master: LinearLayout
     private lateinit var prev: MaterialButton
     private lateinit var next: MaterialButton
-    private lateinit var text: AppCompatEditText
+    private lateinit var text: TextInputEditText
     private lateinit var changer: PageChanger
     private var totalPage = 0
     private var actualPage = 0

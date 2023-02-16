@@ -30,11 +30,11 @@ object DefaultDialogs {
         if (useRtl()) seekBar.rotationY = 180f
         val totalPage = v.findViewById<TextView>(R.id.page)
         val actualPage = v.findViewById<TextInputEditText>(R.id.edit_page)
-        v.findViewById<View>(R.id.prev).setOnClickListener { v12: View? ->
+        v.findViewById<View>(R.id.prev).setOnClickListener {
             seekBar.progress = seekBar.progress - 1
             actualPage.setText(String.format(Locale.US, "%d", seekBar.progress + builder.min))
         }
-        v.findViewById<View>(R.id.next).setOnClickListener { v1: View? ->
+        v.findViewById<View>(R.id.next).setOnClickListener {
             seekBar.progress = seekBar.progress + 1
             actualPage.setText(String.format(Locale.US, "%d", seekBar.progress + builder.min))
         }
@@ -72,13 +72,13 @@ object DefaultDialogs {
             }
         })
         if (builder.dialogs != null) build
-            .setPositiveButton(builder.context.getString(builder.yesbtn)) { dialog: DialogInterface?, id: Int ->
+            .setPositiveButton(builder.context.getString(builder.yesbtn)) { _: DialogInterface?, _: Int ->
                 builder.dialogs!!.positive(
                     seekBar.progress + builder.min
                 )
             }
-            .setNegativeButton(builder.context.getString(builder.nobtn)) { dialog: DialogInterface?, which: Int -> builder.dialogs!!.negative() }
-        if (builder.maybebtn != 0) build.setNeutralButton(builder.context.getString(builder.maybebtn)) { dialog: DialogInterface?, which: Int -> builder.dialogs!!.neutral() }
+            .setNegativeButton(builder.context.getString(builder.nobtn)) { _: DialogInterface?, _: Int -> builder.dialogs!!.negative() }
+        if (builder.maybebtn != 0) build.setNeutralButton(builder.context.getString(builder.maybebtn)) { _: DialogInterface?, _: Int -> builder.dialogs!!.neutral() }
         build.setCancelable(true)
         build.show()
     }

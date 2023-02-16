@@ -26,7 +26,7 @@
         app:iconPadding="0dp"
         app:iconTint="?android:attr/colorForeground" />
 
-    <androidx.appcompat.widget.AppCompatEditText
+    <com.google.android.material.textfield.TextInputEditText
         android:id="@+id/page_index"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
