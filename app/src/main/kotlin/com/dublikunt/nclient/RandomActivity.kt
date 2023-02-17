@@ -25,14 +25,13 @@ class RandomActivity : GeneralActivity() {
     private lateinit var title: TextView
     private lateinit var page: TextView
     private lateinit var censor: View
-    private var loader: RandomLoader? = null
+    private lateinit var loader: RandomLoader
     private var isFavorite = false
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_random)
         loader = RandomLoader(this)
 
-        //init components id
         val toolbar = findViewById<MaterialToolbar>(R.id.toolbar)
         val shuffle = findViewById<FloatingActionButton>(R.id.shuffle)
         val share = findViewById<ImageButton>(R.id.share)
@@ -43,7 +42,6 @@ class RandomActivity : GeneralActivity() {
         title = findViewById(R.id.title)
         page = findViewById(R.id.pages)
 
-        //init toolbar
         setSupportActionBar(toolbar)
         supportActionBar!!.setDisplayHomeAsUpEnabled(true)
         supportActionBar!!.setDisplayShowTitleEnabled(true)

@@ -41,26 +41,26 @@ class PINActivity : GeneralActivity() {
             findViewById<MaterialButton>(R.id.btn9)
         )
         for (i in numbers.indices) {
-            numbers[i].setOnClickListener { v: View? ->
+            numbers[i].setOnClickListener {
                 pin += i
                 applyPinMask()
                 if (pin.length == 4) checkPin()
             }
         }
-        cancelButton.setOnClickListener { v: View? ->
+        cancelButton.setOnClickListener {
             if (pin.isEmpty()) return@setOnClickListener
             pin = pin.substring(0, pin.length - 1)
             applyPinMask()
         }
-        cancelButton.setOnLongClickListener { v: View? ->
+        cancelButton.setOnLongClickListener {
             pin = ""
             applyPinMask()
             true
         }
         val utility = findViewById<MaterialButton>(R.id.utility)
-        utility.setOnClickListener { v: View? ->
+        utility.setOnClickListener {
             if (setMode && isConfirming) {
-                checkPin() //will go in wrong branch
+                checkPin()
             } else {
                 finish()
             }
@@ -92,22 +92,22 @@ class PINActivity : GeneralActivity() {
         get() = preferences!!.getString("pin", null)
 
     private fun checkPin() {
-        if (setMode) { //if password should be set
-            if (!isConfirming) { //now password must be confirmed
+        if (setMode) {
+            if (!isConfirming) {
                 confirmPin = pin
                 pin = ""
                 text.setText(R.string.confirm_pin)
-            } else if (confirmPin == pin) { //password confirmed
+            } else if (confirmPin == pin) {
                 setPin(confirmPin)
                 finish()
-            } else { //wrong confirmed password
+            } else {
                 confirmPin = null
                 text.setText(R.string.insert_pin)
                 pin = ""
             }
-        } else if (pin == truePin) { //right password
+        } else if (pin == truePin) {
             finish()
-        } else { //wrong password
+        } else {
             text.setText(R.string.wrong_pin)
             pin = ""
         }

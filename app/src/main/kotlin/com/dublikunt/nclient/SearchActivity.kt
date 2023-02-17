@@ -59,7 +59,6 @@ class SearchActivity : GeneralActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_search)
-        //init toolbar
         val toolbar = findViewById<MaterialToolbar>(R.id.toolbar)
         setSupportActionBar(toolbar)
         assert(supportActionBar != null)
@@ -87,7 +86,7 @@ class SearchActivity : GeneralActivity() {
             findViewById(R.id.appbar),
             false
         ) as MaterialAutoCompleteTextView
-        autoComplete.setOnEditorActionListener { v: TextView?, actionId: Int, _: KeyEvent? ->
+        autoComplete.setOnEditorActionListener { _: TextView?, actionId: Int, _: KeyEvent? ->
             if (actionId == EditorInfo.IME_ACTION_SEND) {
                 alertDialog.dismiss()
                 createChip()
@@ -165,7 +164,7 @@ class SearchActivity : GeneralActivity() {
         val toPage = pageRangeLayout.findViewById<MaterialButton>(R.id.toButton)
         val fromDate = uploadRangeLayout.findViewById<MaterialButton>(R.id.fromButton)
         val toDate = uploadRangeLayout.findViewById<MaterialButton>(R.id.toButton)
-        fromPage.setOnClickListener { v: View? ->
+        fromPage.setOnClickListener {
             createPageBuilder(
                 R.string.from_page,
                 0,
@@ -188,7 +187,7 @@ class SearchActivity : GeneralActivity() {
                     }
                 })
         }
-        toPage.setOnClickListener { v: View? ->
+        toPage.setOnClickListener {
             createPageBuilder(
                 R.string.to_page,
                 ranges.fromPage,
@@ -207,8 +206,8 @@ class SearchActivity : GeneralActivity() {
                     }
                 })
         }
-        fromDate.setOnClickListener { v: View? -> showUnitDialog(fromDate, true) }
-        toDate.setOnClickListener { v: View? -> showUnitDialog(toDate, false) }
+        fromDate.setOnClickListener { showUnitDialog(fromDate, true) }
+        toDate.setOnClickListener { showUnitDialog(toDate, false) }
     }
 
     private fun showUnitDialog(button: MaterialButton, from: Boolean) {
@@ -332,7 +331,7 @@ class SearchActivity : GeneralActivity() {
         c.isCloseIconVisible = false
         c.setChipIconResource(R.drawable.ic_add)
         c.text = getString(R.string.add)
-        c.setOnClickListener { v: View? -> loadTag(type) }
+        c.setOnClickListener { loadTag(type) }
         Global.setTint(c.chipIcon)
         return c
     }
@@ -396,7 +395,7 @@ class SearchActivity : GeneralActivity() {
         builder.setTitle(R.string.insert_tag_name)
         alertDialog = try {
             builder.show()
-        } catch (e: IllegalStateException) { //the autoComplete is still attached to another View
+        } catch (e: IllegalStateException) {
             (autoComplete.parent as ViewGroup).removeView(autoComplete)
             builder.show()
         }
@@ -408,10 +407,10 @@ class SearchActivity : GeneralActivity() {
         if (tag == null) tag = Tag(name, 0, customId++, loadedTag, TagStatus.ACCEPTED)
         LogUtility.download("CREATED WITH ID: " + tag.id)
         if (tagAlreadyExist(tag)) return
-        //remove add, insert new tag, reinsert add
-        if (getGroup(loadedTag) != null) getGroup(loadedTag)!!.removeView(addChip[loadedTag!!.id.toInt()])
+
+        if (getGroup(loadedTag) != null) getGroup(loadedTag)!!.removeView(addChip[loadedTag.id.toInt()])
         addChipTag(tag, close = true, canBeAvoided = true)
-        getGroup(loadedTag)!!.addView(addChip[loadedTag!!.id.toInt()])
+        getGroup(loadedTag)!!.addView(addChip[loadedTag.id.toInt()])
         inputMethodManager!!.hideSoftInputFromWindow(
             searchView.windowToken,
             InputMethodManager.SHOW_IMPLICIT

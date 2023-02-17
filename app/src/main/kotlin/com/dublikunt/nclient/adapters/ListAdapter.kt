@@ -27,8 +27,8 @@ import java.util.*
 class ListAdapter(private val context: BaseActivity) :
     RecyclerView.Adapter<GenericAdapter.ViewHolder>() {
     private val statuses = SparseIntArray()
-    private val mDataset: MutableList<SimpleGallery?>?
-    private val queryString: String?
+    private val mDataset: MutableList<SimpleGallery>
+    private val queryString: String
 
     init {
         mDataset = ArrayList()
@@ -53,8 +53,8 @@ class ListAdapter(private val context: BaseActivity) :
 
     override fun onBindViewHolder(holder: GenericAdapter.ViewHolder, position: Int) {
         val holderPos = holder.bindingAdapterPosition
-        if (holderPos >= mDataset!!.size) return
-        val ent = mDataset[holderPos] ?: return
+        if (holderPos >= mDataset.size) return
+        val ent = mDataset[holderPos]
         if (!Global.showTitles()) {
             holder.title.alpha = 0f
             holder.flag.alpha = 0f
@@ -70,7 +70,7 @@ class ListAdapter(private val context: BaseActivity) :
             card.layoutParams = params
         }
         holder.overlay.visibility =
-            if (queryString != null && ent.hasIgnoredTags(queryString)) View.VISIBLE else View.GONE
+            if (ent.hasIgnoredTags(queryString)) View.VISIBLE else View.GONE
         loadGallery(holder, ent)
         holder.pages.visibility = View.GONE
         holder.title.text = ent.title
@@ -88,7 +88,7 @@ class ListAdapter(private val context: BaseActivity) :
             if (context is MainActivity) context.setIdOpenedGallery(ent.id)
             downloadGallery(ent)
             holder.overlay.visibility =
-                if (queryString != null && ent.hasIgnoredTags(queryString)) View.VISIBLE else View.GONE
+                if (ent.hasIgnoredTags(queryString)) View.VISIBLE else View.GONE
         }
         holder.overlay.setOnClickListener { holder.overlay.visibility = View.GONE }
         holder.layout.setOnLongClickListener {
@@ -112,8 +112,8 @@ class ListAdapter(private val context: BaseActivity) :
         if (id < 0) return
         var position = -1
         statuses.put(id, Queries.StatusMangaTable.getStatus(id).color)
-        for (i in mDataset!!.indices) {
-            if (mDataset[i] != null && mDataset[i]!!.id == id) {
+        for (i in mDataset.indices) {
+            if (mDataset[i].id == id) {
                 position = id
                 break
             }
@@ -165,11 +165,11 @@ class ListAdapter(private val context: BaseActivity) :
     }
 
     override fun getItemCount(): Int {
-        return mDataset?.size ?: 0
+        return mDataset.size
     }
 
     fun addGalleries(galleries: List<GenericGallery>) {
-        val c = mDataset!!.size
+        val c = mDataset.size
         for (g in galleries) {
             mDataset.add(g as SimpleGallery)
             download("Simple: $g")
@@ -188,8 +188,8 @@ class ListAdapter(private val context: BaseActivity) :
     }
 
     fun restartDataset(galleries: List<GenericGallery?>) {
-        mDataset!!.clear()
-        for (g in galleries) if (g is SimpleGallery) mDataset.add(g as SimpleGallery?)
+        mDataset.clear()
+        for (g in galleries) if (g is SimpleGallery) mDataset.add(g)
         context.runOnUiThread { notifyDataSetChanged() }
     }
 

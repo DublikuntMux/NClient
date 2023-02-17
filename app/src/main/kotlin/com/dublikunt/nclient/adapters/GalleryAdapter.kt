@@ -53,7 +53,7 @@ class GalleryAdapter(
     private val angles = SparseIntArray()
     var directory: GalleryFolder? = null
     private var maxImageSize: Size? = null
-    private var policy: Policy? = null
+    private lateinit var policy: Policy
     private var colCount = 0
 
     init {

@@ -11,13 +11,13 @@ import androidx.recyclerview.widget.RecyclerView
 import com.dublikunt.nclient.R
 import com.dublikunt.nclient.api.components.GenericGallery
 
-abstract class GenericAdapter<T : GenericGallery?> internal constructor(val dataset: List<T>) :
+abstract class GenericAdapter<T : GenericGallery> internal constructor(val dataset: List<T>) :
     RecyclerView.Adapter<GenericAdapter.ViewHolder>(), Filterable {
     var filter: List<T>
     var lastQuery = ""
 
     init {
-        dataset.sortedBy { obj: T -> obj!!.title }
+        dataset.sortedBy { obj: T -> obj.title }
         filter = ArrayList(dataset)
     }
 
@@ -63,22 +63,11 @@ abstract class GenericAdapter<T : GenericGallery?> internal constructor(val data
     }
 
     class ViewHolder(v: View) : RecyclerView.ViewHolder(v) {
-        @JvmField
         val imgView: ImageView
-
-        @JvmField
         val overlay: View
-
-        @JvmField
         val title: TextView
-
-        @JvmField
         val pages: TextView
-
-        @JvmField
         val flag: TextView
-
-        @JvmField
         val layout: View
 
         init {

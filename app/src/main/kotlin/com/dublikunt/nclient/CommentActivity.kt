@@ -26,7 +26,7 @@ import java.io.StringWriter
 import java.util.*
 
 class CommentActivity : BaseActivity() {
-    private var adapter: CommentAdapter? = null
+    private lateinit var adapter: CommentAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -81,7 +81,7 @@ class CommentActivity : BaseActivity() {
                         }
                     }
                     reader.close()
-                    if (comment != null && adapter != null) adapter!!.addComment(comment)
+                    if (comment != null) adapter.addComment(comment)
                 }
             }).setMethod("POST", body).start()
         }
@@ -91,7 +91,7 @@ class CommentActivity : BaseActivity() {
         CommentsFetcher(this@CommentActivity, id).start()
     }
 
-    fun setAdapter(adapter: CommentAdapter?) {
+    fun setAdapter(adapter: CommentAdapter) {
         this.adapter = adapter
     }
 

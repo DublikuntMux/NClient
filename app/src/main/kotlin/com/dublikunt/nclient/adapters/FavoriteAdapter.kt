@@ -21,6 +21,7 @@ import com.dublikunt.nclient.utility.LogUtility.error
 import com.dublikunt.nclient.utility.Utility
 import java.io.IOException
 import java.util.*
+import kotlin.math.min
 
 class FavoriteAdapter(private val activity: FavoriteActivity) :
     RecyclerView.Adapter<GenericAdapter.ViewHolder>(), Filterable {
@@ -147,12 +148,11 @@ class FavoriteAdapter(private val activity: FavoriteActivity) :
                 val oldSize = itemCount
                 val newSize = results.count
                 updateCursor(results.values as Cursor)
-                //not in runOnUIThread because is always executed on UI
                 if (oldSize > newSize) notifyItemRangeRemoved(
                     newSize,
                     oldSize - newSize
                 ) else notifyItemRangeInserted(oldSize, newSize - oldSize)
-                notifyItemRangeChanged(0, Math.min(newSize, oldSize))
+                notifyItemRangeChanged(0, min(newSize, oldSize))
                 setRefresh(false)
             }
         }

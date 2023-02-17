@@ -27,9 +27,9 @@ import java.io.File
 
 class SettingsActivity : GeneralActivity() {
     lateinit var fragment: GeneralPreferenceFragment
-    private var IMPORT_ZIP: ActivityResultLauncher<String>? = null
-    private var SAVE_SETTINGS: ActivityResultLauncher<String>? = null
-    private var REQUEST_STORAGE_MANAGER: ActivityResultLauncher<Any?>? = null
+    private lateinit var IMPORT_ZIP: ActivityResultLauncher<String>
+    private lateinit var SAVE_SETTINGS: ActivityResultLauncher<String>
+    private lateinit var REQUEST_STORAGE_MANAGER: ActivityResultLauncher<Any?>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -106,15 +106,12 @@ class SettingsActivity : GeneralActivity() {
     }
 
     fun importSettings() {
-        IMPORT_ZIP!!.launch("application/zip")
+        IMPORT_ZIP.launch("application/zip")
     }
 
     fun exportSettings() {
         val name = Exporter.defaultExportName(this)
-        if (SAVE_SETTINGS != null) SAVE_SETTINGS!!.launch(name) else {
-            val f = File(Global.BACKUPFOLDER, name)
-            exportSettings(Uri.fromFile(f))
-        }
+        SAVE_SETTINGS.launch(name)
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -127,16 +124,12 @@ class SettingsActivity : GeneralActivity() {
 
     @TargetApi(Build.VERSION_CODES.R)
     fun requestStorageManager() {
-        if (REQUEST_STORAGE_MANAGER == null) {
-            Toast.makeText(this, R.string.failed, Toast.LENGTH_SHORT).show()
-            return
-        }
         val builder = MaterialAlertDialogBuilder(this)
         builder.setIcon(R.drawable.ic_file)
         builder.setTitle(R.string.requesting_storage_access)
         builder.setMessage(R.string.request_storage_manager_summary)
         builder.setPositiveButton(R.string.ok) { _: DialogInterface?, _: Int ->
-            REQUEST_STORAGE_MANAGER!!.launch(
+            REQUEST_STORAGE_MANAGER.launch(
                 null
             )
         }

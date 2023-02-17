@@ -29,12 +29,18 @@ public class CommentsFetcher extends Thread {
         this.commentActivity = commentActivity;
     }
 
+    /**
+    * Runs the task. Populates comments and posts results to #postResult (). Subclasses should override this
+    */
     @Override
     public void run() {
         populateComments();
         postResult();
     }
 
+    /**
+    * Post the result of the comment. This is called when the user clicks on the result button or when the result is completed
+    */
     private void postResult() {
         CommentAdapter commentAdapter = new CommentAdapter(commentActivity, comments, id);
         commentActivity.setAdapter(commentAdapter);
@@ -44,14 +50,19 @@ public class CommentsFetcher extends Thread {
         });
     }
 
+    /**
+    * Populates the comments list with comments that belong to this comment. This is done by calling the comment API
+    */
     private void populateComments() {
         String url = String.format(Locale.US, COMMENT_API_URL, id);
         try {
             Response response = Global.getClient().newCall(new Request.Builder().url(url).build()).execute();
             ResponseBody body = response.body();
             JsonReader reader = new JsonReader(new InputStreamReader(body.byteStream()));
+            // Read a comment from the reader.
             if (reader.peek() == JsonToken.BEGIN_ARRAY) {
                 reader.beginArray();
+                // Add a new comment to the comments list.
                 while (reader.hasNext())
                     comments.add(new Comment(reader));
             }

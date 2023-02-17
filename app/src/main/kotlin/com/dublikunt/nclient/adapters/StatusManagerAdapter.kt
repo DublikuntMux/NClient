@@ -78,7 +78,7 @@ class StatusManagerAdapter(activity: AppCompatActivity) :
         val color = status?.opaqueColor() ?: (Utility.RANDOM.nextInt() or -0x1000000)
         newColor = color
         btnColor.setBackgroundColor(color)
-        name.setText(if (status == null) "" else status.name)
+        name.setText(status?.name ?: "")
         btnColor.setOnClickListener {
             ColorPickerDialog.Builder(activity)
                 .setTitle(R.string.сolor_selection)

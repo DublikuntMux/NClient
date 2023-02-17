@@ -69,14 +69,13 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
         }
     }
 
-    //views
     lateinit var loginItem: MenuItem
     private lateinit var onlineFavoriteManager: MenuItem
     private var failCount = 0
     private lateinit var inspector: Inspector
     private lateinit var navigationView: NavigationView
     private var modeType = ModeType.UNKNOWN
-    private var idOpenedGallery = -1 //Position in the recycler of the opened gallery
+    private var idOpenedGallery = -1
     private var inspecting = false
     private var filteringTag = false
     private lateinit var temporaryType: SortType
@@ -201,9 +200,6 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
         }
     }
 
-    /**
-     * Check if the last gallery has been shown
-     */
     private fun lastGalleryReached(manager: CustomGridLayoutManager?): Boolean {
         return manager!!.findLastVisibleItemPosition() >= recycler.adapter!!.itemCount - 1 - manager.spanCount
     }
@@ -240,7 +236,6 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
     }
 
     private fun hideError() {
-        //errorText.setVisibility(View.GONE);
         if (snackbar != null && snackbar!!.isShown) snackbar!!.dismiss()
         snackbar = null
     }

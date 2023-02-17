@@ -251,10 +251,6 @@ public class LocalAdapter extends MultichoiceAdapter<Object, LocalAdapter.ViewHo
             else holder.layout.performClick();
         });
 
-        /*holder.layout.setOnLongClickListener(v -> {
-            createContextualMenu(position);
-            return true;
-        });*/
         int statusColor = statuses.get(ent.getId(), 0);
         if (statusColor == 0) {
             statusColor = Queries.StatusMangaTable.getStatus(ent.getId()).color;

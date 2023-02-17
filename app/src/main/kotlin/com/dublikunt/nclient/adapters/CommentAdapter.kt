@@ -50,7 +50,7 @@ class CommentAdapter(
     override fun onBindViewHolder(holder: ViewHolder, pos: Int) {
         val position = holder.bindingAdapterPosition
         val c = comments[position]
-        holder.layout.setOnClickListener { v1: View? ->
+        holder.layout.setOnClickListener {
             context.runOnUiThread {
                 holder.body.maxLines = if (holder.body.maxLines == 7) 999 else 7
             }
@@ -59,7 +59,7 @@ class CommentAdapter(
         holder.user.text = c.username
         holder.body.text = c.comment
         holder.date.text = format.format(c.postDate)
-        holder.close.setOnClickListener { v: View? ->
+        holder.close.setOnClickListener {
             val refererUrl = String.format(Locale.US, Utility.getBaseUrl() + "g/%d/", galleryId)
             val submitUrl =
                 String.format(Locale.US, Utility.getBaseUrl() + "api/comments/%d/delete", c.id)
