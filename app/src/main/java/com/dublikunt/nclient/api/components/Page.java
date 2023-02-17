@@ -5,8 +5,8 @@ import android.os.Parcelable;
 import android.util.JsonReader;
 import android.util.JsonToken;
 
-import com.dublikunt.nclient.api.enums.ImageExt;
-import com.dublikunt.nclient.api.enums.ImageType;
+import com.dublikunt.nclient.enums.ImageExt;
+import com.dublikunt.nclient.enums.ImageType;
 import com.dublikunt.nclient.classes.Size;
 
 import java.io.IOException;

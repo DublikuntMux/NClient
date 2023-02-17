@@ -1,4 +1,4 @@
-package com.dublikunt.nclient.api.enums
+package com.dublikunt.nclient.enums
 
 object SpecialTagIds {
     const val LANGUAGE_JAPANESE: Short = 6346

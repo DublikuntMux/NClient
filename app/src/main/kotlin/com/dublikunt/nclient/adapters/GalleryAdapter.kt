@@ -21,9 +21,9 @@ import com.dublikunt.nclient.ZoomActivity
 import com.dublikunt.nclient.api.components.Gallery
 import com.dublikunt.nclient.api.components.GalleryData
 import com.dublikunt.nclient.api.components.GenericGallery
-import com.dublikunt.nclient.api.enums.SpecialTagIds
-import com.dublikunt.nclient.api.enums.TagType
-import com.dublikunt.nclient.api.local.LocalGallery
+import com.dublikunt.nclient.enums.SpecialTagIds
+import com.dublikunt.nclient.enums.TagType
+import com.dublikunt.nclient.api.LocalGallery
 import com.dublikunt.nclient.async.database.Queries
 import com.dublikunt.nclient.classes.Size
 import com.dublikunt.nclient.components.photoview.OnMatrixChangedListener

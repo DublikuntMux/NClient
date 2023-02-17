@@ -5,7 +5,7 @@ import android.os.Parcelable;
 
 import androidx.annotation.NonNull;
 
-import com.dublikunt.nclient.api.enums.TagType;
+import com.dublikunt.nclient.enums.TagType;
 
 import java.util.ArrayList;
 import java.util.Collection;

@@ -1,4 +1,4 @@
-package com.dublikunt.nclient.api.local
+package com.dublikunt.nclient.api
 
 class LocalSortType {
     @JvmField

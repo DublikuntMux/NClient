@@ -5,8 +5,8 @@ import android.content.Intent
 import android.util.JsonReader
 import androidx.core.app.JobIntentService
 import com.dublikunt.nclient.api.components.Tag
-import com.dublikunt.nclient.api.enums.TagStatus
-import com.dublikunt.nclient.api.enums.TagType
+import com.dublikunt.nclient.enums.TagStatus
+import com.dublikunt.nclient.enums.TagType
 import com.dublikunt.nclient.async.database.Queries.TagTable.allFiltered
 import com.dublikunt.nclient.async.database.Queries.TagTable.insertScrape
 import com.dublikunt.nclient.async.database.Queries.TagTable.updateStatus

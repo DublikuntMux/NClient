@@ -11,7 +11,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.dublikunt.nclient.R
 import com.dublikunt.nclient.TagFilterActivity
 import com.dublikunt.nclient.adapters.TagsAdapter
-import com.dublikunt.nclient.api.enums.TagType
+import com.dublikunt.nclient.enums.TagType
 import com.dublikunt.nclient.async.ScrapeTags
 import com.dublikunt.nclient.settings.Global
 import com.dublikunt.nclient.settings.Tags

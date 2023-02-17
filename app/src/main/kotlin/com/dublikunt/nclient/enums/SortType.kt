@@ -1,4 +1,4 @@
-package com.dublikunt.nclient.api.enums
+package com.dublikunt.nclient.enums
 
 import com.dublikunt.nclient.R
 

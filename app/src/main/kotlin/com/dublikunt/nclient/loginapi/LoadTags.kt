@@ -3,7 +3,7 @@ package com.dublikunt.nclient.loginapi
 import android.util.JsonReader
 import com.dublikunt.nclient.adapters.TagsAdapter
 import com.dublikunt.nclient.api.components.Tag
-import com.dublikunt.nclient.api.enums.TagType
+import com.dublikunt.nclient.enums.TagType
 import com.dublikunt.nclient.settings.Global
 import com.dublikunt.nclient.settings.Login
 import com.dublikunt.nclient.utility.LogUtility.download

@@ -5,7 +5,7 @@ import android.util.AttributeSet
 import androidx.core.content.ContextCompat
 import com.dublikunt.nclient.R
 import com.dublikunt.nclient.api.components.Tag
-import com.dublikunt.nclient.api.enums.TagStatus
+import com.dublikunt.nclient.enums.TagStatus
 import com.dublikunt.nclient.settings.Global
 import com.google.android.material.chip.Chip
 

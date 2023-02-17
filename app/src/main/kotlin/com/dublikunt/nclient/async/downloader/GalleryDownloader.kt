@@ -6,7 +6,7 @@ import android.net.Uri
 import com.dublikunt.nclient.R
 import com.dublikunt.nclient.api.Inspector
 import com.dublikunt.nclient.api.components.Gallery
-import com.dublikunt.nclient.api.local.LocalGallery
+import com.dublikunt.nclient.api.LocalGallery
 import com.dublikunt.nclient.async.database.Queries.DownloadTable.addGallery
 import com.dublikunt.nclient.async.database.Queries.DownloadTable.removeGallery
 import com.dublikunt.nclient.settings.Global

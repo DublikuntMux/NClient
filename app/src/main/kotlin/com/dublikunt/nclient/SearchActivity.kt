@@ -16,10 +16,10 @@ import androidx.recyclerview.widget.RecyclerView
 import com.dublikunt.nclient.adapters.HistoryAdapter
 import com.dublikunt.nclient.api.components.Ranges
 import com.dublikunt.nclient.api.components.Tag
-import com.dublikunt.nclient.api.enums.Language
-import com.dublikunt.nclient.api.enums.SpecialTagIds
-import com.dublikunt.nclient.api.enums.TagStatus
-import com.dublikunt.nclient.api.enums.TagType
+import com.dublikunt.nclient.enums.Language
+import com.dublikunt.nclient.enums.SpecialTagIds
+import com.dublikunt.nclient.enums.TagStatus
+import com.dublikunt.nclient.enums.TagType
 import com.dublikunt.nclient.async.database.Queries
 import com.dublikunt.nclient.components.activities.GeneralActivity
 import com.dublikunt.nclient.components.widgets.ChipTag

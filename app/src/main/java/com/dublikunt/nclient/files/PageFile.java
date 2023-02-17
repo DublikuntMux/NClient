@@ -8,7 +8,7 @@ import android.os.Parcelable;
 import androidx.annotation.Nullable;
 
 import com.dublikunt.nclient.api.components.Page;
-import com.dublikunt.nclient.api.enums.ImageExt;
+import com.dublikunt.nclient.enums.ImageExt;
 import com.dublikunt.nclient.settings.Global;
 
 import java.io.File;

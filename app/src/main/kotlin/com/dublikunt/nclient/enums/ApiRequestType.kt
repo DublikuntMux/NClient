@@ -1,4 +1,4 @@
-package com.dublikunt.nclient.api.enums
+package com.dublikunt.nclient.enums
 
 class ApiRequestType private constructor(id: Int, single: Boolean) {
     private val id: Byte

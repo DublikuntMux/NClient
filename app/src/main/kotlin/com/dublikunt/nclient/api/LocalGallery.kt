@@ -1,4 +1,4 @@
-package com.dublikunt.nclient.api.local
+package com.dublikunt.nclient.api
 
 import android.graphics.BitmapFactory
 import android.os.Parcel
@@ -6,7 +6,7 @@ import android.os.Parcelable.Creator
 import android.util.JsonReader
 import com.dublikunt.nclient.api.components.GalleryData
 import com.dublikunt.nclient.api.components.GenericGallery
-import com.dublikunt.nclient.api.enums.SpecialTagIds
+import com.dublikunt.nclient.enums.SpecialTagIds
 import com.dublikunt.nclient.classes.Size
 import com.dublikunt.nclient.files.GalleryFolder
 import com.dublikunt.nclient.utility.LogUtility.download

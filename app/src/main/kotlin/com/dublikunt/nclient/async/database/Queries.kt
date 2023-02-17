@@ -8,10 +8,10 @@ import android.database.sqlite.SQLiteDatabase
 import com.dublikunt.nclient.api.Inspector
 import com.dublikunt.nclient.api.SimpleGallery
 import com.dublikunt.nclient.api.components.*
-import com.dublikunt.nclient.api.enums.ApiRequestType
-import com.dublikunt.nclient.api.enums.TagStatus
-import com.dublikunt.nclient.api.enums.TagType
-import com.dublikunt.nclient.api.enums.TitleType
+import com.dublikunt.nclient.enums.ApiRequestType
+import com.dublikunt.nclient.enums.TagStatus
+import com.dublikunt.nclient.enums.TagType
+import com.dublikunt.nclient.enums.TitleType
 import com.dublikunt.nclient.async.downloader.GalleryDownloaderManager
 import com.dublikunt.nclient.async.downloader.GalleryDownloader
 import com.dublikunt.nclient.classes.Bookmark

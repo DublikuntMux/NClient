@@ -21,7 +21,6 @@
         android:layout_marginStart="8dp"
         android:layout_marginBottom="24dp"
         android:clickable="true"
-        android:contentDescription="get random"
         android:focusable="true"
         app:fabSize="normal"
         app:layout_constraintBottom_toBottomOf="parent"

@@ -1,4 +1,4 @@
-package com.dublikunt.nclient.api.enums
+package com.dublikunt.nclient.enums
 
 enum class ImageExt(name: String) {
     JPG("jpg"), PNG("png"), GIF("gif");

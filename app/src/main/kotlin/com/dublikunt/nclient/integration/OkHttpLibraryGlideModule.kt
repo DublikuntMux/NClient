@@ -9,6 +9,8 @@ import com.bumptech.glide.load.engine.cache.LruResourceCache
 import com.bumptech.glide.load.engine.cache.MemorySizeCalculator
 import com.bumptech.glide.load.model.GlideUrl
 import com.bumptech.glide.module.AppGlideModule
+import com.github.piasy.biv.BigImageViewer
+import com.github.piasy.biv.loader.glide.GlideImageLoader
 import java.io.InputStream
 
 
@@ -21,6 +23,7 @@ class OkHttpLibraryGlideModule : AppGlideModule() {
             GlideUrl::class.java,
             InputStream::class.java, OkHttpUrlLoader.Factory()
         )
+        BigImageViewer.initialize(GlideImageLoader.with(context))
     }
 
     override fun isManifestParsingEnabled(): Boolean {

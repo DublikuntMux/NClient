@@ -1,4 +1,4 @@
-package com.dublikunt.nclient.api.local
+package com.dublikunt.nclient.api
 
 import com.dublikunt.nclient.LocalActivity
 import com.dublikunt.nclient.adapters.LocalAdapter

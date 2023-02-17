@@ -5,8 +5,8 @@ import android.net.Uri
 import com.dublikunt.nclient.api.Inspector
 import com.dublikunt.nclient.api.Inspector.InspectorResponse
 import com.dublikunt.nclient.api.components.Tag
-import com.dublikunt.nclient.api.enums.*
 import com.dublikunt.nclient.async.database.Queries
+import com.dublikunt.nclient.enums.*
 
 class Bookmark(url: String, page: Int, requestType: ApiRequestType, tag: Int) {
     val url: String

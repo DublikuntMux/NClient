@@ -7,8 +7,8 @@ import android.util.JsonReader;
 import android.util.JsonToken;
 import android.util.JsonWriter;
 
-import com.dublikunt.nclient.api.enums.TagStatus;
-import com.dublikunt.nclient.api.enums.TagType;
+import com.dublikunt.nclient.enums.TagStatus;
+import com.dublikunt.nclient.enums.TagType;
 import com.dublikunt.nclient.utility.LogUtility;
 
 import java.io.IOException;

@@ -25,10 +25,10 @@ import androidx.recyclerview.widget.RecyclerView
 import com.dublikunt.nclient.CopyToClipboardActivity
 import com.dublikunt.nclient.R
 import com.dublikunt.nclient.api.components.GenericGallery
-import com.dublikunt.nclient.api.enums.Language
-import com.dublikunt.nclient.api.enums.SortType
-import com.dublikunt.nclient.api.enums.TitleType
-import com.dublikunt.nclient.api.local.LocalSortType
+import com.dublikunt.nclient.enums.Language
+import com.dublikunt.nclient.enums.SortType
+import com.dublikunt.nclient.enums.TitleType
+import com.dublikunt.nclient.api.LocalSortType
 import com.dublikunt.nclient.components.CustomCookieJar
 import com.dublikunt.nclient.utility.LogUtility.download
 import com.dublikunt.nclient.utility.LogUtility.error

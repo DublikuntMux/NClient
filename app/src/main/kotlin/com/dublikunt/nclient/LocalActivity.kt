@@ -11,9 +11,9 @@ import android.widget.ArrayAdapter
 import android.widget.LinearLayout
 import androidx.appcompat.widget.SearchView
 import com.dublikunt.nclient.adapters.LocalAdapter
-import com.dublikunt.nclient.api.local.FakeInspector
-import com.dublikunt.nclient.api.local.LocalGallery
-import com.dublikunt.nclient.api.local.LocalSortType
+import com.dublikunt.nclient.api.FakeInspector
+import com.dublikunt.nclient.api.LocalGallery
+import com.dublikunt.nclient.api.LocalSortType
 import com.dublikunt.nclient.async.converters.CreatePDF
 import com.dublikunt.nclient.async.downloader.GalleryDownloader
 import com.dublikunt.nclient.classes.MultichoiceAdapter

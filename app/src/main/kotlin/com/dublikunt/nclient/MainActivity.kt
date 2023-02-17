@@ -27,13 +27,13 @@ import com.dublikunt.nclient.api.components.Gallery
 import com.dublikunt.nclient.api.components.GenericGallery
 import com.dublikunt.nclient.api.components.Ranges
 import com.dublikunt.nclient.api.components.Tag
-import com.dublikunt.nclient.api.enums.*
 import com.dublikunt.nclient.async.database.Queries
 import com.dublikunt.nclient.async.downloader.DownloadGallery
 import com.dublikunt.nclient.components.GlideX
 import com.dublikunt.nclient.components.activities.BaseActivity
 import com.dublikunt.nclient.components.views.PageSwitcher
 import com.dublikunt.nclient.components.widgets.CustomGridLayoutManager
+import com.dublikunt.nclient.enums.*
 import com.dublikunt.nclient.settings.Global
 import com.dublikunt.nclient.settings.Global.ThemeScheme
 import com.dublikunt.nclient.settings.Login

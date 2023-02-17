@@ -9,7 +9,7 @@ import androidx.core.app.JobIntentService
 import androidx.core.app.NotificationCompat
 import androidx.core.content.FileProvider
 import com.dublikunt.nclient.R
-import com.dublikunt.nclient.api.local.LocalGallery
+import com.dublikunt.nclient.api.LocalGallery
 import com.dublikunt.nclient.settings.Global
 import com.dublikunt.nclient.settings.NotificationSettings.Companion.notificationId
 import com.dublikunt.nclient.settings.NotificationSettings.Companion.notify

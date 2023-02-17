@@ -11,12 +11,12 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.dublikunt.nclient.api.SimpleGallery;
-import com.dublikunt.nclient.api.enums.ImageExt;
-import com.dublikunt.nclient.api.enums.Language;
-import com.dublikunt.nclient.api.enums.SpecialTagIds;
-import com.dublikunt.nclient.api.enums.TagStatus;
-import com.dublikunt.nclient.api.enums.TagType;
-import com.dublikunt.nclient.api.enums.TitleType;
+import com.dublikunt.nclient.enums.ImageExt;
+import com.dublikunt.nclient.enums.Language;
+import com.dublikunt.nclient.enums.SpecialTagIds;
+import com.dublikunt.nclient.enums.TagStatus;
+import com.dublikunt.nclient.enums.TagType;
+import com.dublikunt.nclient.enums.TitleType;
 import com.dublikunt.nclient.async.database.Queries;
 import com.dublikunt.nclient.classes.Size;
 import com.dublikunt.nclient.files.GalleryFolder;

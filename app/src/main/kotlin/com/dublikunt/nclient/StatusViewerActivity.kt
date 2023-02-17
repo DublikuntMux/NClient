@@ -5,7 +5,6 @@ import android.view.Menu
 import android.view.MenuItem
 import androidx.appcompat.widget.SearchView
 import androidx.viewpager2.widget.ViewPager2
-import androidx.viewpager2.widget.ViewPager2.OnPageChangeCallback
 import com.dublikunt.nclient.components.activities.GeneralActivity
 import com.dublikunt.nclient.settings.Global
 import com.dublikunt.nclient.ui.main.PlaceholderFragment
@@ -32,12 +31,6 @@ class StatusViewerActivity : GeneralActivity() {
         viewPager = findViewById(R.id.view_pager)
         sectionsPagerAdapter = SectionsPagerAdapter(this)
         viewPager.adapter = sectionsPagerAdapter
-        viewPager.registerOnPageChangeCallback(object : OnPageChangeCallback() {
-            override fun onPageSelected(position: Int) {
-                val fragment = getPositionFragment(position)
-                fragment?.reload(query, sortByTitle)
-            }
-        })
         val tabs = findViewById<TabLayout>(R.id.tabs)
         TabLayoutMediator(
             tabs,
