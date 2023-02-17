@@ -8,8 +8,6 @@ import com.dublikunt.nclient.settings.Database
 import com.dublikunt.nclient.settings.Global
 import com.dublikunt.nclient.settings.Tags
 import com.dublikunt.nclient.utility.NetworkUtil
-import com.github.piasy.biv.BigImageViewer
-import com.github.piasy.biv.loader.glide.GlideImageLoader
 import com.google.android.material.color.DynamicColors
 
 class MainApplication : Application() {

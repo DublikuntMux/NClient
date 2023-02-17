@@ -157,8 +157,7 @@ class GalleryActivity : BaseActivity() {
             getString(R.string.resume_from_page, page),
             Snackbar.LENGTH_LONG
         )
-        //Should be already compensated
-        snack.setAction(R.string.resume) { v: View? ->
+        snack.setAction(R.string.resume) {
             Thread(Runnable {
                 runOnUiThread { recycler.scrollToPosition(page) }
                 if (Global.columnCount != 1) return@Runnable
@@ -175,7 +174,7 @@ class GalleryActivity : BaseActivity() {
         val actionBar = supportActionBar
         val title = gallery.title
         if (collapsing == null || actionBar == null) return
-        val listener = OnLongClickListener { v: View? ->
+        val listener = OnLongClickListener {
             copyTextToClipboard(this@GalleryActivity, title)
             runOnUiThread {
                 Toast.makeText(
@@ -372,7 +371,7 @@ class GalleryActivity : BaseActivity() {
             newStatusColor = Utility.RANDOM.nextInt() or -0x1000000
         } while (newStatusColor == Color.BLACK || newStatusColor == Color.WHITE)
         btnColor.setBackgroundColor(newStatusColor)
-        btnColor.setOnClickListener { v: View? ->
+        btnColor.setOnClickListener {
             ColorPickerDialog.Builder(this)
                 .setTitle(R.string.сolor_selection)
                 .setPositiveButton(getString(R.string.confirm),
