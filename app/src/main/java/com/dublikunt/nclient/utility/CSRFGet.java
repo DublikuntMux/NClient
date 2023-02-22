@@ -19,8 +19,8 @@ public class CSRFGet extends Thread {
     }
 
     /**
-    * Executes the request and returns the token. This is called by the Thread#interrupt () method when the thread is done
-    */
+     * Executes the request and returns the token. This is called by the Thread#interrupt () method when the thread is done
+     */
     @Override
     public void run() {
         try {
@@ -40,17 +40,17 @@ public class CSRFGet extends Thread {
 
     public interface Response {
         /**
-        * Called when we have a response. This is the place to do stuff that needs to be done in order to get the user's access to the API
-        *
-        * @param token - The token that was
-        */
+         * Called when we have a response. This is the place to do stuff that needs to be done in order to get the user's access to the API
+         *
+         * @param token - The token that was
+         */
         void onResponse(String token) throws IOException;
 
         /**
-        * Called when an error occurs. This is a no - op for this type of event. The default implementation prints the stack trace to System. err
-        *
-        * @param e - The exception that occurred
-        */
+         * Called when an error occurs. This is a no - op for this type of event. The default implementation prints the stack trace to System. err
+         *
+         * @param e - The exception that occurred
+         */
         default void onError(Exception e) {
             e.printStackTrace();
         }

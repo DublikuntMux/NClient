@@ -24,12 +24,12 @@ import androidx.core.graphics.drawable.DrawableCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.dublikunt.nclient.CopyToClipboardActivity
 import com.dublikunt.nclient.R
+import com.dublikunt.nclient.api.LocalSortType
 import com.dublikunt.nclient.api.components.GenericGallery
+import com.dublikunt.nclient.components.CustomCookieJar
 import com.dublikunt.nclient.enums.Language
 import com.dublikunt.nclient.enums.SortType
 import com.dublikunt.nclient.enums.TitleType
-import com.dublikunt.nclient.api.LocalSortType
-import com.dublikunt.nclient.components.CustomCookieJar
 import com.dublikunt.nclient.utility.LogUtility.download
 import com.dublikunt.nclient.utility.LogUtility.error
 import com.dublikunt.nclient.utility.NetworkUtil.ConnectionType
@@ -65,16 +65,16 @@ object Global {
     var OLD_GALLERYFOLDER: File? = null
     lateinit var MAINFOLDER: File
 
-    @JvmField
-    var DOWNLOADFOLDER: File? = null
     @JvmStatic
+    var DOWNLOADFOLDER: File? = null
+
     var SCREENFOLDER: File? = null
 
-    @JvmField
+
     var PDFFOLDER: File? = null
     var UPDATEFOLDER: File? = null
 
-    @JvmField
+
     var ZIPFOLDER: File? = null
     var TORRENTFOLDER: File? = null
     var BACKUPFOLDER: File? = null
@@ -97,7 +97,7 @@ object Global {
     private var hideMultitask = false
     var isEnableBeta = false
     private var volumeOverride = false
-    @JvmStatic
+
     var isZoomOneColumn = false
         private set
     var isKeepHistory = false
@@ -121,7 +121,7 @@ object Global {
     var mirror: String? = null
         private set
 
-    @JvmStatic
+
     var maxHistory = 0
         private set
     var columnCount = 0
@@ -199,7 +199,7 @@ object Global {
         return activity.isDestroyed
     }
 
-    @JvmStatic
+
     val userAgent: String
         get() = "NClient " + getLastVersion(null)
 
@@ -465,7 +465,7 @@ object Global {
         return onlyLanguage!!
     }
 
-    @JvmStatic
+
     fun useRtl(): Boolean {
         return useRtl
     }
@@ -613,7 +613,7 @@ object Global {
         return strings
     }
 
-    @JvmStatic
+
     fun hasStoragePermission(context: Context?): Boolean {
         return ContextCompat.checkSelfPermission(
             context!!,
@@ -621,7 +621,7 @@ object Global {
         ) == PackageManager.PERMISSION_GRANTED
     }
 
-    @JvmStatic
+
     fun isJPEGCorrupted(path: String?): Boolean {
         if (!File(path).exists()) return true
         try {
@@ -718,7 +718,7 @@ object Global {
     val isExternalStorageManager: Boolean
         get() = Build.VERSION.SDK_INT < Build.VERSION_CODES.R || Environment.isExternalStorageManager()
 
-    @JvmStatic
+
     fun applyFastScroller(recycler: RecyclerView?) {
         if (recycler == null) return
         val drawable = ContextCompat.getDrawable(recycler.context, R.drawable.thumb) ?: return

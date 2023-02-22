@@ -30,8 +30,8 @@ public class CommentsFetcher extends Thread {
     }
 
     /**
-    * Runs the task. Populates comments and posts results to #postResult (). Subclasses should override this
-    */
+     * Runs the task. Populates comments and posts results to #postResult (). Subclasses should override this
+     */
     @Override
     public void run() {
         populateComments();
@@ -39,8 +39,8 @@ public class CommentsFetcher extends Thread {
     }
 
     /**
-    * Post the result of the comment. This is called when the user clicks on the result button or when the result is completed
-    */
+     * Post the result of the comment. This is called when the user clicks on the result button or when the result is completed
+     */
     private void postResult() {
         CommentAdapter commentAdapter = new CommentAdapter(commentActivity, comments, id);
         commentActivity.setAdapter(commentAdapter);
@@ -51,8 +51,8 @@ public class CommentsFetcher extends Thread {
     }
 
     /**
-    * Populates the comments list with comments that belong to this comment. This is done by calling the comment API
-    */
+     * Populates the comments list with comments that belong to this comment. This is done by calling the comment API
+     */
     private void populateComments() {
         String url = String.format(Locale.US, COMMENT_API_URL, id);
         try {

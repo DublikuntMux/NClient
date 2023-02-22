@@ -8,11 +8,11 @@ import android.util.JsonToken;
 
 import androidx.annotation.NonNull;
 
+import com.dublikunt.nclient.async.database.Queries;
 import com.dublikunt.nclient.enums.ImageExt;
 import com.dublikunt.nclient.enums.ImageType;
 import com.dublikunt.nclient.enums.SpecialTagIds;
 import com.dublikunt.nclient.enums.TitleType;
-import com.dublikunt.nclient.async.database.Queries;
 import com.dublikunt.nclient.utility.Utility;
 
 import java.io.IOException;

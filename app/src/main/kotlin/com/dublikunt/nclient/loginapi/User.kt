@@ -28,7 +28,7 @@ class User private constructor(val username: String, id: String, codename: Strin
     }
 
     companion object {
-        @JvmStatic
+
         fun createUser(createUser: CreateUser?) {
             Global.client
                 ?.newCall(Request.Builder().url(Login.BASE_HTTP_URL).build())

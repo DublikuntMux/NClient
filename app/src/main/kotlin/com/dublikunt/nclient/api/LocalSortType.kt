@@ -1,7 +1,6 @@
 package com.dublikunt.nclient.api
 
 class LocalSortType {
-    @JvmField
     val type: Type
 
     @JvmField

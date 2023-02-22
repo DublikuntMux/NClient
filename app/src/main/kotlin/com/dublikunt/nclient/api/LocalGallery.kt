@@ -6,8 +6,8 @@ import android.os.Parcelable.Creator
 import android.util.JsonReader
 import com.dublikunt.nclient.api.components.GalleryData
 import com.dublikunt.nclient.api.components.GenericGallery
-import com.dublikunt.nclient.enums.SpecialTagIds
 import com.dublikunt.nclient.classes.Size
+import com.dublikunt.nclient.enums.SpecialTagIds
 import com.dublikunt.nclient.files.GalleryFolder
 import com.dublikunt.nclient.utility.LogUtility.download
 import java.io.File
@@ -206,7 +206,7 @@ class LocalGallery : GenericGallery {
         /**
          * @return null if not found or the file if found
          */
-        @JvmStatic
+
         fun getPage(dir: File?, page: Int): File? {
             if (dir == null || !dir.exists()) return null
             val pag = String.format(Locale.US, "%03d.", page)

@@ -130,7 +130,6 @@ object Login {
         }
         if (context != null) logout(context)
         return false
-        //return sessionId!=null;
     }
 
     @JvmStatic

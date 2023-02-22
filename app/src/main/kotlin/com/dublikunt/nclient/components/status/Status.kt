@@ -3,10 +3,10 @@ package com.dublikunt.nclient.components.status
 import android.graphics.Color
 
 class Status internal constructor(color: Int, name: String) {
-    @JvmField
+
     val color: Int
 
-    @JvmField
+
     val name: String
 
     init {

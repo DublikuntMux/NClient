@@ -22,8 +22,8 @@ public class RandomLoader {
     }
 
     /**
-    * Loads a random gallery from the web. If there are too many galleries this is a no - op
-    */
+     * Loads a random gallery from the web. If there are too many galleries this is a no - op
+     */
     private void loadRandomGallery() {
         // Returns true if the galleries are not loaded.
         if (galleries.size() >= MAXLOADED) return;
@@ -31,8 +31,8 @@ public class RandomLoader {
     }
 
     /**
-    * Requests a gallery from the gallery manager. This is called by the Activity#onCreate ( Bundle ) method
-    */
+     * Requests a gallery from the gallery manager. This is called by the Activity#onCreate ( Bundle ) method
+     */
     public void requestGallery() {
         galleryHasBeenRequested = true;
         // Removes all galleries from the list.
@@ -52,20 +52,20 @@ public class RandomLoader {
 
     private final Inspector.InspectorResponse response = new Inspector.DefaultInspectorResponse() {
         /**
-        * Called when the request failed. This is the place to do anything that needs to be done in response to an HTTP request.
-        *
-        * @param e - The exception that caused the request to fail. May be null
-        */
+         * Called when the request failed. This is the place to do anything that needs to be done in response to an HTTP request.
+         *
+         * @param e - The exception that caused the request to fail. May be null
+         */
         @Override
         public void onFailure(Exception e) {
             loadRandomGallery();
         }
 
         /**
-        * Called when the list of galleries is loaded. This is a callback method that will be called by the gallery manager when it has finished loading a gallery.
-        *
-        * @param galleryList - The list of galleries that was loaded
-        */
+         * Called when the list of galleries is loaded. This is a callback method that will be called by the gallery manager when it has finished loading a gallery.
+         *
+         * @param galleryList - The list of galleries that was loaded
+         */
         @Override
         public void onSuccess(List<GenericGallery> galleryList) {
             // Load random gallery if not empty.
@@ -79,7 +79,7 @@ public class RandomLoader {
             // Requests the gallery if the gallery has been requested.
             if (galleryHasBeenRequested)
                 requestGallery();//requestGallery will call loadRandomGallery
-            // Load random gallery if the number of galleries is less than MAXLOADED
+                // Load random gallery if the number of galleries is less than MAXLOADED
             else if (galleries.size() < MAXLOADED) loadRandomGallery();
         }
     };

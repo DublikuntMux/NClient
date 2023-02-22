@@ -13,9 +13,9 @@ import com.dublikunt.nclient.api.Inspector
 import com.dublikunt.nclient.api.Inspector.DefaultInspectorResponse
 import com.dublikunt.nclient.api.SimpleGallery
 import com.dublikunt.nclient.api.components.GenericGallery
-import com.dublikunt.nclient.enums.Language
 import com.dublikunt.nclient.async.database.Queries
 import com.dublikunt.nclient.components.activities.BaseActivity
+import com.dublikunt.nclient.enums.Language
 import com.dublikunt.nclient.settings.Global
 import com.dublikunt.nclient.settings.Tags
 import com.dublikunt.nclient.utility.ImageDownloadUtility.loadImage

@@ -2,7 +2,6 @@ package com.dublikunt.nclient.adapters
 
 import android.content.DialogInterface
 import android.content.Intent
-import android.graphics.RectF
 import android.text.format.DateFormat
 import android.util.SparseIntArray
 import android.view.LayoutInflater

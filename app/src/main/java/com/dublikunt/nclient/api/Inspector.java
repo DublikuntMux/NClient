@@ -12,13 +12,13 @@ import com.dublikunt.nclient.api.components.Gallery;
 import com.dublikunt.nclient.api.components.GenericGallery;
 import com.dublikunt.nclient.api.components.Ranges;
 import com.dublikunt.nclient.api.components.Tag;
+import com.dublikunt.nclient.async.database.Queries;
 import com.dublikunt.nclient.enums.ApiRequestType;
 import com.dublikunt.nclient.enums.Language;
 import com.dublikunt.nclient.enums.SortType;
 import com.dublikunt.nclient.enums.SpecialTagIds;
 import com.dublikunt.nclient.enums.TagStatus;
 import com.dublikunt.nclient.enums.TagType;
-import com.dublikunt.nclient.async.database.Queries;
 import com.dublikunt.nclient.settings.Global;
 import com.dublikunt.nclient.utility.LogUtility;
 import com.dublikunt.nclient.utility.Utility;
@@ -35,6 +35,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 import okhttp3.Request;
@@ -272,15 +273,7 @@ public class Inspector extends Thread implements Parcelable {
                 builder.append("?q=").append(query).append('&');
             else builder.append('?');
             builder.append("page=").append(page);
-        }/*else if(requestType==ApiRequestType.BYTAG){
-                 for(Tag tt:tags)t=tt;
-                 assert t!=null;
-                 builder.append(t.getTypeSingleName()).append('/')
-                         .append(t.getName().replace(' ','-').replace(".",""));
-                 if(byPopular)builder.append("/popular");
-                 else builder.append('/');
-                 builder.append("?page=").append(page);
-        }*/ else if (requestType == ApiRequestType.BYSEARCH || requestType == ApiRequestType.BYTAG) {
+        } else if (requestType == ApiRequestType.BYSEARCH || requestType == ApiRequestType.BYTAG) {
             builder.append("search/?q=").append(query);
             for (Tag tt : tags) {
                 if (builder.toString().contains(tt.toQueryTag(TagStatus.ACCEPTED))) continue;
@@ -309,7 +302,7 @@ public class Inspector extends Thread implements Parcelable {
 
     public void createDocument() throws IOException {
         if (htmlDocument != null) return;
-        Response response = Global.getClient().newCall(new Request.Builder().url(url).build()).execute();
+        Response response = Objects.requireNonNull(Global.getClient()).newCall(new Request.Builder().url(url).build()).execute();
         setHtmlDocument(Jsoup.parse(response.body().byteStream(), "UTF-8", Utility.getBaseUrl()));
         response.close();
     }
@@ -357,7 +350,7 @@ public class Inspector extends Thread implements Parcelable {
         Elements scripts = document.getElementsByTag("script");
         if (scripts.size() == 0)
             throw new InvalidResponseException();
-        String json = trimScriptTag(scripts.last().html());
+        String json = trimScriptTag(Objects.requireNonNull(scripts.last()).html());
         if (json == null)
             throw new InvalidResponseException();
         Element relContainer = document.getElementById("related-container");
@@ -368,7 +361,7 @@ public class Inspector extends Thread implements Parcelable {
             rel = new Elements();
         boolean isFavorite;
         try {
-            isFavorite = document.getElementById("favorite").getElementsByTag("span").get(0).text().equals("Unfavorite");
+            isFavorite = Objects.requireNonNull(document.getElementById("favorite")).getElementsByTag("span").get(0).text().equals("Unfavorite");
         } catch (Exception e) {
             isFavorite = false;
         }
@@ -392,7 +385,7 @@ public class Inspector extends Thread implements Parcelable {
         galleries = new ArrayList<>(gal.size());
         for (Element e : gal) galleries.add(new SimpleGallery(context.get(), e));
         gal = document.getElementsByClass("last");
-        pageCount = gal.size() == 0 ? Math.max(1, page) : findTotal(gal.last());
+        pageCount = gal.size() == 0 ? Math.max(1, page) : findTotal(Objects.requireNonNull(gal.last()));
         if (gal.size() == 0 && pageCount == 1 && document.getElementById("content") == null)
             throw new InvalidResponseException();
     }

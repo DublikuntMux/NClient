@@ -53,8 +53,6 @@ class TagType : Parcelable {
 
         @JvmField
         val LANGUAGE = TagType(6, "language", null)
-
-        @JvmField
         val CATEGORY = TagType(7, "category", null)
 
         @JvmField

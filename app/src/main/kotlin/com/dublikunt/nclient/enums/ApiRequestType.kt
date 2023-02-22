@@ -36,6 +36,8 @@ class ApiRequestType private constructor(id: Int, single: Boolean) {
 
         @JvmField
         val BYSINGLE = ApiRequestType(3, true)
+
+        @JvmField
         val RELATED = ApiRequestType(4, false)
 
         @JvmField

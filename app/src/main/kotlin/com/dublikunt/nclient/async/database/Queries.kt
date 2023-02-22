@@ -8,17 +8,17 @@ import android.database.sqlite.SQLiteDatabase
 import com.dublikunt.nclient.api.Inspector
 import com.dublikunt.nclient.api.SimpleGallery
 import com.dublikunt.nclient.api.components.*
-import com.dublikunt.nclient.enums.ApiRequestType
-import com.dublikunt.nclient.enums.TagStatus
-import com.dublikunt.nclient.enums.TagType
-import com.dublikunt.nclient.enums.TitleType
-import com.dublikunt.nclient.async.downloader.GalleryDownloaderManager
 import com.dublikunt.nclient.async.downloader.GalleryDownloader
+import com.dublikunt.nclient.async.downloader.GalleryDownloaderManager
 import com.dublikunt.nclient.classes.Bookmark
 import com.dublikunt.nclient.components.status.Status
 import com.dublikunt.nclient.components.status.StatusManager
 import com.dublikunt.nclient.components.status.StatusManager.add
 import com.dublikunt.nclient.components.status.StatusManager.getByName
+import com.dublikunt.nclient.enums.ApiRequestType
+import com.dublikunt.nclient.enums.TagStatus
+import com.dublikunt.nclient.enums.TagType
+import com.dublikunt.nclient.enums.TitleType
 import com.dublikunt.nclient.settings.Global.maxHistory
 import com.dublikunt.nclient.settings.Global.titleType
 import com.dublikunt.nclient.settings.Tags.minCount
@@ -368,7 +368,7 @@ object Queries {
         /**
          * Returns a List of all tags which are AVOIDED or ACCEPTED
          */
-        @JvmStatic
+
         val allFiltered: List<Tag>
             get() {
                 val query = "SELECT * FROM $TABLE_NAME WHERE $STATUS != ?"
@@ -427,7 +427,7 @@ object Queries {
             return t
         }
 
-        @JvmStatic
+
         fun updateStatus(id: Int, status: TagStatus): Int {
             val values = ContentValues(1)
             values.put(STATUS, status.ordinal)
@@ -608,7 +608,7 @@ object Queries {
         }
 
         /*To avoid conflict between the import process and the ScrapeTags*/
-        @JvmStatic
+
         fun insertScrape(tag: Tag, b: Boolean) {
             if (db.isOpen) insert(tag, b)
         }
@@ -626,7 +626,7 @@ object Queries {
             "FOREIGN KEY(`id_gallery`) REFERENCES `Gallery`(`idGallery`) ON UPDATE CASCADE ON DELETE CASCADE" +
             "); "
 
-        @JvmStatic
+
         fun addGallery(downloader: GalleryDownloader) {
             val gallery = downloader.gallery
             GalleryTable.insert(gallery)
@@ -637,14 +637,14 @@ object Queries {
             db.insertWithOnConflict(TABLE_NAME, null, values, SQLiteDatabase.CONFLICT_IGNORE)
         }
 
-        @JvmStatic
+
         fun removeGallery(id: Int) {
             val favorite = FavoriteTable.isFavorite(id)
             if (!favorite) GalleryTable.delete(id)
             db.delete(TABLE_NAME, "$ID_GALLERY=?", arrayOf("" + id))
         }
 
-        @JvmStatic
+
         @Throws(IOException::class)
         fun getAllDownloads(context: Context): List<GalleryDownloaderManager> {
             val q = "SELECT * FROM %s INNER JOIN %s ON %s=%s"
@@ -990,7 +990,7 @@ object Queries {
             ");"
         const val ID_GALLERY = "id_gallery"
         const val PAGE = "page"
-        @JvmStatic
+
         fun insert(id: Int, page: Int) {
             if (id < 0) return
             val values = ContentValues(2)

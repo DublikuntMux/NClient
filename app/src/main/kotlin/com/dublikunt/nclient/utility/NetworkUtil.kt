@@ -10,7 +10,7 @@ import com.dublikunt.nclient.utility.LogUtility.download
 
 
 object NetworkUtil {
-    @JvmStatic
+
     @Volatile
     var type = ConnectionType.WIFI
         set(x) {

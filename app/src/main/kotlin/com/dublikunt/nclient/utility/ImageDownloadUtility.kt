@@ -22,7 +22,7 @@ object ImageDownloadUtility {
         manager?.load(url)?.preload()
     }
 
-    @JvmStatic
+
     fun loadImageOp(context: Context, view: ImageView?, file: File, angle: Int) {
         val glide = GlideX.with(context) ?: return
         val logo = Global.getLogo(context.resources)
@@ -30,13 +30,13 @@ object ImageDownloadUtility {
         LogUtility.download("Requested file glide: $file")
     }
 
-    @JvmStatic
+
     fun loadImageOp(context: Context, view: ImageView, gallery: Gallery, page: Int, angle: Int) {
         val url = getUrlForGallery(gallery, page, true)
         loadImageOp(context, view, url, angle)
     }
 
-    @JvmStatic
+
     fun loadImageOp(context: Context, view: ImageView, url: Uri?, angle: Int) {
         LogUtility.download("Requested url glide: $url")
         if (Global.downloadPolicy == Global.DataUsageType.NONE) {
@@ -60,7 +60,7 @@ object ImageDownloadUtility {
         return if (shouldFull) gallery.getPageUrl(page) else gallery.getLowPage(page)
     }
 
-    @JvmStatic
+
     fun downloadPage(
         activity: AppCompatActivity,
         imageView: ImageView,
@@ -73,7 +73,7 @@ object ImageDownloadUtility {
         loadImageOp(activity, imageView, getUrlForGallery(gallery, page, shouldFull), 0)
     }
 
-    @JvmStatic
+
     private fun loadLogo(imageView: ImageView) {
         imageView.setImageDrawable(Global.getLogo(imageView.resources))
     }

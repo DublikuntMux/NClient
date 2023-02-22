@@ -11,19 +11,19 @@ import androidx.recyclerview.widget.RecyclerView
 import com.dublikunt.nclient.R
 import com.dublikunt.nclient.TagFilterActivity
 import com.dublikunt.nclient.adapters.TagsAdapter
-import com.dublikunt.nclient.enums.TagType
 import com.dublikunt.nclient.async.ScrapeTags
+import com.dublikunt.nclient.enums.TagType
 import com.dublikunt.nclient.settings.Global
 import com.dublikunt.nclient.settings.Tags
 
 class TagTypePage : Fragment() {
-    private var type: TagType? = null
+    private lateinit var type: TagType
     var recyclerView: RecyclerView? = null
         private set
     private var activity: TagFilterActivity? = null
     private var query: String? = null
     private var adapter: TagsAdapter? = null
-    fun setQuery(query: String?) {
+    fun setQuery(query: String) {
         this.query = query
         refilter(query)
     }
@@ -41,7 +41,7 @@ class TagTypePage : Fragment() {
         return rootView
     }
 
-    fun loadTags() {
+    private fun loadTags() {
         recyclerView!!.layoutManager = CustomGridLayoutManager(
             activity,
             if (resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE) 4 else 2

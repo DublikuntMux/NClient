@@ -34,32 +34,30 @@ public class Utility {
     public static final String ORIGINAL_URL = "nhentai.net";
 
     /**
-    * Returns the base URL for the API. This is based on the host and port specified in the configuration.
-    *
-    *
-    * @return base URL for the API including the port and port specified in the configuration. Note that the host will be added
-    */
+     * Returns the base URL for the API. This is based on the host and port specified in the configuration.
+     *
+     * @return base URL for the API including the port and port specified in the configuration. Note that the host will be added
+     */
     public static String getBaseUrl() {
         return "https://" + Utility.getHost() + "/";
     }
 
 
     /**
-    * Returns the host that the application is running on. This is used to distinguish between different instances of Jitsi's host - based application.
-    *
-    *
-    * @return the host that the application is running on or null if it isn't running on a host -
-    */
+     * Returns the host that the application is running on. This is used to distinguish between different instances of Jitsi's host - based application.
+     *
+     * @return the host that the application is running on or null if it isn't running on a host -
+     */
     public static String getHost() {
         return Global.getMirror();
     }
 
     /**
-    * Parses an escaped character and writes it to the writer. Escaped characters are U + 0000 - FFFF followed by hexadecimal digits in the range 0 - 9A - F.
-    *
-    * @param reader - the reader to read from. Not null.
-    * @param writer - the writer to write to. Not null. The result is written to
-    */
+     * Parses an escaped character and writes it to the writer. Escaped characters are U + 0000 - FFFF followed by hexadecimal digits in the range 0 - 9A - F.
+     *
+     * @param reader - the reader to read from. Not null.
+     * @param writer - the writer to write to. Not null. The result is written to
+     */
     private static void parseEscapedCharacter(Reader reader, Writer writer) throws IOException {
         int toCreate, read;
         // Read the next character from the input.
@@ -87,12 +85,11 @@ public class Utility {
     }
 
     /**
-    * Unescapes unicode characters in script HTML. This is useful for scripts that are embedded in HTML such as a table or script tag.
-    *
-    * @param scriptHtml - The script HTML to unescape. May be null in which case " " is returned.
-    *
-    * @return The unescaped script HTML or " " if there was an error in the input string which could be a string
-    */
+     * Unescapes unicode characters in script HTML. This is useful for scripts that are embedded in HTML such as a table or script tag.
+     *
+     * @param scriptHtml - The script HTML to unescape. May be null in which case " " is returned.
+     * @return The unescaped script HTML or " " if there was an error in the input string which could be a string
+     */
     @NonNull
     public static String unescapeUnicodeString(@Nullable String scriptHtml) {
         // Returns the scriptHtml if scriptHtml is not null.
@@ -114,10 +111,10 @@ public class Utility {
     }
 
     /**
-    * Sleeps for the specified amount of time. This is useful for unit testing and to ensure that the test is running in a safe environment.
-    *
-    * @param millis - the amount of time to sleep in milliseconds
-    */
+     * Sleeps for the specified amount of time. This is useful for unit testing and to ensure that the test is running in a safe environment.
+     *
+     * @param millis - the amount of time to sleep in milliseconds
+     */
     public static void threadSleep(long millis) {
         try {
             Thread.sleep(millis);
@@ -127,10 +124,10 @@ public class Utility {
     }
 
     /**
-    * Tints the menu to a given size. This is useful for toggling the tint on / off in order to make it easier to read and / or modify the menu while it is running
-    *
-    * @param menu - The menu to tint
-    */
+     * Tints the menu to a given size. This is useful for toggling the tint on / off in order to make it easier to read and / or modify the menu while it is running
+     *
+     * @param menu - The menu to tint
+     */
     public static void tintMenu(Menu menu) {
         int x = menu.size();
         // Set the Tint to the global Tint
@@ -141,12 +138,11 @@ public class Utility {
     }
 
     /**
-    * Converts a Drawable to a Bitmap. This is useful for determining which type of drawable to use as a source for an android. graphics. Bitmap.
-    *
-    * @param dra - The Drawable to convert. Must be a BitmapDrawable.
-    *
-    * @return The Bitmap or null if the Drawable is not a BitmapDrawable or does not implement { @link android. graphics. Bitmap
-    */
+     * Converts a Drawable to a Bitmap. This is useful for determining which type of drawable to use as a source for an android. graphics. Bitmap.
+     *
+     * @param dra - The Drawable to convert. Must be a BitmapDrawable.
+     * @return The Bitmap or null if the Drawable is not a BitmapDrawable or does not implement { @link android. graphics. Bitmap
+     */
     @Nullable
     private static Bitmap drawableToBitmap(Drawable dra) {
         // Returns the drawable if it s a BitmapDrawable.
@@ -155,11 +151,11 @@ public class Utility {
     }
 
     /**
-    * Saves the given Drawable to the given File. This will be converted to a bitmap before saving. If you want to save to a file that already exists use #saveImage ( Bitmap File ) instead.
-    *
-    * @param drawable - The Drawable to save. It will be converted to a bitmap then saved.
-    * @param output - The File to save to. This should be a file
-    */
+     * Saves the given Drawable to the given File. This will be converted to a bitmap before saving. If you want to save to a file that already exists use #saveImage ( Bitmap File ) instead.
+     *
+     * @param drawable - The Drawable to save. It will be converted to a bitmap then saved.
+     * @param output   - The File to save to. This should be a file
+     */
     public static void saveImage(Drawable drawable, File output) {
         Bitmap b = drawableToBitmap(drawable);
         // Save the image to the output file.
@@ -167,11 +163,11 @@ public class Utility {
     }
 
     /**
-    * Saves the given bitmap to the given file. This is a convenience method for use in testing. It compresses the image to JPEG and saves it to the given file.
-    *
-    * @param bitmap - The bitmap to save. Must not be null.
-    * @param output - The file to save the bitmap to. Must not be null
-    */
+     * Saves the given bitmap to the given file. This is a convenience method for use in testing. It compresses the image to JPEG and saves it to the given file.
+     *
+     * @param bitmap - The bitmap to save. Must not be null.
+     * @param output - The file to save the bitmap to. Must not be null
+     */
     private static void saveImage(@NonNull Bitmap bitmap, @NonNull File output) {
         try {
             // Create a new file if it doesn t exist.
@@ -186,11 +182,11 @@ public class Utility {
     }
 
     /**
-    * Writes the contents of an input stream to a file. Closes the input stream when done. This method is useful for debugging purposes as it does not create a File object at all.
-    *
-    * @param inputStream - The input stream to write. Must not be null.
-    * @param filePath - The file to write to. Must not be null
-    */
+     * Writes the contents of an input stream to a file. Closes the input stream when done. This method is useful for debugging purposes as it does not create a File object at all.
+     *
+     * @param inputStream - The input stream to write. Must not be null.
+     * @param filePath    - The file to write to. Must not be null
+     */
     public static long writeStreamToFile(InputStream inputStream, File filePath) throws IOException {
         FileOutputStream outputStream = new FileOutputStream(filePath);
         int read;
@@ -208,12 +204,12 @@ public class Utility {
     }
 
     /**
-    * Sends an image to the user. This is a convenience method for sending images that are in the app's android. app. Activity hierarchy.
-    *
-    * @param context - The context to use. Must be non - null.
-    * @param drawable - The image to send. Must be non - null.
-    * @param text - The text to send. If null no text is sent
-    */
+     * Sends an image to the user. This is a convenience method for sending images that are in the app's android. app. Activity hierarchy.
+     *
+     * @param context  - The context to use. Must be non - null.
+     * @param drawable - The image to send. Must be non - null.
+     * @param text     - The text to send. If null no text is sent
+     */
     public static void sendImage(Context context, Drawable drawable, String text) {
         context = context.getApplicationContext();
         try {

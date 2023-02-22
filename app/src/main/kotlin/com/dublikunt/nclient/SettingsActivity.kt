@@ -23,7 +23,6 @@ import com.dublikunt.nclient.settings.*
 import com.dublikunt.nclient.settings.Global.isExternalStorageManager
 import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import java.io.File
 
 class SettingsActivity : GeneralActivity() {
     lateinit var fragment: GeneralPreferenceFragment

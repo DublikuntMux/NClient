@@ -5,7 +5,7 @@ import com.dublikunt.nclient.async.database.Queries
 import com.dublikunt.nclient.utility.LogUtility.download
 
 object Database {
-    @JvmStatic
+
     var database: SQLiteDatabase? = null
         set(database) {
             field = database

@@ -1,499 +1,467 @@
-package com.dublikunt.nclient.adapters;
+package com.dublikunt.nclient.adapters
 
-import android.content.Intent;
-import android.text.Layout;
-import android.util.SparseIntArray;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.Filter;
-import android.widget.Filterable;
-import android.widget.ImageButton;
-import android.widget.ImageView;
-import android.widget.ProgressBar;
+import android.content.DialogInterface
+import android.content.Intent
+import android.util.SparseIntArray
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import android.widget.*
+import androidx.appcompat.app.AppCompatActivity
+import androidx.recyclerview.widget.RecyclerView
+import com.dublikunt.nclient.GalleryActivity
+import com.dublikunt.nclient.LocalActivity
+import com.dublikunt.nclient.R
+import com.dublikunt.nclient.api.LocalGallery
+import com.dublikunt.nclient.api.LocalSortType
+import com.dublikunt.nclient.async.converters.CreatePDF
+import com.dublikunt.nclient.async.converters.CreateZIP
+import com.dublikunt.nclient.async.database.Queries.StatusMangaTable.getStatus
+import com.dublikunt.nclient.async.downloader.DownloadGallery
+import com.dublikunt.nclient.async.downloader.DownloadGallery.Companion.startWork
+import com.dublikunt.nclient.async.downloader.DownloadObserver
+import com.dublikunt.nclient.async.downloader.DownloadQueue.addObserver
+import com.dublikunt.nclient.async.downloader.DownloadQueue.downloaders
+import com.dublikunt.nclient.async.downloader.DownloadQueue.givePriority
+import com.dublikunt.nclient.async.downloader.DownloadQueue.remove
+import com.dublikunt.nclient.async.downloader.DownloadQueue.removeObserver
+import com.dublikunt.nclient.async.downloader.GalleryDownloader
+import com.dublikunt.nclient.classes.MultichoiceAdapter
+import com.dublikunt.nclient.settings.Global.localSortType
+import com.dublikunt.nclient.settings.Global.recursiveDelete
+import com.dublikunt.nclient.settings.Global.recursiveSize
+import com.dublikunt.nclient.settings.Global.setTint
+import com.dublikunt.nclient.utility.ImageDownloadUtility.loadImage
+import com.dublikunt.nclient.utility.LogUtility.download
+import com.dublikunt.nclient.utility.Utility
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.android.material.textview.MaterialTextView
+import java.io.File
+import java.util.*
+import java.util.concurrent.CopyOnWriteArrayList
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.RecyclerView;
-
-import com.dublikunt.nclient.GalleryActivity;
-import com.dublikunt.nclient.LocalActivity;
-import com.dublikunt.nclient.R;
-import com.dublikunt.nclient.api.LocalGallery;
-import com.dublikunt.nclient.api.LocalSortType;
-import com.dublikunt.nclient.async.converters.CreatePDF;
-import com.dublikunt.nclient.async.converters.CreateZIP;
-import com.dublikunt.nclient.async.database.Queries;
-import com.dublikunt.nclient.async.downloader.DownloadGallery;
-import com.dublikunt.nclient.async.downloader.DownloadObserver;
-import com.dublikunt.nclient.async.downloader.DownloadQueue;
-import com.dublikunt.nclient.async.downloader.GalleryDownloader;
-import com.dublikunt.nclient.classes.MultichoiceAdapter;
-import com.dublikunt.nclient.settings.Global;
-import com.dublikunt.nclient.utility.ImageDownloadUtility;
-import com.dublikunt.nclient.utility.LogUtility;
-import com.dublikunt.nclient.utility.Utility;
-import com.google.android.material.dialog.MaterialAlertDialogBuilder;
-import com.google.android.material.textview.MaterialTextView;
-
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.concurrent.CopyOnWriteArrayList;
-
-public class LocalAdapter extends MultichoiceAdapter<Object, LocalAdapter.ViewHolder> implements Filterable {
-    private final SparseIntArray statuses = new SparseIntArray();
-    private final LocalActivity context;
-    private final List<LocalGallery> dataset;
-    private final List<GalleryDownloader> galleryDownloaders;
-    private final Comparator<Object> comparatorByName = (o1, o2) -> {
-        if (o1 == o2) return 0;
-        boolean b1 = o1 instanceof LocalGallery;
-        boolean b2 = o2 instanceof LocalGallery;
-        String s1 = b1 ? ((LocalGallery) o1).getTitle() : ((GalleryDownloader) o1).getTruePathTitle();
-        String s2 = b2 ? ((LocalGallery) o2).getTitle() : ((GalleryDownloader) o2).getTruePathTitle();
-        return s1.compareTo(s2);
-    };
-    private final Comparator<Object> comparatorBySize = (o1, o2) -> {
-        if (o1 == o2) return 0;
-        long page1 = o1 instanceof LocalGallery ? Global.recursiveSize(((LocalGallery) o1).getDirectory()) : 0;
-        long page2 = o2 instanceof LocalGallery ? Global.recursiveSize(((LocalGallery) o2).getDirectory()) : 0;
-        return Long.compare(page1, page2);
-    };
-    private final Comparator<Object> comparatorByPageCount = (o1, o2) -> {
-        if (o1 == o2) return 0;
-        int page1 = o1 instanceof LocalGallery ? ((LocalGallery) o1).getPageCount() : 0;
-        int page2 = o2 instanceof LocalGallery ? ((LocalGallery) o2).getPageCount() : 0;
-        return page1 - page2;
-    };
-    private final Comparator<Object> comparatorByDate = (o1, o2) -> {
-        if (o1 == o2) return 0;
-        boolean b1 = o1 instanceof LocalGallery;
-        boolean b2 = o2 instanceof LocalGallery;
+class LocalAdapter(private val context: LocalActivity, myDataset: ArrayList<LocalGallery>) :
+    MultichoiceAdapter<Any, LocalAdapter.ViewHolder>(), Filterable {
+    private val statuses = SparseIntArray()
+    private lateinit var dataset: MutableList<LocalGallery>
+    private lateinit var galleryDownloaders: MutableList<GalleryDownloader?>
+    private val comparatorByName = Comparator { o1: Any, o2: Any ->
+        if (o1 === o2) return@Comparator 0
+        val b1 = o1 is LocalGallery
+        val b2 = o2 is LocalGallery
+        val s1 = if (b1) (o1 as LocalGallery).title else (o1 as GalleryDownloader).truePathTitle
+        val s2 = if (b2) (o2 as LocalGallery).title else (o2 as GalleryDownloader).truePathTitle
+        s1.compareTo(s2)
+    }
+    private val comparatorBySize = Comparator { o1: Any, o2: Any ->
+        if (o1 === o2) return@Comparator 0
+        val page1 = if (o1 is LocalGallery) recursiveSize(o1.directory) else 0
+        val page2 = if (o2 is LocalGallery) recursiveSize(o2.directory) else 0
+        page1.compareTo(page2)
+    }
+    private val comparatorByPageCount = Comparator { o1: Any, o2: Any ->
+        if (o1 === o2) return@Comparator 0
+        val page1 = if (o1 is LocalGallery) o1.pageCount else 0
+        val page2 = if (o2 is LocalGallery) o2.pageCount else 0
+        page1 - page2
+    }
+    private val comparatorByDate = Comparator { o1: Any, o2: Any ->
+        if (o1 === o2) return@Comparator 0
+        val b1 = o1 is LocalGallery
+        val b2 = o2 is LocalGallery
         //downloading manga are newer
-        if (b1 && !b2) return -1;
-        if (!b1 && b2) return 1;
-        if (b1/*&&b2*/) {
-            long res = ((LocalGallery) o1).getDirectory().lastModified() - ((LocalGallery) o2).getDirectory().lastModified();
-            if (res != 0) return res < 0 ? -1 : 1;
+        if (b1 && !b2) return@Comparator -1
+        if (!b1 && b2) return@Comparator 1
+        if (b1 /*&&b2*/) {
+            val res =
+                (o1 as LocalGallery).directory.lastModified() - (o2 as LocalGallery).directory.lastModified()
+            if (res != 0L) return@Comparator if (res < 0) -1 else 1
         }
-        String s1 = b1 ? ((LocalGallery) o1).getTitle() : ((GalleryDownloader) o1).getTruePathTitle();
-        String s2 = b2 ? ((LocalGallery) o2).getTitle() : ((GalleryDownloader) o2).getTruePathTitle();
-        return s1.compareTo(s2);
-    };
-
-    private List<Object> filter;
-    @NonNull
-    private String lastQuery;
-    private final DownloadObserver observer = new DownloadObserver() {
-        private void updatePosition(GalleryDownloader downloader) {
-            final int id = filter.indexOf(downloader);
-            if (id >= 0) context.runOnUiThread(() -> notifyItemChanged(id));
-        }
-
-        @Override
-        public void triggerStartDownload(GalleryDownloader downloader) {
-            updatePosition(downloader);
+        val s1 = if (b1) (o1 as LocalGallery).title else (o1 as GalleryDownloader).truePathTitle
+        val s2 = if (b2) (o2 as LocalGallery).title else (o2 as GalleryDownloader).truePathTitle
+        s1.compareTo(s2)
+    }
+    private lateinit var filter: ArrayList<Any>
+    private var lastQuery: String
+    private val observer: DownloadObserver = object : DownloadObserver {
+        private fun updatePosition(downloader: GalleryDownloader?) {
+            val id = filter.indexOf(downloader!!)
+            if (id >= 0) context.runOnUiThread { notifyItemChanged(id) }
         }
 
-        @Override
-        public void triggerUpdateProgress(GalleryDownloader downloader, int reach, int total) {
-            updatePosition(downloader);
+        override fun triggerStartDownload(downloader: GalleryDownloader) {
+            updatePosition(downloader)
         }
 
-        @Override
-        public void triggerEndDownload(GalleryDownloader downloader) {
-            LocalGallery l = downloader.localGallery();
-            galleryDownloaders.remove(downloader);
+        override fun triggerUpdateProgress(downloader: GalleryDownloader?, reach: Int, total: Int) {
+            updatePosition(downloader)
+        }
+
+        override fun triggerEndDownload(downloader: GalleryDownloader?) {
+            val l = downloader!!.localGallery()
+            galleryDownloaders.remove(downloader)
             if (l != null) {
-                dataset.remove(l);
-                dataset.add(l);
-                LogUtility.download(l);
-                sortElements();
+                dataset.remove(l)
+                dataset.add(l)
+                download(l)
+                sortElements()
             }
-            context.runOnUiThread(() -> notifyItemRangeChanged(0, getItemCount()));
+            context.runOnUiThread { notifyItemRangeChanged(0, itemCount) }
         }
 
-        @Override
-        public void triggerCancelDownload(GalleryDownloader downloader) {
-            removeDownloader(downloader);
+        override fun triggerCancelDownload(downloader: GalleryDownloader) {
+            removeDownloader(downloader)
         }
 
-        @Override
-        public void triggerPauseDownload(GalleryDownloader downloader) {
-            context.runOnUiThread(() -> notifyItemChanged(filter.indexOf(downloader)));
+        override fun triggerPauseDownload(downloader: GalleryDownloader?) {
+            context.runOnUiThread { notifyItemChanged(filter.indexOf(downloader!!)) }
         }
-    };
-    private int colCount;
+    }
+    private var colCount: Int
 
-    public LocalAdapter(LocalActivity cont, ArrayList<LocalGallery> myDataset) {
-        this.context = cont;
-        dataset = new CopyOnWriteArrayList<>(myDataset);
-        colCount = cont.getColCount();
-        galleryDownloaders = DownloadQueue.getDownloaders();
-        lastQuery = cont.getQuery();
-        filter = new ArrayList<>(myDataset);
-        filter.addAll(galleryDownloaders);
-
-        DownloadQueue.addObserver(observer);
-        sortElements();
+    init {
+        dataset = CopyOnWriteArrayList(myDataset)
+        colCount = context.colCount
+        galleryDownloaders = downloaders
+        lastQuery = context.query
+        filter = ArrayList(myDataset)
+        filter.addAll(listOf(galleryDownloaders))
+        addObserver(observer)
+        sortElements()
     }
 
-    static void startGallery(AppCompatActivity context, File directory) {
-        if (!directory.isDirectory()) return;
-        LocalGallery ent = new LocalGallery(directory);
-        ent.calculateSizes();
-        new Thread(() -> {
-            Intent intent = new Intent(context, GalleryActivity.class);
-            intent.putExtra(context.getPackageName() + ".GALLERY", ent);
-            intent.putExtra(context.getPackageName() + ".ISLOCAL", true);
-            context.runOnUiThread(() -> context.startActivity(intent));
-        }).start();
+    protected override fun getMaster(holder: ViewHolder): ViewGroup {
+        return holder.layout
     }
 
-    @Override
-    protected ViewGroup getMaster(ViewHolder holder) {
-        return holder.layout;
+    override fun getItemAt(position: Int): Any {
+        return filter[position]
     }
 
-    @Override
-    protected Object getItemAt(int position) {
-        return filter.get(position);
-    }
-
-    private CopyOnWriteArrayList<Object> createHash(List<GalleryDownloader> galleryDownloaders, List<LocalGallery> dataset) {
-        HashMap<String, Object> hashMap = new HashMap<>(dataset.size() + galleryDownloaders.size());
-        for (LocalGallery gall : dataset) {
-            if (gall != null && gall.getTitle().toLowerCase(Locale.US).contains(lastQuery))
-                hashMap.put(gall.getTrueTitle(), gall);
+    private fun createHash(
+        galleryDownloaders: List<GalleryDownloader?>,
+        dataset: List<LocalGallery>
+    ): ArrayList<Any> {
+        val hashMap = HashMap<String?, Any>(dataset.size + galleryDownloaders.size)
+        for (gall in dataset) {
+            if (gall.title.lowercase()
+                    .contains(lastQuery)
+            ) hashMap[gall.trueTitle] = gall
         }
-
-        for (GalleryDownloader gall : galleryDownloaders) {
-            if (gall != null && gall.getTruePathTitle().toLowerCase(Locale.US).contains(lastQuery))
-                hashMap.put(gall.getTruePathTitle(), gall);
+        for (gall in galleryDownloaders) {
+            if (gall != null && gall.truePathTitle.lowercase()
+                    .contains(lastQuery)
+            ) hashMap[gall.truePathTitle] = gall
         }
-
-        ArrayList<Object> arr = new ArrayList<>(hashMap.values());
-
-        sortItems(arr);
-
-        return new CopyOnWriteArrayList<>(arr);
+        val arr = ArrayList(hashMap.values)
+        sortItems(arr)
+        return ArrayList(arr)
     }
 
-    private void sortItems(ArrayList<Object> arr) {
-        LocalSortType type = Global.getLocalSortType();
-        if (type.type == LocalSortType.Type.RANDOM) {
-            Collections.shuffle(arr, Utility.RANDOM);
+    private fun sortItems(arr: ArrayList<Any>) {
+        val type = localSortType
+        if (type.type === LocalSortType.Type.RANDOM) {
+            arr.shuffle(Utility.RANDOM)
         } else {
-            arr.sort(getComparator(type.type));
-            if (type.descending) Collections.reverse(arr);
+            arr.sortWith(getComparator(type.type))
+            if (type.descending) arr.reverse()
         }
     }
 
-    private Comparator<Object> getComparator(LocalSortType.Type type) {
-        switch (type) {
-            case DATE:
-                return comparatorByDate;
-            case TITLE:
-                return comparatorByName;
-            case PAGE_COUNT:
-                return comparatorByPageCount;
-            //case SIZE:return comparatorBySize;
+    private fun getComparator(type: LocalSortType.Type): Comparator<Any> {
+        when (type) {
+            LocalSortType.Type.DATE -> return comparatorByDate
+            LocalSortType.Type.TITLE -> return comparatorByName
+            LocalSortType.Type.PAGE_COUNT -> return comparatorByPageCount
+            else -> {}
         }
-        return comparatorByName;
+        return comparatorByName
     }
 
-    public void setColCount(int colCount) {
-        this.colCount = colCount;
+    fun setColCount(colCount: Int) {
+        this.colCount = colCount
     }
 
-    private void sortElements() {
-        filter = createHash(galleryDownloaders, dataset);
+    private fun sortElements() {
+        filter = createHash(galleryDownloaders, dataset)
     }
 
-    @NonNull
-    @Override
-    protected ViewHolder onCreateMultichoiceViewHolder(@NonNull ViewGroup parent, int viewType) {
-        int id = 0;
-        switch (viewType) {
-            case 0:
-                id = colCount == 1 ? R.layout.entry_layout_single : R.layout.entry_layout;
-                break;
-            case 1:
-                id = colCount == 1 ? R.layout.entry_download_layout : R.layout.entry_download_layout_compact;
-                break;
+    override fun onCreateMultichoiceViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
+        var id = 0
+        when (viewType) {
+            0 -> id = if (colCount == 1) R.layout.entry_layout_single else R.layout.entry_layout
+            1 -> id =
+                if (colCount == 1) R.layout.entry_download_layout else R.layout.entry_download_layout_compact
         }
-        return new ViewHolder(LayoutInflater.from(parent.getContext()).inflate(id, parent, false));
+        return ViewHolder(LayoutInflater.from(parent.context).inflate(id, parent, false))
     }
 
-    @Override
-    public int getItemViewType(int position) {
-        return filter.get(position) instanceof LocalGallery ? 0 : 1;
+    override fun getItemViewType(position: Int): Int {
+        return if (filter[position] is LocalGallery) 0 else 1
     }
 
-    private void bindGallery(@NonNull final ViewHolder holder, int position, LocalGallery ent) {
-        if (holder.flag != null) holder.flag.setVisibility(View.GONE);
-        ImageDownloadUtility.loadImage(context, ent.getPage(ent.getMin()), holder.imgView);
-        holder.title.setText(ent.getTitle());
-        if (colCount == 1)
-            holder.pages.setText(context.getString(R.string.page_count_format, ent.getPageCount()));
-        else holder.pages.setText(String.format(Locale.US, "%d", ent.getPageCount()));
-
-        holder.title.setOnClickListener(v -> {
-            Layout layout = holder.title.getLayout();
-            if (layout.getEllipsisCount(layout.getLineCount() - 1) > 0)
-                holder.title.setMaxLines(7);
-            else if (holder.title.getMaxLines() == 7) holder.title.setMaxLines(3);
-            else holder.layout.performClick();
-        });
-
-        int statusColor = statuses.get(ent.getId(), 0);
+    private fun bindGallery(holder: ViewHolder, position: Int, ent: LocalGallery) {
+        if (holder.flag != null) holder.flag.visibility = View.GONE
+        loadImage(context, ent.getPage(ent.min), holder.imgView)
+        holder.title.text = ent.title
+        if (colCount == 1) holder.pages.text =
+            context.getString(R.string.page_count_format, ent.pageCount) else holder.pages.text =
+            String.format(
+                Locale.US, "%d", ent.pageCount
+            )
+        holder.title.setOnClickListener {
+            val layout = holder.title.layout
+            if (layout.getEllipsisCount(layout.lineCount - 1) > 0) holder.title.maxLines =
+                7 else if (holder.title.maxLines == 7) holder.title.maxLines =
+                3 else holder.layout.performClick()
+        }
+        var statusColor = statuses[ent.id, 0]
         if (statusColor == 0) {
-            statusColor = Queries.StatusMangaTable.getStatus(ent.getId()).color;
-            statuses.put(ent.getId(), statusColor);
+            statusColor = getStatus(ent.id).color
+            statuses.put(ent.id, statusColor)
         }
-        holder.title.setBackgroundColor(statusColor);
+        holder.title.setBackgroundColor(statusColor)
     }
 
-    public void updateColor(int id) {
-        if (id < 0) return;
-        statuses.put(id, Queries.StatusMangaTable.getStatus(id).color);
-        for (int i = 0; i < filter.size(); i++) {
-            Object o = filter.get(i);
-            if (!(o instanceof LocalGallery)) continue;
-            LocalGallery lg = (LocalGallery) o;
-            if (lg.getId() == id) notifyItemChanged(i);
+    fun updateColor(id: Int) {
+        if (id < 0) return
+        statuses.put(id, getStatus(id).color)
+        for (i in filter.indices) {
+            val o = filter[i] as? LocalGallery ?: continue
+            if (o.id == id) notifyItemChanged(i)
         }
     }
 
-    @Override
-    protected void defaultMasterAction(int position) {
-        if (position < 0 || filter.size() <= position) return;
-        if (!(filter.get(position) instanceof LocalGallery)) return;
-        LocalGallery lg = (LocalGallery) filter.get(position);
-        startGallery(context, lg.getDirectory());
-        context.setIdGalleryPosition(lg.getId());
+    override fun defaultMasterAction(position: Int) {
+        if (position < 0 || filter.size <= position) return
+        if (filter[position] !is LocalGallery) return
+        val lg = filter[position] as LocalGallery
+        startGallery(context, lg.directory)
+        context.setIdGalleryPosition(lg.id)
     }
 
-    private void bindDownload(@NonNull final ViewHolder holder, int position, GalleryDownloader downloader) {
-        int percentage = downloader.getPercentage();
-        ImageDownloadUtility.loadImage(context, downloader.getThumbnail(), holder.imgView);
-        holder.title.setText(downloader.getTruePathTitle());
-        holder.cancelButton.setOnClickListener(v -> removeDownloader(downloader));
-        switch (downloader.getStatus()) {
-            case PAUSED:
-                holder.playButton.setImageResource(R.drawable.ic_play_arrow);
-                holder.playButton.setOnClickListener(v -> {
-                    downloader.setStatus(GalleryDownloader.Status.NOT_STARTED);
-                    DownloadGallery.startWork(context);
-                    notifyItemChanged(position);
-                });
-                break;
-            case DOWNLOADING:
-                holder.playButton.setImageResource(R.drawable.ic_pause);
-                holder.playButton.setOnClickListener(v -> {
-                    downloader.setStatus(GalleryDownloader.Status.PAUSED);
-                    notifyItemChanged(position);
-                });
-                break;
-            case NOT_STARTED:
-                holder.playButton.setImageResource(R.drawable.ic_play_arrow);
-                holder.playButton.setOnClickListener(v -> DownloadQueue.givePriority(downloader));
-                break;
-        }
-        holder.progress.setText(context.getString(R.string.percentage_format, percentage));
-        holder.progress.setVisibility(downloader.getStatus() == GalleryDownloader.Status.NOT_STARTED ? View.GONE : View.VISIBLE);
-        holder.progressBar.setProgress(percentage);
-        holder.progressBar.setIndeterminate(downloader.getStatus() == GalleryDownloader.Status.NOT_STARTED);
-        Global.setTint(holder.playButton.getDrawable());
-        Global.setTint(holder.cancelButton.getDrawable());
-    }
-
-    private void removeDownloader(GalleryDownloader downloader) {
-        int position = filter.indexOf(downloader);
-        if (position < 0) return;
-        filter.remove(position);
-        DownloadQueue.remove(downloader, true);
-        galleryDownloaders.remove(downloader);
-        context.runOnUiThread(() -> notifyItemRemoved(position));
-
-    }
-
-    @Override
-    public long getItemId(int position) {
-        if (position == -1) return -1;
-        return filter.get(position).hashCode();
-    }
-
-    @Override
-    public void onBindMultichoiceViewHolder(@NonNull ViewHolder holder, int position) {
-        if (filter.get(position) instanceof LocalGallery)
-            bindGallery(holder, position, (LocalGallery) filter.get(position));
-        else
-            bindDownload(holder, position, (GalleryDownloader) filter.get(position));
-    }
-
-    private void showDialogDelete() {
-        MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(context);
-        builder.setTitle(R.string.delete_galleries).setMessage(getAllGalleries());
-        builder.setPositiveButton(R.string.yes, (dialog, which) -> {
-            ArrayList<Object> coll = new ArrayList<>(getSelected());
-            for (Object o : coll) {
-                filter.remove(o);
-                if (o instanceof LocalGallery) {
-                    dataset.remove(o);
-                    Global.recursiveDelete(((LocalGallery) o).getDirectory());
-                } else if (o instanceof DownloadGallery) {
-                    DownloadQueue.remove((GalleryDownloader) o, true);
+    private fun bindDownload(holder: ViewHolder, position: Int, downloader: GalleryDownloader) {
+        val percentage = downloader.percentage
+        loadImage(context, downloader.thumbnail, holder.imgView)
+        holder.title.text = downloader.truePathTitle
+        holder.cancelButton.setOnClickListener { removeDownloader(downloader) }
+        when (downloader.status) {
+            GalleryDownloader.Status.PAUSED -> {
+                holder.playButton.setImageResource(R.drawable.ic_play_arrow)
+                holder.playButton.setOnClickListener {
+                    downloader.status = GalleryDownloader.Status.NOT_STARTED
+                    startWork(context)
+                    notifyItemChanged(position)
                 }
             }
-            context.runOnUiThread(this::notifyDataSetChanged);
-        }).setNegativeButton(R.string.no, null).setCancelable(true);
-        builder.show();
-    }
-
-    private String getAllGalleries() {
-        StringBuilder builder = new StringBuilder();
-        for (Object o : getSelected()) {
-            if (o instanceof LocalGallery) builder.append(((LocalGallery) o).getTitle());
-            else builder.append(((GalleryDownloader) o).getTruePathTitle());
-            builder.append('\n');
-        }
-        return builder.toString();
-    }
-
-    private void showDialogPDF() {
-        MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(context);
-        builder.setTitle(R.string.create_pdf).setMessage(getAllGalleries());
-        builder.setPositiveButton(R.string.yes, (dialog, which) -> {
-            for (Object o : getSelected()) {
-                if (!(o instanceof LocalGallery)) continue;
-                CreatePDF.startWork(context, (LocalGallery) o);
-            }
-        }).setNegativeButton(R.string.no, null).setCancelable(true);
-        builder.show();
-    }
-
-
-    private void showDialogZip() {
-        MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(context);
-        builder.setTitle(R.string.create_zip).setMessage(getAllGalleries());
-        builder.setPositiveButton(R.string.yes, (dialog, which) -> {
-            for (Object o : getSelected()) {
-                if (!(o instanceof LocalGallery)) continue;
-                CreateZIP.startWork(context, (LocalGallery) o);
-            }
-        }).setNegativeButton(R.string.no, null).setCancelable(true);
-        builder.show();
-
-    }
-
-    public boolean hasSelectedClass(Class<?> c) {
-        for (Object x : getSelected()) if (x.getClass() == c) return true;
-        return false;
-    }
-
-    @Override
-    public int getItemCount() {
-        return filter.size();
-    }
-
-    @Override
-    public Filter getFilter() {
-        return new Filter() {
-            @Override
-            protected FilterResults performFiltering(CharSequence constraint) {
-                String query = constraint.toString().toLowerCase(Locale.US);
-                if (lastQuery.equals(query)) return null;
-                FilterResults results = new FilterResults();
-                lastQuery = query;
-                results.values = createHash(galleryDownloaders, dataset);
-                return results;
-            }
-
-            @Override
-            protected void publishResults(CharSequence constraint, FilterResults results) {
-                if (results != null) {
-                    filter = (CopyOnWriteArrayList<Object>) results.values;
-                    context.runOnUiThread(() -> notifyDataSetChanged());
+            GalleryDownloader.Status.DOWNLOADING -> {
+                holder.playButton.setImageResource(R.drawable.ic_pause)
+                holder.playButton.setOnClickListener {
+                    downloader.status = GalleryDownloader.Status.PAUSED
+                    notifyItemChanged(position)
                 }
             }
-        };
-    }
-
-    public void removeObserver() {
-        DownloadQueue.removeObserver(observer);
-    }
-
-    public void viewRandom() {
-        if (dataset.size() == 0) return;
-        int x = Utility.RANDOM.nextInt(dataset.size());
-        startGallery(context, dataset.get(x).getDirectory());
-    }
-
-    public void sortChanged() {
-        sortElements();
-        context.runOnUiThread(() -> notifyItemRangeChanged(0, getItemCount()));
-    }
-
-    public void startSelected() {
-        for (Object o : getSelected()) {
-            if (!(o instanceof GalleryDownloader)) continue;
-            GalleryDownloader d = (GalleryDownloader) o;
-            if (d.getStatus() == GalleryDownloader.Status.PAUSED)
-                d.setStatus(GalleryDownloader.Status.NOT_STARTED);
+            GalleryDownloader.Status.NOT_STARTED -> {
+                holder.playButton.setImageResource(R.drawable.ic_play_arrow)
+                holder.playButton.setOnClickListener { givePriority(downloader) }
+            }
+            else -> {}
         }
-        context.runOnUiThread(this::notifyDataSetChanged);
+        holder.progress.text = context.getString(R.string.percentage_format, percentage)
+        holder.progress.visibility =
+            if (downloader.status === GalleryDownloader.Status.NOT_STARTED) View.GONE else View.VISIBLE
+        holder.progressBar.progress = percentage
+        holder.progressBar.isIndeterminate =
+            downloader.status === GalleryDownloader.Status.NOT_STARTED
+        setTint(holder.playButton.drawable)
+        setTint(holder.cancelButton.drawable)
     }
 
-    public void pauseSelected() {
-        for (Object o : getSelected()) {
-            if (!(o instanceof GalleryDownloader)) continue;
-            GalleryDownloader d = (GalleryDownloader) o;
-            d.setStatus(GalleryDownloader.Status.PAUSED);
+    private fun removeDownloader(downloader: GalleryDownloader) {
+        val position = filter.indexOf(downloader)
+        if (position < 0) return
+        filter.removeAt(position)
+        remove(downloader, true)
+        galleryDownloaders.remove(downloader)
+        context.runOnUiThread { notifyItemRemoved(position) }
+    }
+
+    override fun getItemId(position: Int): Long {
+        return if (position == -1) -1 else filter[position].hashCode().toLong()
+    }
+
+    override fun onBindMultichoiceViewHolder(holder: ViewHolder, position: Int) {
+        if (filter[position] is LocalGallery) bindGallery(
+            holder,
+            position,
+            filter[position] as LocalGallery
+        ) else bindDownload(holder, position, filter[position] as GalleryDownloader)
+    }
+
+    private fun showDialogDelete() {
+        val builder = MaterialAlertDialogBuilder(context)
+        builder.setTitle(R.string.delete_galleries).setMessage(allGalleries)
+        builder.setPositiveButton(R.string.yes) { _: DialogInterface?, _: Int ->
+            val coll = ArrayList(selected)
+            for (o in coll) {
+                filter.remove(o)
+                if (o is LocalGallery) {
+                    dataset.remove(o)
+                    recursiveDelete(o.directory)
+                } else if (o is DownloadGallery) {
+                    remove(o as GalleryDownloader, true)
+                }
+            }
+            context.runOnUiThread { notifyDataSetChanged() }
+        }.setNegativeButton(R.string.no, null).setCancelable(true)
+        builder.show()
+    }
+
+    private val allGalleries: String
+        get() {
+            val builder = StringBuilder()
+            for (o in selected) {
+                if (o is LocalGallery) builder.append(o.title) else builder.append((o as GalleryDownloader).truePathTitle)
+                builder.append('\n')
+            }
+            return builder.toString()
         }
-        context.runOnUiThread(this::notifyDataSetChanged);
+
+    private fun showDialogPDF() {
+        val builder = MaterialAlertDialogBuilder(context)
+        builder.setTitle(R.string.create_pdf).setMessage(allGalleries)
+        builder.setPositiveButton(R.string.yes) { _: DialogInterface?, _: Int ->
+            for (o in selected) {
+                if (o !is LocalGallery) continue
+                CreatePDF.startWork(context, (o as LocalGallery?)!!)
+            }
+        }.setNegativeButton(R.string.no, null).setCancelable(true)
+        builder.show()
     }
 
-    public void deleteSelected() {
-        showDialogDelete();
+    private fun showDialogZip() {
+        val builder = MaterialAlertDialogBuilder(context)
+        builder.setTitle(R.string.create_zip).setMessage(allGalleries)
+        builder.setPositiveButton(R.string.yes) { _: DialogInterface?, _: Int ->
+            for (o in selected) {
+                if (o !is LocalGallery) continue
+                CreateZIP.startWork(context, (o as LocalGallery?)!!)
+            }
+        }.setNegativeButton(R.string.no, null).setCancelable(true)
+        builder.show()
     }
 
-    public void zipSelected() {
-        showDialogZip();
+    fun hasSelectedClass(c: Class<*>): Boolean {
+        for (x in selected) if (x.javaClass == c) return true
+        return false
     }
 
-    public void pdfSelected() {
-        showDialogPDF();
+    override fun getItemCount(): Int {
+        return filter.size
     }
 
-    static class ViewHolder extends RecyclerView.ViewHolder {
-        final ImageView imgView;
-        final View overlay;
-        final MaterialTextView title, pages, flag, progress;
-        final ViewGroup layout;
-        final ImageButton playButton, cancelButton;
-        final ProgressBar progressBar;
+    override fun getFilter(): Filter {
+        return object : Filter() {
+            override fun performFiltering(constraint: CharSequence): FilterResults? {
+                val query = constraint.toString().lowercase()
+                if (lastQuery == query) return null
+                val results = FilterResults()
+                lastQuery = query
+                results.values = createHash(galleryDownloaders, dataset)
+                return results
+            }
 
-        ViewHolder(View v) {
-            super(v);
+            override fun publishResults(constraint: CharSequence, results: FilterResults) {
+                filter = results.values as ArrayList<Any>
+                context.runOnUiThread { notifyDataSetChanged() }
+            }
+        }
+    }
+
+    fun removeObserver() {
+        removeObserver(observer)
+    }
+
+    fun viewRandom() {
+        if (dataset.size == 0) return
+        val x = Utility.RANDOM.nextInt(dataset.size)
+        startGallery(context, dataset[x].directory)
+    }
+
+    fun sortChanged() {
+        sortElements()
+        context.runOnUiThread { notifyItemRangeChanged(0, itemCount) }
+    }
+
+    fun startSelected() {
+        for (o in selected) {
+            if (o !is GalleryDownloader) continue
+            if (o.status === GalleryDownloader.Status.PAUSED) o.status =
+                GalleryDownloader.Status.NOT_STARTED
+        }
+        context.runOnUiThread { notifyDataSetChanged() }
+    }
+
+    fun pauseSelected() {
+        for (o in selected) {
+            if (o !is GalleryDownloader) continue
+            o.status = GalleryDownloader.Status.PAUSED
+        }
+        context.runOnUiThread { notifyDataSetChanged() }
+    }
+
+    fun deleteSelected() {
+        showDialogDelete()
+    }
+
+    fun zipSelected() {
+        showDialogZip()
+    }
+
+    fun pdfSelected() {
+        showDialogPDF()
+    }
+
+    class ViewHolder(v: View) : RecyclerView.ViewHolder(v) {
+        val imgView: ImageView
+        val overlay: View
+        val title: MaterialTextView
+        val pages: MaterialTextView
+        val flag: MaterialTextView?
+        val progress: MaterialTextView
+        val layout: ViewGroup
+        val playButton: ImageButton
+        val cancelButton: ImageButton
+        val progressBar: ProgressBar
+
+        init {
             //Both
-            imgView = v.findViewById(R.id.image);
-            title = v.findViewById(R.id.title);
+            imgView = v.findViewById(R.id.image)
+            title = v.findViewById(R.id.title)
             //Local
-            pages = v.findViewById(R.id.pages);
-            layout = v.findViewById(R.id.master_layout);
-            flag = v.findViewById(R.id.flag);
-            overlay = v.findViewById(R.id.overlay);
+            pages = v.findViewById(R.id.pages)
+            layout = v.findViewById(R.id.master_layout)
+            flag = v.findViewById(R.id.flag)
+            overlay = v.findViewById(R.id.overlay)
             //Downloader
-            progress = itemView.findViewById(R.id.progress);
-            progressBar = itemView.findViewById(R.id.progressBar);
-            playButton = itemView.findViewById(R.id.playButton);
-            cancelButton = itemView.findViewById(R.id.cancelButton);
+            progress = itemView.findViewById(R.id.progress)
+            progressBar = itemView.findViewById(R.id.progressBar)
+            playButton = itemView.findViewById(R.id.playButton)
+            cancelButton = itemView.findViewById(R.id.cancelButton)
+        }
+    }
+
+    companion object {
+        fun startGallery(context: AppCompatActivity, directory: File) {
+            if (!directory.isDirectory) return
+            val ent = LocalGallery(directory)
+            ent.calculateSizes()
+            Thread {
+                val intent = Intent(context, GalleryActivity::class.java)
+                intent.putExtra(context.packageName + ".GALLERY", ent)
+                intent.putExtra(context.packageName + ".ISLOCAL", true)
+                context.runOnUiThread { context.startActivity(intent) }
+            }.start()
         }
     }
 }

@@ -146,7 +146,7 @@ class FavoriteActivity : BaseActivity() {
     }
 
     companion object {
-        @JvmStatic
+
         val entryPerPage: Int
             get() = Int.MAX_VALUE
     }

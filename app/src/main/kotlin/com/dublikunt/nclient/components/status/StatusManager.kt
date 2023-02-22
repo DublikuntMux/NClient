@@ -6,24 +6,24 @@ object StatusManager {
     const val DEFAULT_STATUS = "None"
     private val statusMap = HashMap<String, Status>()
 
-    @JvmStatic
+
     fun getByName(name: String): Status? {
         return statusMap[name]
     }
 
-    @JvmStatic
+
     fun add(name: String, color: Int): Status {
         return add(Status(color, name))
     }
 
-    @JvmStatic
+
     fun add(status: Status): Status {
         Queries.StatusTable.insert(status)
         statusMap[status.name] = status
         return status
     }
 
-    @JvmStatic
+
     fun remove(status: Status) {
         Queries.StatusTable.remove(status.name)
         statusMap.remove(status.name)

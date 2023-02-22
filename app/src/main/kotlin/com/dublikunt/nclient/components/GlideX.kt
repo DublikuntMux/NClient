@@ -19,7 +19,7 @@ object GlideX {
         }
     }
 
-    @JvmStatic
+
     fun with(view: View?): RequestManager? {
         return try {
             Glide.with(view!!)

@@ -10,9 +10,9 @@ import java.util.concurrent.CopyOnWriteArrayList
 class NotificationSettings private constructor(private val notificationManager: NotificationManagerCompat) {
     companion object {
         private val notificationArray: MutableList<Int> = CopyOnWriteArrayList()
-        private var notificationSettings: NotificationSettings? = null
+        private lateinit var notificationSettings: NotificationSettings
 
-        @JvmStatic
+
         var notificationId = 999
             get() = field++
             private set
@@ -25,26 +25,26 @@ class NotificationSettings private constructor(private val notificationManager: 
             trimArray()
         }
 
-        @JvmStatic
+
         fun notify(channel: String?, notificationId: Int, notification: Notification?) {
             if (maximumNotification == 0) return
             notificationArray.remove(Integer.valueOf(notificationId))
             notificationArray.add(notificationId)
             trimArray()
             download("Notification count: " + notificationArray.size)
-            notificationSettings!!.notificationManager.notify(notificationId, notification!!)
+            notificationSettings.notificationManager.notify(notificationId, notification!!)
         }
 
-        @JvmStatic
+
         fun cancel(channel: String?, notificationId: Int) {
-            notificationSettings!!.notificationManager.cancel(notificationId)
+            notificationSettings.notificationManager.cancel(notificationId)
             notificationArray.remove(Integer.valueOf(notificationId))
         }
 
         private fun trimArray() {
             while (notificationArray.size > maximumNotification) {
                 val first = notificationArray.removeAt(0)
-                notificationSettings!!.notificationManager.cancel(first)
+                notificationSettings.notificationManager.cancel(first)
             }
         }
     }

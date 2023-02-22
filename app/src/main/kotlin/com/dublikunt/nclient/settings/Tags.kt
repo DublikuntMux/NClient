@@ -2,15 +2,15 @@ package com.dublikunt.nclient.settings
 
 import android.content.Context
 import com.dublikunt.nclient.api.components.Tag
+import com.dublikunt.nclient.async.database.Queries
 import com.dublikunt.nclient.enums.TagStatus
 import com.dublikunt.nclient.enums.TagType
-import com.dublikunt.nclient.async.database.Queries
 import com.dublikunt.nclient.settings.Global.removeAvoidedGalleries
 
 object Tags {
     const val MAXTAGS = 100
 
-    @JvmStatic
+
     var minCount = 0
         private set
 
