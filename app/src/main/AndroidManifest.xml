@@ -57,7 +57,6 @@
             android:exported="true"
             android:icon="@mipmap/ic_launcher_calculator"
             android:label="@string/app_name_fake_calculator"
-            android:roundIcon="@mipmap/ic_launcher_calculator_round"
             android:targetActivity=".PINActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

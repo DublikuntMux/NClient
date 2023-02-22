@@ -80,7 +80,7 @@
                     android:layout_weight="1"
                     android:background="?attr/selectableItemBackgroundBorderless"
                     android:contentDescription="@string/start_download"
-                    app:icon="@drawable/ic_play"
+                    app:icon="@drawable/ic_play_arrow"
                     app:iconGravity="textStart"
                     app:iconPadding="0dp"
                     app:iconTint="?android:attr/colorForeground"

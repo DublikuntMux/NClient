@@ -164,7 +164,7 @@ class ZoomFragment : Fragment() {
         val dra = loadPage() ?: return
         dra
             .transform(Rotate(degree))
-            .placeholder(R.drawable.ic_launcher_foreground)
+            .placeholder(R.mipmap.ic_launcher_foreground)
             .error(R.drawable.ic_refresh)
             .priority(priority!!)
             .addListener(object : RequestListener<Drawable?> {

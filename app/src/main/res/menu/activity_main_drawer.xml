@@ -7,7 +7,7 @@
             <group android:checkableBehavior="none">
                 <item
                     android:id="@+id/downloaded"
-                    android:icon="@drawable/ic_file"
+                    android:icon="@drawable/ic_file_download"
                     android:title="@string/downloaded_manga" />
                 <item
                     android:id="@+id/random"
@@ -23,7 +23,7 @@
                     android:title="@string/online_favorite_manga" />
                 <item
                     android:id="@+id/tag_manager"
-                    android:icon="@drawable/ic_hashtag"
+                    android:icon="@drawable/ic_tag"
                     android:title="@string/manage_tags" />
                 <item
                     android:id="@+id/status_manager"

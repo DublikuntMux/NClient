@@ -39,7 +39,7 @@
         app:showAsAction="ifRoom|collapseActionView" />
     <item
         android:id="@+id/download_page"
-        android:icon="@drawable/ic_file"
+        android:icon="@drawable/ic_file_download"
         android:title="@string/download_all_galleries_in_this_page"
         android:titleCondensed="@string/download_all_galleries"
         app:showAsAction="never" />

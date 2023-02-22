@@ -8,7 +8,7 @@
         app:showAsAction="ifRoom|collapseActionView" />
     <item
         android:id="@+id/pdf_all"
-        android:icon="@drawable/ic_pdf"
+        android:icon="@drawable/ic_picture_as_pdf"
         android:title="@string/create_pdf"
         app:showAsAction="ifRoom|collapseActionView" />
     <item
@@ -23,7 +23,7 @@
         app:showAsAction="ifRoom|collapseActionView" />
     <item
         android:id="@+id/start_all"
-        android:icon="@drawable/ic_play"
+        android:icon="@drawable/ic_play_arrow"
         android:title="@string/start_selected_downloads"
         app:showAsAction="ifRoom|collapseActionView" />
     <item
