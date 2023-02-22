@@ -127,7 +127,7 @@ class CreatePDF : JobIntentService() {
 
     private fun preExecute(file: File) {
         notification = NotificationCompat.Builder(applicationContext, Global.CHANNEL_ID2)
-        notification!!.setSmallIcon(R.drawable.ic_pdf)
+        notification!!.setSmallIcon(R.drawable.ic_picture_as_pdf)
             .setOnlyAlertOnce(true)
             .setStyle(NotificationCompat.BigTextStyle().bigText(file.name))
             .setContentTitle(getString(R.string.channel2_title))

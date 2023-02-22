@@ -1,8 +1,9 @@
-package com.dublikunt.nclient.components.photoview
+package com.dublikunt.nclient.components.photoview;
 
-import android.view.View
+import android.view.View;
 
-interface OnViewTapListener {
+public interface OnViewTapListener {
+
     /**
      * A callback to receive where the user taps on a ImageView. You will receive a callback if
      * the user taps anywhere on the view, tapping on 'whitespace' will not be ignored.
@@ -11,5 +12,5 @@ interface OnViewTapListener {
      * @param x    - where the user tapped from the left of the View.
      * @param y    - where the user tapped from the top of the View.
      */
-    fun onViewTap(view: View?, x: Float, y: Float)
+    void onViewTap(View view, float x, float y);
 }

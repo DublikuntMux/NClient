@@ -990,6 +990,7 @@ object Queries {
             ");"
         const val ID_GALLERY = "id_gallery"
         const val PAGE = "page"
+        @JvmStatic
         fun insert(id: Int, page: Int) {
             if (id < 0) return
             val values = ContentValues(2)

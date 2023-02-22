@@ -84,7 +84,8 @@ class ZoomFragment : Fragment() {
         url = if (str == null) null else Uri.parse(str)
         pageFile = requireArguments().getParcelable("FOLDER")
         photoView.setAllowParentInterceptOnEdge(true)
-        photoView.setOnPhotoTapListener(object : OnPhotoTapListener {
+        photoView.setOnPhotoTapListener(object :
+            OnPhotoTapListener {
             override fun onPhotoTap(view: ImageView?, x: Float, y: Float) {
                 val prev = x < CHANGE_PAGE_THRESHOLD
                 val next = x > 1f - CHANGE_PAGE_THRESHOLD
@@ -96,7 +97,8 @@ class ZoomFragment : Fragment() {
                 download(view!!, x, y, prev, next)
             }
         })
-        photoView.setOnScaleChangeListener(object : OnScaleChangedListener {
+        photoView.setOnScaleChangeListener(object :
+            OnScaleChangedListener {
             override fun onScaleChange(scaleFactor: Float, focusX: Float, focusY: Float) {
                 if (zoomChangeListener != null) {
                     zoomChangeListener!!.onZoomChange(rootView, photoView.scale)

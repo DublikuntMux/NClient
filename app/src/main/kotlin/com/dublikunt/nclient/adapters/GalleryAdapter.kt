@@ -11,6 +11,7 @@ import android.view.View.OnLongClickListener
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.ImageView
+import android.widget.TextView
 import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 import com.dublikunt.nclient.CopyToClipboardActivity.Companion.copyTextToClipboard
@@ -18,19 +19,25 @@ import com.dublikunt.nclient.GalleryActivity
 import com.dublikunt.nclient.MainActivity
 import com.dublikunt.nclient.R
 import com.dublikunt.nclient.ZoomActivity
+import com.dublikunt.nclient.api.LocalGallery
 import com.dublikunt.nclient.api.components.Gallery
 import com.dublikunt.nclient.api.components.GalleryData
 import com.dublikunt.nclient.api.components.GenericGallery
-import com.dublikunt.nclient.enums.SpecialTagIds
-import com.dublikunt.nclient.enums.TagType
-import com.dublikunt.nclient.api.LocalGallery
-import com.dublikunt.nclient.async.database.Queries
+import com.dublikunt.nclient.async.database.Queries.ResumeTable.insert
 import com.dublikunt.nclient.classes.Size
-import com.dublikunt.nclient.components.photoview.OnMatrixChangedListener
 import com.dublikunt.nclient.components.photoview.PhotoView
 import com.dublikunt.nclient.components.widgets.CustomGridLayoutManager
+import com.dublikunt.nclient.enums.SpecialTagIds
+import com.dublikunt.nclient.enums.TagType
 import com.dublikunt.nclient.files.GalleryFolder
 import com.dublikunt.nclient.settings.Global
+import com.dublikunt.nclient.settings.Global.SCREENFOLDER
+import com.dublikunt.nclient.settings.Global.applyFastScroller
+import com.dublikunt.nclient.settings.Global.downloadPolicy
+import com.dublikunt.nclient.settings.Global.findGalleryFolder
+import com.dublikunt.nclient.settings.Global.hasStoragePermission
+import com.dublikunt.nclient.settings.Global.isZoomOneColumn
+import com.dublikunt.nclient.settings.Global.useRtl
 import com.dublikunt.nclient.utility.ImageDownloadUtility.downloadPage
 import com.dublikunt.nclient.utility.ImageDownloadUtility.loadImage
 import com.dublikunt.nclient.utility.ImageDownloadUtility.loadImageOp
@@ -53,7 +60,7 @@ class GalleryAdapter(
     private val angles = SparseIntArray()
     var directory: GalleryFolder? = null
     private var maxImageSize: Size? = null
-    private lateinit var policy: Policy
+    private var policy: Policy? = null
     private var colCount = 0
 
     init {
@@ -61,15 +68,16 @@ class GalleryAdapter(
         try {
             if (gallery is LocalGallery) {
                 directory = gallery.galleryFolder
-            } else if (Global.hasStoragePermission(context)) {
+            } else if (hasStoragePermission(context)) {
                 if (gallery.id != -1) {
-                    val f = Global.findGalleryFolder(context, gallery.id)
+                    val f = findGalleryFolder(context, gallery.id)
                     if (f != null) directory = GalleryFolder(f)
                 } else {
                     directory = GalleryFolder(gallery.title)
                 }
             }
         } catch (ignore: IllegalArgumentException) {
+            directory = null
         }
         download("Max maxSize: " + maxSize + ", min maxSize: " + gallery.minSize)
     }
@@ -132,14 +140,14 @@ class GalleryAdapter(
             CustomGridLayoutManager(context, 1, RecyclerView.HORIZONTAL, false)
         if (gallery.isRelatedLoaded) {
             val adapter = ListAdapter(context)
-            adapter.addGalleries(ArrayList<GenericGallery>(gallery.related))
+            adapter.addGalleries(ArrayList(gallery.related))
             recyclerView.adapter = adapter
         }
     }
 
     private fun loadTagLayout(holder: ViewHolder) {
         val vg = holder.master.findViewById<ViewGroup>(R.id.tag_master)
-        val idContainer = holder.master.findViewById<MaterialTextView>(R.id.id_num)
+        val idContainer = holder.master.findViewById<TextView>(R.id.id_num)
         initializeIdContainer(idContainer)
         if (!hasTags()) {
             val layoutParams = vg.layoutParams
@@ -160,7 +168,7 @@ class GalleryAdapter(
             cg = lay.findViewById(R.id.chip_group)
             if (cg.childCount != 0) continue
             lay.visibility = if (tagCount == 0) View.GONE else View.VISIBLE
-            (lay.findViewById<View>(R.id.title) as MaterialTextView).setText(idStringTagName)
+            (lay.findViewById<View>(R.id.title) as TextView).setText(idStringTagName)
             for (a in 0 until tagCount) {
                 val tag = tagList.getTag(type, a)
                 val c = inflater.inflate(R.layout.chip_layout, cg, false) as Chip
@@ -182,7 +190,7 @@ class GalleryAdapter(
         }
     }
 
-    private fun initializeIdContainer(idContainer: MaterialTextView) {
+    private fun initializeIdContainer(idContainer: TextView) {
         if (gallery.id <= 0) {
             idContainer.visibility = View.GONE
             return
@@ -204,7 +212,7 @@ class GalleryAdapter(
     }
 
     private fun addInfoLayout(holder: ViewHolder, gallery: GalleryData) {
-        var text = holder.master.findViewById<MaterialTextView>(R.id.page_count)
+        var text = holder.master.findViewById<TextView>(R.id.page_count)
         text.text = context.getString(R.string.page_count_format, gallery.pageCount)
         text = holder.master.findViewById(R.id.upload_date)
         text.text = context.getString(
@@ -247,14 +255,12 @@ class GalleryAdapter(
         }
         if (policy == Policy.FULL) {
             val photoView = imgView as PhotoView
-            photoView.isZoomable = Global.isZoomOneColumn
-            photoView.setOnMatrixChangeListener(object : OnMatrixChangedListener {
-                override fun onMatrixChanged(rect: RectF?) {
-                    photoView.setAllowParentInterceptOnEdge(
-                        photoView.scale <= 1f
-                    )
-                }
-            })
+            photoView.isZoomable = isZoomOneColumn
+            photoView.setOnMatrixChangeListener {
+                photoView.setAllowParentInterceptOnEdge(
+                    photoView.scale <= 1f
+                )
+            }
             photoView.setOnClickListener {
                 if (photoView.scale <= 1f) startGallery(
                     holder.bindingAdapterPosition
@@ -275,17 +281,17 @@ class GalleryAdapter(
         adapter.add(context.getString(R.string.share))
         adapter.add(context.getString(R.string.rotate_image))
         adapter.add(context.getString(R.string.bookmark_here))
-        if (Global.hasStoragePermission(context)) adapter.add(context.getString(R.string.save_page))
+        if (hasStoragePermission(context)) adapter.add(context.getString(R.string.save_page))
         val builder = MaterialAlertDialogBuilder(context)
         builder.setTitle(R.string.settings).setIcon(R.drawable.ic_share)
         builder.setAdapter(adapter) { _: DialogInterface?, which: Int ->
             when (which) {
                 0 -> openSendImageDialog(imgView, pos)
                 1 -> rotate(pos)
-                2 -> Queries.ResumeTable.insert(gallery.id, pos)
+                2 -> insert(gallery.id, pos)
                 3 -> {
                     val name = String.format(Locale.US, "%d-%d.jpg", gallery.id, pos)
-                    Utility.saveImage(imgView.drawable, File(Global.SCREENFOLDER, name))
+                    Utility.saveImage(imgView.drawable, File(SCREENFOLDER, name))
                 }
             }
         }.show()
@@ -322,7 +328,7 @@ class GalleryAdapter(
     }
 
     private fun startGallery(page: Int) {
-        if (!gallery.isLocal && Global.downloadPolicy == Global.DataUsageType.NONE) {
+        if (!gallery.isLocal && downloadPolicy === Global.DataUsageType.NONE) {
             context.runOnUiThread {
                 Toast.makeText(
                     context,
@@ -391,8 +397,8 @@ class GalleryAdapter(
         init {
             master = v.findViewById(R.id.master)
             pageNumber = v.findViewById(R.id.page_number)
-            if (Global.useRtl()) v.rotationY = 180f
-            if (type == Type.RELATED) Global.applyFastScroller(master.findViewById(R.id.recycler))
+            if (useRtl()) v.rotationY = 180f
+            if (type == Type.RELATED) applyFastScroller(master.findViewById(R.id.recycler))
         }
     }
 

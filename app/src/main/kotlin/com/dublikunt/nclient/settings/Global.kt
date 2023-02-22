@@ -67,6 +67,7 @@ object Global {
 
     @JvmField
     var DOWNLOADFOLDER: File? = null
+    @JvmStatic
     var SCREENFOLDER: File? = null
 
     @JvmField
@@ -96,6 +97,7 @@ object Global {
     private var hideMultitask = false
     var isEnableBeta = false
     private var volumeOverride = false
+    @JvmStatic
     var isZoomOneColumn = false
         private set
     var isKeepHistory = false
@@ -611,6 +613,7 @@ object Global {
         return strings
     }
 
+    @JvmStatic
     fun hasStoragePermission(context: Context?): Boolean {
         return ContextCompat.checkSelfPermission(
             context!!,
@@ -715,6 +718,7 @@ object Global {
     val isExternalStorageManager: Boolean
         get() = Build.VERSION.SDK_INT < Build.VERSION_CODES.R || Environment.isExternalStorageManager()
 
+    @JvmStatic
     fun applyFastScroller(recycler: RecyclerView?) {
         if (recycler == null) return
         val drawable = ContextCompat.getDrawable(recycler.context, R.drawable.thumb) ?: return

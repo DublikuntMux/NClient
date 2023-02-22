@@ -143,7 +143,7 @@ class GalleryDownloaderManager {
                 )
             )
             .setProgress(gallery!!.pageCount, 0, false)
-            .setSmallIcon(R.drawable.ic_file)
+            .setSmallIcon(R.drawable.ic_file_download)
         setPercentage(0, 1)
     }
 
@@ -194,7 +194,7 @@ class GalleryDownloaderManager {
                 PendingIntent.getService(context, 2, startIntent, PendingIntent.FLAG_CANCEL_CURRENT)
         }
         if (pauseMode) notification!!.addAction(
-            R.drawable.ic_play,
+            R.drawable.ic_play_arrow,
             context.getString(R.string.resume),
             pStart
         ) else notification!!.addAction(

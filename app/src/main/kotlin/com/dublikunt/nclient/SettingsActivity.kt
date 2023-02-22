@@ -125,7 +125,7 @@ class SettingsActivity : GeneralActivity() {
     @TargetApi(Build.VERSION_CODES.R)
     fun requestStorageManager() {
         val builder = MaterialAlertDialogBuilder(this)
-        builder.setIcon(R.drawable.ic_file)
+        builder.setIcon(R.drawable.ic_file_download)
         builder.setTitle(R.string.requesting_storage_access)
         builder.setMessage(R.string.request_storage_manager_summary)
         builder.setPositiveButton(R.string.ok) { _: DialogInterface?, _: Int ->

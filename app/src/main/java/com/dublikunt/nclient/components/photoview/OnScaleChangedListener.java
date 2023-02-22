@@ -1,9 +1,11 @@
-package com.dublikunt.nclient.components.photoview
+package com.dublikunt.nclient.components.photoview;
+
 
 /**
  * Interface definition for callback to be invoked when attached ImageView scale changes
  */
-interface OnScaleChangedListener {
+public interface OnScaleChangedListener {
+
     /**
      * Callback for when the scale changes
      *
@@ -11,5 +13,5 @@ interface OnScaleChangedListener {
      * @param focusX      focal point X position
      * @param focusY      focal point Y position
      */
-    fun onScaleChange(scaleFactor: Float, focusX: Float, focusY: Float)
+    void onScaleChange(float scaleFactor, float focusX, float focusY);
 }

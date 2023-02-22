@@ -618,7 +618,7 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
         val builder = MaterialAlertDialogBuilder(this)
         builder
             .setTitle(R.string.download_all_galleries_in_this_page)
-            .setIcon(R.drawable.ic_file)
+            .setIcon(R.drawable.ic_file_download)
             .setNegativeButton(R.string.cancel, null)
             .setPositiveButton(
                 R.string.ok

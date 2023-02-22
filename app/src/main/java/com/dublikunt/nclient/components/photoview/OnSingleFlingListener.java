@@ -1,12 +1,13 @@
-package com.dublikunt.nclient.components.photoview
+package com.dublikunt.nclient.components.photoview;
 
-import android.view.MotionEvent
+import android.view.MotionEvent;
 
 /**
  * A callback to be invoked when the ImageView is flung with a single
  * touch
  */
-interface OnSingleFlingListener {
+public interface OnSingleFlingListener {
+
     /**
      * A callback to receive where the user flings on a ImageView. You will receive a callback if
      * the user flings anywhere on the view.
@@ -16,5 +17,5 @@ interface OnSingleFlingListener {
      * @param velocityX distance of user's horizontal fling.
      * @param velocityY distance of user's vertical fling.
      */
-    fun onFling(e1: MotionEvent?, e2: MotionEvent?, velocityX: Float, velocityY: Float): Boolean
+    boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY);
 }

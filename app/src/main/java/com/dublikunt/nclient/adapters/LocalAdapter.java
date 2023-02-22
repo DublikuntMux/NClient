@@ -286,7 +286,7 @@ public class LocalAdapter extends MultichoiceAdapter<Object, LocalAdapter.ViewHo
         holder.cancelButton.setOnClickListener(v -> removeDownloader(downloader));
         switch (downloader.getStatus()) {
             case PAUSED:
-                holder.playButton.setImageResource(R.drawable.ic_play);
+                holder.playButton.setImageResource(R.drawable.ic_play_arrow);
                 holder.playButton.setOnClickListener(v -> {
                     downloader.setStatus(GalleryDownloader.Status.NOT_STARTED);
                     DownloadGallery.startWork(context);
@@ -301,7 +301,7 @@ public class LocalAdapter extends MultichoiceAdapter<Object, LocalAdapter.ViewHo
                 });
                 break;
             case NOT_STARTED:
-                holder.playButton.setImageResource(R.drawable.ic_play);
+                holder.playButton.setImageResource(R.drawable.ic_play_arrow);
                 holder.playButton.setOnClickListener(v -> DownloadQueue.givePriority(downloader));
                 break;
         }
