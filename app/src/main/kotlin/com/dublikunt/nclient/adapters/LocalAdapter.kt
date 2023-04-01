@@ -130,7 +130,7 @@ class LocalAdapter(private val context: LocalActivity, myDataset: ArrayList<Loca
         sortElements()
     }
 
-    protected override fun getMaster(holder: ViewHolder): ViewGroup {
+    override fun getMaster(holder: ViewHolder): ViewGroup {
         return holder.layout
     }
 

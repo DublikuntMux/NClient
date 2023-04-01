@@ -13,14 +13,13 @@ class ChipTag : Chip {
     private var tag: Tag? = null
     private var canBeAvoided = true
 
-    constructor(context: Context?) : super(context) {}
-    constructor(context: Context?, attrs: AttributeSet?) : super(context, attrs) {}
+    constructor(context: Context?) : super(context)
+    constructor(context: Context?, attrs: AttributeSet?) : super(context, attrs)
     constructor(context: Context?, attrs: AttributeSet?, defStyleAttr: Int) : super(
         context,
         attrs,
         defStyleAttr
-    ) {
-    }
+    )
 
     fun init(t: Tag, close: Boolean, canBeAvoided: Boolean) {
         setTag(t)

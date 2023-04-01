@@ -764,7 +764,7 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
         }
     }
 
-    private inner class Setting internal constructor() {
+    private inner class Setting() {
         val theme: ThemeScheme = Global.theme
         val locale: Locale = Global.initLanguage(this@MainActivity)
 

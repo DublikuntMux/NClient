@@ -40,7 +40,7 @@ abstract class GenericAdapter<T : GenericGallery> internal constructor(val datas
                 results.count = filter.size
                 lastQuery = query
                 val filter: MutableList<T> = ArrayList()
-                for (gallery in dataset) if (gallery!!.title.lowercase()
+                for (gallery in dataset) if (gallery.title.lowercase()
                         .contains(query)
                 ) filter.add(gallery)
                 results.values = filter

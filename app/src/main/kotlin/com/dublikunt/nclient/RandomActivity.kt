@@ -47,7 +47,7 @@ class RandomActivity : GeneralActivity() {
         supportActionBar!!.setDisplayShowTitleEnabled(true)
         supportActionBar!!.setTitle(R.string.random_manga)
         loadedGallery?.let { loadGallery(it) }
-        shuffle.setOnClickListener { loader!!.requestGallery() }
+        shuffle.setOnClickListener { loader.requestGallery() }
         thumbnail.setOnClickListener {
             if (loadedGallery != null) {
                 val intent = Intent(this@RandomActivity, GalleryActivity::class.java)

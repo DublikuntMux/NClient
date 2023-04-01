@@ -248,12 +248,12 @@ class GalleryDownloader(
 
     private fun createPages() {
         var i = start
-        while (i <= end && i < gallery!!.pageCount) {
+        while (i <= end && i < gallery.pageCount) {
             urls.add(
                 PageContainer(
                     i + 1,
-                    gallery!!.getHighPage(i).toString(),
-                    gallery!!.getPageExtension(i)
+                    gallery.getHighPage(i).toString(),
+                    gallery.getPageExtension(i)
                 )
             )
             i++
@@ -282,7 +282,7 @@ class GalleryDownloader(
         val nomedia = File(folder, ".nomedia")
         download("NOMEDIA: $nomedia for id $id")
         val writer = FileWriter(nomedia)
-        gallery!!.jsonWrite(writer)
+        gallery.jsonWrite(writer)
         writer.close()
     }
 

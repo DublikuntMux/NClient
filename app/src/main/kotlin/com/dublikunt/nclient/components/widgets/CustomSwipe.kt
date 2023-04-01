@@ -6,8 +6,8 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.dublikunt.nclient.utility.LogUtility.error
 
 class CustomSwipe : SwipeRefreshLayout {
-    constructor(context: Context) : super(context) {}
-    constructor(context: Context, attrs: AttributeSet?) : super(context, attrs) {}
+    constructor(context: Context) : super(context)
+    constructor(context: Context, attrs: AttributeSet?) : super(context, attrs)
 
     override fun setEnabled(refreshing: Boolean) {
         try {
