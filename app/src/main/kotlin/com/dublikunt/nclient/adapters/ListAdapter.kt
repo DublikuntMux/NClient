@@ -46,7 +46,7 @@ class ListAdapter(private val context: BaseActivity) :
         if (context.isFinishing) return
         try {
             if (Global.isDestroyed(context)) return
-            loadImage(context, ent.thumbnail, holder.imgView)
+            loadImage(context, ent.getThumbnail(), holder.imgView)
         } catch (ignore: VerifyError) {
         }
     }

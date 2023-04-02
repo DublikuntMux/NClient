@@ -1,3 +1,3 @@
 # NClient
 
-DublikuntMax app to see nhentai.com website from modern android app writen on kotlin.
+Dublikunt Max app to see nhentai.net website from modern android app written on kotlin.

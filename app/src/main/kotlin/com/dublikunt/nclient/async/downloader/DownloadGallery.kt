@@ -54,9 +54,7 @@ class DownloadGallery : JobIntentService() {
                 continue
             }
             download("Downloading: " + entry.downloader().id)
-            if (entry.downloader().downloadGalleryData()) {
-                entry.downloader().download()
-            }
+            entry.downloader().download()
             Utility.threadSleep(1000)
         }
     }
@@ -64,8 +62,6 @@ class DownloadGallery : JobIntentService() {
     private fun obtainData() {
         var downloader = DownloadQueue.fetchForData()
         while (downloader != null) {
-            downloader.downloadGalleryData()
-            Utility.threadSleep(100)
             downloader = DownloadQueue.fetchForData()
         }
     }
@@ -74,10 +70,10 @@ class DownloadGallery : JobIntentService() {
         private val lock = Any()
         private const val JOB_DOWNLOAD_GALLERY_ID = 9999
         fun downloadGallery(context: Context, gallery: GenericGallery) {
-            if (gallery.isValid && gallery is Gallery) downloadGallery(context, gallery)
+            if (gallery.valid && gallery is Gallery) downloadGallery(context, gallery)
             if (gallery.id > 0) {
                 if (gallery is SimpleGallery) {
-                    downloadGallery(context, gallery.getTitle(), gallery.thumbnail, gallery.id)
+                    downloadGallery(context, gallery.title, gallery.getThumbnail(), gallery.id)
                 } else downloadGallery(context, null, null, gallery.id)
             }
         }

@@ -54,8 +54,8 @@ class GalleryAdapter(
     private val gallery: GenericGallery,
     colCount: Int
 ) : RecyclerView.Adapter<GalleryAdapter.ViewHolder>() {
-    private val maxSize: Size = gallery.maxSize
-    private val minSize: Size = gallery.minSize
+    private val maxSize: Size = gallery.maxSize!!
+    private val minSize: Size = gallery.minSize!!
     private val angles = SparseIntArray()
     var directory: GalleryFolder? = null
     private var maxImageSize: Size? = null
@@ -159,7 +159,7 @@ class GalleryAdapter(
         var idStringTagName: Int
         var lay: ViewGroup
         var cg: ChipGroup
-        val tagList = gallery.galleryData.tags
+        val tagList = gallery.galleryData!!.tags
         for (type in TagType.values) {
             idStringTagName = TAG_NAMES[type.id.toInt()]
             tagCount = tagList.getCount(type)
@@ -185,7 +185,7 @@ class GalleryAdapter(
                 }
                 cg.addView(c)
             }
-            addInfoLayout(holder, gallery.galleryData)
+            addInfoLayout(holder, gallery.galleryData!!)
         }
     }
 

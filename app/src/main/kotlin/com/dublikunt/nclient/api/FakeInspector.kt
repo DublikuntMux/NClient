@@ -43,7 +43,7 @@ class FakeInspector(activity: LocalActivity, folder: File) :
 
     private fun createGallery(file: File) {
         val lg = LocalGallery(file, true)
-        if (lg.isValid) {
+        if (lg.valid) {
             galleries.add(lg)
         } else {
             error(lg)

@@ -17,13 +17,24 @@ import java.util.regex.Pattern
 
 class LocalGallery : GenericGallery {
     private val folder: GalleryFolder
-    private val galleryData: GalleryData
-    private val title: String
-    val trueTitle: String?
-    private val valid: Boolean
+    override val galleryData: GalleryData
+    override val id: Int
+        get() = folder.id
+    override val type: Type = Type.LOCAL
+    override val pageCount: Int
+        get() = galleryData.pageCount
+    override val valid: Boolean
+    override val title: String
+    val trueTitle: String
     private var hasAdvancedData = true
-    private var maxSize = Size(0, 0)
-    private var minSize = Size(Int.MAX_VALUE, Int.MAX_VALUE)
+    override var maxSize = Size(0, 0)
+    override var minSize = Size(Int.MAX_VALUE, Int.MAX_VALUE)
+    override val galleryFolder: GalleryFolder?
+        get() = null
+
+    override fun hasGalleryData(): Boolean {
+        return hasAdvancedData
+    }
 
     @JvmOverloads
     constructor(file: File, jumpDataRetrieve: Boolean = false) {
@@ -61,15 +72,11 @@ class LocalGallery : GenericGallery {
                 Size::class.java.classLoader
             )
         )
-        trueTitle = `in`.readString()
+        trueTitle = `in`.readString().toString()
         title = `in`.readString()!!
         hasAdvancedData = `in`.readByte().toInt() == 1
         folder = `in`.readParcelable(GalleryFolder::class.java.classLoader)!!
         valid = true
-    }
-
-    override fun getGalleryFolder(): GalleryFolder {
-        return folder
     }
 
     private fun readGalleryData(): GalleryData {
@@ -95,42 +102,6 @@ class LocalGallery : GenericGallery {
         if (options.outWidth < minSize.width) minSize.width = options.outWidth
         if (options.outHeight > maxSize.height) maxSize.height = options.outHeight
         if (options.outHeight < minSize.height) minSize.height = options.outHeight
-    }
-
-    override fun getMaxSize(): Size {
-        return maxSize
-    }
-
-    override fun getMinSize(): Size {
-        return minSize
-    }
-
-    override fun hasGalleryData(): Boolean {
-        return hasAdvancedData
-    }
-
-    override fun getGalleryData(): GalleryData {
-        return galleryData
-    }
-
-    override fun getType(): Type {
-        return Type.LOCAL
-    }
-
-    override fun isValid(): Boolean {
-        return valid
-    }
-
-    override fun getId(): Int {
-        return folder.id
-    }
-
-    override fun getPageCount(): Int {
-        return galleryData.pageCount
-    }
-
-    override fun getTitle(): String {
-        return title
     }
 
     val min: Int
@@ -210,8 +181,7 @@ class LocalGallery : GenericGallery {
         fun getPage(dir: File?, page: Int): File? {
             if (dir == null || !dir.exists()) return null
             val pag = String.format(Locale.US, "%03d.", page)
-            var x: File
-            x = File(dir, pag + "jpg")
+            var x: File = File(dir, pag + "jpg")
             if (x.exists()) return x
             x = File(dir, pag + "png")
             if (x.exists()) return x

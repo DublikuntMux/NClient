@@ -1,7 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <full-backup-content>
     <!--
-    ./adb shell bmgr fullbackup nclient   ./adb shell bmgr restore nclient   -->
+    Command for backup data
+    adb shell bmgr fullbackup nclient
+    adb shell bmgr restore nclient
+    -->
     <include
         domain="sharedpref"
         path="." />

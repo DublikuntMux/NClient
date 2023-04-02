@@ -1,308 +1,160 @@
-package com.dublikunt.nclient.api;
+package com.dublikunt.nclient.api
 
-import android.annotation.SuppressLint;
-import android.content.Context;
-import android.database.Cursor;
-import android.net.Uri;
-import android.os.Parcel;
+import android.annotation.SuppressLint
+import android.content.Context
+import android.database.Cursor
+import android.net.Uri
+import android.os.Parcel
+import android.os.Parcelable.Creator
+import com.dublikunt.nclient.api.components.*
+import com.dublikunt.nclient.async.database.Queries
+import com.dublikunt.nclient.async.database.Queries.TagTable.getTagsFromListOfInt
+import com.dublikunt.nclient.classes.Size
+import com.dublikunt.nclient.enums.ImageExt
+import com.dublikunt.nclient.enums.Language
+import com.dublikunt.nclient.enums.TagStatus
+import com.dublikunt.nclient.files.GalleryFolder
+import com.dublikunt.nclient.settings.Global.maxId
+import com.dublikunt.nclient.settings.Global.updateMaxId
+import com.dublikunt.nclient.utility.LogUtility.download
+import com.dublikunt.nclient.utility.Utility
+import org.jsoup.nodes.Element
+import java.util.*
 
-import androidx.annotation.NonNull;
+class SimpleGallery : GenericGallery {
+    override val title: String
+    override val maxSize: Size?
+        get() = null
+    override val minSize: Size?
+        get() = null
+    override val galleryFolder: GalleryFolder?
+        get() = null
+    override val galleryData: GalleryData?
+        get() = null
+    val thumb: ImageExt
+    override val id: Int
+    override val type = Type.SIMPLE
+    override val pageCount = 0
+    override val valid: Boolean
+        get() = id > 0
+    val mediaId: Int
+    var language = Language.UNKNOWN
+        private set
+    private var tags: TagList? = null
 
-import com.dublikunt.nclient.api.components.Gallery;
-import com.dublikunt.nclient.api.components.GalleryData;
-import com.dublikunt.nclient.api.components.GenericGallery;
-import com.dublikunt.nclient.api.components.Page;
-import com.dublikunt.nclient.api.components.Tag;
-import com.dublikunt.nclient.api.components.TagList;
-import com.dublikunt.nclient.async.database.Queries;
-import com.dublikunt.nclient.classes.Size;
-import com.dublikunt.nclient.enums.ImageExt;
-import com.dublikunt.nclient.enums.Language;
-import com.dublikunt.nclient.enums.TagStatus;
-import com.dublikunt.nclient.files.GalleryFolder;
-import com.dublikunt.nclient.settings.Global;
-import com.dublikunt.nclient.utility.LogUtility;
-import com.dublikunt.nclient.utility.Utility;
-
-import org.jsoup.nodes.Element;
-
-import java.util.Locale;
-
-public class SimpleGallery extends GenericGallery {
-    public static final Creator<SimpleGallery> CREATOR = new Creator<SimpleGallery>() {
-        /**
-         * Creates a SimpleGallery from Parcel. This is used to create an instance of the Gallery class and can be overridden by subclasses that need to create their own instances
-         *
-         * @param in - The Parcel to create the gallery from
-         *
-         * @return The newly created SimpleGallery or null if there was an error creating the gallery ( in which case the error will be logged
-         */
-        @Override
-        public SimpleGallery createFromParcel(Parcel in) {
-            return new SimpleGallery(in);
-        }
-
-        /**
-         * Creates a new array of SimpleGallery. Note that it is up to the implementer to make sure the array is large enough to hold the requested number of SimpleGalleries
-         *
-         * @param size - the number of SimpleGalleries to
-         */
-        @Override
-        public SimpleGallery[] newArray(int size) {
-            return new SimpleGallery[size];
-        }
-    };
-    private final String title;
-    private final ImageExt thumbnail;
-    private final int id, mediaId;
-    private Language language = Language.UNKNOWN;
-    private TagList tags;
-
-    public SimpleGallery(Parcel in) {
-        title = in.readString();
-        id = in.readInt();
-        mediaId = in.readInt();
-        thumbnail = ImageExt.values()[in.readByte()];
-        language = Language.values()[in.readByte()];
+    constructor(`in`: Parcel) {
+        title = `in`.readString()!!
+        id = `in`.readInt()
+        mediaId = `in`.readInt()
+        thumb = ImageExt.values()[`in`.readByte().toInt()]
+        language = Language.values()[`in`.readByte().toInt()]
     }
 
     @SuppressLint("Range")
-    public SimpleGallery(Cursor c) {
-        title = c.getString(c.getColumnIndex(Queries.HistoryTable.TITLE));
-        id = c.getInt(c.getColumnIndex(Queries.HistoryTable.ID));
-        mediaId = c.getInt(c.getColumnIndex(Queries.HistoryTable.MEDIAID));
-        thumbnail = ImageExt.values()[c.getInt(c.getColumnIndex(Queries.HistoryTable.THUMB))];
+    constructor(c: Cursor) {
+        title = c.getString(c.getColumnIndex(Queries.HistoryTable.TITLE))
+        id = c.getInt(c.getColumnIndex(Queries.HistoryTable.ID))
+        mediaId = c.getInt(c.getColumnIndex(Queries.HistoryTable.MEDIAID))
+        thumb = ImageExt.values()[c.getInt(c.getColumnIndex(Queries.HistoryTable.THUMB))]
     }
 
-    public SimpleGallery(Context context, Element e) {
-        String temp;
-        String tags = e.attr("data-tags").replace(' ', ',');
-        this.tags = Queries.TagTable.getTagsFromListOfInt(tags);
-        language = Gallery.loadLanguage(this.tags);
-        Element a = e.getElementsByTag("a").first();
-        temp = a.attr("href");
-        id = Integer.parseInt(temp.substring(3, temp.length() - 1));
-        a = e.getElementsByTag("img").first();
-        temp = a.hasAttr("data-src") ? a.attr("data-src") : a.attr("src");
-        mediaId = Integer.parseInt(temp.substring(temp.indexOf("galleries") + 10, temp.lastIndexOf('/')));
-        thumbnail = Page.charToExt(temp.charAt(temp.length() - 3));
-        title = e.getElementsByTag("div").first().text();
-        // Update the maximum id for the context.
-        if (context != null && id > Global.getMaxId()) Global.updateMaxId(context, id);
+    constructor(context: Context?, e: Element) {
+        var temp: String
+        val tags = e.attr("data-tags").replace(' ', ',')
+        this.tags = getTagsFromListOfInt(tags)
+        language = Gallery.loadLanguage(this.tags!!)
+        var a = e.getElementsByTag("a").first()!!
+        temp = a.attr("href")
+        id = temp.substring(3, temp.length - 1).toInt()
+        a = e.getElementsByTag("img").first()!!
+        temp = if (a.hasAttr("data-src")) a.attr("data-src") else a.attr("src")
+        mediaId = temp.substring(temp.indexOf("galleries") + 10, temp.lastIndexOf('/')).toInt()
+        thumb = Page.charToExt(temp[temp.length - 3].code)
+        title = e.getElementsByTag("div").first()!!.text()
+        if (context != null && id > maxId) updateMaxId(context, id)
     }
 
-    public SimpleGallery(Gallery gallery) {
-        title = gallery.getTitle();
-        mediaId = gallery.getMediaId();
-        id = gallery.getId();
-        thumbnail = gallery.getThumb();
+    constructor(gallery: Gallery) {
+        title = gallery.title
+        mediaId = gallery.mediaId
+        id = gallery.id
+        thumb = gallery.thumb
     }
 
-    /**
-     * Converts ImageExt to string. This is used to determine the format of the image to be displayed in JPG and PNG files.
-     *
-     * @param ext - the extension to convert. Must be one of the constants in ImageExt.
-     * @return the string representation of the extension or null if not recognised by this extension type ( such as GIF PNG JPG
-     */
-    private static String extToString(ImageExt ext) {
-        // Returns the extension of the image.
-        switch (ext) {
-            case GIF:
-                return "gif";
-            case PNG:
-                return "png";
-            case JPG:
-                return "jpg";
+    fun hasIgnoredTags(s: String): Boolean {
+        if (tags == null) return false
+        for (t in tags!!.allTagsList) if (s.contains(t.toQueryTag(TagStatus.AVOIDED))) {
+            download("Found: " + s + ",," + t.toQueryTag())
+            return true
         }
-        return null;
+        return false
     }
 
-    /**
-     * Returns the language associated with this message. This method is called by Jabber to get the language associated with this message.
-     *
-     * @return the language associated with this message or null if there is no language associated with this message or if the message does not have a
-     */
-    public Language getLanguage() {
-        return language;
+    override fun describeContents(): Int {
+        return 0
     }
 
-    /**
-     * Checks if there are tags that are ignored. This is used to prevent tags from appearing in the file when we want to download a file
-     *
-     * @param s - string to look for
-     */
-    public boolean hasIgnoredTags(String s) {
-        // Returns true if tags is null.
-        if (tags == null) return false;
-        for (Tag t : tags.getAllTagsList())
-            // Check if the tag is an AVOIDED tag.
-            if (s.contains(t.toQueryTag(TagStatus.AVOIDED))) {
-                LogUtility.download("Found: " + s + ",," + t.toQueryTag());
-                return true;
-            }
-        return false;
+    override fun writeToParcel(dest: Parcel, flags: Int) {
+        dest.writeString(title)
+        dest.writeInt(id)
+        dest.writeInt(mediaId)
+        dest.writeByte(thumb.ordinal.toByte())
+        dest.writeByte(language.ordinal.toByte())
     }
 
-    /**
-     * Returns the id of this object. This is used to distinguish objects that have been created by the client
-     */
-    @Override
-    public int getId() {
-        return id;
+    fun getThumbnail(): Uri {
+        return if (thumb === ImageExt.GIF) {
+            Uri.parse(
+                String.format(
+                    Locale.US,
+                    "https://i." + Utility.getHost() + "/galleries/%d/1.gif",
+                    mediaId
+                )
+            )
+        } else Uri.parse(
+            String.format(
+                Locale.US,
+                "https://t." + Utility.getHost() + "/galleries/%d/thumb.%s",
+                mediaId,
+                extToString(
+                    thumb
+                )
+            )
+        )
     }
 
-    /**
-     * Returns the type of this property. This will be Type#SIMPLE if the property is an array of Property instances.
-     *
-     * @return the type of this property as determined by #getType (). The default implementation returns Type#SIMPLE
-     */
-    @Override
-    public Type getType() {
-        return Type.SIMPLE;
-    }
-
-    /**
-     * Returns the number of pages in this view. This is a constant value that can be used to determine how many pages are available
-     */
-    @Override
-    public int getPageCount() {
-        return 0;
-    }
-
-    /**
-     * Checks if the id is greater than 0. This is used to prevent duplicate messages from being sent to the
-     */
-    @Override
-    public boolean isValid() {
-        return id > 0;
-    }
-
-    /**
-     * Returns the title of the activity. Note that this will be null if the activity is an instance of Activity#isPlayable () playable or if there is no title associated with the activity.
-     *
-     * @return the title of the activity or null if the activity is an instance of Activity#isPlayable ()
-     */
-    @Override
-    @NonNull
-    public String getTitle() {
-        return title;
-    }
-
-    /**
-     * Returns the maximum size of the view. Note that this is not the size of the data that is stored in the view.
-     *
-     * @return the maximum size of the view or null if there is no limit on the size of the data that is stored in
-     */
-    @Override
-    public Size getMaxSize() {
-        return null;
-    }
-
-    /**
-     * Returns the minimum size of the view. Note that this is not the size of the content but the minimum size of the content itself.
-     *
-     * @return the minimum size of the view or null if there is no minimum size to return from this method or it is a
-     */
-    @Override
-    public Size getMinSize() {
-        return null;
-    }
-
-    /**
-     * Returns 0 for no contents 1 for content and 2 for content. This is used to determine whether or not a file is in use
-     */
-    @Override
-    public int describeContents() {
-        return 0;
-    }
-
-    /**
-     * Writes the object to a Parcel. This will be written to a Parcel in the format used by the write method of com. alfresco. xacml. parcel. Parcel#writeToParcel ( com. alfresco. xacml. parcel. Parcel int )
-     *
-     * @param dest  - The Parcel to which the object is to be written.
-     * @param flags - Additional flags about how the object should be written
-     */
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeString(title);
-        dest.writeInt(id);
-        dest.writeInt(mediaId);
-        dest.writeByte((byte) thumbnail.ordinal());
-        dest.writeByte((byte) language.ordinal());
-        //TAGS AREN'T WRITTEN
-    }
-
-    /**
-     * Gets the URI of the thumbnail. Note that this is not the same as the URI returned by #getMedia () but it includes the host and port in the URI.
-     *
-     * @return The URI of the thumbnail or null if there is no thumbnail to be used for this media id ( in which case the host is set to the host of this MediaProvider
-     */
-    public Uri getThumbnail() {
-        // Returns the URL of the image.
-        if (thumbnail == ImageExt.GIF) {
-            return Uri.parse(String.format(Locale.US, "https://i." + Utility.getHost() + "/galleries/%d/1.gif", mediaId));
-        }
-        return Uri.parse(String.format(Locale.US, "https://t." + Utility.getHost() + "/galleries/%d/thumb.%s", mediaId, extToString(thumbnail)));
-    }
-
-    /**
-     * Returns the media id associated with this Media. This is used to distinguish between different media types and their associated ID
-     */
-    public int getMediaId() {
-        return mediaId;
-    }
-
-    /**
-     * Returns the thumbnail associated with this Image. If there is no thumbnail this method returns null. Note that this method is public for unit testing and should not be called by user code.
-     *
-     * @return the thumbnail associated with this Image or null if there is no thumbnail associated with this Image or if there is
-     */
-    public ImageExt getThumb() {
-        return thumbnail;
-    }
-
-    /**
-     * Returns the GalleryFolder associated with this user. Note that this does not mean that the user has permission to view the gallery in which case it returns null.
-     *
-     * @return The GalleryFolder associated with this user or null if none can be found in the user's gallery
-     */
-    @Override
-    public GalleryFolder getGalleryFolder() {
-        return null;
-    }
-
-    /**
-     * Returns a string representation of this SimpleGallery. The string representation is suitable for use in debugging and to verify that the values are sensible.
-     *
-     * @return a string representation of this SimpleGallery for debugging and to verify that the values are sensible ( and valid )
-     */
-    @NonNull
-    @Override
-    public String toString() {
+    override fun toString(): String {
         return "SimpleGallery{" +
             "language=" + language +
             ", title='" + title + '\'' +
-            ", thumbnail=" + thumbnail +
+            ", thumbnail=" + thumb +
             ", id=" + id +
             ", mediaId=" + mediaId +
-            '}';
+            '}'
     }
 
-    /**
-     * Returns true if there is gallery data false otherwise. This is used to determine if we should show the gallery
-     */
-    @Override
-    public boolean hasGalleryData() {
-        return false;
+    override fun hasGalleryData(): Boolean {
+        return false
     }
 
-    /**
-     * Returns the GalleryData associated with this Media. This can be null if there is no data associated with this Media.
-     *
-     * @return The GalleryData associated with this Media or null if there is no data associated with this Media or if there is no
-     */
-    @Override
-    public GalleryData getGalleryData() {
-        return null;
+    companion object {
+        @JvmField
+        val CREATOR: Creator<SimpleGallery?> = object : Creator<SimpleGallery?> {
+            override fun createFromParcel(`in`: Parcel): SimpleGallery {
+                return SimpleGallery(`in`)
+            }
+
+            override fun newArray(size: Int): Array<SimpleGallery?> {
+                return arrayOfNulls(size)
+            }
+        }
+
+        private fun extToString(ext: ImageExt): String {
+            return when (ext) {
+                ImageExt.GIF -> "gif"
+                ImageExt.PNG -> "png"
+                ImageExt.JPG -> "jpg"
+            }
+        }
     }
 }

@@ -1,374 +1,319 @@
-package com.dublikunt.nclient.api.components;
+package com.dublikunt.nclient.api.components
 
-import android.content.Context;
-import android.database.Cursor;
-import android.net.Uri;
-import android.os.Parcel;
-import android.util.JsonReader;
-import android.util.JsonWriter;
+import android.content.Context
+import android.database.Cursor
+import android.net.Uri
+import android.os.Parcel
+import android.os.Parcelable.Creator
+import android.util.JsonReader
+import android.util.JsonWriter
+import com.dublikunt.nclient.api.SimpleGallery
+import com.dublikunt.nclient.async.database.Queries
+import com.dublikunt.nclient.async.database.Queries.TagTable.allOnlineBlacklisted
+import com.dublikunt.nclient.async.database.Queries.TagTable.getAllStatus
+import com.dublikunt.nclient.async.database.Queries.getColumnFromName
+import com.dublikunt.nclient.classes.Size
+import com.dublikunt.nclient.enums.*
+import com.dublikunt.nclient.files.GalleryFolder
+import com.dublikunt.nclient.settings.Global
+import com.dublikunt.nclient.settings.Global.downloadPolicy
+import com.dublikunt.nclient.settings.Global.removeAvoidedGalleries
+import com.dublikunt.nclient.settings.Global.titleType
+import com.dublikunt.nclient.utility.LogUtility.download
+import com.dublikunt.nclient.utility.Utility
+import org.jsoup.select.Elements
+import java.io.IOException
+import java.io.StringReader
+import java.io.Writer
+import java.util.*
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
-import com.dublikunt.nclient.api.SimpleGallery;
-import com.dublikunt.nclient.async.database.Queries;
-import com.dublikunt.nclient.classes.Size;
-import com.dublikunt.nclient.enums.ImageExt;
-import com.dublikunt.nclient.enums.Language;
-import com.dublikunt.nclient.enums.SpecialTagIds;
-import com.dublikunt.nclient.enums.TagStatus;
-import com.dublikunt.nclient.enums.TagType;
-import com.dublikunt.nclient.enums.TitleType;
-import com.dublikunt.nclient.files.GalleryFolder;
-import com.dublikunt.nclient.files.PageFile;
-import com.dublikunt.nclient.settings.Global;
-import com.dublikunt.nclient.utility.LogUtility;
-import com.dublikunt.nclient.utility.Utility;
-
-import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
-
-import java.io.IOException;
-import java.io.StringReader;
-import java.io.Writer;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Locale;
-import java.util.Set;
-
-public class Gallery extends GenericGallery {
-    public static final Creator<Gallery> CREATOR = new Creator<Gallery>() {
-        @Override
-        public Gallery createFromParcel(Parcel in) {
-            LogUtility.download("Reading to parcel");
-            return new Gallery(in);
+class Gallery : GenericGallery {
+    override val galleryData: GalleryData
+    private val folder: GalleryFolder?
+    val isOnlineFavorite: Boolean
+    var related: MutableList<SimpleGallery> = ArrayList()
+    var language = Language.UNKNOWN
+        private set
+    override val id: Int
+        get() = galleryData.id
+    override val type: Type
+        get() = Type.COMPLETE
+    override val pageCount: Int
+        get() = galleryData.pageCount
+    override val valid: Boolean
+        get() = galleryData.isValid
+    override val title: String
+        get() {
+            var x = getTitle(titleType)
+            if (x.length > 2) return x
+            if (getTitle(TitleType.PRETTY).also { x = it }.length > 2) return x
+            if (getTitle(TitleType.ENGLISH).also { x = it }.length > 2) return x
+            return if (getTitle(TitleType.JAPANESE).also { x = it }.length > 2) x else "Unnamed"
         }
+    override var maxSize = Size(0, 0)
+    override var minSize = Size(Int.MAX_VALUE, Int.MAX_VALUE)
+    override val galleryFolder: GalleryFolder?
+        get() = folder
 
-        @Override
-        public Gallery[] newArray(int size) {
-            return new Gallery[size];
-        }
-    };
-    @NonNull
-    private final GalleryData galleryData;
-    @Nullable
-    private final GalleryFolder folder;
-    private final boolean onlineFavorite;
-    private List<SimpleGallery> related = new ArrayList<>();
-    private Language language = Language.UNKNOWN;
-    private Size maxSize = new Size(0, 0), minSize = new Size(Integer.MAX_VALUE, Integer.MAX_VALUE);
-
-    public Gallery(Context context, String json, Elements related, boolean isFavorite) throws IOException {
-        LogUtility.download("Found JSON: " + json);
-        JsonReader reader = new JsonReader(new StringReader(json));
-        this.related = new ArrayList<>(related.size());
-        for (Element e : related) this.related.add(new SimpleGallery(context, e));
-        galleryData = new GalleryData(reader);
-        folder = GalleryFolder.fromId(context, galleryData.getId());
-        calculateSizes(galleryData);
-        language = loadLanguage(getTags());
-        onlineFavorite = isFavorite;
+    constructor(context: Context?, json: String, related: Elements, isFavorite: Boolean) {
+        download("Found JSON: $json")
+        val reader = JsonReader(StringReader(json))
+        this.related = ArrayList(related.size)
+        for (e in related) this.related.add(SimpleGallery(context, e!!))
+        galleryData = GalleryData(reader)
+        folder = GalleryFolder.fromId(context, galleryData.id)
+        calculateSizes(galleryData)
+        language = loadLanguage(tags)
+        isOnlineFavorite = isFavorite
     }
 
-    public Gallery(Cursor cursor, TagList tags) throws IOException {
-        maxSize.setWidth(cursor.getInt(Queries.getColumnFromName(cursor, Queries.GalleryTable.MAX_WIDTH)));
-        maxSize.setHeight(cursor.getInt(Queries.getColumnFromName(cursor, Queries.GalleryTable.MAX_HEIGHT)));
-        minSize.setWidth(cursor.getInt(Queries.getColumnFromName(cursor, Queries.GalleryTable.MIN_WIDTH)));
-        minSize.setHeight(cursor.getInt(Queries.getColumnFromName(cursor, Queries.GalleryTable.MIN_HEIGHT)));
-        galleryData = new GalleryData(cursor, tags);
-        folder = GalleryFolder.fromId(null, galleryData.getId());
-        this.language = loadLanguage(tags);
-        onlineFavorite = false;
-        LogUtility.download(toString());
+    constructor(cursor: Cursor, tags: TagList) {
+        maxSize.width = cursor.getInt(getColumnFromName(cursor, Queries.GalleryTable.MAX_WIDTH))
+        maxSize.height = cursor.getInt(getColumnFromName(cursor, Queries.GalleryTable.MAX_HEIGHT))
+        minSize.width = cursor.getInt(getColumnFromName(cursor, Queries.GalleryTable.MIN_WIDTH))
+        minSize.height = cursor.getInt(getColumnFromName(cursor, Queries.GalleryTable.MIN_HEIGHT))
+        galleryData = GalleryData(cursor, tags)
+        folder = GalleryFolder.fromId(null, galleryData.id)
+        language = loadLanguage(tags)
+        isOnlineFavorite = false
+        download(toString())
     }
 
-    private Gallery() {
-        onlineFavorite = false;
-        galleryData = GalleryData.fakeData();
-        folder = null;
+    private constructor() {
+        isOnlineFavorite = false
+        galleryData = GalleryData.fakeData()
+        folder = null
     }
 
-    public Gallery(Parcel in) {
-        maxSize = in.readParcelable(Size.class.getClassLoader());
-        minSize = in.readParcelable(Size.class.getClassLoader());
-        galleryData = in.readParcelable(GalleryData.class.getClassLoader());
-        folder = in.readParcelable(GalleryFolder.class.getClassLoader());
-        in.readTypedList(related, SimpleGallery.CREATOR);
-        onlineFavorite = in.readByte() == 1;
-        language = loadLanguage(getTags());
+    constructor(`in`: Parcel) {
+        maxSize = `in`.readParcelable(Size::class.java.classLoader)!!
+        minSize = `in`.readParcelable(Size::class.java.classLoader)!!
+        galleryData = `in`.readParcelable(GalleryData::class.java.classLoader)!!
+        folder = `in`.readParcelable(GalleryFolder::class.java.classLoader)
+        `in`.readTypedList(related as List<SimpleGallery?>, SimpleGallery.CREATOR)
+        isOnlineFavorite = `in`.readByte().toInt() == 1
+        language = loadLanguage(tags)
     }
 
-    public static String getPathTitle(@Nullable String title, @NonNull String defaultValue) {
-        if (title == null) return defaultValue;
-        String pathTitle = title.replace('/', ' ').replaceAll("[/|\\\\*\"'?:<>]", " ");
-        while (pathTitle.contains("  "))
-            pathTitle = pathTitle.replace("  ", " ");
-        return pathTitle.trim();
-    }
-
-    public static String getPathTitle(@Nullable String title) {
-        return getPathTitle(title, "");
-    }
-
-    public static Language loadLanguage(TagList tags) {
-        for (Tag tag : tags.retrieveForType(TagType.LANGUAGE)) {
-            switch (tag.getId()) {
-                case SpecialTagIds.LANGUAGE_JAPANESE:
-                    return Language.JAPANESE;
-                case SpecialTagIds.LANGUAGE_ENGLISH:
-                    return Language.ENGLISH;
-                case SpecialTagIds.LANGUAGE_CHINESE:
-                    return Language.CHINESE;
-            }
-        }
-        return Language.UNKNOWN;
-    }
-
-    public static Gallery emptyGallery() {
-        return new Gallery();
-    }
-
-    private void calculateSizes(GalleryData galleryData) {
-        Size actualSize;
-        for (Page page : galleryData.getPages()) {
-            actualSize = page.getSize();
-            if (actualSize.getWidth() > maxSize.getWidth()) maxSize.setWidth(actualSize.getWidth());
-            if (actualSize.getHeight() > maxSize.getHeight())
-                maxSize.setHeight(actualSize.getHeight());
-            if (actualSize.getWidth() < minSize.getWidth()) minSize.setWidth(actualSize.getWidth());
-            if (actualSize.getHeight() < minSize.getHeight())
-                minSize.setHeight(actualSize.getHeight());
+    private fun calculateSizes(galleryData: GalleryData) {
+        var actualSize: Size
+        for (page in galleryData.pages) {
+            actualSize = page.size
+            if (actualSize.width > maxSize.width) maxSize.width = actualSize.width
+            if (actualSize.height > maxSize.height) maxSize.height = actualSize.height
+            if (actualSize.width < minSize.width) minSize.width = actualSize.width
+            if (actualSize.height < minSize.height) minSize.height = actualSize.height
         }
     }
 
-    public boolean isOnlineFavorite() {
-        return onlineFavorite;
+    val pathTitle: String
+        get() = getPathTitle(title)
+    val cover: Uri
+        get() {
+            if (downloadPolicy === Global.DataUsageType.THUMBNAIL) return thumbnail
+            return if (galleryData.cover.imageExt === ImageExt.GIF) getHighPage(0) else Uri.parse(
+                String.format(
+                    Locale.US,
+                    "https://t." + Utility.getHost() + "/galleries/%d/cover.%s",
+                    mediaId,
+                    galleryData.cover.extToString()
+                )
+            )
+        }
+    val thumb: ImageExt
+        get() = galleryData.thumbnail.imageExt
+    val thumbnail: Uri
+        get() = if (galleryData.cover.imageExt === ImageExt.GIF) getHighPage(0) else Uri.parse(
+            String.format(
+                Locale.US,
+                "https://t." + Utility.getHost() + "/galleries/%d/thumb.%s",
+                mediaId,
+                galleryData.thumbnail.extToString()
+            )
+        )
+
+    private fun getFileUri(page: Int): Uri? {
+        if (folder == null) return null
+        val f = folder.getPage(page + 1) ?: return null
+        return f.toUri()
     }
 
-    @NonNull
-    public String getPathTitle() {
-        return getPathTitle(getTitle());
+    fun getPageUrl(page: Int): Uri {
+        if (downloadPolicy === Global.DataUsageType.THUMBNAIL) return getLowPage(page)
+        val uri = getFileUri(page)
+        return uri ?: getHighPage(page)
     }
 
-    public Uri getCover() {
-        if (Global.getDownloadPolicy() == Global.DataUsageType.THUMBNAIL) return getThumbnail();
-        if (galleryData.getCover().getImageExt() == ImageExt.GIF) return getHighPage(0);
-        return Uri.parse(String.format(Locale.US, "https://t." + Utility.getHost() + "/galleries/%d/cover.%s", getMediaId(), galleryData.getCover().extToString()));
+    fun getHighPage(page: Int): Uri {
+        return Uri.parse(
+            String.format(
+                Locale.US,
+                "https://i." + Utility.getHost() + "/galleries/%d/%d.%s",
+                mediaId,
+                page + 1,
+                getPageExtension(page)
+            )
+        )
     }
 
-    public ImageExt getThumb() {
-        return galleryData.getThumbnail().getImageExt();
+    fun getLowPage(page: Int): Uri {
+        val uri = getFileUri(page)
+        return uri
+            ?: Uri.parse(
+                String.format(
+                    Locale.US,
+                    "https://t." + Utility.getHost() + "/galleries/%d/%dt.%s",
+                    mediaId,
+                    page + 1,
+                    getPageExtension(page)
+                )
+            )
     }
 
-    public Uri getThumbnail() {
-        if (galleryData.getCover().getImageExt() == ImageExt.GIF) return getHighPage(0);
-        return Uri.parse(String.format(Locale.US, "https://t." + Utility.getHost() + "/galleries/%d/thumb.%s", getMediaId(), galleryData.getThumbnail().extToString()));
+    fun getPageExtension(page: Int): String {
+        return getPage(page).extToString()
     }
 
-    private @Nullable
-    Uri getFileUri(int page) {
-        if (folder == null) return null;
-        PageFile f = folder.getPage(page + 1);
-        if (f == null) return null;
-        return f.toUri();
+    private fun getPage(index: Int): Page {
+        return galleryData.getPage(index)
     }
 
-    public Uri getPageUrl(int page) {
-        if (Global.getDownloadPolicy() == Global.DataUsageType.THUMBNAIL) return getLowPage(page);
-        Uri uri = getFileUri(page);
-        if (uri != null) return uri;
-        return getHighPage(page);
+    fun toSimpleGallery(): SimpleGallery {
+        return SimpleGallery(this)
     }
 
-    public Uri getHighPage(int page) {
-        return Uri.parse(String.format(Locale.US, "https://i." + Utility.getHost() + "/galleries/%d/%d.%s", getMediaId(), page + 1, getPageExtension(page)));
+    val isRelatedLoaded: Boolean
+        get() = true
+
+    private fun getTitle(x: TitleType): String {
+        return galleryData.getTitle(x)
     }
 
-    public Uri getLowPage(int page) {
-        Uri uri = getFileUri(page);
-        if (uri != null) return uri;
-        return Uri.parse(String.format(Locale.US, "https://t." + Utility.getHost() + "/galleries/%d/%dt.%s", getMediaId(), page + 1, getPageExtension(page)));
+    private val uploadDate: Date
+        get() = galleryData.uploadDate
+    private val favoriteCount: Int
+        get() = galleryData.favoriteCount
+
+    val tags: TagList
+        get() = galleryData.tags
+
+    val mediaId: Int
+        get() = galleryData.mediaId
+
+    private fun hasIgnoredTags(s: Set<Tag>): Boolean {
+        for (t in tags.allTagsSet) if (s.contains(t)) {
+            download("Found: " + s + ",," + t.toQueryTag())
+            return true
+        }
+        return false
     }
 
-    public String getPageExtension(int page) {
-        return getPage(page).extToString();
+    fun hasIgnoredTags(): Boolean {
+        val tags: MutableSet<Tag> = HashSet(getAllStatus(TagStatus.AVOIDED))
+        if (removeAvoidedGalleries()) tags.addAll(allOnlineBlacklisted)
+        return hasIgnoredTags(tags)
     }
 
-    private Page getPage(int index) {
-        return galleryData.getPage(index);
+    override fun hasGalleryData(): Boolean {
+        return true
     }
 
-    public SimpleGallery toSimpleGallery() {
-        return new SimpleGallery(this);
+    @Throws(IOException::class)
+    fun jsonWrite(ww: Writer) {
+        val writer = JsonWriter(ww)
+        writer.beginObject()
+        writer.name("id").value(id.toLong())
+        writer.name("media_id").value(mediaId.toLong())
+        writer.name("upload_date").value(uploadDate.time / 1000)
+        writer.name("num_favorites").value(favoriteCount.toLong())
+        toJsonTitle(writer)
+        toJsonTags(writer)
+        writer.endObject()
+        writer.flush()
     }
 
-    public boolean isRelatedLoaded() {
-        return related != null;
+    @Throws(IOException::class)
+    private fun toJsonTags(writer: JsonWriter) {
+        writer.name("tags")
+        writer.beginArray()
+        for (t in tags.allTagsSet) t.writeJson(writer)
+        writer.endArray()
     }
 
-    public List<SimpleGallery> getRelated() {
-        return related;
+    @Throws(IOException::class)
+    private fun toJsonTitle(writer: JsonWriter) {
+        var title: String?
+        writer.name("title")
+        writer.beginObject()
+        if (getTitle(TitleType.JAPANESE).also { title = it } != null) writer.name("japanese")
+            .value(title)
+        if (getTitle(TitleType.PRETTY).also { title = it } != null) writer.name("pretty")
+            .value(title)
+        if (getTitle(TitleType.ENGLISH).also { title = it } != null) writer.name("english")
+            .value(title)
+        writer.endObject()
     }
 
-    @Override
-    public boolean isValid() {
-        return galleryData.isValid();
+    override fun describeContents(): Int {
+        return 0
     }
 
-    @Override
-    public Size getMaxSize() {
-        return maxSize;
+    override fun writeToParcel(dest: Parcel, flags: Int) {
+        dest.writeParcelable(maxSize, flags)
+        dest.writeParcelable(minSize, flags)
+        dest.writeParcelable(galleryData, flags)
+        dest.writeParcelable(folder, flags)
+        dest.writeTypedList(related)
+        dest.writeByte((if (isOnlineFavorite) 1 else 0).toByte())
     }
 
-    @Override
-    public Size getMinSize() {
-        return minSize;
-    }
-
-    @Override
-    public GalleryFolder getGalleryFolder() {
-        return folder;
-    }
-
-    @NonNull
-    @Override
-    public String getTitle() {
-        String x = getTitle(Global.getTitleType());
-        if (x.length() > 2) return x;
-        if ((x = getTitle(TitleType.PRETTY)).length() > 2) return x;
-        if ((x = getTitle(TitleType.ENGLISH)).length() > 2) return x;
-        if ((x = getTitle(TitleType.JAPANESE)).length() > 2) return x;
-        return "Unnamed";
-    }
-
-    public String getTitle(TitleType x) {
-        return galleryData.getTitle(x);
-    }
-
-    public Language getLanguage() {
-        return language;
-    }
-
-    public Date getUploadDate() {
-        return galleryData.getUploadDate();
-    }
-
-    public int getFavoriteCount() {
-        return galleryData.getFavoriteCount();
-    }
-
-    @Override
-    public int getId() {
-        return galleryData.getId();
-    }
-
-    public TagList getTags() {
-        return galleryData.getTags();
-    }
-
-    @Override
-    public int getPageCount() {
-        return galleryData.getPageCount();
-    }
-
-    @Override
-    public Type getType() {
-        return Type.COMPLETE;
-    }
-
-    public int getMediaId() {
-        return galleryData.getMediaId();
-    }
-
-    public boolean hasIgnoredTags(Set<Tag> s) {
-        for (Tag t : getTags().getAllTagsSet())
-            if (s.contains(t)) {
-                LogUtility.download("Found: " + s + ",," + t.toQueryTag());
-                return true;
-            }
-        return false;
-    }
-
-    public boolean hasIgnoredTags() {
-        Set<Tag> tags = new HashSet<>(Queries.TagTable.getAllStatus(TagStatus.AVOIDED));
-        if (Global.removeAvoidedGalleries())
-            tags.addAll(Queries.TagTable.getAllOnlineBlacklisted());
-        return hasIgnoredTags(tags);
-    }
-
-    @Override
-    public boolean hasGalleryData() {
-        return true;
-    }
-
-    @NonNull
-    @Override
-    public GalleryData getGalleryData() {
-        return galleryData;
-    }
-
-    public void jsonWrite(Writer ww) throws IOException {
-        //images aren't saved
-        JsonWriter writer = new JsonWriter(ww);
-        writer.beginObject();
-        writer.name("id").value(getId());
-        writer.name("media_id").value(getMediaId());
-        writer.name("upload_date").value(getUploadDate().getTime() / 1000);
-        writer.name("num_favorites").value(getFavoriteCount());
-        toJsonTitle(writer);
-        toJsonTags(writer);
-
-        writer.endObject();
-        writer.flush();
-    }
-
-    private void toJsonTags(JsonWriter writer) throws IOException {
-        writer.name("tags");
-        writer.beginArray();
-        for (Tag t : getTags().getAllTagsSet())
-            t.writeJson(writer);
-        writer.endArray();
-    }
-
-    private void toJsonTitle(JsonWriter writer) throws IOException {
-        String title;
-        writer.name("title");
-        writer.beginObject();
-        if ((title = getTitle(TitleType.JAPANESE)) != null)
-            writer.name("japanese").value(title);
-        if ((title = getTitle(TitleType.PRETTY)) != null)
-            writer.name("pretty").value(title);
-        if ((title = getTitle(TitleType.ENGLISH)) != null)
-            writer.name("english").value(title);
-        writer.endObject();
-    }
-
-    @Override
-    public int describeContents() {
-        return 0;
-    }
-
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeParcelable(maxSize, flags);
-        dest.writeParcelable(minSize, flags);
-        dest.writeParcelable(galleryData, flags);
-        dest.writeParcelable(folder, flags);
-        dest.writeTypedList(related);
-        dest.writeByte((byte) (onlineFavorite ? 1 : 0));
-    }
-
-    @NonNull
-    @Override
-    public String toString() {
+    override fun toString(): String {
         return "Gallery{" +
             "galleryData=" + galleryData +
             ", language=" + language +
             ", maxSize=" + maxSize +
             ", minSize=" + minSize +
-            ", onlineFavorite=" + onlineFavorite +
-            '}';
+            ", onlineFavorite=" + isOnlineFavorite +
+            '}'
+    }
+
+    companion object {
+        @JvmField
+        val CREATOR: Creator<Gallery> = object : Creator<Gallery> {
+            override fun createFromParcel(`in`: Parcel): Gallery {
+                download("Reading to parcel")
+                return Gallery(`in`)
+            }
+
+            override fun newArray(size: Int): Array<Gallery?> {
+                return arrayOfNulls(size)
+            }
+        }
+
+        fun getPathTitle(title: String?, defaultValue: String): String {
+            if (title == null) return defaultValue
+            var pathTitle = title.replace('/', ' ').replace("[/|\\\\*\"'?:<>]".toRegex(), " ")
+            while (pathTitle.contains("  ")) pathTitle = pathTitle.replace("  ", " ")
+            return pathTitle.trim { it <= ' ' }
+        }
+
+        fun getPathTitle(title: String?): String {
+            return getPathTitle(title, "")
+        }
+
+        fun loadLanguage(tags: TagList): Language {
+            for (tag in tags.retrieveForType(TagType.LANGUAGE)) {
+                when (tag.id.toShort()) {
+                    SpecialTagIds.LANGUAGE_JAPANESE -> return Language.JAPANESE
+                    SpecialTagIds.LANGUAGE_ENGLISH -> return Language.ENGLISH
+                    SpecialTagIds.LANGUAGE_CHINESE -> return Language.CHINESE
+                }
+            }
+            return Language.UNKNOWN
+        }
+
+        fun emptyGallery(): Gallery {
+            return Gallery()
+        }
     }
 }

@@ -232,7 +232,7 @@ class GalleryActivity : BaseActivity() {
 
     private fun menuItemsVisible(menu: Menu) {
         val isLogged = Login.isLogged()
-        val isValidOnline = gallery.isValid && !isLocal
+        val isValidOnline = gallery.valid && !isLocal
         onlineFavoriteItem = menu.findItem(R.id.add_online_gallery)
         onlineFavoriteItem.isVisible = isValidOnline && isLogged
         menu.findItem(R.id.favorite_manager).isVisible = isValidOnline
@@ -240,8 +240,8 @@ class GalleryActivity : BaseActivity() {
         menu.findItem(R.id.related).isVisible = isValidOnline
         menu.findItem(R.id.comments).isVisible = isValidOnline
         menu.findItem(R.id.download_torrent).isVisible = isLogged
-        menu.findItem(R.id.share).isVisible = gallery.isValid
-        menu.findItem(R.id.load_internet).isVisible = isLocal && gallery.isValid
+        menu.findItem(R.id.share).isVisible = gallery.valid
+        menu.findItem(R.id.load_internet).isVisible = isLocal && gallery.valid
     }
 
     override fun onResume() {

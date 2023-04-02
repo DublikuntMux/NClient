@@ -4,7 +4,6 @@ import android.view.MotionEvent;
 import android.widget.ImageView;
 
 class Util {
-
     static void checkZoomLevels(float minZoom, float midZoom,
                                 float maxZoom) {
         if (minZoom >= midZoom) {

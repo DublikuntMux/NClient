@@ -1,365 +1,304 @@
-package com.dublikunt.nclient.api.components;
+package com.dublikunt.nclient.api.components
 
-import android.database.Cursor;
-import android.os.Parcel;
-import android.os.Parcelable;
-import android.util.JsonReader;
-import android.util.JsonToken;
+import android.database.Cursor
+import android.os.Parcel
+import android.os.Parcelable
+import android.os.Parcelable.Creator
+import android.util.JsonReader
+import android.util.JsonToken
+import com.dublikunt.nclient.async.database.Queries
+import com.dublikunt.nclient.async.database.Queries.TagTable.insert
+import com.dublikunt.nclient.async.database.Queries.getColumnFromName
+import com.dublikunt.nclient.enums.ImageExt
+import com.dublikunt.nclient.enums.ImageType
+import com.dublikunt.nclient.enums.SpecialTagIds
+import com.dublikunt.nclient.enums.TitleType
+import com.dublikunt.nclient.utility.Utility
+import java.io.IOException
+import java.io.StringReader
+import java.io.StringWriter
+import java.util.*
 
-import androidx.annotation.NonNull;
+open class GalleryData : Parcelable {
+    var uploadDate = Date(0)
+        private set
+    var favoriteCount = 0
+        private set
+    var id = 0
+    var pageCount = 0
+    var mediaId = 0
+        private set
+    private var titles = arrayOf("", "", "")
+    var tags = TagList()
+        private set
+    var cover = Page()
+        private set
+    var thumbnail = Page()
+        private set
+    var pages = ArrayList<Page>()
+        private set
+    var isValid = true
+        private set
 
-import com.dublikunt.nclient.async.database.Queries;
-import com.dublikunt.nclient.enums.ImageExt;
-import com.dublikunt.nclient.enums.ImageType;
-import com.dublikunt.nclient.enums.SpecialTagIds;
-import com.dublikunt.nclient.enums.TitleType;
-import com.dublikunt.nclient.utility.Utility;
-
-import java.io.IOException;
-import java.io.StringReader;
-import java.io.StringWriter;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.Objects;
-
-public class GalleryData implements Parcelable {
-    public static final Creator<GalleryData> CREATOR = new Creator<GalleryData>() {
-        @Override
-        public GalleryData createFromParcel(Parcel in) {
-            return new GalleryData(in);
-        }
-
-        @Override
-        public GalleryData[] newArray(int size) {
-            return new GalleryData[size];
-        }
-    };
-    @NonNull
-    private Date uploadDate = new Date(0);
-    private int favoriteCount, id, pageCount, mediaId;
-    @NonNull
-    private String[] titles = new String[]{"", "", ""};
-    @NonNull
-    private TagList tags = new TagList();
-    @NonNull
-    private Page cover = new Page(), thumbnail = new Page();
-    @NonNull
-    private ArrayList<Page> pages = new ArrayList<>();
-    private boolean valid = true;
-
-    private GalleryData() {
+    private constructor()
+    constructor(jr: JsonReader) {
+        parseJSON(jr)
     }
 
-    public GalleryData(JsonReader jr) throws IOException {
-        parseJSON(jr);
+    constructor(cursor: Cursor, tagList: TagList) {
+        id = cursor.getInt(getColumnFromName(cursor, Queries.GalleryTable.IDGALLERY))
+        mediaId = cursor.getInt(getColumnFromName(cursor, Queries.GalleryTable.MEDIAID))
+        favoriteCount =
+            cursor.getInt(getColumnFromName(cursor, Queries.GalleryTable.FAVORITE_COUNT))
+        titles[TitleType.JAPANESE.ordinal] =
+            cursor.getString(getColumnFromName(cursor, Queries.GalleryTable.TITLE_JP))
+        titles[TitleType.PRETTY.ordinal] =
+            cursor.getString(getColumnFromName(cursor, Queries.GalleryTable.TITLE_PRETTY))
+        titles[TitleType.ENGLISH.ordinal] =
+            cursor.getString(getColumnFromName(cursor, Queries.GalleryTable.TITLE_ENG))
+        uploadDate = Date(cursor.getLong(getColumnFromName(cursor, Queries.GalleryTable.UPLOAD)))
+        readPagePath(cursor.getString(getColumnFromName(cursor, Queries.GalleryTable.PAGES)))
+        pageCount = pages.size
+        tags = tagList
     }
 
-    public GalleryData(Cursor cursor, @NonNull TagList tagList) throws IOException {
-        id = cursor.getInt(Queries.getColumnFromName(cursor, Queries.GalleryTable.IDGALLERY));
-        mediaId = cursor.getInt(Queries.getColumnFromName(cursor, Queries.GalleryTable.MEDIAID));
-        favoriteCount = cursor.getInt(Queries.getColumnFromName(cursor, Queries.GalleryTable.FAVORITE_COUNT));
-
-        titles[TitleType.JAPANESE.ordinal()] = cursor.getString(Queries.getColumnFromName(cursor, Queries.GalleryTable.TITLE_JP));
-        titles[TitleType.PRETTY.ordinal()] = cursor.getString(Queries.getColumnFromName(cursor, Queries.GalleryTable.TITLE_PRETTY));
-        titles[TitleType.ENGLISH.ordinal()] = cursor.getString(Queries.getColumnFromName(cursor, Queries.GalleryTable.TITLE_ENG));
-
-        uploadDate = new Date(cursor.getLong(Queries.getColumnFromName(cursor, Queries.GalleryTable.UPLOAD)));
-        readPagePath(cursor.getString(Queries.getColumnFromName(cursor, Queries.GalleryTable.PAGES)));
-        pageCount = pages.size();
-        this.tags = tagList;
+    protected constructor(`in`: Parcel) {
+        uploadDate = Date(`in`.readLong())
+        favoriteCount = `in`.readInt()
+        id = `in`.readInt()
+        pageCount = `in`.readInt()
+        mediaId = `in`.readInt()
+        titles = Objects.requireNonNull(`in`.createStringArray())
+        tags = Objects.requireNonNull(`in`.readParcelable(TagList::class.java.classLoader))
+        cover = Objects.requireNonNull(
+            `in`.readParcelable(
+                Page::class.java.classLoader
+            )
+        )
+        thumbnail = Objects.requireNonNull(
+            `in`.readParcelable(
+                Page::class.java.classLoader
+            )
+        )
+        pages = Objects.requireNonNull(`in`.createTypedArrayList(Page.CREATOR)) as ArrayList<Page>
+        isValid = `in`.readByte().toInt() != 0
     }
 
-    protected GalleryData(Parcel in) {
-        uploadDate = new Date(in.readLong());
-        favoriteCount = in.readInt();
-        id = in.readInt();
-        pageCount = in.readInt();
-        mediaId = in.readInt();
-        titles = Objects.requireNonNull(in.createStringArray());
-        tags = Objects.requireNonNull(in.readParcelable(TagList.class.getClassLoader()));
-        cover = Objects.requireNonNull(in.readParcelable(Page.class.getClassLoader()));
-        thumbnail = Objects.requireNonNull(in.readParcelable(Page.class.getClassLoader()));
-        pages = Objects.requireNonNull(in.createTypedArrayList(Page.CREATOR));
-        valid = in.readByte() != 0;
-    }
-
-    public static GalleryData fakeData() {
-        GalleryData galleryData = new GalleryData();
-        galleryData.id = SpecialTagIds.INVALID_ID;
-        galleryData.favoriteCount = -1;
-        galleryData.pageCount = -1;
-        galleryData.mediaId = SpecialTagIds.INVALID_ID;
-        galleryData.pages.trimToSize();
-        galleryData.valid = false;
-        return galleryData;
-    }
-
-    private void parseJSON(JsonReader jr) throws IOException {
-        jr.beginObject();
+    @Throws(IOException::class)
+    private fun parseJSON(jr: JsonReader) {
+        jr.beginObject()
         while (jr.peek() != JsonToken.END_OBJECT) {
-            switch (jr.nextName()) {
-                case "upload_date":
-                    uploadDate = new Date(jr.nextLong() * 1000);
-                    break;
-                case "num_favorites":
-                    favoriteCount = jr.nextInt();
-                    break;
-                case "num_pages":
-                    pageCount = jr.nextInt();
-                    break;
-                case "media_id":
-                    mediaId = jr.nextInt();
-                    break;
-                case "id":
-                    id = jr.nextInt();
-                    break;
-                case "images":
-                    readImages(jr);
-                    break;
-                case "title":
-                    readTitles(jr);
-                    break;
-                case "tags":
-                    readTags(jr);
-                    break;
-                case "error":
-                    jr.skipValue();
-                    valid = false;
-                    break;
-                default:
-                    jr.skipValue();
-                    break;
+            when (jr.nextName()) {
+                "upload_date" -> uploadDate = Date(jr.nextLong() * 1000)
+                "num_favorites" -> favoriteCount = jr.nextInt()
+                "num_pages" -> pageCount = jr.nextInt()
+                "media_id" -> mediaId = jr.nextInt()
+                "id" -> id = jr.nextInt()
+                "images" -> readImages(jr)
+                "title" -> readTitles(jr)
+                "tags" -> readTags(jr)
+                "error" -> {
+                    jr.skipValue()
+                    isValid = false
+                }
+                else -> jr.skipValue()
             }
         }
-        jr.endObject();
+        jr.endObject()
     }
 
-    private void setTitle(TitleType type, String title) {
-        titles[type.ordinal()] = Utility.unescapeUnicodeString(title);
+    private fun setTitle(type: TitleType, title: String) {
+        titles[type.ordinal] = Utility.unescapeUnicodeString(title)
     }
 
-    private void readTitles(JsonReader jr) throws IOException {
-        jr.beginObject();
+    @Throws(IOException::class)
+    private fun readTitles(jr: JsonReader) {
+        jr.beginObject()
         while (jr.peek() != JsonToken.END_OBJECT) {
-            switch (jr.nextName()) {
-                case "japanese":
-                    setTitle(TitleType.JAPANESE, jr.peek() != JsonToken.NULL ? jr.nextString() : "");
-                    break;
-                case "english":
-                    setTitle(TitleType.ENGLISH, jr.peek() != JsonToken.NULL ? jr.nextString() : "");
-                    break;
-                case "pretty":
-                    setTitle(TitleType.PRETTY, jr.peek() != JsonToken.NULL ? jr.nextString() : "");
-                    break;
-                default:
-                    jr.skipValue();
-                    break;
+            when (jr.nextName()) {
+                "japanese" -> setTitle(
+                    TitleType.JAPANESE,
+                    if (jr.peek() != JsonToken.NULL) jr.nextString() else ""
+                )
+                "english" -> setTitle(
+                    TitleType.ENGLISH,
+                    if (jr.peek() != JsonToken.NULL) jr.nextString() else ""
+                )
+                "pretty" -> setTitle(
+                    TitleType.PRETTY,
+                    if (jr.peek() != JsonToken.NULL) jr.nextString() else ""
+                )
+                else -> jr.skipValue()
             }
-            if (jr.peek() == JsonToken.NULL) jr.skipValue();
+            if (jr.peek() == JsonToken.NULL) jr.skipValue()
         }
-        jr.endObject();
+        jr.endObject()
     }
 
-    private void readTags(JsonReader jr) throws IOException {
-        jr.beginArray();
+    @Throws(IOException::class)
+    private fun readTags(jr: JsonReader) {
+        jr.beginArray()
         while (jr.hasNext()) {
-            Tag createdTag = new Tag(jr);
-            Queries.TagTable.insert(createdTag);
-            tags.addTag(createdTag);
+            val createdTag = Tag(jr)
+            insert(createdTag)
+            tags.addTag(createdTag)
         }
-        jr.endArray();
-        tags.sort((o1, o2) -> o2.getCount() - o1.getCount());
+        jr.endArray()
+        tags.sort { o1: Tag, o2: Tag -> o2.count - o1.count }
     }
 
-    private void readImages(JsonReader jr) throws IOException {
-        int actualPage = 0;
-        jr.beginObject();
+    @Throws(IOException::class)
+    private fun readImages(jr: JsonReader) {
+        var actualPage = 0
+        jr.beginObject()
         while (jr.peek() != JsonToken.END_OBJECT) {
-            switch (jr.nextName()) {
-                case "cover":
-                    cover = new Page(ImageType.COVER, jr);
-                    break;
-                case "thumbnail":
-                    thumbnail = new Page(ImageType.THUMBNAIL, jr);
-                    break;
-                case "pages":
-                    jr.beginArray();
-                    while (jr.hasNext())
-                        pages.add(new Page(ImageType.PAGE, jr, actualPage++));
-                    jr.endArray();
-                    break;
-                default:
-                    jr.skipValue();
-                    break;
+            when (jr.nextName()) {
+                "cover" -> cover = Page(ImageType.COVER, jr)
+                "thumbnail" -> thumbnail = Page(ImageType.THUMBNAIL, jr)
+                "pages" -> {
+                    jr.beginArray()
+                    while (jr.hasNext()) pages.add(Page(ImageType.PAGE, jr, actualPage++))
+                    jr.endArray()
+                }
+                else -> jr.skipValue()
             }
         }
-        jr.endObject();
-        pages.trimToSize();
+        jr.endObject()
+        pages.trimToSize()
     }
 
-    public Date getUploadDate() {
-        return uploadDate;
+    fun getTitle(i: Int): String {
+        return titles[i]
     }
 
-    public int getFavoriteCount() {
-        return favoriteCount;
+    fun getTitle(type: TitleType): String {
+        return titles[type.ordinal]
     }
 
-    public int getId() {
-        return id;
+    fun getPage(index: Int): Page {
+        return pages[index]
     }
 
-    public void setId(int id) {
-        this.id = id;
+    override fun describeContents(): Int {
+        return 0
     }
 
-    public int getPageCount() {
-        return pageCount;
+    override fun writeToParcel(dest: Parcel, flags: Int) {
+        dest.writeLong(uploadDate.time)
+        dest.writeInt(favoriteCount)
+        dest.writeInt(id)
+        dest.writeInt(pageCount)
+        dest.writeInt(mediaId)
+        dest.writeStringArray(titles)
+        dest.writeParcelable(tags, flags)
+        dest.writeParcelable(cover, flags)
+        dest.writeParcelable(thumbnail, flags)
+        dest.writeTypedList(pages)
+        dest.writeByte((if (isValid) 1 else 0).toByte())
     }
 
-    public void setPageCount(int pageCount) {
-        this.pageCount = pageCount;
+    private fun writeInterval(writer: StringWriter, intervalLen: Int, referencePage: ImageExt) {
+        writer.write(intervalLen.toString())
+        writer.write(Page.extToChar(referencePage).code)
     }
 
-    public int getMediaId() {
-        return mediaId;
-    }
-
-    public String getTitle(int i) {
-        return titles[i];
-    }
-
-    public String getTitle(TitleType type) {
-        return titles[type.ordinal()];
-    }
-
-    public TagList getTags() {
-        return tags;
-    }
-
-    public Page getCover() {
-        return cover;
-    }
-
-    public Page getThumbnail() {
-        return thumbnail;
-    }
-
-    public Page getPage(int index) {
-        return pages.get(index);
-    }
-
-    public ArrayList<Page> getPages() {
-        return pages;
-    }
-
-    public boolean isValid() {
-        return valid;
-    }
-
-    @Override
-    public int describeContents() {
-        return 0;
-    }
-
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeLong(uploadDate.getTime());
-        dest.writeInt(favoriteCount);
-        dest.writeInt(id);
-        dest.writeInt(pageCount);
-        dest.writeInt(mediaId);
-        dest.writeStringArray(titles);
-        dest.writeParcelable(tags, flags);
-        dest.writeParcelable(cover, flags);
-        dest.writeParcelable(thumbnail, flags);
-        dest.writeTypedList(pages);
-        dest.writeByte((byte) (valid ? 1 : 0));
-    }
-
-    private void writeInterval(StringWriter writer, int intervalLen, ImageExt referencePage) {
-        writer.write(Integer.toString(intervalLen));
-        writer.write(Page.extToChar(referencePage));
-    }
-
-    public String createPagePath() {
-        StringWriter writer = new StringWriter();
-        writer.write(Integer.toString(pages.size()));
-        writer.write(cover.getImageExtChar());
-        writer.write(thumbnail.getImageExtChar());
-        if (pages.size() == 0) return writer.toString();
-        ImageExt referencePage = pages.get(0).getImageExt(), actualPage;
-        int intervalLen = 1;
-        for (int i = 1; i < pages.size(); i++) {
-            actualPage = pages.get(i).getImageExt();
-            if (actualPage != referencePage) {
-                writeInterval(writer, intervalLen, referencePage);
-                referencePage = actualPage;
-                intervalLen = 1;
-            } else intervalLen++;
+    fun createPagePath(): String {
+        val writer = StringWriter()
+        writer.write(pages.size.toString())
+        writer.write(cover.imageExtChar.code)
+        writer.write(thumbnail.imageExtChar.code)
+        if (pages.size == 0) return writer.toString()
+        var referencePage = pages[0].imageExt
+        var actualPage: ImageExt
+        var intervalLen = 1
+        for (i in 1 until pages.size) {
+            actualPage = pages[i].imageExt
+            if (actualPage !== referencePage) {
+                writeInterval(writer, intervalLen, referencePage)
+                referencePage = actualPage
+                intervalLen = 1
+            } else intervalLen++
         }
-        writeInterval(writer, intervalLen, referencePage);
-        return writer.toString();
+        writeInterval(writer, intervalLen, referencePage)
+        return writer.toString()
     }
 
-    private void readPagePath(String path) throws IOException {
-        System.out.println(path);
-        StringReader reader = new StringReader(path + "e");//flag for the end
-        int absolutePage = 0;
-        int actualChar;
-        int pageOfType = 0;
-        boolean specialImages = true;//compability variable
-        while ((actualChar = reader.read()) != 'e') {
-            switch (actualChar) {
-                case 'p':
-                case 'j':
-                case 'g':
+    @Throws(IOException::class)
+    private fun readPagePath(path: String) {
+        println(path)
+        val reader = StringReader(path + "e")
+        var absolutePage = 0
+        var actualChar: Int
+        var pageOfType = 0
+        var specialImages = true
+        while (reader.read().also { actualChar = it } != 'e'.code) {
+            when (actualChar) {
+                'p'.code, 'j'.code, 'g'.code -> {
                     if (specialImages) {
-                        cover = new Page(ImageType.COVER, Page.charToExt(actualChar));
-                        thumbnail = new Page(ImageType.THUMBNAIL, Page.charToExt(actualChar));
-                        specialImages = false;
+                        cover = Page(ImageType.COVER, Page.charToExt(actualChar))
+                        thumbnail = Page(ImageType.THUMBNAIL, Page.charToExt(actualChar))
+                        specialImages = false
                     } else {
-                        for (int j = 0; j < pageOfType; j++) {//add pageOfType time a page of actualChar
-                            pages.add(new Page(ImageType.PAGE, Page.charToExt(actualChar), absolutePage++));
+                        var j = 0
+                        while (j < pageOfType) {
+                            pages.add(
+                                Page(
+                                    ImageType.PAGE,
+                                    Page.charToExt(actualChar),
+                                    absolutePage++
+                                )
+                            )
+                            j++
                         }
                     }
-                    pageOfType = 0;//reset digits
-                    break;
-                case '0':
-                case '1':
-                case '2':
-                case '3':
-                case '4':
-                case '5':
-                case '6':
-                case '7':
-                case '8':
-                case '9':
-                    pageOfType *= 10;
-                    pageOfType += actualChar - '0';
-                    break;
-                default:
-                    break;
+                    pageOfType = 0
+                }
+                '0'.code, '1'.code, '2'.code, '3'.code, '4'.code, '5'.code, '6'.code, '7'.code, '8'.code, '9'.code -> {
+                    pageOfType *= 10
+                    pageOfType += actualChar - '0'.code
+                }
+                else -> {}
             }
         }
     }
 
-    @NonNull
-    @Override
-    public String toString() {
+    override fun toString(): String {
         return "GalleryData{" +
-            "uploadDate=" + uploadDate +
-            ", favoriteCount=" + favoriteCount +
-            ", id=" + id +
-            ", pageCount=" + pageCount +
-            ", mediaId=" + mediaId +
-            ", titles=" + Arrays.toString(titles) +
-            ", tags=" + tags +
-            ", cover=" + cover +
-            ", thumbnail=" + thumbnail +
-            ", pages=" + pages +
-            ", valid=" + valid +
-            '}';
+                "uploadDate=" + uploadDate +
+                ", favoriteCount=" + favoriteCount +
+                ", id=" + id +
+                ", pageCount=" + pageCount +
+                ", mediaId=" + mediaId +
+                ", titles=" + titles.contentToString() +
+                ", tags=" + tags +
+                ", cover=" + cover +
+                ", thumbnail=" + thumbnail +
+                ", pages=" + pages +
+                ", valid=" + isValid +
+                '}'
+    }
+
+    companion object {
+        @JvmField
+        val CREATOR: Creator<GalleryData?> = object : Creator<GalleryData?> {
+            override fun createFromParcel(`in`: Parcel): GalleryData {
+                return GalleryData(`in`)
+            }
+
+            override fun newArray(size: Int): Array<GalleryData?> {
+                return arrayOfNulls(size)
+            }
+        }
+
+        fun fakeData(): GalleryData {
+            val galleryData = GalleryData()
+            galleryData.id = SpecialTagIds.INVALID_ID.toInt()
+            galleryData.favoriteCount = -1
+            galleryData.pageCount = -1
+            galleryData.mediaId = SpecialTagIds.INVALID_ID.toInt()
+            galleryData.pages.trimToSize()
+            galleryData.isValid = false
+            return galleryData
+        }
     }
 }

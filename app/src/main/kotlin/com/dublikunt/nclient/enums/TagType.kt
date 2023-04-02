@@ -4,7 +4,7 @@ import android.os.Parcel
 import android.os.Parcelable
 import android.os.Parcelable.Creator
 
-class TagType : Parcelable {
+open class TagType : Parcelable {
     val id: Byte
     val single: String?
     val plural: String?

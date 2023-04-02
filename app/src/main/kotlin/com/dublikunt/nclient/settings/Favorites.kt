@@ -16,7 +16,7 @@ object Favorites {
     }
 
     fun isFavorite(gallery: GenericGallery?): Boolean {
-        return if (gallery == null || !gallery.isValid) false else Queries.FavoriteTable.isFavorite(
+        return if (gallery == null || !gallery.valid) false else Queries.FavoriteTable.isFavorite(
             gallery.id
         )
     }

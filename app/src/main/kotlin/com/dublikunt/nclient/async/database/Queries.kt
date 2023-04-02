@@ -170,7 +170,7 @@ object Queries {
 
         fun insert(gallery: GenericGallery) {
             val values = ContentValues(12)
-            val data = gallery.galleryData
+            val data = gallery.galleryData!!
             values.put(IDGALLERY, gallery.id)
             values.put(TITLE_ENG, data.getTitle(TitleType.ENGLISH))
             values.put(TITLE_JP, data.getTitle(TitleType.JAPANESE))
@@ -179,10 +179,10 @@ object Queries {
             values.put(MEDIAID, data.mediaId)
             values.put(PAGES, data.createPagePath())
             values.put(UPLOAD, data.uploadDate.time)
-            values.put(MAX_WIDTH, gallery.maxSize.width)
-            values.put(MAX_HEIGHT, gallery.maxSize.height)
-            values.put(MIN_WIDTH, gallery.minSize.width)
-            values.put(MIN_HEIGHT, gallery.minSize.height)
+            values.put(MAX_WIDTH, gallery.maxSize!!.width)
+            values.put(MAX_HEIGHT, gallery.maxSize!!.height)
+            values.put(MIN_WIDTH, gallery.minSize!!.width)
+            values.put(MIN_HEIGHT, gallery.minSize!!.height)
             //Insert gallery
             db.insertWithOnConflict(
                 TABLE_NAME,

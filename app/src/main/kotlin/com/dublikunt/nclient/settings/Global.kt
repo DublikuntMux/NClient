@@ -80,7 +80,7 @@ object Global {
     private var onlyLanguage: Language? = null
 
     @JvmStatic
-    var titleType: TitleType? = null
+    lateinit var titleType: TitleType
         private set
 
     @JvmStatic

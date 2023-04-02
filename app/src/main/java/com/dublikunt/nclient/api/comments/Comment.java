@@ -10,12 +10,11 @@ import java.io.IOException;
 import java.util.Date;
 
 public class Comment implements Parcelable {
-    public static final Creator<Comment> CREATOR = new Creator<Comment>() {
+    public static final Creator<Comment> CREATOR = new Creator<>() {
         /**
          * Creates a new instance of this class from a Parcel. This is used to create comments that are part of a comment - like object such as a list of comments or an object that has been added to a collection.
          *
          * @param in - The Parcel to create the comment from.
-         *
          * @return A new instance of this class with the data from the Parcel passed in. Note that the type of the object is determined by the implementation
          */
         @Override
@@ -98,15 +97,6 @@ public class Comment implements Parcelable {
      */
     public int getId() {
         return id;
-    }
-
-    /**
-     * Returns the poster of this message. This may be null if the message is an unposted message.
-     *
-     * @return the poster of this message or null if the message is not a poster of this message or if there is no
-     */
-    public User getPoster() {
-        return poster;
     }
 
     /**

@@ -4,7 +4,6 @@ import android.content.Context
 import android.graphics.BitmapFactory
 import android.net.Uri
 import com.dublikunt.nclient.R
-import com.dublikunt.nclient.api.Inspector
 import com.dublikunt.nclient.api.LocalGallery
 import com.dublikunt.nclient.api.components.Gallery
 import com.dublikunt.nclient.async.database.Queries.DownloadTable.addGallery
@@ -116,25 +115,6 @@ class GalleryDownloader(
     fun addObserver(observer: DownloadObserver?) {
         if (observer == null) return
         observers.add(observer)
-    }
-
-    /**
-     * @return true if the download has been completed, false otherwise
-     */
-    fun downloadGalleryData(): Boolean {
-        if (gallery != null) return true
-        val inspector = Inspector.galleryInspector(context, id, null)
-        return try {
-            inspector.createDocument()
-            inspector.parseDocument()
-            if (inspector.galleries == null || inspector.galleries.size == 0) return false
-            val g = inspector.galleries[0] as Gallery
-            if (g.isValid) setGallery(g)
-            g.isValid
-        } catch (e: Exception) {
-            error("Error while downloading")
-            false
-        }
     }
 
     fun canBeFetched(): Boolean {
