@@ -264,18 +264,18 @@ open class GalleryData : Parcelable {
 
     override fun toString(): String {
         return "GalleryData{" +
-                "uploadDate=" + uploadDate +
-                ", favoriteCount=" + favoriteCount +
-                ", id=" + id +
-                ", pageCount=" + pageCount +
-                ", mediaId=" + mediaId +
-                ", titles=" + titles.contentToString() +
-                ", tags=" + tags +
-                ", cover=" + cover +
-                ", thumbnail=" + thumbnail +
-                ", pages=" + pages +
-                ", valid=" + isValid +
-                '}'
+            "uploadDate=" + uploadDate +
+            ", favoriteCount=" + favoriteCount +
+            ", id=" + id +
+            ", pageCount=" + pageCount +
+            ", mediaId=" + mediaId +
+            ", titles=" + titles.contentToString() +
+            ", tags=" + tags +
+            ", cover=" + cover +
+            ", thumbnail=" + thumbnail +
+            ", pages=" + pages +
+            ", valid=" + isValid +
+            '}'
     }
 
     companion object {

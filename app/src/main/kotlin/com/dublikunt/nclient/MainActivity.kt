@@ -91,7 +91,7 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
             runOnUiThread { recycler.smoothScrollToPosition(0) }
         }
     }
-    val changeLanguageRunnable = Runnable {
+    private val changeLanguageRunnable = Runnable {
         useNormalMode()
         inspector.start()
     }
@@ -167,6 +167,7 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
         bar.setTitle(com.franmontiel.persistentcookiejar.R.string.app_name)
     }
 
+    @Suppress("InvalidSetHasFixedSize")
     private fun initializeRecyclerView() {
         adapter = ListAdapter(this)
         recycler.adapter = adapter

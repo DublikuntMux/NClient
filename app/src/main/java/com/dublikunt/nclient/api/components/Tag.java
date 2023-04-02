@@ -6,10 +6,13 @@ import android.os.Parcelable;
 import android.util.JsonReader;
 import android.util.JsonToken;
 import android.util.JsonWriter;
+
 import androidx.annotation.NonNull;
+
 import com.dublikunt.nclient.enums.TagStatus;
 import com.dublikunt.nclient.enums.TagType;
 import com.dublikunt.nclient.utility.LogUtility;
+
 import java.io.IOException;
 import java.util.Locale;
 

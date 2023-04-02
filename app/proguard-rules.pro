@@ -1,7 +1,12 @@
--checkdiscard class kotlin.Metadata
 -optimizationpasses 10
+-dontusemixedcaseclassnames
 -dontskipnonpubliclibraryclasses
 -dontskipnonpubliclibraryclassmembers
--verbose
+-dontpreverify
+-optimizations *
+-checkdiscard class kotlin.Metadata
 -allowaccessmodification
 -repackageclasses
+-verbose
+-keepattributes LineNumberTable,SourceFile
+-renamesourcefileattribute SourceFile
