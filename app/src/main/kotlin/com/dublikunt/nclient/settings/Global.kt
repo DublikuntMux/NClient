@@ -45,7 +45,6 @@ import java.io.RandomAccessFile
 import java.util.*
 import kotlin.math.max
 
-
 object Global {
     const val CHANNEL_ID1 = "download_gallery"
     const val CHANNEL_ID2 = "create_pdf"
@@ -201,7 +200,7 @@ object Global {
 
 
     val userAgent: String
-        get() = "NClient " + getLastVersion(null)
+        get() = "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/106.0.0.0 Mobile Safari/537.36"
 
     fun getDefaultFileParent(context: Context): String {
         val f: File? = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
@@ -216,12 +215,12 @@ object Global {
         val files = getUsableFolders(context)
         val path = context.getSharedPreferences("Settings", Context.MODE_PRIVATE)
             .getString(context.getString(R.string.key_save_path), getDefaultFileParent(context))
-        var ROOTFOLDER = File(path)
+        var rootFolder = File(path)
         //in case the permission is removed
-        if (!files.contains(ROOTFOLDER) && !isExternalStorageManager) ROOTFOLDER = File(
+        if (!files.contains(rootFolder) && !isExternalStorageManager) rootFolder = File(
             getDefaultFileParent(context)
         )
-        MAINFOLDER = File(ROOTFOLDER, MAINFOLDER_NAME)
+        MAINFOLDER = File(rootFolder, MAINFOLDER_NAME)
         download(MAINFOLDER)
         OLD_GALLERYFOLDER =
             File(context.getExternalFilesDir(Environment.DIRECTORY_PICTURES), MAINFOLDER_NAME)
@@ -232,11 +231,6 @@ object Global {
         ZIPFOLDER = File(MAINFOLDER, ZIPFOLDER_NAME)
         TORRENTFOLDER = File(MAINFOLDER, TORRENTFOLDER_NAME)
         BACKUPFOLDER = File(MAINFOLDER, BACKUPFOLDER_NAME)
-    }
-
-    fun getClient(context: Context): OkHttpClient {
-        if (client == null) initHttpClient(context)
-        return client!!
     }
 
     fun initScreenSize(activity: AppCompatActivity) {

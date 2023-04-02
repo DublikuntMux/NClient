@@ -3,6 +3,7 @@ package com.dublikunt.nclient
 import android.os.Bundle
 import android.view.MenuItem
 import android.webkit.CookieManager
+import android.webkit.WebSettings
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import android.widget.TextView
@@ -38,17 +39,24 @@ class LoginActivity : GeneralActivity() {
         assert(supportActionBar != null)
         supportActionBar!!.setDisplayHomeAsUpEnabled(true)
         supportActionBar!!.setDisplayShowTitleEnabled(true)
-        val webSettings = webView.settings
-        webSettings.javaScriptEnabled = true
         webView.webViewClient = object : WebViewClient() {
             override fun onLoadResource(view: WebView, url: String) {
                 if (url.indexOf("." + Utility.ORIGINAL_URL) > 0) captchaPassed = true
                 super.onLoadResource(view, url)
             }
         }
-        webSettings.loadsImagesAutomatically = true
-        webSettings.userAgentString = Global.userAgent
+        webView.settings.javaScriptEnabled = true
+        webView.settings.domStorageEnabled = true
+        webView.settings.databaseEnabled = true
+        webView.settings.useWideViewPort = true
+        webView.settings.loadWithOverviewMode = true
+        webView.settings.cacheMode = WebSettings.LOAD_DEFAULT
+        webView.settings.setSupportZoom(true)
+        webView.settings.builtInZoomControls = true
+        webView.settings.displayZoomControls = false
+        webView.settings.userAgentString = Global.userAgent
         webView.loadUrl(Utility.getBaseUrl() + if (isCaptcha) "" else "login/")
+
         waiter = CookieWaiter()
         waiter.start()
     }
