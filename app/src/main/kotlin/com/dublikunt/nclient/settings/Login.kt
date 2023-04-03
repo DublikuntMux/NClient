@@ -30,7 +30,7 @@ object Login {
     fun initLogin(context: Context) {
         val preferences = context.getSharedPreferences("Settings", 0)
         accountTag = preferences.getBoolean(context.getString(R.string.key_use_account_tag), false)
-        BASE_HTTP_URL = Utility.getBaseUrl().toHttpUrl()
+        BASE_HTTP_URL = Utility.baseUrl.toHttpUrl()
     }
 
     fun useAccountTag(): Boolean {

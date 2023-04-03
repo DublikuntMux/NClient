@@ -55,7 +55,7 @@ class LoginActivity : GeneralActivity() {
         webView.settings.builtInZoomControls = true
         webView.settings.displayZoomControls = false
         webView.settings.userAgentString = Global.userAgent
-        webView.loadUrl(Utility.getBaseUrl() + if (isCaptcha) "" else "login/")
+        webView.loadUrl(Utility.baseUrl + if (isCaptcha) "" else "login/")
 
         waiter = CookieWaiter()
         waiter.start()
@@ -81,7 +81,7 @@ class LoginActivity : GeneralActivity() {
                     LogUtility.info((if (isCaptcha) "captcha" else "login") + " interrupted")
                     return
                 }
-                cookies = manager.getCookie(Utility.getBaseUrl())
+                cookies = manager.getCookie(Utility.baseUrl)
                 if (cookies == null) continue
                 val splitCookies =
                     cookies.split("; ".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()

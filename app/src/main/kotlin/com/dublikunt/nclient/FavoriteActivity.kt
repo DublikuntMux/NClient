@@ -110,7 +110,7 @@ class FavoriteActivity : BaseActivity() {
         val i: Intent
         when (item.itemId) {
             R.id.open_browser -> {
-                i = Intent(Intent.ACTION_VIEW, Uri.parse(Utility.getBaseUrl() + "favorites/"))
+                i = Intent(Intent.ACTION_VIEW, Uri.parse(Utility.baseUrl + "favorites/"))
                 startActivity(i)
             }
             R.id.download_page -> {

@@ -114,7 +114,7 @@ class Gallery : GenericGallery {
             return if (galleryData.cover.imageExt === ImageExt.GIF) getHighPage(0) else Uri.parse(
                 String.format(
                     Locale.US,
-                    "https://t." + Utility.getHost() + "/galleries/%d/cover.%s",
+                    "https://t." + Utility.host + "/galleries/%d/cover.%s",
                     mediaId,
                     galleryData.cover.extToString()
                 )
@@ -126,7 +126,7 @@ class Gallery : GenericGallery {
         get() = if (galleryData.cover.imageExt === ImageExt.GIF) getHighPage(0) else Uri.parse(
             String.format(
                 Locale.US,
-                "https://t." + Utility.getHost() + "/galleries/%d/thumb.%s",
+                "https://t." + Utility.host + "/galleries/%d/thumb.%s",
                 mediaId,
                 galleryData.thumbnail.extToString()
             )
@@ -148,7 +148,7 @@ class Gallery : GenericGallery {
         return Uri.parse(
             String.format(
                 Locale.US,
-                "https://i." + Utility.getHost() + "/galleries/%d/%d.%s",
+                "https://i." + Utility.host + "/galleries/%d/%d.%s",
                 mediaId,
                 page + 1,
                 getPageExtension(page)
@@ -162,7 +162,7 @@ class Gallery : GenericGallery {
             ?: Uri.parse(
                 String.format(
                     Locale.US,
-                    "https://t." + Utility.getHost() + "/galleries/%d/%dt.%s",
+                    "https://t." + Utility.host + "/galleries/%d/%dt.%s",
                     mediaId,
                     page + 1,
                     getPageExtension(page)

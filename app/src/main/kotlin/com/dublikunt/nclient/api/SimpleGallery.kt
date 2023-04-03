@@ -107,14 +107,14 @@ class SimpleGallery : GenericGallery {
             Uri.parse(
                 String.format(
                     Locale.US,
-                    "https://i." + Utility.getHost() + "/galleries/%d/1.gif",
+                    "https://i." + Utility.host + "/galleries/%d/1.gif",
                     mediaId
                 )
             )
         } else Uri.parse(
             String.format(
                 Locale.US,
-                "https://t." + Utility.getHost() + "/galleries/%d/thumb.%s",
+                "https://t." + Utility.host + "/galleries/%d/thumb.%s",
                 mediaId,
                 extToString(
                     thumb

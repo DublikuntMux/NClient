@@ -27,10 +27,8 @@ public class CSRFGet extends Thread {
             token = token.substring(token.lastIndexOf("csrf_token"));
             token = token.substring(token.indexOf('"') + 1);
             token = token.substring(0, token.indexOf('"'));
-            // Called when the response is received.
             if (this.response != null) this.response.onResponse(token);
         } catch (Exception e) {
-            // Called when an error occurs.
             if (response != null) response.onError(e);
         }
     }

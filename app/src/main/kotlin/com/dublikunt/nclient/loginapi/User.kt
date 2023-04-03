@@ -39,7 +39,7 @@ class User private constructor(val username: String, id: String, codename: Strin
                     override fun onResponse(call: Call, response: Response) {
                         var user: User? = null
                         val doc =
-                            Jsoup.parse(response.body.byteStream(), null, Utility.getBaseUrl())
+                            Jsoup.parse(response.body.byteStream(), null, Utility.baseUrl)
                         val elements = doc.getElementsByClass("fa-tachometer-alt")
                         if (elements.size > 0) {
                             val x = elements.first()!!.parent()

@@ -115,12 +115,8 @@ object Global {
     private var usageMobile: DataUsageType? = null
     private var usageWifi: DataUsageType? = null
     private var lastVersion: String? = null
-
-    @JvmStatic
-    var mirror: String? = null
+    lateinit var mirror: String
         private set
-
-
     var maxHistory = 0
         private set
     var columnCount = 0
@@ -289,6 +285,7 @@ object Global {
         localSortType = LocalSortType(shared.getInt(context.getString(R.string.key_local_sort), 0))
         useRtl = shared.getBoolean(context.getString(R.string.key_use_rtl), false)
         mirror = shared.getString(context.getString(R.string.key_site_mirror), Utility.ORIGINAL_URL)
+            .toString()
         isKeepHistory = shared.getBoolean(context.getString(R.string.key_keep_history), true)
         removeAvoidedGalleries =
             shared.getBoolean(context.getString(R.string.key_remove_ignored), true)
@@ -556,7 +553,7 @@ object Global {
     }
 
     fun shareGallery(context: Context, gallery: GenericGallery) {
-        shareURL(context, gallery.title, Utility.getBaseUrl() + "g/" + gallery.id)
+        shareURL(context, gallery.title, Utility.baseUrl + "g/" + gallery.id)
     }
 
     @JvmStatic

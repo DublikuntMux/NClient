@@ -179,7 +179,7 @@ class TagsAdapter : RecyclerView.Adapter<TagsAdapter.ViewHolder>, Filterable {
         jw.endArray().endObject()
         val url = String.format(
             Locale.US,
-            Utility.getBaseUrl() + "users/%d/%s/blacklist",
+            Utility.baseUrl + "users/%d/%s/blacklist",
             user!!.id,
             user!!.codename
         )

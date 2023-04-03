@@ -22,7 +22,7 @@ class LoadTags(private val adapter: TagsAdapter?) : Thread() {
     private fun getScripts(url: String): Elements {
         val response = Global.client!!
             .newCall(Request.Builder().url(url).build()).execute()
-        val x = Jsoup.parse(response.body.byteStream(), null, Utility.getBaseUrl())
+        val x = Jsoup.parse(response.body.byteStream(), null, Utility.baseUrl)
             .getElementsByTag("script")
         response.close()
         return x
@@ -50,7 +50,7 @@ class LoadTags(private val adapter: TagsAdapter?) : Thread() {
         super.run()
         if (Login.user == null) return
         val url = String.format(
-            Locale.US, Utility.getBaseUrl() + "users/%s/%s/blacklist",
+            Locale.US, Utility.baseUrl + "users/%s/%s/blacklist",
             Login.user!!.id, Login.user!!.codename
         )
         download(url)

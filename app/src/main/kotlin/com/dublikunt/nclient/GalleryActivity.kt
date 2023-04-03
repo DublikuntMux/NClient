@@ -287,8 +287,8 @@ class GalleryActivity : BaseActivity() {
         if (!Global.hasStoragePermission(this)) {
             return
         }
-        val url = String.format(Locale.US, Utility.getBaseUrl() + "g/%d/download", gallery.id)
-        val referer = String.format(Locale.US, Utility.getBaseUrl() + "g/%d/", gallery.id)
+        val url = String.format(Locale.US, Utility.baseUrl + "g/%d/download", gallery.id)
+        val referer = String.format(Locale.US, Utility.baseUrl + "g/%d/", gallery.id)
         AuthRequest(referer, url, object : Callback {
             override fun onFailure(call: Call, e: IOException) {
                 runOnUiThread {
@@ -427,11 +427,11 @@ class GalleryActivity : BaseActivity() {
             onlineFavoriteItem.title == getString(R.string.remove_from_online_favorites)
         val url = String.format(
             Locale.US,
-            Utility.getBaseUrl() + "api/gallery/%d/%sfavorite",
+            Utility.baseUrl + "api/gallery/%d/%sfavorite",
             gallery.id,
             if (wasFavorite) "un" else ""
         )
-        val galleryUrl = String.format(Locale.US, Utility.getBaseUrl() + "g/%d/", gallery.id)
+        val galleryUrl = String.format(Locale.US, Utility.baseUrl + "g/%d/", gallery.id)
         LogUtility.download("Calling: $url")
         AuthRequest(galleryUrl, url, object : Callback {
             override fun onFailure(call: Call, e: IOException) {}

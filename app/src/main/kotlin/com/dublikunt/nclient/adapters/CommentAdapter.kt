@@ -60,9 +60,9 @@ class CommentAdapter(
         holder.body.text = c.comment
         holder.date.text = format.format(c.postDate)
         holder.close.setOnClickListener {
-            val refererUrl = String.format(Locale.US, Utility.getBaseUrl() + "g/%d/", galleryId)
+            val refererUrl = String.format(Locale.US, Utility.baseUrl + "g/%d/", galleryId)
             val submitUrl =
-                String.format(Locale.US, Utility.getBaseUrl() + "api/comments/%d/delete", c.id)
+                String.format(Locale.US, Utility.baseUrl + "api/comments/%d/delete", c.id)
             AuthRequest(refererUrl, submitUrl, object : Callback {
                 override fun onFailure(call: Call, e: IOException) {}
 

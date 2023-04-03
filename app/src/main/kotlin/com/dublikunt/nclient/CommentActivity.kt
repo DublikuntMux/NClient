@@ -56,10 +56,10 @@ class CommentActivity : BaseActivity() {
                 ).show()
                 return@setOnClickListener
             }
-            val refererUrl = String.format(Locale.US, Utility.getBaseUrl() + "g/%d/", id)
+            val refererUrl = String.format(Locale.US, Utility.baseUrl + "g/%d/", id)
             val submitUrl = String.format(
                 Locale.US,
-                Utility.getBaseUrl() + "api/gallery/%d/comments/submit",
+                Utility.baseUrl + "api/gallery/%d/comments/submit",
                 id
             )
             val requestString = createRequestString(commentText.text.toString())

@@ -26,6 +26,6 @@ abstract class GenericGallery : Parcelable {
     }
 
     fun sharePageUrl(i: Int): String {
-        return String.format(Locale.US, "https://" + Utility.getHost() + "/g/%d/%d/", id, i + 1)
+        return String.format(Locale.US, "https://" + Utility.host + "/g/%d/%d/", id, i + 1)
     }
 }
