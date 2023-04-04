@@ -115,7 +115,7 @@ object Global {
     private var usageMobile: DataUsageType? = null
     private var usageWifi: DataUsageType? = null
     private var lastVersion: String? = null
-    lateinit var mirror: String
+    var mirror: String? = null
         private set
     var maxHistory = 0
         private set
@@ -605,15 +605,15 @@ object Global {
     }
 
 
-    fun hasStoragePermission(context: Context?): Boolean {
+    fun hasStoragePermission(context: Context): Boolean {
         return ContextCompat.checkSelfPermission(
-            context!!,
+            context,
             Manifest.permission.WRITE_EXTERNAL_STORAGE
         ) == PackageManager.PERMISSION_GRANTED
     }
 
 
-    fun isJPEGCorrupted(path: String?): Boolean {
+    fun isJPEGCorrupted(path: String): Boolean {
         if (!File(path).exists()) return true
         try {
             RandomAccessFile(path, "r").use { fh ->

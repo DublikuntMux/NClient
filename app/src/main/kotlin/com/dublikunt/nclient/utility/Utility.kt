@@ -24,7 +24,7 @@ object Utility {
         get() = "https://$host/"
 
     @JvmStatic
-    val host: String
+    val host: String?
         get() = Global.mirror
 
     @Throws(IOException::class)

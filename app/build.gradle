@@ -14,9 +14,9 @@ android {
         applicationId 'com.dublikunt.nclient'
         minSdk 24
         targetSdk 33
-        versionCode 204
+        versionCode 205
         multiDexEnabled true
-        versionName '2.0.4'
+        versionName '2.0.5'
         vectorDrawables.useSupportLibrary true
         proguardFiles 'proguard-rules.pro'
     }
