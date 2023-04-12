@@ -34,11 +34,6 @@ class BookmarkAdapter(private val bookmarkActivity: BookmarkActivity) :
         holder.rootLayout.setOnClickListener { loadBookmark(bookmark) }
     }
 
-    /**
-     * Start an [MainActivity] with `bookmark` as query and page
-     *
-     * @param bookmark bookmark to load
-     */
     private fun loadBookmark(bookmark: Bookmark) {
         val i = Intent(bookmarkActivity, MainActivity::class.java)
         i.putExtra(bookmarkActivity.packageName + ".BYBOOKMARK", true)
@@ -50,11 +45,6 @@ class BookmarkAdapter(private val bookmarkActivity: BookmarkActivity) :
         startAnotherActivity(bookmarkActivity, i)
     }
 
-    /**
-     * remove bookmark from the adapter at `position`
-     *
-     * @param position index to delete
-     */
     private fun removeBookmarkAtPosition(position: Int) {
         if (position >= bookmarks.size) return
         val bookmark = bookmarks[position]

@@ -34,7 +34,7 @@ class Bookmark(url: String, page: Int, requestType: ApiRequestType, tag: Int) {
         uri = Uri.parse(url)
     }
 
-    fun createInspector(context: Context?, response: InspectorResponse?): Inspector? {
+    fun createInspector(context: Context, response: InspectorResponse?): Inspector? {
         val query = uri.getQueryParameter("q")
         val popular = SortType.findFromAddition(uri.getQueryParameter("sort"))
         if (requestType === ApiRequestType.FAVORITE) return Inspector.favoriteInspector(

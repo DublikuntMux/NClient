@@ -23,6 +23,12 @@ import androidx.recyclerview.widget.RecyclerView
 import com.dublikunt.nclient.adapters.ListAdapter
 import com.dublikunt.nclient.api.Inspector
 import com.dublikunt.nclient.api.Inspector.*
+import com.dublikunt.nclient.api.Inspector.Companion.basicInspector
+import com.dublikunt.nclient.api.Inspector.Companion.favoriteInspector
+import com.dublikunt.nclient.api.Inspector.Companion.galleryInspector
+import com.dublikunt.nclient.api.Inspector.Companion.randomInspector
+import com.dublikunt.nclient.api.Inspector.Companion.searchInspector
+import com.dublikunt.nclient.api.Inspector.Companion.tagInspector
 import com.dublikunt.nclient.api.components.Gallery
 import com.dublikunt.nclient.api.components.GenericGallery
 import com.dublikunt.nclient.api.components.Ranges
@@ -318,7 +324,7 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
         query = query!!.trim { it <= ' ' }
         if (advanced) {
             assert(
-                tagArrayList != null //tags is always not null when advanced is set
+                tagArrayList != null
             )
             tags = tagArrayList?.let { HashSet(it) }
         }
@@ -342,13 +348,10 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
         val t = intent.getParcelableExtra<Tag>(
             "$packageName.TAG"
         )
-        inspector = tagInspector(this, t, 1, Global.sortType, resetDataset)
+        inspector = tagInspector(this, t!!, 1, Global.sortType, resetDataset)
         modeType = ModeType.TAG
     }
 
-    /**
-     * Load inspector from an URL, it can be either a tag or a search
-     */
     private fun manageDataStart(data: Uri) {
         val datas = data.pathSegments
         LogUtility.download("Datas: $datas")
@@ -557,7 +560,7 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
             changeUsedLanguage(item)
             showLanguageIcon(item)
         } else if (item.itemId == R.id.search) {
-            if (modeType != ModeType.FAVORITE) { //show textbox or start search activity
+            if (modeType != ModeType.FAVORITE) {
                 i = Intent(this, SearchActivity::class.java)
                 startActivity(i)
             }
@@ -568,7 +571,7 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
             inspector = randomInspector(this, startGallery, true)
             inspector.start()
         } else if (item.itemId == R.id.download_page) {
-            if (inspector.galleries != null) showDialogDownloadAll()
+            showDialogDownloadAll()
         } else if (item.itemId == R.id.add_bookmark) {
             Queries.BookmarkTable.addBookmark(inspector)
         } else if (item.itemId == R.id.tag_manager) {
