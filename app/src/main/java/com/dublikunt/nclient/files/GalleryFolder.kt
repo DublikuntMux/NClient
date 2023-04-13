@@ -1,225 +1,180 @@
-package com.dublikunt.nclient.files;
+package com.dublikunt.nclient.files
 
-import android.content.Context;
-import android.os.Parcel;
-import android.os.Parcelable;
+import android.content.Context
+import android.os.Parcel
+import android.os.Parcelable
+import android.os.Parcelable.Creator
+import androidx.collection.SparseArrayCompat
+import com.dublikunt.nclient.api.components.Page
+import com.dublikunt.nclient.enums.SpecialTagIds
+import com.dublikunt.nclient.settings.Global.DOWNLOADFOLDER
+import com.dublikunt.nclient.settings.Global.findGalleryFolder
+import java.io.File
+import java.util.*
+import java.util.regex.Matcher
+import java.util.regex.Pattern
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.collection.SparseArrayCompat;
+open class GalleryFolder : Parcelable, Iterable<PageFile> {
+    private val pageArray = SparseArrayCompat<PageFile>()
+    val folder: File
+    var id = SpecialTagIds.INVALID_ID.toInt()
+        private set
+    var max = -1
+        private set
+    var min = Int.MAX_VALUE
+        private set
+    var galleryDataFile: File? = null
+        private set
 
-import com.dublikunt.nclient.api.components.Page;
-import com.dublikunt.nclient.enums.ImageExt;
-import com.dublikunt.nclient.enums.SpecialTagIds;
-import com.dublikunt.nclient.settings.Global;
-
-import java.io.File;
-import java.util.Iterator;
-import java.util.Objects;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-public class GalleryFolder implements Parcelable, Iterable<PageFile> {
-
-    public static final Creator<GalleryFolder> CREATOR = new Creator<>() {
-        @Override
-        public GalleryFolder createFromParcel(Parcel in) {
-            return new GalleryFolder(in);
-        }
-
-        @Override
-        public GalleryFolder[] newArray(int size) {
-            return new GalleryFolder[size];
-        }
-    };
-    private static final Pattern FILE_PATTERN = Pattern.compile("^0*(\\d{1,9})\\.(gif|png|jpg)$", Pattern.CASE_INSENSITIVE);
-    private static final Pattern ID_FILE_PATTERN = Pattern.compile("^\\.(\\d{1,6})$");
-    private static final String NOMEDIA_FILE = ".nomedia";
-    private final SparseArrayCompat<PageFile> pageArray = new SparseArrayCompat<>();
-    private final File folder;
-    private int id = SpecialTagIds.INVALID_ID;
-    private int max = -1;
-    private int min = Integer.MAX_VALUE;
-    private File nomedia;
-
-    public GalleryFolder(@NonNull String child) {
-        this(Global.getDOWNLOADFOLDER(), child);
+    constructor(child: String) : this(DOWNLOADFOLDER, child) {}
+    constructor(parent: File?, child: String) : this(File(parent, child)) {}
+    constructor(file: File) {
+        folder = file
+        require(folder.isDirectory) { "File is not a folder" }
+        parseFiles()
     }
 
-    public GalleryFolder(@Nullable File parent, @NonNull String child) {
-        this(new File(parent, child));
-
-    }
-
-    public GalleryFolder(File file) {
-        folder = file;
-        if (!folder.isDirectory())
-            throw new IllegalArgumentException("File is not a folder");
-        parseFiles();
-    }
-
-
-    protected GalleryFolder(Parcel in) {
-        folder = new File(Objects.requireNonNull(in.readString()));
-        id = in.readInt();
-        min = in.readInt();
-        max = in.readInt();
-        int pageCount = in.readInt();
-        for (int i = 0; i < pageCount; i++) {
-            int k = in.readInt();
-            PageFile f = in.readParcelable(PageFile.class.getClassLoader());
-            pageArray.put(k, f);
+    protected constructor(`in`: Parcel) {
+        folder = File(Objects.requireNonNull(`in`.readString()))
+        id = `in`.readInt()
+        min = `in`.readInt()
+        max = `in`.readInt()
+        val pageCount = `in`.readInt()
+        for (i in 0 until pageCount) {
+            val k = `in`.readInt()
+            val f = `in`.readParcelable<PageFile>(PageFile::class.java.classLoader)
+            pageArray.put(k, f)
         }
     }
 
-    public static @Nullable
-    GalleryFolder fromId(@Nullable Context context, int id) {
-        File f = Global.findGalleryFolder(context, id);
-        if (f == null) return null;
-        return new GalleryFolder(f);
-    }
-
-    private void parseFiles() {
-        File[] files = folder.listFiles();
-        if (files == null) return;
-        for (File f : files) {
-            elaborateFile(f);
+    private fun parseFiles() {
+        val files = folder.listFiles() ?: return
+        for (f in files) {
+            elaborateFile(f)
         }
     }
 
-    private void elaborateFile(File f) {
-        String name = f.getName();
+    private fun elaborateFile(f: File) {
+        val name = f.name
+        var matcher = FILE_PATTERN.matcher(name)
+        if (matcher.matches()) elaboratePage(f, matcher)
+        if (id == SpecialTagIds.INVALID_ID.toInt()) {
+            matcher = ID_FILE_PATTERN.matcher(name)
+            if (matcher.matches()) id = elaborateId(matcher)
+        }
+        if (galleryDataFile == null && name == NOMEDIA_FILE) galleryDataFile = f
+    }
 
-        Matcher matcher = FILE_PATTERN.matcher(name);
-        if (matcher.matches()) elaboratePage(f, matcher);
+    private fun elaborateId(matcher: Matcher): Int {
+        return Objects.requireNonNull(matcher.group(1)).toInt()
+    }
 
-        if (id == SpecialTagIds.INVALID_ID) {
-            matcher = ID_FILE_PATTERN.matcher(name);
-            if (matcher.matches()) id = elaborateId(matcher);
+    val pageCount: Int
+        get() = pageArray.size()
+    val pages: Array<PageFile?>
+        get() {
+            val files = arrayOfNulls<PageFile>(pageArray.size())
+            for (i in 0 until pageArray.size()) {
+                files[i] = pageArray.valueAt(i)
+            }
+            return files
         }
 
-        if (nomedia == null && name.equals(NOMEDIA_FILE)) nomedia = f;
+    private fun elaboratePage(f: File, matcher: Matcher) {
+        val page = Objects.requireNonNull(matcher.group(1)).toInt()
+        val ext = Page.charToExt(
+            Objects.requireNonNull(
+                matcher.group(2)
+            )[0].code
+        )
+            ?: return
+        pageArray.append(page, PageFile(ext, f, page))
+        if (page > max) max = page
+        if (page < min) min = page
     }
 
-    private int elaborateId(Matcher matcher) {
-        return Integer.parseInt(Objects.requireNonNull(matcher.group(1)));
+    fun getPage(page: Int): PageFile? {
+        return pageArray[page]
     }
 
-    public int getPageCount() {
-        return pageArray.size();
+    override fun describeContents(): Int {
+        return 0
     }
 
-    public File getGalleryDataFile() {
-        return nomedia;
-    }
-
-    public PageFile[] getPages() {
-        PageFile[] files = new PageFile[pageArray.size()];
-        for (int i = 0; i < pageArray.size(); i++) {
-            files[i] = pageArray.valueAt(i);
-        }
-        return files;
-    }
-
-    public File getFolder() {
-        return folder;
-    }
-
-    public int getMax() {
-        return max;
-    }
-
-    public int getMin() {
-        return min;
-    }
-
-    private void elaboratePage(File f, Matcher matcher) {
-        int page = Integer.parseInt(Objects.requireNonNull(matcher.group(1)));
-        ImageExt ext = Page.charToExt(Objects.requireNonNull(matcher.group(2)).charAt(0));
-        if (ext == null) return;
-        pageArray.append(page, new PageFile(ext, f, page));
-        if (page > max) max = page;
-        if (page < min) min = page;
-    }
-
-    public PageFile getPage(int page) {
-        return pageArray.get(page);
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    @Override
-    public int describeContents() {
-        return 0;
-    }
-
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeString(folder.getAbsolutePath());
-        dest.writeInt(id);
-        dest.writeInt(min);
-        dest.writeInt(max);
-        dest.writeInt(pageArray.size());
-        for (int i = 0; i < pageArray.size(); i++) {
-            dest.writeInt(pageArray.keyAt(i));
-            dest.writeParcelable(pageArray.valueAt(i), flags);
+    override fun writeToParcel(dest: Parcel, flags: Int) {
+        dest.writeString(folder.absolutePath)
+        dest.writeInt(id)
+        dest.writeInt(min)
+        dest.writeInt(max)
+        dest.writeInt(pageArray.size())
+        for (i in 0 until pageArray.size()) {
+            dest.writeInt(pageArray.keyAt(i))
+            dest.writeParcelable(pageArray.valueAt(i), flags)
         }
     }
 
-    @NonNull
-    @Override
-    public Iterator<PageFile> iterator() {
-        return new PageFileIterator(pageArray);
+    override fun iterator(): PageFileIterator {
+        return PageFileIterator(pageArray)
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        GalleryFolder pageFiles = (GalleryFolder) o;
-
-        return folder.equals(pageFiles.folder);
+    override fun equals(o: Any?): Boolean {
+        if (this === o) return true
+        if (o == null || javaClass != o.javaClass) return false
+        val pageFiles = o as GalleryFolder
+        return folder == pageFiles.folder
     }
 
-    @Override
-    public int hashCode() {
-        return folder.hashCode();
+    override fun hashCode(): Int {
+        return folder.hashCode()
     }
 
-    @NonNull
-    @Override
-    public String toString() {
+    override fun toString(): String {
         return "GalleryFolder{" +
             "pageArray=" + pageArray +
             ", folder=" + folder +
             ", id=" + id +
             ", max=" + max +
             ", min=" + min +
-            ", nomedia=" + nomedia +
-            '}';
+            ", nomedia=" + galleryDataFile +
+            '}'
     }
 
-    public static class PageFileIterator implements Iterator<PageFile> {
-        private final SparseArrayCompat<PageFile> files;
-        private int reach = 0;
-
-        public PageFileIterator(SparseArrayCompat<PageFile> files) {
-            this.files = files;
+    class PageFileIterator(private val files: SparseArrayCompat<PageFile>) :
+        MutableIterator<PageFile> {
+        private var reach = 0
+        override fun hasNext(): Boolean {
+            return reach < files.size()
         }
 
-        @Override
-        public boolean hasNext() {
-            return reach < files.size();
+        override fun next(): PageFile {
+            val f = files.valueAt(reach)
+            reach++
+            return f
         }
 
-        @Override
-        public PageFile next() {
-            PageFile f = files.valueAt(reach);
-            reach++;
-            return f;
+        override fun remove() {
+            // HAHA
+        }
+    }
+
+    companion object {
+        @JvmField
+        val CREATOR: Creator<GalleryFolder> = object : Creator<GalleryFolder> {
+            override fun createFromParcel(`in`: Parcel): GalleryFolder {
+                return GalleryFolder(`in`)
+            }
+
+            override fun newArray(size: Int): Array<GalleryFolder?> {
+                return arrayOfNulls(size)
+            }
+        }
+        private val FILE_PATTERN =
+            Pattern.compile("^0*(\\d{1,9})\\.(gif|png|jpg)$", Pattern.CASE_INSENSITIVE)
+        private val ID_FILE_PATTERN = Pattern.compile("^\\.(\\d{1,6})$")
+        private const val NOMEDIA_FILE = ".nomedia"
+        fun fromId(context: Context?, id: Int): GalleryFolder? {
+            val f = findGalleryFolder(context, id) ?: return null
+            return GalleryFolder(f)
         }
     }
 }

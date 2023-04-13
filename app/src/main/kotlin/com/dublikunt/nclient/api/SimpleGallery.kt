@@ -139,7 +139,7 @@ class SimpleGallery : GenericGallery {
 
     companion object {
         @JvmField
-        val CREATOR: Creator<SimpleGallery?> = object : Creator<SimpleGallery?> {
+        val CREATOR: Creator<SimpleGallery> = object : Creator<SimpleGallery> {
             override fun createFromParcel(`in`: Parcel): SimpleGallery {
                 return SimpleGallery(`in`)
             }

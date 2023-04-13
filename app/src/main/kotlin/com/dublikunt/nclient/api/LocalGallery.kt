@@ -90,7 +90,7 @@ class LocalGallery : GenericGallery {
     }
 
     fun calculateSizes() {
-        for (f in folder) checkSize(f)
+        for (f in folder) f?.let { checkSize(it) }
     }
 
     private fun checkSize(f: File) {
@@ -151,7 +151,7 @@ class LocalGallery : GenericGallery {
 
     companion object {
         @JvmField
-        val CREATOR: Creator<LocalGallery?> = object : Creator<LocalGallery?> {
+        val CREATOR: Creator<LocalGallery> = object : Creator<LocalGallery> {
             override fun createFromParcel(`in`: Parcel): LocalGallery {
                 return LocalGallery(`in`)
             }

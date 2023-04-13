@@ -58,7 +58,7 @@ open class Comment : Parcelable {
 
     companion object {
         @JvmField
-        val CREATOR: Creator<Comment?> = object : Creator<Comment?> {
+        val CREATOR: Creator<Comment> = object : Creator<Comment> {
             override fun createFromParcel(`in`: Parcel): Comment {
                 return Comment(`in`)
             }

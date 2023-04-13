@@ -280,7 +280,7 @@ open class GalleryData : Parcelable {
 
     companion object {
         @JvmField
-        val CREATOR: Creator<GalleryData?> = object : Creator<GalleryData?> {
+        val CREATOR: Creator<GalleryData> = object : Creator<GalleryData> {
             override fun createFromParcel(`in`: Parcel): GalleryData {
                 return GalleryData(`in`)
             }

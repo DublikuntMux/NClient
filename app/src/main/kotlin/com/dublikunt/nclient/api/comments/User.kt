@@ -12,9 +12,9 @@ import java.util.*
 open class User : Parcelable {
     var id = 0
         private set
-    lateinit var username: String
+    var username: String = ""
         private set
-    private lateinit var avatarUrl: String
+    var avatarUrl: String = ""
 
     constructor(reader: JsonReader) {
         reader.beginObject()
@@ -51,7 +51,7 @@ open class User : Parcelable {
 
     companion object {
         @JvmField
-        val CREATOR: Creator<User?> = object : Creator<User?> {
+        val CREATOR: Creator<User> = object : Creator<User> {
             override fun createFromParcel(`in`: Parcel): User {
                 return User(`in`)
             }

@@ -7,7 +7,7 @@ apply plugin: 'com.google.firebase.firebase-perf'
 
 android {
     compileSdk 33
-    buildToolsVersion '34.0.0 rc2'
+    buildToolsVersion '34.0.0 rc3'
     namespace 'com.dublikunt.nclient'
     ndkVersion '25.2.9519653'
     defaultConfig {

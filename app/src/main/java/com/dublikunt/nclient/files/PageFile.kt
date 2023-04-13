@@ -1,100 +1,80 @@
-package com.dublikunt.nclient.files;
+package com.dublikunt.nclient.files
 
-import android.content.Context;
-import android.net.Uri;
-import android.os.Parcel;
-import android.os.Parcelable;
+import android.content.Context
+import android.net.Uri
+import android.os.Parcel
+import android.os.Parcelable
+import android.os.Parcelable.Creator
+import com.dublikunt.nclient.api.components.Page
+import com.dublikunt.nclient.enums.ImageExt
+import com.dublikunt.nclient.settings.Global.findGalleryFolder
+import java.io.File
+import java.util.*
+import java.util.regex.Pattern
 
-import androidx.annotation.Nullable;
+open class PageFile : File, Parcelable {
+    val ext: ImageExt
+    val page: Int
 
-import com.dublikunt.nclient.api.components.Page;
-import com.dublikunt.nclient.enums.ImageExt;
-import com.dublikunt.nclient.settings.Global;
+    constructor(ext: ImageExt, file: File, page: Int) : super(file.absolutePath) {
+        this.ext = ext
+        this.page = page
+    }
 
-import java.io.File;
-import java.util.Objects;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+    protected constructor(`in`: Parcel) : super(`in`.readString().toString()) {
+        page = `in`.readInt()
+        ext = ImageExt.values()[`in`.readByte().toInt()]
+    }
 
-public class PageFile extends File implements Parcelable {
-    public static final Creator<PageFile> CREATOR = new Creator<>() {
+    fun toUri(): Uri {
+        return Uri.fromFile(this)
+    }
 
-        @Override
-        public PageFile createFromParcel(Parcel in) {
-            return new PageFile(in);
+    override fun describeContents(): Int {
+        return 0
+    }
+
+    override fun writeToParcel(dest: Parcel, flags: Int) {
+        dest.writeString(this.absolutePath)
+        dest.writeInt(page)
+        dest.writeByte(ext.ordinal.toByte())
+    }
+
+    companion object {
+        @JvmField
+        val CREATOR: Creator<PageFile> = object : Creator<PageFile> {
+            override fun createFromParcel(`in`: Parcel): PageFile {
+                return PageFile(`in`)
+            }
+
+            override fun newArray(size: Int): Array<PageFile?> {
+                return arrayOfNulls(size)
+            }
+        }
+        private val DEFAULT_THUMBNAIL =
+            Pattern.compile("^0*1\\.(gif|png|jpg)$", Pattern.CASE_INSENSITIVE)
+
+        private fun fastThumbnail(folder: File): PageFile? {
+            for (ext in ImageExt.values()) {
+                val name = "001." + ext.name
+                val file = File(folder, name)
+                if (file.exists()) return PageFile(ext, file, 1)
+            }
+            return null
         }
 
-        @Override
-        public PageFile[] newArray(int size) {
-            return new PageFile[size];
+        fun getThumbnail(context: Context, id: Int): PageFile? {
+            val file = findGalleryFolder(context, id) ?: return null
+            val pageFile = fastThumbnail(file)
+            if (pageFile != null) return pageFile
+            val files = file.listFiles() ?: return null
+            for (f in files) {
+                val m = DEFAULT_THUMBNAIL.matcher(f.name)
+                if (!m.matches()) continue
+                val ext = Page.charToExt(Objects.requireNonNull(m.group(1))[0].code)
+                return PageFile(ext, f, 1)
+            }
+            return null
         }
-    };
-    private static final Pattern DEFAULT_THUMBNAIL = Pattern.compile("^0*1\\.(gif|png|jpg)$", Pattern.CASE_INSENSITIVE);
-    private final ImageExt ext;
-    private final int page;
-
-    public PageFile(ImageExt ext, File file, int page) {
-        super(file.getAbsolutePath());
-        this.ext = ext;
-        this.page = page;
     }
-
-    protected PageFile(Parcel in) {
-        super(in.readString());
-        page = in.readInt();
-        ext = ImageExt.values()[in.readByte()];
-    }
-
-    private static @Nullable
-    PageFile fastThumbnail(File folder) {
-        for (ImageExt ext : ImageExt.values()) {
-            String name = "001." + ext.name();
-            File file = new File(folder, name);
-            if (file.exists()) return new PageFile(ext, file, 1);
-        }
-        return null;
-    }
-
-    public static @Nullable
-    PageFile getThumbnail(Context context, int id) {
-        File file = Global.findGalleryFolder(context, id);
-        if (file == null) return null;
-        PageFile pageFile = fastThumbnail(file);
-        if (pageFile != null) return pageFile;
-        File[] files = file.listFiles();
-        if (files == null) return null;
-        for (File f : files) {
-            Matcher m = DEFAULT_THUMBNAIL.matcher(f.getName());
-            if (!m.matches()) continue;
-            ImageExt ext = Page.charToExt(Objects.requireNonNull(m.group(1)).charAt(0));
-            return new PageFile(ext, f, 1);
-        }
-        return null;
-    }
-
-    public Uri toUri() {
-        return Uri.fromFile(this);
-    }
-
-    public ImageExt getExt() {
-        return ext;
-    }
-
-    public int getPage() {
-        return page;
-    }
-
-    @Override
-    public int describeContents() {
-        return 0;
-    }
-
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeString(this.getAbsolutePath());
-        dest.writeInt(page);
-        dest.writeByte((byte) ext.ordinal());
-    }
-
-
 }
