@@ -29,10 +29,10 @@ import com.dublikunt.nclient.api.Inspector.Companion.galleryInspector
 import com.dublikunt.nclient.api.Inspector.Companion.randomInspector
 import com.dublikunt.nclient.api.Inspector.Companion.searchInspector
 import com.dublikunt.nclient.api.Inspector.Companion.tagInspector
+import com.dublikunt.nclient.api.comments.Ranges
+import com.dublikunt.nclient.api.comments.Tag
 import com.dublikunt.nclient.api.components.Gallery
 import com.dublikunt.nclient.api.components.GenericGallery
-import com.dublikunt.nclient.api.components.Ranges
-import com.dublikunt.nclient.api.components.Tag
 import com.dublikunt.nclient.async.database.Queries
 import com.dublikunt.nclient.async.downloader.DownloadGallery
 import com.dublikunt.nclient.components.GlideX

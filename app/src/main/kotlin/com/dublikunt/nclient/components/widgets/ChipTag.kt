@@ -4,18 +4,18 @@ import android.content.Context
 import android.util.AttributeSet
 import androidx.core.content.ContextCompat
 import com.dublikunt.nclient.R
-import com.dublikunt.nclient.api.components.Tag
+import com.dublikunt.nclient.api.comments.Tag
 import com.dublikunt.nclient.enums.TagStatus
 import com.dublikunt.nclient.settings.Global
 import com.google.android.material.chip.Chip
 
 class ChipTag : Chip {
-    private var tag: Tag? = null
+    private lateinit var tag: Tag
     private var canBeAvoided = true
 
-    constructor(context: Context?) : super(context)
-    constructor(context: Context?, attrs: AttributeSet?) : super(context, attrs)
-    constructor(context: Context?, attrs: AttributeSet?, defStyleAttr: Int) : super(
+    constructor(context: Context) : super(context)
+    constructor(context: Context, attrs: AttributeSet) : super(context, attrs)
+    constructor(context: Context, attrs: AttributeSet, defStyleAttr: Int) : super(
         context,
         attrs,
         defStyleAttr
@@ -41,7 +41,7 @@ class ChipTag : Chip {
         loadStatusIcon()
     }
 
-    fun changeStatus(status: TagStatus?) {
+    fun changeStatus(status: TagStatus) {
         tag!!.status = status
         loadStatusIcon()
     }

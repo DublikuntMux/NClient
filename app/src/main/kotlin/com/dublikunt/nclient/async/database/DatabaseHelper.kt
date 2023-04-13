@@ -6,7 +6,7 @@ import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
 import android.graphics.Color
 import com.dublikunt.nclient.R
-import com.dublikunt.nclient.api.components.Tag
+import com.dublikunt.nclient.api.comments.Tag
 import com.dublikunt.nclient.components.status.StatusManager
 import com.dublikunt.nclient.components.status.StatusManager.add
 import com.dublikunt.nclient.enums.SpecialTagIds

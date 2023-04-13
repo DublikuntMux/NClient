@@ -6,6 +6,9 @@ import android.os.Parcelable
 import android.os.Parcelable.Creator
 import android.util.JsonReader
 import android.util.JsonToken
+import com.dublikunt.nclient.api.comments.Page
+import com.dublikunt.nclient.api.comments.Tag
+import com.dublikunt.nclient.api.comments.TagList
 import com.dublikunt.nclient.async.database.Queries
 import com.dublikunt.nclient.async.database.Queries.TagTable.insert
 import com.dublikunt.nclient.async.database.Queries.getColumnFromName

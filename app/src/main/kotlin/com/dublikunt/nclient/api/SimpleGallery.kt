@@ -6,6 +6,8 @@ import android.database.Cursor
 import android.net.Uri
 import android.os.Parcel
 import android.os.Parcelable.Creator
+import com.dublikunt.nclient.api.comments.Page
+import com.dublikunt.nclient.api.comments.TagList
 import com.dublikunt.nclient.api.components.*
 import com.dublikunt.nclient.async.database.Queries
 import com.dublikunt.nclient.async.database.Queries.TagTable.getTagsFromListOfInt

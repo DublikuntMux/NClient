@@ -6,7 +6,7 @@ import android.os.Parcelable.Creator
 
 open class TagType : Parcelable {
     val id: Byte
-    val single: String?
+    val single: String
     val plural: String?
 
     private constructor(id: Int, single: String, plural: String?) {
@@ -17,7 +17,7 @@ open class TagType : Parcelable {
 
     protected constructor(`in`: Parcel) {
         id = `in`.readByte()
-        single = `in`.readString()
+        single = `in`.readString().toString()
         plural = `in`.readString()
     }
 
@@ -32,7 +32,6 @@ open class TagType : Parcelable {
         return id.toInt()
     }
 
-    //start parcelable implementation
     override fun describeContents(): Int {
         return 0
     }

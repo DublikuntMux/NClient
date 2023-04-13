@@ -345,7 +345,7 @@ class GalleryAdapter(
     }
 
     private fun loadImageOnPolicy(imgView: ImageView, pos: Int) {
-        val file: File? = directory?.getPage(pos)
+        val file: File? = directory!!.getPage(pos)
         val angle = angles[pos]
         if (policy == Policy.FULL) {
             if (file != null && file.exists()) loadImageOp(

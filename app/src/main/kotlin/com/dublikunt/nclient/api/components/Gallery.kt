@@ -8,6 +8,9 @@ import android.os.Parcelable.Creator
 import android.util.JsonReader
 import android.util.JsonWriter
 import com.dublikunt.nclient.api.SimpleGallery
+import com.dublikunt.nclient.api.comments.Page
+import com.dublikunt.nclient.api.comments.Tag
+import com.dublikunt.nclient.api.comments.TagList
 import com.dublikunt.nclient.async.database.Queries
 import com.dublikunt.nclient.async.database.Queries.TagTable.allOnlineBlacklisted
 import com.dublikunt.nclient.async.database.Queries.TagTable.getAllStatus
@@ -116,7 +119,7 @@ class Gallery : GenericGallery {
                     Locale.US,
                     "https://t." + Utility.host + "/galleries/%d/cover.%s",
                     mediaId,
-                    galleryData.cover.extToString()
+                    Page.extToString(galleryData.thumbnail.imageExt)
                 )
             )
         }
@@ -128,7 +131,7 @@ class Gallery : GenericGallery {
                 Locale.US,
                 "https://t." + Utility.host + "/galleries/%d/thumb.%s",
                 mediaId,
-                galleryData.thumbnail.extToString()
+                Page.extToString(galleryData.thumbnail.imageExt)
             )
         )
 
@@ -171,7 +174,7 @@ class Gallery : GenericGallery {
     }
 
     fun getPageExtension(page: Int): String {
-        return getPage(page).extToString()
+        return Page.extToString(getPage(page).imageExt)
     }
 
     private fun getPage(index: Int): Page {
@@ -302,7 +305,7 @@ class Gallery : GenericGallery {
         }
 
         fun loadLanguage(tags: TagList): Language {
-            for (tag in tags.retrieveForType(TagType.LANGUAGE)) {
+            for (tag in tags.retrieveForType(TagType.LANGUAGE)!!) {
                 when (tag.id.toShort()) {
                     SpecialTagIds.LANGUAGE_JAPANESE -> return Language.JAPANESE
                     SpecialTagIds.LANGUAGE_ENGLISH -> return Language.ENGLISH

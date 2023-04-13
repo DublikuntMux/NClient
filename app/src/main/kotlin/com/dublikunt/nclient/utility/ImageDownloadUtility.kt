@@ -15,7 +15,7 @@ import java.io.File
 
 object ImageDownloadUtility {
     @JvmStatic
-    fun preloadImage(context: Context?, url: Uri) {
+    fun preloadImage(context: Context, url: Uri) {
         if (Global.downloadPolicy == Global.DataUsageType.NONE) return
         val manager = GlideX.with(context)
         LogUtility.download("Requested url glide: $url")
@@ -23,10 +23,10 @@ object ImageDownloadUtility {
     }
 
 
-    fun loadImageOp(context: Context, view: ImageView?, file: File, angle: Int) {
+    fun loadImageOp(context: Context, view: ImageView, file: File, angle: Int) {
         val glide = GlideX.with(context) ?: return
         val logo = Global.getLogo(context.resources)
-        glide.load(file).transform(Rotate(angle)).error(logo).placeholder(logo).into(view!!)
+        glide.load(file).transform(Rotate(angle)).error(logo).placeholder(logo).into(view)
         LogUtility.download("Requested file glide: $file")
     }
 
@@ -49,7 +49,7 @@ object ImageDownloadUtility {
         if (angle != 0) dra = dra.transform(Rotate(angle))
         dra.error(logo)
             .placeholder(logo)
-            .into(object : ImageViewTarget<Drawable?>(view) {
+            .into(object : ImageViewTarget<Drawable>(view) {
                 override fun setResource(resource: Drawable?) {
                     this.view.setImageDrawable(resource)
                 }

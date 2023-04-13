@@ -1,170 +1,118 @@
-package com.dublikunt.nclient.api.components;
+package com.dublikunt.nclient.api.comments
 
-import android.os.Parcel;
-import android.os.Parcelable;
-import android.util.JsonReader;
-import android.util.JsonToken;
+import android.os.Parcel
+import android.os.Parcelable
+import android.os.Parcelable.Creator
+import android.util.JsonReader
+import android.util.JsonToken
+import com.dublikunt.nclient.classes.Size
+import com.dublikunt.nclient.enums.ImageExt
+import com.dublikunt.nclient.enums.ImageType
 
-import androidx.annotation.NonNull;
+open class Page : Parcelable {
+    val page: Int
+    val imageType: ImageType
+    lateinit var imageExt: ImageExt
+    var size: Size = Size(0, 0)
 
-import com.dublikunt.nclient.classes.Size;
-import com.dublikunt.nclient.enums.ImageExt;
-import com.dublikunt.nclient.enums.ImageType;
-
-import java.io.IOException;
-
-public class Page implements Parcelable {
-    public static final Creator<Page> CREATOR = new Creator<>() {
-        @Override
-        public Page createFromParcel(Parcel in) {
-            return new Page(in);
-        }
-
-        @Override
-        public Page[] newArray(int size) {
-            return new Page[size];
-        }
-    };
-    private final int page;
-    private final ImageType imageType;
-    private ImageExt imageExt;
-    private Size size = new Size(0, 0);
-
-    Page() {
-        this.imageType = ImageType.PAGE;
-        this.imageExt = ImageExt.JPG;
-        this.page = 0;
+    internal constructor() {
+        imageType = ImageType.PAGE
+        imageExt = ImageExt.JPG
+        page = 0
     }
 
-    public Page(ImageType type, JsonReader reader) throws IOException {
-        this(type, reader, 0);
+    @JvmOverloads
+    constructor(type: ImageType, ext: ImageExt, page: Int = 0) {
+        imageType = type
+        imageExt = ext
+        this.page = page
     }
 
-    public Page(ImageType type, ImageExt ext) {
-        this(type, ext, 0);
-    }
-
-    public Page(ImageType type, ImageExt ext, int page) {
-        this.imageType = type;
-        this.imageExt = ext;
-        this.page = page;
-    }
-
-    public Page(ImageType type, JsonReader reader, int page) throws IOException {
-        this.imageType = type;
-        this.page = page;
-        reader.beginObject();
+    @JvmOverloads
+    constructor(type: ImageType, reader: JsonReader, page: Int = 0) {
+        imageType = type
+        this.page = page
+        reader.beginObject()
         while (reader.peek() != JsonToken.END_OBJECT) {
-            switch (reader.nextName()) {
-                case "t":
-                    imageExt = stringToExt(reader.nextString());
-                    break;
-                case "w":
-                    size.setWidth(reader.nextInt());
-                    break;
-                case "h":
-                    size.setHeight(reader.nextInt());
-                    break;
-                default:
-                    reader.skipValue();
-                    break;
+            when (reader.nextName()) {
+                "t" -> imageExt = stringToExt(reader.nextString())
+                "w" -> size!!.width = reader.nextInt()
+                "h" -> size!!.height = reader.nextInt()
+                else -> reader.skipValue()
             }
         }
-        reader.endObject();
+        reader.endObject()
     }
 
-    protected Page(Parcel in) {
-        page = in.readInt();
-        size = in.readParcelable(Size.class.getClassLoader());
-        imageExt = ImageExt.values()[in.readByte()];
-        imageType = ImageType.values()[in.readByte()];
+    protected constructor(`in`: Parcel) {
+        page = `in`.readInt()
+        size = `in`.readParcelable(Size::class.java.classLoader)!!
+        imageExt = ImageExt.values()[`in`.readByte().toInt()]
+        imageType = ImageType.values()[`in`.readByte().toInt()]
     }
 
-    private static ImageExt stringToExt(String ext) {
-        return charToExt(ext.charAt(0));
+    override fun describeContents(): Int {
+        return 0
     }
 
-    public static String extToString(ImageExt ext) {
-        switch (ext) {
-            case GIF:
-                return "gif";
-            case PNG:
-                return "png";
-            case JPG:
-                return "jpg";
-        }
-        return null;
+    override fun writeToParcel(dest: Parcel, flags: Int) {
+        dest.writeInt(page)
+        dest.writeParcelable(size, flags)
+        dest.writeByte((if (imageExt == null) ImageExt.JPG.ordinal else imageExt!!.ordinal).toByte())
+        dest.writeByte((imageType?.ordinal ?: ImageType.PAGE.ordinal).toByte())
     }
 
-    public static char extToChar(ImageExt imageExt) {
-        switch (imageExt) {
-            case GIF:
-                return 'g';
-            case PNG:
-                return 'p';
-            case JPG:
-                return 'j';
-        }
-        return '\0';
-    }
+    val imageExtChar: Char
+        get() = extToChar(imageExt)
 
-    public static ImageExt charToExt(int ext) {
-        switch (ext) {
-            case 'g':
-                return ImageExt.GIF;
-            case 'p':
-                return ImageExt.PNG;
-            case 'j':
-                return ImageExt.JPG;
-        }
-        return null;
-    }
-
-    public String extToString() {
-        return extToString(imageExt);
-    }
-
-    @Override
-    public int describeContents() {
-        return 0;
-    }
-
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeInt(page);
-        dest.writeParcelable(size, flags);
-        dest.writeByte((byte) (imageExt == null ? ImageExt.JPG.ordinal() : imageExt.ordinal()));
-        dest.writeByte((byte) (imageType == null ? ImageType.PAGE.ordinal() : imageType.ordinal()));
-    }
-
-    public int getPage() {
-        return page;
-    }
-
-    public ImageExt getImageExt() {
-        return imageExt;
-    }
-
-    public char getImageExtChar() {
-        return extToChar(imageExt);
-    }
-
-    public ImageType getImageType() {
-        return imageType;
-    }
-
-    public Size getSize() {
-        return size;
-    }
-
-    @NonNull
-    @Override
-    public String toString() {
+    override fun toString(): String {
         return "Page{" +
             "page=" + page +
             ", imageExt=" + imageExt +
             ", imageType=" + imageType +
             ", size=" + size +
-            '}';
+            '}'
+    }
+
+    companion object {
+        @JvmField
+        val CREATOR: Creator<Page> = object : Creator<Page> {
+            override fun createFromParcel(`in`: Parcel): Page {
+                return Page(`in`)
+            }
+
+            override fun newArray(size: Int): Array<Page?> {
+                return arrayOfNulls(size)
+            }
+        }
+
+        fun stringToExt(ext: String): ImageExt {
+            return charToExt(ext[0].code)
+        }
+
+        fun extToString(ext: ImageExt): String {
+            return when (ext) {
+                ImageExt.GIF -> "gif"
+                ImageExt.PNG -> "png"
+                ImageExt.JPG -> "jpg"
+            }
+        }
+
+        fun extToChar(imageExt: ImageExt): Char {
+            return when (imageExt) {
+                ImageExt.GIF -> 'g'
+                ImageExt.PNG -> 'p'
+                ImageExt.JPG -> 'j'
+            }
+        }
+
+        fun charToExt(ext: Int): ImageExt {
+            return when (ext) {
+                'g'.code -> ImageExt.GIF
+                'p'.code -> ImageExt.PNG
+                'j'.code -> ImageExt.JPG
+                else -> ImageExt.JPG
+            }
+        }
     }
 }

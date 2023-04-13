@@ -5,7 +5,7 @@ import android.os.Parcel
 import android.os.Parcelable
 import android.os.Parcelable.Creator
 import androidx.collection.SparseArrayCompat
-import com.dublikunt.nclient.api.components.Page
+import com.dublikunt.nclient.api.comments.Page
 import com.dublikunt.nclient.enums.SpecialTagIds
 import com.dublikunt.nclient.settings.Global.DOWNLOADFOLDER
 import com.dublikunt.nclient.settings.Global.findGalleryFolder

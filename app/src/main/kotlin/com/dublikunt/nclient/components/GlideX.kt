@@ -9,9 +9,9 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.RequestManager
 
 object GlideX {
-    operator fun get(context: Context?): Glide? {
+    operator fun get(context: Context): Glide? {
         return try {
-            Glide.get(context!!)
+            Glide.get(context)
         } catch (ignore: VerifyError) {
             null
         } catch (ignore: IllegalStateException) {
@@ -20,7 +20,7 @@ object GlideX {
     }
 
 
-    fun with(view: View?): RequestManager? {
+    fun with(view: View): RequestManager? {
         return try {
             Glide.with(view!!)
         } catch (ignore: VerifyError) {
@@ -30,7 +30,7 @@ object GlideX {
         }
     }
 
-    fun with(context: Context?): RequestManager? {
+    fun with(context: Context): RequestManager? {
         return try {
             Glide.with(context!!)
         } catch (ignore: VerifyError) {
@@ -40,7 +40,7 @@ object GlideX {
         }
     }
 
-    fun with(fragment: Fragment?): RequestManager? {
+    fun with(fragment: Fragment): RequestManager? {
         return try {
             Glide.with(fragment!!)
         } catch (ignore: VerifyError) {
@@ -50,7 +50,7 @@ object GlideX {
         }
     }
 
-    fun with(fragmentActivity: FragmentActivity?): RequestManager? {
+    fun with(fragmentActivity: FragmentActivity): RequestManager? {
         return try {
             Glide.with(fragmentActivity!!)
         } catch (ignore: VerifyError) {
@@ -60,7 +60,7 @@ object GlideX {
         }
     }
 
-    fun with(activity: AppCompatActivity?): RequestManager? {
+    fun with(activity: AppCompatActivity): RequestManager? {
         return try {
             Glide.with(activity!!)
         } catch (ignore: VerifyError) {

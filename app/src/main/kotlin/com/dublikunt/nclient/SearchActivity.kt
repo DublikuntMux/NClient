@@ -14,8 +14,8 @@ import androidx.appcompat.widget.SearchView
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.RecyclerView
 import com.dublikunt.nclient.adapters.HistoryAdapter
-import com.dublikunt.nclient.api.components.Ranges
-import com.dublikunt.nclient.api.components.Tag
+import com.dublikunt.nclient.api.comments.Ranges
+import com.dublikunt.nclient.api.comments.Tag
 import com.dublikunt.nclient.async.database.Queries
 import com.dublikunt.nclient.components.activities.GeneralActivity
 import com.dublikunt.nclient.components.widgets.ChipTag
@@ -111,7 +111,7 @@ class SearchActivity : GeneralActivity() {
                 i.putExtra("$packageName.ADVANCED", advanced)
                 if (advanced) {
                     val tt = ArrayList<Tag>(tags.size)
-                    for (t in tags) if (t.tag.status == TagStatus.ACCEPTED) tt.add(t.tag)
+                    for (t in tags) if (t.tag.status == TagStatus.ACCEPTED) tt.add(t.tag as Tag)
                     i.putParcelableArrayListExtra("$packageName.TAGS", tt)
                     i.putExtra("$packageName.RANGES", ranges)
                 }
@@ -243,7 +243,7 @@ class SearchActivity : GeneralActivity() {
                             Locale.US,
                             "%d %c",
                             actual,
-                            temporaryUnit!!.getVal().uppercaseChar()
+                            temporaryUnit!!.`val`.uppercaseChar()
                         )
                         advanced = true
                     }

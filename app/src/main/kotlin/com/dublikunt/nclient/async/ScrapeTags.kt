@@ -4,7 +4,7 @@ import android.content.Context
 import android.content.Intent
 import android.util.JsonReader
 import androidx.core.app.JobIntentService
-import com.dublikunt.nclient.api.components.Tag
+import com.dublikunt.nclient.api.comments.Tag
 import com.dublikunt.nclient.async.database.Queries.TagTable.allFiltered
 import com.dublikunt.nclient.async.database.Queries.TagTable.insertScrape
 import com.dublikunt.nclient.async.database.Queries.TagTable.updateStatus

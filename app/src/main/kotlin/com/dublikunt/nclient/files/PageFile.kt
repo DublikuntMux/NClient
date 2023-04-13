@@ -5,7 +5,7 @@ import android.net.Uri
 import android.os.Parcel
 import android.os.Parcelable
 import android.os.Parcelable.Creator
-import com.dublikunt.nclient.api.components.Page
+import com.dublikunt.nclient.api.comments.Page
 import com.dublikunt.nclient.enums.ImageExt
 import com.dublikunt.nclient.settings.Global.findGalleryFolder
 import java.io.File

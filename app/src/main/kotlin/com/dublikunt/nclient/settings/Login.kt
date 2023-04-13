@@ -5,7 +5,7 @@ import android.content.SharedPreferences
 import android.webkit.CookieManager
 import com.dublikunt.nclient.MainActivity
 import com.dublikunt.nclient.R
-import com.dublikunt.nclient.api.components.Tag
+import com.dublikunt.nclient.api.comments.Tag
 import com.dublikunt.nclient.async.database.Queries
 import com.dublikunt.nclient.components.CustomCookieJar
 import com.dublikunt.nclient.loginapi.LoadTags

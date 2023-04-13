@@ -7,6 +7,8 @@ import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
 import com.dublikunt.nclient.api.Inspector
 import com.dublikunt.nclient.api.SimpleGallery
+import com.dublikunt.nclient.api.comments.Tag
+import com.dublikunt.nclient.api.comments.TagList
 import com.dublikunt.nclient.api.components.*
 import com.dublikunt.nclient.async.downloader.GalleryDownloader
 import com.dublikunt.nclient.async.downloader.GalleryDownloaderManager

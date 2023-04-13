@@ -26,8 +26,6 @@ import com.dublikunt.nclient.ZoomActivity
 import com.dublikunt.nclient.api.components.Gallery
 import com.dublikunt.nclient.api.components.GenericGallery
 import com.dublikunt.nclient.components.GlideX.with
-import com.dublikunt.nclient.components.photoview.OnPhotoTapListener
-import com.dublikunt.nclient.components.photoview.OnScaleChangedListener
 import com.dublikunt.nclient.components.photoview.PhotoView
 import com.dublikunt.nclient.files.GalleryFolder
 import com.dublikunt.nclient.files.PageFile
@@ -84,27 +82,21 @@ class ZoomFragment : Fragment() {
         url = if (str == null) null else Uri.parse(str)
         pageFile = requireArguments().getParcelable("FOLDER")
         photoView.setAllowParentInterceptOnEdge(true)
-        photoView.setOnPhotoTapListener(object :
-            OnPhotoTapListener {
-            override fun onPhotoTap(view: ImageView?, x: Float, y: Float) {
-                val prev = x < CHANGE_PAGE_THRESHOLD
-                val next = x > 1f - CHANGE_PAGE_THRESHOLD
-                if ((prev || next) && Global.isButtonChangePage) {
-                    activity!!.changeClosePage(next)
-                } else if (clickListener != null) {
-                    clickListener!!.onClick(view)
-                }
-                download(view!!, x, y, prev, next)
+        photoView.setOnPhotoTapListener { view, x, y ->
+            val prev = x < CHANGE_PAGE_THRESHOLD
+            val next = x > 1f - CHANGE_PAGE_THRESHOLD
+            if ((prev || next) && Global.isButtonChangePage) {
+                activity!!.changeClosePage(next)
+            } else if (clickListener != null) {
+                clickListener!!.onClick(view)
             }
-        })
-        photoView.setOnScaleChangeListener(object :
-            OnScaleChangedListener {
-            override fun onScaleChange(scaleFactor: Float, focusX: Float, focusY: Float) {
-                if (zoomChangeListener != null) {
-                    zoomChangeListener!!.onZoomChange(rootView, photoView.scale)
-                }
+            download(requireView(), x, y, prev, next)
+        }
+        photoView.setOnScaleChangeListener { scaleFactor, focusX, focusY ->
+            if (zoomChangeListener != null) {
+                zoomChangeListener!!.onZoomChange(rootView, photoView.scale)
             }
-        })
+        }
         photoView.maximumScale = MAX_SCALE
         retryButton.setOnClickListener { loadImage() }
         createTarget()

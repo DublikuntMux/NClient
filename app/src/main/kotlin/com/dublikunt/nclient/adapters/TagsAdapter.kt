@@ -11,7 +11,7 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.RecyclerView
 import com.dublikunt.nclient.R
 import com.dublikunt.nclient.TagFilterActivity
-import com.dublikunt.nclient.api.components.Tag
+import com.dublikunt.nclient.api.comments.Tag
 import com.dublikunt.nclient.async.database.Queries.TagTable.cursorToTag
 import com.dublikunt.nclient.async.database.Queries.TagTable.getFilterCursor
 import com.dublikunt.nclient.enums.TagStatus
@@ -249,7 +249,7 @@ class TagsAdapter : RecyclerView.Adapter<TagsAdapter.ViewHolder>, Filterable {
             jw.beginObject()
             jw.name("id").value(tag.id.toLong())
             jw.name("name").value(tag.name)
-            jw.name("type").value(tag.typeSingleName)
+            jw.name("type").value(tag.type.single)
             jw.endObject()
         }
     }

@@ -90,7 +90,7 @@ class LocalGallery : GenericGallery {
     }
 
     fun calculateSizes() {
-        for (f in folder) f?.let { checkSize(it) }
+        for (f in folder) checkSize(f)
     }
 
     private fun checkSize(f: File) {
