@@ -5,7 +5,7 @@ import android.graphics.BitmapFactory
 import android.net.Uri
 import com.dublikunt.nclient.R
 import com.dublikunt.nclient.api.LocalGallery
-import com.dublikunt.nclient.api.components.Gallery
+import com.dublikunt.nclient.api.gallerys.Gallery
 import com.dublikunt.nclient.async.database.Queries.DownloadTable.addGallery
 import com.dublikunt.nclient.async.database.Queries.DownloadTable.removeGallery
 import com.dublikunt.nclient.settings.Global

@@ -1,5 +1,6 @@
 package com.dublikunt.nclient.adapters
 
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.util.SparseIntArray
 import android.view.LayoutInflater
@@ -11,8 +12,8 @@ import com.dublikunt.nclient.MainActivity
 import com.dublikunt.nclient.R
 import com.dublikunt.nclient.api.Inspector
 import com.dublikunt.nclient.api.Inspector.DefaultInspectorResponse
-import com.dublikunt.nclient.api.SimpleGallery
-import com.dublikunt.nclient.api.components.GenericGallery
+import com.dublikunt.nclient.api.gallerys.GenericGallery
+import com.dublikunt.nclient.api.gallerys.SimpleGallery
 import com.dublikunt.nclient.async.database.Queries
 import com.dublikunt.nclient.components.activities.BaseActivity
 import com.dublikunt.nclient.enums.Language
@@ -187,7 +188,7 @@ class ListAdapter(private val context: BaseActivity) :
         context.runOnUiThread { notifyItemRangeInserted(c, galleries.size) }
     }
 
-    fun restartDataset(galleries: List<GenericGallery?>) {
+    fun restartDataset(galleries: List<GenericGallery>) {
         mDataset.clear()
         for (g in galleries) if (g is SimpleGallery) mDataset.add(g)
         context.runOnUiThread { notifyDataSetChanged() }

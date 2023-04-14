@@ -1,4 +1,4 @@
-package com.dublikunt.nclient.api.components
+package com.dublikunt.nclient.api.gallerys
 
 import android.os.Parcelable
 import com.dublikunt.nclient.classes.Size
@@ -12,12 +12,13 @@ abstract class GenericGallery : Parcelable {
     abstract val pageCount: Int
     abstract val valid: Boolean
     abstract val title: String
+    val isLocal: Boolean
+        get() = type == Type.LOCAL
+
     abstract val maxSize: Size?
     abstract val minSize: Size?
     abstract val galleryFolder: GalleryFolder?
     abstract val galleryData: GalleryData?
-    val isLocal: Boolean
-        get() = type == Type.LOCAL
 
     abstract fun hasGalleryData(): Boolean
 

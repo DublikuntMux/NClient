@@ -31,13 +31,14 @@ import com.dublikunt.nclient.api.Inspector.Companion.searchInspector
 import com.dublikunt.nclient.api.Inspector.Companion.tagInspector
 import com.dublikunt.nclient.api.comments.Ranges
 import com.dublikunt.nclient.api.comments.Tag
-import com.dublikunt.nclient.api.components.Gallery
-import com.dublikunt.nclient.api.components.GenericGallery
+import com.dublikunt.nclient.api.gallerys.Gallery
+import com.dublikunt.nclient.api.gallerys.GenericGallery
 import com.dublikunt.nclient.async.database.Queries
 import com.dublikunt.nclient.async.downloader.DownloadGallery
 import com.dublikunt.nclient.components.GlideX
 import com.dublikunt.nclient.components.activities.BaseActivity
 import com.dublikunt.nclient.components.views.PageSwitcher
+import com.dublikunt.nclient.components.views.PageSwitcher.DefaultPageChanger
 import com.dublikunt.nclient.components.widgets.CustomGridLayoutManager
 import com.dublikunt.nclient.enums.*
 import com.dublikunt.nclient.settings.Global
@@ -52,6 +53,7 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.navigation.NavigationView
 import com.google.android.material.snackbar.Snackbar
 import java.util.*
+
 
 class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedListener {
     private val startGallery: InspectorResponse = object : MainInspectorResponse() {
@@ -157,7 +159,7 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
     }
 
     private fun initializePageSwitcherActions() {
-        pageSwitcher.setChanger(object : PageSwitcher.DefaultPageChanger() {
+        pageSwitcher.setChanger(object : DefaultPageChanger() {
             override fun pageChanged(switcher: PageSwitcher, page: Int) {
                 inspector = inspector.cloneInspector(this@MainActivity, resetDataset)
                 inspector.page = pageSwitcher.getActualPage()

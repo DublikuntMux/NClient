@@ -9,7 +9,7 @@ import android.widget.SeekBar.OnSeekBarChangeListener
 import android.widget.TextView
 import android.widget.Toast
 import com.dublikunt.nclient.R
-import com.dublikunt.nclient.api.components.Gallery
+import com.dublikunt.nclient.api.gallerys.Gallery
 import com.dublikunt.nclient.async.downloader.DownloadGallery
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.dialog.MaterialAlertDialogBuilder

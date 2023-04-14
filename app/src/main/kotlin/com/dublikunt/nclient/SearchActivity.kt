@@ -382,8 +382,8 @@ class SearchActivity : GeneralActivity() {
         inputMethodManager!!.showSoftInput(autoComplete, InputMethodManager.SHOW_IMPLICIT)
     }
 
-    private fun getGroup(type: TagType?): ChipGroup? {
-        return groups[type!!.id.toInt()]
+    private fun getGroup(type: TagType): ChipGroup? {
+        return groups[type.id.toInt()]
     }
 
     private fun addDialog() {

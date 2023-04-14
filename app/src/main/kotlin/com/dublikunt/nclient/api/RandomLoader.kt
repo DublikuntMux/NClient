@@ -3,8 +3,8 @@ package com.dublikunt.nclient.api
 import com.dublikunt.nclient.RandomActivity
 import com.dublikunt.nclient.api.Inspector.DefaultInspectorResponse
 import com.dublikunt.nclient.api.Inspector.InspectorResponse
-import com.dublikunt.nclient.api.components.Gallery
-import com.dublikunt.nclient.api.components.GenericGallery
+import com.dublikunt.nclient.api.gallerys.Gallery
+import com.dublikunt.nclient.api.gallerys.GenericGallery
 import com.dublikunt.nclient.utility.ImageDownloadUtility.preloadImage
 import kotlin.properties.Delegates
 
@@ -35,15 +35,15 @@ class RandomLoader(private val activity: RandomActivity) {
             loadRandomGallery()
         }
 
-        override fun onSuccess(galleryList: List<GenericGallery>) {
-            if (galleryList.isEmpty() || !galleryList[0].valid) {
+        override fun onSuccess(galleries: List<GenericGallery>) {
+            if (galleries.isEmpty() || !galleries[0].valid) {
                 loadRandomGallery()
                 return
             }
-            val gallery = galleryList[0] as Gallery
-            galleries.add(gallery)
+            val gallery = galleries[0] as Gallery
+            this@RandomLoader.galleries.add(gallery)
             preloadImage(activity, gallery.cover)
-            if (galleryHasBeenRequested) requestGallery() else if (galleries.size < MAXLOADED) loadRandomGallery()
+            if (galleryHasBeenRequested) requestGallery() else if (this@RandomLoader.galleries.size < MAXLOADED) loadRandomGallery()
         }
     }
 

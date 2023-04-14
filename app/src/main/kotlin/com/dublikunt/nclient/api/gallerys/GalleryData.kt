@@ -1,4 +1,4 @@
-package com.dublikunt.nclient.api.components
+package com.dublikunt.nclient.api.gallerys
 
 import android.database.Cursor
 import android.os.Parcel

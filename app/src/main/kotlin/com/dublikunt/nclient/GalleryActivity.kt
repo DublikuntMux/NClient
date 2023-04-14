@@ -20,8 +20,8 @@ import com.dublikunt.nclient.CopyToClipboardActivity.Companion.copyTextToClipboa
 import com.dublikunt.nclient.adapters.GalleryAdapter
 import com.dublikunt.nclient.api.Inspector
 import com.dublikunt.nclient.api.Inspector.DefaultInspectorResponse
-import com.dublikunt.nclient.api.components.Gallery
-import com.dublikunt.nclient.api.components.GenericGallery
+import com.dublikunt.nclient.api.gallerys.Gallery
+import com.dublikunt.nclient.api.gallerys.GenericGallery
 import com.dublikunt.nclient.async.database.Queries
 import com.dublikunt.nclient.components.activities.BaseActivity
 import com.dublikunt.nclient.components.status.StatusManager

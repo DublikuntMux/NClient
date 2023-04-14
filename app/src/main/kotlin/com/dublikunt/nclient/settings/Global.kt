@@ -25,7 +25,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.dublikunt.nclient.CopyToClipboardActivity
 import com.dublikunt.nclient.R
 import com.dublikunt.nclient.api.LocalSortType
-import com.dublikunt.nclient.api.components.GenericGallery
+import com.dublikunt.nclient.api.gallerys.GenericGallery
 import com.dublikunt.nclient.components.CustomCookieJar
 import com.dublikunt.nclient.enums.Language
 import com.dublikunt.nclient.enums.SortType

@@ -172,6 +172,7 @@ open class GalleryFolder : Parcelable, Iterable<PageFile> {
             Pattern.compile("^0*(\\d{1,9})\\.(gif|png|jpg)$", Pattern.CASE_INSENSITIVE)
         private val ID_FILE_PATTERN = Pattern.compile("^\\.(\\d{1,6})$")
         private const val NOMEDIA_FILE = ".nomedia"
+
         fun fromId(context: Context?, id: Int): GalleryFolder? {
             val f = findGalleryFolder(context, id) ?: return null
             return GalleryFolder(f)

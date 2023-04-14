@@ -1,4 +1,4 @@
-package com.dublikunt.nclient.api.components
+package com.dublikunt.nclient.api.gallerys
 
 import android.content.Context
 import android.database.Cursor
@@ -7,7 +7,6 @@ import android.os.Parcel
 import android.os.Parcelable.Creator
 import android.util.JsonReader
 import android.util.JsonWriter
-import com.dublikunt.nclient.api.SimpleGallery
 import com.dublikunt.nclient.api.comments.Page
 import com.dublikunt.nclient.api.comments.Tag
 import com.dublikunt.nclient.api.comments.TagList

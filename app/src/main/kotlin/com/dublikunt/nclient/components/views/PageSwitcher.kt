@@ -12,8 +12,6 @@ import com.dublikunt.nclient.settings.DefaultDialogs
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.textfield.TextInputEditText
 import java.util.*
-import kotlin.math.max
-import kotlin.math.min
 
 class PageSwitcher : CardView {
     private lateinit var master: LinearLayout
@@ -28,12 +26,12 @@ class PageSwitcher : CardView {
         init(context)
     }
 
-    constructor(context: Context, attrs: AttributeSet?) : super(context, attrs) {
+    constructor(context: Context, attrs: AttributeSet) : super(context, attrs) {
         init(context)
         setPages(0, 0)
     }
 
-    constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : super(
+    constructor(context: Context, attrs: AttributeSet, defStyleAttr: Int) : super(
         context,
         attrs,
         defStyleAttr
@@ -47,7 +45,7 @@ class PageSwitcher : CardView {
 
     fun setPages(totalPage: Int, actualPage: Int) {
         var actualPage = actualPage
-        actualPage = min(totalPage, max(actualPage, 1))
+        actualPage = totalPage.coerceAtMost(actualPage.coerceAtLeast(1))
         val pageChanged = this.actualPage != actualPage
         if (this.totalPage == totalPage && !pageChanged) return
         this.totalPage = totalPage
@@ -79,8 +77,8 @@ class PageSwitcher : CardView {
     }
 
     private fun init(context: Context) {
-        master = (LayoutInflater.from(context).inflate(R.layout.page_switcher, this, true)
-            .findViewById<View>(R.id.master_layout) as LinearLayout?)!!
+        master = LayoutInflater.from(context).inflate(R.layout.page_switcher, this, true)
+            .findViewById<View>(R.id.master_layout) as LinearLayout
         prev = master.findViewById(R.id.prev)
         next = master.findViewById(R.id.next)
         text = master.findViewById(R.id.page_index)

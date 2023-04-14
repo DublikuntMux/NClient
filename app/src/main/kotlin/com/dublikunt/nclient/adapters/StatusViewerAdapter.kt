@@ -8,7 +8,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.RecyclerView
 import com.dublikunt.nclient.GalleryActivity
 import com.dublikunt.nclient.R
-import com.dublikunt.nclient.api.components.Gallery
+import com.dublikunt.nclient.api.gallerys.Gallery
 import com.dublikunt.nclient.async.database.Queries
 import com.dublikunt.nclient.settings.Global
 import com.dublikunt.nclient.utility.ImageDownloadUtility.loadImage

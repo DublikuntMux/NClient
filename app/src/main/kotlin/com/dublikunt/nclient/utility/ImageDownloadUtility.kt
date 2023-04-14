@@ -8,7 +8,7 @@ import androidx.annotation.DrawableRes
 import androidx.appcompat.app.AppCompatActivity
 import com.bumptech.glide.load.resource.bitmap.Rotate
 import com.bumptech.glide.request.target.ImageViewTarget
-import com.dublikunt.nclient.api.components.Gallery
+import com.dublikunt.nclient.api.gallerys.Gallery
 import com.dublikunt.nclient.components.GlideX
 import com.dublikunt.nclient.settings.Global
 import java.io.File

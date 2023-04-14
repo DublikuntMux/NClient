@@ -7,8 +7,9 @@ import android.os.Parcelable
 import android.os.Parcelable.Creator
 import com.dublikunt.nclient.api.comments.Ranges
 import com.dublikunt.nclient.api.comments.Tag
-import com.dublikunt.nclient.api.components.Gallery
-import com.dublikunt.nclient.api.components.GenericGallery
+import com.dublikunt.nclient.api.gallerys.Gallery
+import com.dublikunt.nclient.api.gallerys.GenericGallery
+import com.dublikunt.nclient.api.gallerys.SimpleGallery
 import com.dublikunt.nclient.async.database.Queries.TagTable.allOnlineBlacklisted
 import com.dublikunt.nclient.async.database.Queries.TagTable.getAllStatus
 import com.dublikunt.nclient.async.database.Queries.TagTable.getTagById

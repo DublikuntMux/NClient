@@ -4,8 +4,8 @@ import android.graphics.BitmapFactory
 import android.os.Parcel
 import android.os.Parcelable.Creator
 import android.util.JsonReader
-import com.dublikunt.nclient.api.components.GalleryData
-import com.dublikunt.nclient.api.components.GenericGallery
+import com.dublikunt.nclient.api.gallerys.GalleryData
+import com.dublikunt.nclient.api.gallerys.GenericGallery
 import com.dublikunt.nclient.classes.Size
 import com.dublikunt.nclient.enums.SpecialTagIds
 import com.dublikunt.nclient.files.GalleryFolder
@@ -161,10 +161,6 @@ class LocalGallery : GenericGallery {
             }
         }
         private val DUP_PATTERN = Pattern.compile("^(.*)\\.DUP\\d+$")
-        private fun getPageFromFile(f: File): Int {
-            val n = f.name
-            return n.substring(0, n.indexOf('.')).toInt()
-        }
 
         private fun createTitle(file: File): String {
             val name = file.name
@@ -172,21 +168,6 @@ class LocalGallery : GenericGallery {
             if (!matcher.matches()) return name
             val title = matcher.group(1)
             return title ?: name
-        }
-
-        /**
-         * @return null if not found or the file if found
-         */
-
-        fun getPage(dir: File?, page: Int): File? {
-            if (dir == null || !dir.exists()) return null
-            val pag = String.format(Locale.US, "%03d.", page)
-            var x: File = File(dir, pag + "jpg")
-            if (x.exists()) return x
-            x = File(dir, pag + "png")
-            if (x.exists()) return x
-            x = File(dir, pag + "gif")
-            return if (x.exists()) x else null
         }
     }
 }

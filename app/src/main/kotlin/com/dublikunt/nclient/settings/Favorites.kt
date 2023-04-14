@@ -1,7 +1,7 @@
 package com.dublikunt.nclient.settings
 
-import com.dublikunt.nclient.api.components.Gallery
-import com.dublikunt.nclient.api.components.GenericGallery
+import com.dublikunt.nclient.api.gallerys.Gallery
+import com.dublikunt.nclient.api.gallerys.GenericGallery
 import com.dublikunt.nclient.async.database.Queries
 
 object Favorites {

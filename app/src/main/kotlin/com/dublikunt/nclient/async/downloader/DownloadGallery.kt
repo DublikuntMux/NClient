@@ -4,9 +4,9 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import androidx.core.app.JobIntentService
-import com.dublikunt.nclient.api.SimpleGallery
-import com.dublikunt.nclient.api.components.Gallery
-import com.dublikunt.nclient.api.components.GenericGallery
+import com.dublikunt.nclient.api.gallerys.SimpleGallery
+import com.dublikunt.nclient.api.gallerys.Gallery
+import com.dublikunt.nclient.api.gallerys.GenericGallery
 import com.dublikunt.nclient.async.database.Queries.DownloadTable.getAllDownloads
 import com.dublikunt.nclient.utility.LogUtility.download
 import com.dublikunt.nclient.utility.LogUtility.error

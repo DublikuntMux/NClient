@@ -10,7 +10,7 @@ import android.widget.ImageButton
 import android.widget.TextView
 import androidx.core.widget.ImageViewCompat
 import com.dublikunt.nclient.api.RandomLoader
-import com.dublikunt.nclient.api.components.Gallery
+import com.dublikunt.nclient.api.gallerys.Gallery
 import com.dublikunt.nclient.components.activities.GeneralActivity
 import com.dublikunt.nclient.settings.Favorites
 import com.dublikunt.nclient.settings.Global

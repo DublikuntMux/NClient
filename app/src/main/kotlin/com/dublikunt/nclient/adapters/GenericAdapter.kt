@@ -9,7 +9,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.dublikunt.nclient.R
-import com.dublikunt.nclient.api.components.GenericGallery
+import com.dublikunt.nclient.api.gallerys.GenericGallery
 
 abstract class GenericAdapter<T : GenericGallery> internal constructor(val dataset: List<T>) :
     RecyclerView.Adapter<GenericAdapter.ViewHolder>(), Filterable {

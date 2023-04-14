@@ -9,7 +9,7 @@ import android.os.Build
 import androidx.core.app.NotificationCompat
 import com.dublikunt.nclient.GalleryActivity
 import com.dublikunt.nclient.R
-import com.dublikunt.nclient.api.components.Gallery
+import com.dublikunt.nclient.api.gallerys.Gallery
 import com.dublikunt.nclient.settings.Global
 import com.dublikunt.nclient.settings.Global.recursiveDelete
 import com.dublikunt.nclient.settings.NotificationSettings

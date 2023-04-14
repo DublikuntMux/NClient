@@ -20,7 +20,7 @@ import androidx.viewpager2.adapter.FragmentStateAdapter
 import androidx.viewpager2.widget.ViewPager2
 import androidx.viewpager2.widget.ViewPager2.OnPageChangeCallback
 import com.bumptech.glide.Priority
-import com.dublikunt.nclient.api.components.GenericGallery
+import com.dublikunt.nclient.api.gallerys.GenericGallery
 import com.dublikunt.nclient.async.database.Queries
 import com.dublikunt.nclient.components.activities.GeneralActivity
 import com.dublikunt.nclient.components.views.ZoomFragment
@@ -97,8 +97,8 @@ class ZoomActivity : GeneralActivity() {
         //initial setup for views
         changeLayout(resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE)
         mViewPager.keepScreenOn = Global.isLockScreen
-        findViewById<View>(R.id.prev).setOnClickListener { v: View? -> changeClosePage(false) }
-        findViewById<View>(R.id.next).setOnClickListener { v: View? -> changeClosePage(true) }
+        findViewById<View>(R.id.prev).setOnClickListener { changeClosePage(false) }
+        findViewById<View>(R.id.next).setOnClickListener { changeClosePage(true) }
         seekBar.max = gallery.pageCount - 1
         if (Global.useRtl()) {
             seekBar.rotationY = 180f
@@ -117,7 +117,7 @@ class ZoomActivity : GeneralActivity() {
                 makeNearRequests(newPage)
             }
         })
-        pageManagerLabel.setOnClickListener(View.OnClickListener { v: View? ->
+        pageManagerLabel.setOnClickListener {
             DefaultDialogs.pageChangerDialog(
                 DefaultDialogs.Builder(this)
                     .setActual(actualPage + 1)
@@ -131,7 +131,7 @@ class ZoomActivity : GeneralActivity() {
                         }
                     })
             )
-        })
+        }
         seekBar.setOnSeekBarChangeListener(object : OnSeekBarChangeListener {
             override fun onProgressChanged(seekBar: SeekBar, progress: Int, fromUser: Boolean) {
                 if (fromUser) {

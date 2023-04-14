@@ -1,4 +1,4 @@
-package com.dublikunt.nclient.api
+package com.dublikunt.nclient.api.gallerys
 
 import android.annotation.SuppressLint
 import android.content.Context
@@ -8,7 +8,7 @@ import android.os.Parcel
 import android.os.Parcelable.Creator
 import com.dublikunt.nclient.api.comments.Page
 import com.dublikunt.nclient.api.comments.TagList
-import com.dublikunt.nclient.api.components.*
+import com.dublikunt.nclient.api.gallerys.*
 import com.dublikunt.nclient.async.database.Queries
 import com.dublikunt.nclient.async.database.Queries.TagTable.getTagsFromListOfInt
 import com.dublikunt.nclient.classes.Size

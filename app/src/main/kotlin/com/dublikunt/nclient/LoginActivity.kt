@@ -16,9 +16,6 @@ import com.dublikunt.nclient.utility.Utility
 import com.google.android.material.appbar.MaterialToolbar
 import okhttp3.Cookie
 
-/**
- * A login screen that offers login via email/password.
- */
 class LoginActivity : GeneralActivity() {
     lateinit var invalid: TextView
     private lateinit var waiter: CookieWaiter

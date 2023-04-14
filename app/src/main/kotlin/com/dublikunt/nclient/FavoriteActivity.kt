@@ -134,7 +134,7 @@ class FavoriteActivity : BaseActivity() {
             .setTitle(R.string.download_all_galleries_in_this_page)
             .setIcon(R.drawable.ic_file_download)
             .setNegativeButton(R.string.cancel, null)
-            .setPositiveButton(R.string.ok) { _: DialogInterface?, _: Int ->
+            .setPositiveButton(R.string.ok) { _: DialogInterface, _: Int ->
                 for (g in adapter.allGalleries) g?.let {
                     DownloadGallery.downloadGallery(
                         this,

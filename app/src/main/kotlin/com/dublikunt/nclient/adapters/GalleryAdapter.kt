@@ -19,9 +19,9 @@ import com.dublikunt.nclient.MainActivity
 import com.dublikunt.nclient.R
 import com.dublikunt.nclient.ZoomActivity
 import com.dublikunt.nclient.api.LocalGallery
-import com.dublikunt.nclient.api.components.Gallery
-import com.dublikunt.nclient.api.components.GalleryData
-import com.dublikunt.nclient.api.components.GenericGallery
+import com.dublikunt.nclient.api.gallerys.Gallery
+import com.dublikunt.nclient.api.gallerys.GalleryData
+import com.dublikunt.nclient.api.gallerys.GenericGallery
 import com.dublikunt.nclient.async.database.Queries.ResumeTable.insert
 import com.dublikunt.nclient.classes.Size
 import com.dublikunt.nclient.components.photoview.PhotoView
@@ -345,7 +345,7 @@ class GalleryAdapter(
     }
 
     private fun loadImageOnPolicy(imgView: ImageView, pos: Int) {
-        val file: File? = directory!!.getPage(pos)
+        val file: File? = directory?.getPage(pos)
         val angle = angles[pos]
         if (policy == Policy.FULL) {
             if (file != null && file.exists()) loadImageOp(

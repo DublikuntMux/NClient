@@ -12,7 +12,7 @@ import com.dublikunt.nclient.FavoriteActivity
 import com.dublikunt.nclient.FavoriteActivity.Companion.entryPerPage
 import com.dublikunt.nclient.GalleryActivity
 import com.dublikunt.nclient.R
-import com.dublikunt.nclient.api.components.Gallery
+import com.dublikunt.nclient.api.gallerys.Gallery
 import com.dublikunt.nclient.async.database.Queries
 import com.dublikunt.nclient.settings.Global
 import com.dublikunt.nclient.utility.ImageDownloadUtility.loadImage

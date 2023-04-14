@@ -29,8 +29,8 @@ import com.google.android.material.switchmaterial.SwitchMaterial
 import java.io.File
 
 class LocalActivity : BaseActivity() {
-    private var optionMenu: Menu? = null
-    private var adapter: LocalAdapter? = null
+    private lateinit var optionMenu: Menu
+    private lateinit var adapter: LocalAdapter
     private val listener: MultichoiceListener = object : DefaultMultichoiceListener() {
         override fun choiceChanged() {
             setMenuVisibility(optionMenu)
@@ -58,9 +58,9 @@ class LocalActivity : BaseActivity() {
         FakeInspector(this, folder).execute(this)
     }
 
-    fun setAdapter(adapter: LocalAdapter?) {
+    fun setAdapter(adapter: LocalAdapter) {
         this.adapter = adapter
-        this.adapter!!.addListener(listener)
+        this.adapter.addListener(listener)
         recycler.adapter = adapter
     }
 
@@ -91,14 +91,13 @@ class LocalActivity : BaseActivity() {
         return true
     }
 
-    private fun setMenuVisibility(menu: Menu?) {
-        if (menu == null) return
-        val mode = if (adapter == null) MultichoiceAdapter.Mode.NORMAL else adapter!!.mode
+    private fun setMenuVisibility(menu: Menu) {
+        val mode = adapter.mode
         var hasGallery = false
         var hasDownloads = false
         if (mode == MultichoiceAdapter.Mode.SELECTING) {
-            hasGallery = adapter!!.hasSelectedClass(LocalGallery::class.java)
-            hasDownloads = adapter!!.hasSelectedClass(GalleryDownloader::class.java)
+            hasGallery = adapter.hasSelectedClass(LocalGallery::class.java)
+            hasDownloads = adapter.hasSelectedClass(GalleryDownloader::class.java)
         }
         menu.findItem(R.id.search).isVisible = mode == MultichoiceAdapter.Mode.NORMAL
         menu.findItem(R.id.sort_by_name).isVisible = mode == MultichoiceAdapter.Mode.NORMAL
@@ -120,45 +119,56 @@ class LocalActivity : BaseActivity() {
     }
 
     override fun onDestroy() {
-        if (adapter != null) adapter!!.removeObserver()
+        adapter.removeObserver()
         super.onDestroy()
     }
 
     override fun changeLayout(landscape: Boolean) {
         colCount = if (landscape) landscapeColumnCount else portraitColumnCount
-        if (adapter != null) adapter!!.setColCount(colCount)
+        adapter.setColCount(colCount)
         super.changeLayout(landscape)
     }
 
     override fun onResume() {
         super.onResume()
         if (idGalleryPosition != -1) {
-            adapter!!.updateColor(idGalleryPosition)
+            adapter.updateColor(idGalleryPosition)
             idGalleryPosition = -1
         }
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        if (item.itemId == android.R.id.home) {
-            return true
-        } else if (item.itemId == R.id.pause_all) {
-            adapter!!.pauseSelected()
-        } else if (item.itemId == R.id.start_all) {
-            adapter!!.startSelected()
-        } else if (item.itemId == R.id.delete_all) {
-            adapter!!.deleteSelected()
-        } else if (item.itemId == R.id.pdf_all) {
-            adapter!!.pdfSelected()
-        } else if (item.itemId == R.id.zip_all) {
-            adapter!!.zipSelected()
-        } else if (item.itemId == R.id.select_all) {
-            adapter!!.selectAll()
-        } else if (item.itemId == R.id.folder_choose) {
-            showDialogFolderChoose()
-        } else if (item.itemId == R.id.random_favorite) {
-            if (adapter != null) adapter!!.viewRandom()
-        } else if (item.itemId == R.id.sort_by_name) {
-            dialogSortType()
+        when (item.itemId) {
+            android.R.id.home -> {
+                return true
+            }
+            R.id.pause_all -> {
+                adapter.pauseSelected()
+            }
+            R.id.start_all -> {
+                adapter.startSelected()
+            }
+            R.id.delete_all -> {
+                adapter.deleteSelected()
+            }
+            R.id.pdf_all -> {
+                adapter.pdfSelected()
+            }
+            R.id.zip_all -> {
+                adapter.zipSelected()
+            }
+            R.id.select_all -> {
+                adapter.selectAll()
+            }
+            R.id.folder_choose -> {
+                showDialogFolderChoose()
+            }
+            R.id.random_favorite -> {
+                adapter.viewRandom()
+            }
+            R.id.sort_by_name -> {
+                dialogSortType()
+            }
         }
         return super.onOptionsItemSelected(item)
     }
@@ -192,7 +202,7 @@ class LocalActivity : BaseActivity() {
             val newSortType = LocalSortType(typeSelected, descending)
             if (sortType == newSortType) return@setPositiveButton
             Global.setLocalSortType(this@LocalActivity, newSortType)
-            if (adapter != null) adapter!!.sortChanged()
+            adapter.sortChanged()
         }
             .setNeutralButton(R.string.cancel, null)
             .setTitle(R.string.sort_select_type)

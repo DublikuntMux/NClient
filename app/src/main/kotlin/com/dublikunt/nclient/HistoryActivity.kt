@@ -5,7 +5,7 @@ import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import com.dublikunt.nclient.adapters.ListAdapter
-import com.dublikunt.nclient.api.components.GenericGallery
+import com.dublikunt.nclient.api.gallerys.GenericGallery
 import com.dublikunt.nclient.async.database.Queries
 import com.dublikunt.nclient.components.activities.BaseActivity
 import com.dublikunt.nclient.settings.Global

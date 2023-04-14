@@ -57,20 +57,20 @@ class TagFilterActivity : GeneralActivity() {
         })
         TabLayoutMediator(
             tabLayout!!,
-            mViewPager,
-            TabConfigurationStrategy { tab: TabLayout.Tab, position: Int ->
-                var id = 0
-                when (position) {
-                    0 -> id = R.string.applied_filters
-                    1 -> id = R.string.tags
-                    2 -> id = R.string.artists
-                    3 -> id = R.string.characters
-                    4 -> id = R.string.parodies
-                    5 -> id = R.string.groups
-                    6 -> id = R.string.online_tags
-                }
-                tab.setText(id)
-            }).attach()
+            mViewPager
+        ) { tab: TabLayout.Tab, position: Int ->
+            var id = 0
+            when (position) {
+                0 -> id = R.string.applied_filters
+                1 -> id = R.string.tags
+                2 -> id = R.string.artists
+                3 -> id = R.string.characters
+                4 -> id = R.string.parodies
+                5 -> id = R.string.groups
+                6 -> id = R.string.online_tags
+            }
+            tab.setText(id)
+        }.attach()
         mViewPager.currentItem = page
     }
 

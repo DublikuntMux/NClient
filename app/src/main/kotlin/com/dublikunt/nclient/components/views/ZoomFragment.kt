@@ -23,8 +23,8 @@ import com.bumptech.glide.request.target.Target
 import com.bumptech.glide.request.transition.Transition
 import com.dublikunt.nclient.R
 import com.dublikunt.nclient.ZoomActivity
-import com.dublikunt.nclient.api.components.Gallery
-import com.dublikunt.nclient.api.components.GenericGallery
+import com.dublikunt.nclient.api.gallerys.Gallery
+import com.dublikunt.nclient.api.gallerys.GenericGallery
 import com.dublikunt.nclient.components.GlideX.with
 import com.dublikunt.nclient.components.photoview.PhotoView
 import com.dublikunt.nclient.files.GalleryFolder

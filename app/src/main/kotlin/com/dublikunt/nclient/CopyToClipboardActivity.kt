@@ -19,8 +19,7 @@ class CopyToClipboardActivity : GeneralActivity() {
     }
 
     companion object {
-
-        fun copyTextToClipboard(context: Context, text: String?) {
+        fun copyTextToClipboard(context: Context, text: String) {
             val clipboard = context.getSystemService(CLIPBOARD_SERVICE) as ClipboardManager
             val clip = ClipData.newPlainText("text", text)
             clipboard.setPrimaryClip(clip)
