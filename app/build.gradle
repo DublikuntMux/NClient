@@ -47,9 +47,9 @@ android {
         baseline = file("lint-baseline.xml")
     }
     packagingOptions {
-        exclude "**/*.kotlin_builtins"
-        exclude "**/*.kotlin_module"
-        exclude "**/*.properties"
+        resources {
+            excludes += ['**/*.kotlin_builtins', '**/*.kotlin_module', '**/*.properties']
+        }
     }
     dependenciesInfo {
         includeInBundle false
