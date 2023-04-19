@@ -6,7 +6,7 @@ import android.os.Parcelable
 import android.os.Parcelable.Creator
 import android.util.JsonReader
 import android.util.JsonToken
-import java.util.*
+import java.util.Date
 
 open class Comment : Parcelable {
     var id = 0

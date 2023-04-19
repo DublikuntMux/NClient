@@ -1,6 +1,6 @@
 package com.dublikunt.nclient.components
 
-import java.util.*
+import java.util.Locale
 
 object LocaleManager {
     val LANGUAGES = arrayOf(

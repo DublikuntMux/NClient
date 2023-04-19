@@ -36,6 +36,7 @@ object LogUtility {
         )
     }
 
+    @JvmStatic
     fun error(message: Any?, throwable: Throwable?) {
         var message = message
         if (message == null) message = ""

@@ -42,6 +42,7 @@ object Utility {
                 }
                 writer.write(toCreate)
             }
+
             'n'.code -> writer.write('\n'.code)
             't'.code -> writer.write('\t'.code)
             else -> {

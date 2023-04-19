@@ -11,7 +11,7 @@ import com.dublikunt.nclient.R
 import com.dublikunt.nclient.settings.DefaultDialogs
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.textfield.TextInputEditText
-import java.util.*
+import java.util.Locale
 
 class PageSwitcher : CardView {
     private lateinit var master: LinearLayout

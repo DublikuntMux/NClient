@@ -1,18 +1,16 @@
-package com.dublikunt.nclient.api
+package com.dublikunt.nclient.api.gallerys
 
 import android.graphics.BitmapFactory
 import android.os.Parcel
 import android.os.Parcelable.Creator
 import android.util.JsonReader
-import com.dublikunt.nclient.api.gallerys.GalleryData
-import com.dublikunt.nclient.api.gallerys.GenericGallery
 import com.dublikunt.nclient.classes.Size
 import com.dublikunt.nclient.enums.SpecialTagIds
 import com.dublikunt.nclient.files.GalleryFolder
 import com.dublikunt.nclient.utility.LogUtility.download
 import java.io.File
 import java.io.FileReader
-import java.util.*
+import java.util.Objects
 import java.util.regex.Pattern
 
 class LocalGallery : GenericGallery {

@@ -14,7 +14,7 @@ import com.dublikunt.nclient.settings.Global
 import com.dublikunt.nclient.utility.ImageDownloadUtility.loadImage
 import com.dublikunt.nclient.utility.LogUtility.download
 import java.io.IOException
-import java.util.*
+import java.util.Locale
 
 class StatusViewerAdapter(private val context: AppCompatActivity, private val statusName: String) :
     RecyclerView.Adapter<GenericAdapter.ViewHolder>() {

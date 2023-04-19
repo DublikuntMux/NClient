@@ -54,6 +54,7 @@ class TagTypePage : Fragment() {
                     false
                 )
             }
+
             TagType.CATEGORY -> activity?.let { TagsAdapter(it, query, true) }
             else -> activity?.let {
                 TagsAdapter(

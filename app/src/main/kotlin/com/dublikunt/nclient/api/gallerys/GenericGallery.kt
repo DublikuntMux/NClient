@@ -4,7 +4,7 @@ import android.os.Parcelable
 import com.dublikunt.nclient.classes.Size
 import com.dublikunt.nclient.files.GalleryFolder
 import com.dublikunt.nclient.utility.Utility
-import java.util.*
+import java.util.Locale
 
 abstract class GenericGallery : Parcelable {
     abstract val id: Int

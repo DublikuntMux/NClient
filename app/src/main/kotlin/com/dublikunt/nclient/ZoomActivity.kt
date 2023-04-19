@@ -7,7 +7,12 @@ import android.content.DialogInterface
 import android.content.pm.PackageManager
 import android.content.res.Configuration
 import android.os.Bundle
-import android.view.*
+import android.view.KeyEvent
+import android.view.Menu
+import android.view.MenuItem
+import android.view.View
+import android.view.ViewConfiguration
+import android.view.WindowManager
 import android.widget.SeekBar
 import android.widget.SeekBar.OnSeekBarChangeListener
 import android.widget.Toast
@@ -177,6 +182,7 @@ class ZoomActivity : GeneralActivity() {
                     if (up && down) changeSide()
                     return true
                 }
+
                 KeyEvent.KEYCODE_VOLUME_DOWN -> {
                     down = true
                     changeClosePage(!side)

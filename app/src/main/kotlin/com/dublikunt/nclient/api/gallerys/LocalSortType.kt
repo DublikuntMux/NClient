@@ -1,4 +1,4 @@
-package com.dublikunt.nclient.api
+package com.dublikunt.nclient.api.gallerys
 
 class LocalSortType {
     val type: Type

@@ -63,8 +63,10 @@ internal object Importer {
                             values.putNull(fieldName)
                             reader.nextNull()
                         }
+
                         JsonToken.NUMBER ->
                             values.put(fieldName, reader.nextLong())
+
                         JsonToken.STRING -> values.put(fieldName, reader.nextString())
                         else -> {
                             values.putNull(fieldName)

@@ -7,7 +7,7 @@ import android.os.Parcelable.Creator
 import android.util.JsonReader
 import android.util.JsonToken
 import com.dublikunt.nclient.utility.Utility.host
-import java.util.*
+import java.util.Locale
 
 open class User : Parcelable {
     var id = 0

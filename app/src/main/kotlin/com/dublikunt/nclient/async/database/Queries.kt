@@ -6,7 +6,6 @@ import android.content.Context
 import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
 import com.dublikunt.nclient.api.Inspector
-import com.dublikunt.nclient.api.gallerys.SimpleGallery
 import com.dublikunt.nclient.api.comments.Tag
 import com.dublikunt.nclient.api.comments.TagList
 import com.dublikunt.nclient.api.gallerys.*
@@ -765,7 +764,7 @@ object Queries {
             val values = ContentValues(4)
             values.put(URL, inspector.url)
             values.put(PAGE, inspector.page)
-            values.put(TYPE, inspector.requestType.ordinal())
+            values.put(TYPE, inspector.requestType!!.ordinal())
             values.put(TAG_ID, tag?.id ?: 0)
             download("ADDED: " + inspector.url)
             db.insertWithOnConflict(TABLE_NAME, null, values, SQLiteDatabase.CONFLICT_IGNORE)

@@ -112,15 +112,19 @@ object Exporter {
                 is String -> {
                     writer.beginObject().name(SharedType.STRING.name).value(`val`).endObject()
                 }
+
                 is Boolean -> {
                     writer.beginObject().name(SharedType.BOOLEAN.name).value(`val`).endObject()
                 }
+
                 is Int -> {
                     writer.beginObject().name(SharedType.INT.name).value(`val`).endObject()
                 }
+
                 is Float -> {
                     writer.beginObject().name(SharedType.FLOAT.name).value(`val`).endObject()
                 }
+
                 is Set<*> -> {
                     writer.beginObject().name(SharedType.STRING_SET.name)
                     writer.beginArray()
@@ -130,9 +134,11 @@ object Exporter {
                     writer.endArray()
                     writer.endObject()
                 }
+
                 is Long -> {
                     writer.beginObject().name(SharedType.LONG.name).value(`val`).endObject()
                 }
+
                 else -> {
                     error("Missing export class: " + `val`.javaClass.name)
                 }

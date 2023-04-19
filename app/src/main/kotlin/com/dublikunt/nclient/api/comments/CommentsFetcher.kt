@@ -9,7 +9,7 @@ import com.dublikunt.nclient.utility.Utility.baseUrl
 import okhttp3.Request
 import java.io.IOException
 import java.io.InputStreamReader
-import java.util.*
+import java.util.Locale
 
 class CommentsFetcher(private val commentActivity: CommentActivity, private val id: Int) :
     Thread() {

@@ -315,6 +315,7 @@ class GeneralPreferenceFragment : PreferenceFragmentCompat() {
             is Boolean -> writer.value(
                 (entry.value as Boolean?)!!
             )
+
             is String -> writer.value(entry.value as String?)
             is Long -> writer.value(
                 entry.value as Long?

@@ -9,7 +9,7 @@ import com.dublikunt.nclient.api.comments.Page
 import com.dublikunt.nclient.enums.ImageExt
 import com.dublikunt.nclient.settings.Global.findGalleryFolder
 import java.io.File
-import java.util.*
+import java.util.Objects
 import java.util.regex.Pattern
 
 open class PageFile : File, Parcelable {

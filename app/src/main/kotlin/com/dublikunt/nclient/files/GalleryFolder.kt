@@ -10,7 +10,7 @@ import com.dublikunt.nclient.enums.SpecialTagIds
 import com.dublikunt.nclient.settings.Global.DOWNLOADFOLDER
 import com.dublikunt.nclient.settings.Global.findGalleryFolder
 import java.io.File
-import java.util.*
+import java.util.Objects
 import java.util.regex.Matcher
 import java.util.regex.Pattern
 

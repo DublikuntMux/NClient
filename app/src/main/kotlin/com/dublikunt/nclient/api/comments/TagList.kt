@@ -55,7 +55,7 @@ open class TagList() : Parcelable {
         }
 
     fun addTag(tag: Tag) {
-        tagList[tag.type!!.id.toInt()]!!.add(tag)
+        tagList[tag.type.id.toInt()]!!.add(tag)
     }
 
     fun addTags(tags: Collection<Tag>) {
@@ -68,6 +68,19 @@ open class TagList() : Parcelable {
 
     fun getLenght(): Int {
         return tagList.size
+    }
+
+    open fun hasTag(tag: Tag): Boolean {
+        return tagList[tag.type.id.toInt()]!!.contains(tag)
+    }
+
+    open fun hasTags(tags: Collection<Tag>): Boolean {
+        for (tag in tags) {
+            if (!hasTag(tag)) {
+                return false
+            }
+        }
+        return true
     }
 
     fun sort(comparator: Comparator<Tag>) {

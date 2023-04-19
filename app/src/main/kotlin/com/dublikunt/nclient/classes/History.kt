@@ -1,6 +1,6 @@
 package com.dublikunt.nclient.classes
 
-import java.util.*
+import java.util.Date
 
 class History(value: String, set: Boolean) {
     val value: String

@@ -57,7 +57,7 @@ class Gallery : GenericGallery {
     override val galleryFolder: GalleryFolder?
         get() = folder
 
-    constructor(context: Context?, json: String, related: Elements, isFavorite: Boolean) {
+    constructor(context: Context, json: String, related: Elements, isFavorite: Boolean) {
         download("Found JSON: $json")
         val reader = JsonReader(StringReader(json))
         this.related = ArrayList(related.size)

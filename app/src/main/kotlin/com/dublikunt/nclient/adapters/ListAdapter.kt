@@ -1,6 +1,5 @@
 package com.dublikunt.nclient.adapters
 
-import android.annotation.SuppressLint
 import android.content.Intent
 import android.util.SparseIntArray
 import android.view.LayoutInflater
@@ -23,7 +22,7 @@ import com.dublikunt.nclient.utility.ImageDownloadUtility.loadImage
 import com.dublikunt.nclient.utility.LogUtility.download
 import com.google.android.material.card.MaterialCardView
 import com.google.android.material.snackbar.Snackbar
-import java.util.*
+import java.util.Locale
 
 class ListAdapter(private val context: BaseActivity) :
     RecyclerView.Adapter<GenericAdapter.ViewHolder>() {

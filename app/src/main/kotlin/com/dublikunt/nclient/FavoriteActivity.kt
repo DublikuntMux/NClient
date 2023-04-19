@@ -113,14 +113,17 @@ class FavoriteActivity : BaseActivity() {
                 i = Intent(Intent.ACTION_VIEW, Uri.parse(Utility.baseUrl + "favorites/"))
                 startActivity(i)
             }
+
             R.id.download_page -> {
                 showDialogDownloadAll()
             }
+
             R.id.sort_by_name -> {
                 sortByTitle = !sortByTitle
                 adapter.setSortByTitle(sortByTitle)
                 item.setTitle(if (sortByTitle) R.string.sort_by_latest else R.string.sort_by_title)
             }
+
             R.id.random_favorite -> {
                 adapter.randomGallery()
             }

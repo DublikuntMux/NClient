@@ -18,10 +18,10 @@ import com.dublikunt.nclient.GalleryActivity
 import com.dublikunt.nclient.MainActivity
 import com.dublikunt.nclient.R
 import com.dublikunt.nclient.ZoomActivity
-import com.dublikunt.nclient.api.LocalGallery
 import com.dublikunt.nclient.api.gallerys.Gallery
 import com.dublikunt.nclient.api.gallerys.GalleryData
 import com.dublikunt.nclient.api.gallerys.GenericGallery
+import com.dublikunt.nclient.api.gallerys.LocalGallery
 import com.dublikunt.nclient.async.database.Queries.ResumeTable.insert
 import com.dublikunt.nclient.classes.Size
 import com.dublikunt.nclient.components.photoview.PhotoView
@@ -47,7 +47,7 @@ import com.google.android.material.chip.ChipGroup
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.textview.MaterialTextView
 import java.io.File
-import java.util.*
+import java.util.Locale
 
 class GalleryAdapter(
     private val context: GalleryActivity,
@@ -107,6 +107,7 @@ class GalleryAdapter(
                 Policy.PROPORTION -> id = R.layout.image_void_static
                 else -> {}
             }
+
             Type.RELATED -> id = R.layout.related_recycler
         }
         return ViewHolder(

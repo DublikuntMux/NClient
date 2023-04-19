@@ -24,8 +24,8 @@ import androidx.core.graphics.drawable.DrawableCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.dublikunt.nclient.CopyToClipboardActivity
 import com.dublikunt.nclient.R
-import com.dublikunt.nclient.api.LocalSortType
 import com.dublikunt.nclient.api.gallerys.GenericGallery
+import com.dublikunt.nclient.api.gallerys.LocalSortType
 import com.dublikunt.nclient.components.CustomCookieJar
 import com.dublikunt.nclient.enums.Language
 import com.dublikunt.nclient.enums.SortType
@@ -42,7 +42,7 @@ import okhttp3.OkHttpClient
 import java.io.File
 import java.io.IOException
 import java.io.RandomAccessFile
-import java.util.*
+import java.util.Locale
 import kotlin.math.max
 
 object Global {

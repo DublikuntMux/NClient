@@ -12,8 +12,8 @@ import android.widget.LinearLayout
 import androidx.appcompat.widget.SearchView
 import com.dublikunt.nclient.adapters.LocalAdapter
 import com.dublikunt.nclient.api.FakeInspector
-import com.dublikunt.nclient.api.LocalGallery
-import com.dublikunt.nclient.api.LocalSortType
+import com.dublikunt.nclient.api.gallerys.LocalGallery
+import com.dublikunt.nclient.api.gallerys.LocalSortType
 import com.dublikunt.nclient.async.converters.CreatePDF
 import com.dublikunt.nclient.async.downloader.GalleryDownloader
 import com.dublikunt.nclient.classes.MultichoiceAdapter
@@ -142,30 +142,39 @@ class LocalActivity : BaseActivity() {
             android.R.id.home -> {
                 return true
             }
+
             R.id.pause_all -> {
                 adapter.pauseSelected()
             }
+
             R.id.start_all -> {
                 adapter.startSelected()
             }
+
             R.id.delete_all -> {
                 adapter.deleteSelected()
             }
+
             R.id.pdf_all -> {
                 adapter.pdfSelected()
             }
+
             R.id.zip_all -> {
                 adapter.zipSelected()
             }
+
             R.id.select_all -> {
                 adapter.selectAll()
             }
+
             R.id.folder_choose -> {
                 showDialogFolderChoose()
             }
+
             R.id.random_favorite -> {
                 adapter.viewRandom()
             }
+
             R.id.sort_by_name -> {
                 dialogSortType()
             }

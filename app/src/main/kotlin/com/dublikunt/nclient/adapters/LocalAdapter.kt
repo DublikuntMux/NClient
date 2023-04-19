@@ -6,14 +6,18 @@ import android.util.SparseIntArray
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.*
+import android.widget.Filter
+import android.widget.Filterable
+import android.widget.ImageButton
+import android.widget.ImageView
+import android.widget.ProgressBar
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.RecyclerView
 import com.dublikunt.nclient.GalleryActivity
 import com.dublikunt.nclient.LocalActivity
 import com.dublikunt.nclient.R
-import com.dublikunt.nclient.api.LocalGallery
-import com.dublikunt.nclient.api.LocalSortType
+import com.dublikunt.nclient.api.gallerys.LocalGallery
+import com.dublikunt.nclient.api.gallerys.LocalSortType
 import com.dublikunt.nclient.async.converters.CreatePDF
 import com.dublikunt.nclient.async.converters.CreateZIP
 import com.dublikunt.nclient.async.database.Queries.StatusMangaTable.getStatus
@@ -37,7 +41,7 @@ import com.dublikunt.nclient.utility.Utility
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.textview.MaterialTextView
 import java.io.File
-import java.util.*
+import java.util.Locale
 import java.util.concurrent.CopyOnWriteArrayList
 
 class LocalAdapter(private val context: LocalActivity, myDataset: ArrayList<LocalGallery>) :
@@ -254,6 +258,7 @@ class LocalAdapter(private val context: LocalActivity, myDataset: ArrayList<Loca
                     notifyItemChanged(position)
                 }
             }
+
             GalleryDownloader.Status.DOWNLOADING -> {
                 holder.playButton.setImageResource(R.drawable.ic_pause)
                 holder.playButton.setOnClickListener {
@@ -261,10 +266,12 @@ class LocalAdapter(private val context: LocalActivity, myDataset: ArrayList<Loca
                     notifyItemChanged(position)
                 }
             }
+
             GalleryDownloader.Status.NOT_STARTED -> {
                 holder.playButton.setImageResource(R.drawable.ic_play_arrow)
                 holder.playButton.setOnClickListener { givePriority(downloader) }
             }
+
             else -> {}
         }
         holder.progress.text = context.getString(R.string.percentage_format, percentage)

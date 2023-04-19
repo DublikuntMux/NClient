@@ -6,7 +6,11 @@ import com.dublikunt.nclient.api.Inspector
 import com.dublikunt.nclient.api.Inspector.InspectorResponse
 import com.dublikunt.nclient.api.comments.Tag
 import com.dublikunt.nclient.async.database.Queries
-import com.dublikunt.nclient.enums.*
+import com.dublikunt.nclient.enums.ApiRequestType
+import com.dublikunt.nclient.enums.SortType
+import com.dublikunt.nclient.enums.SpecialTagIds
+import com.dublikunt.nclient.enums.TagStatus
+import com.dublikunt.nclient.enums.TagType
 
 class Bookmark(url: String, page: Int, requestType: ApiRequestType, tag: Int) {
     val url: String

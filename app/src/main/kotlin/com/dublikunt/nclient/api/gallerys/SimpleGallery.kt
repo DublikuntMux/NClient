@@ -7,6 +7,7 @@ import android.net.Uri
 import android.os.Parcel
 import android.os.Parcelable.Creator
 import com.dublikunt.nclient.api.comments.Page
+import com.dublikunt.nclient.api.comments.Tag
 import com.dublikunt.nclient.api.comments.TagList
 import com.dublikunt.nclient.api.gallerys.*
 import com.dublikunt.nclient.async.database.Queries
@@ -42,7 +43,7 @@ class SimpleGallery : GenericGallery {
     val mediaId: Int
     var language = Language.UNKNOWN
         private set
-    private var tags: TagList? = null
+    private lateinit var tags: TagList
 
     constructor(`in`: Parcel) {
         title = `in`.readString()!!
@@ -60,7 +61,7 @@ class SimpleGallery : GenericGallery {
         thumb = ImageExt.values()[c.getInt(c.getColumnIndex(Queries.HistoryTable.THUMB))]
     }
 
-    constructor(context: Context?, e: Element) {
+    constructor(context: Context, e: Element) {
         var temp: String
         val tags = e.attr("data-tags").replace(' ', ',')
         this.tags = getTagsFromListOfInt(tags)
@@ -73,7 +74,7 @@ class SimpleGallery : GenericGallery {
         mediaId = temp.substring(temp.indexOf("galleries") + 10, temp.lastIndexOf('/')).toInt()
         thumb = Page.charToExt(temp[temp.length - 3].code)
         title = e.getElementsByTag("div").first()!!.text()
-        if (context != null && id > maxId) updateMaxId(context, id)
+        if (id > maxId) updateMaxId(context, id)
     }
 
     constructor(gallery: Gallery) {
@@ -90,6 +91,14 @@ class SimpleGallery : GenericGallery {
             return true
         }
         return false
+    }
+
+    fun hasTag(tag: Tag): Boolean {
+        return tags.hasTag(tag)
+    }
+
+    fun hasTags(tags: Collection<Tag>): Boolean {
+        return this.tags.hasTags(tags)
     }
 
     override fun describeContents(): Int {

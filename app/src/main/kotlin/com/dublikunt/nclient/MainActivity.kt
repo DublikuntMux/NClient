@@ -151,8 +151,10 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
             ModeType.FAVORITE -> supportActionBar!!.setTitle(R.string.favorite_online_manga)
             ModeType.SEARCH -> supportActionBar!!.title =
                 inspector.searchTitle
+
             ModeType.TAG -> supportActionBar!!.title =
-                inspector.tag.name
+                inspector.tag!!.name
+
             ModeType.NORMAL -> supportActionBar!!.setTitle(com.franmontiel.persistentcookiejar.R.string.app_name)
             else -> supportActionBar!!.title = "WTF"
         }
@@ -392,7 +394,7 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
         var tag = Queries.TagTable.getTagFromTagName(query)
         if (tag == null) tag =
             Tag(query, -1, SpecialTagIds.INVALID_ID.toInt(), type, TagStatus.DEFAULT)
-        var sortType: SortType? = SortType.RECENT_ALL_TIME
+        var sortType: SortType = SortType.RECENT_ALL_TIME
         if (datas.size == 3) {
             sortType = SortType.findFromAddition(datas[2])
         }
@@ -484,8 +486,8 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
         initializeSearchItem(menu.findItem(R.id.search))
         if (modeType == ModeType.TAG) {
             val item = menu.findItem(R.id.tag_manager)
-            item.isVisible = inspector.tag.id > 0
-            val ts = inspector.tag.status
+            item.isVisible = inspector.tag!!.id > 0
+            val ts = inspector.tag!!.status
             updateTagStatus(item, ts)
         }
         Utility.tintMenu(menu)
@@ -523,18 +525,22 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
                 item.setTitle(R.string.only_japanese)
                 item.setIcon(R.drawable.ic_jpbw)
             }
+
             Language.CHINESE -> {
                 item.setTitle(R.string.only_chinese)
                 item.setIcon(R.drawable.ic_cnbw)
             }
+
             Language.ENGLISH -> {
                 item.setTitle(R.string.only_english)
                 item.setIcon(R.drawable.ic_gbbw)
             }
+
             Language.ALL -> {
                 item.setTitle(R.string.all_languages)
                 item.setIcon(R.drawable.ic_world)
             }
+
             else -> {
                 item.setTitle(R.string.all_languages)
                 item.setIcon(R.drawable.ic_world)
@@ -757,13 +763,13 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
                 }
                 showError(R.string.invalid_response) {
                     inspector =
-                        inspector.cloneInspector(this@MainActivity, inspector.response)
+                        inspector.cloneInspector(this@MainActivity, inspector.response!!)
                     inspector.start()
                 }
             } else {
                 showError(R.string.unable_to_connect_to_the_site) {
                     inspector =
-                        inspector.cloneInspector(this@MainActivity, inspector.response)
+                        inspector.cloneInspector(this@MainActivity, inspector.response!!)
                     inspector.start()
                 }
             }

@@ -127,6 +127,7 @@ class TagsAdapter : RecyclerView.Adapter<TagsAdapter.ViewHolder>, Filterable {
                         updateStatus(ent)
                         updateLogo(holder.imgView, ent.status)
                     }
+
                 TagMode.ONLINE -> try {
                     onlineTagUpdate(ent, !isOnlineTags(ent), holder.imgView)
                 } catch (e: IOException) {
@@ -212,6 +213,7 @@ class TagsAdapter : RecyclerView.Adapter<TagsAdapter.ViewHolder>, Filterable {
                     loadImage(R.drawable.ic_check, img)
                     setTint(img.drawable)
                 }
+
                 TagStatus.AVOIDED -> {
                     loadImage(R.drawable.ic_close, img)
                     setTint(img.drawable)

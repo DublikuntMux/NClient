@@ -2,6 +2,7 @@ package com.dublikunt.nclient.api
 
 import com.dublikunt.nclient.LocalActivity
 import com.dublikunt.nclient.adapters.LocalAdapter
+import com.dublikunt.nclient.api.gallerys.LocalGallery
 import com.dublikunt.nclient.components.ThreadAsyncTask
 import com.dublikunt.nclient.utility.LogUtility.download
 import com.dublikunt.nclient.utility.LogUtility.error

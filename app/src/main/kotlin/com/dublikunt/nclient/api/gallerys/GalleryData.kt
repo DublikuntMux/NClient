@@ -104,6 +104,7 @@ open class GalleryData : Parcelable {
                     jr.skipValue()
                     isValid = false
                 }
+
                 else -> jr.skipValue()
             }
         }
@@ -123,14 +124,17 @@ open class GalleryData : Parcelable {
                     TitleType.JAPANESE,
                     if (jr.peek() != JsonToken.NULL) jr.nextString() else ""
                 )
+
                 "english" -> setTitle(
                     TitleType.ENGLISH,
                     if (jr.peek() != JsonToken.NULL) jr.nextString() else ""
                 )
+
                 "pretty" -> setTitle(
                     TitleType.PRETTY,
                     if (jr.peek() != JsonToken.NULL) jr.nextString() else ""
                 )
+
                 else -> jr.skipValue()
             }
             if (jr.peek() == JsonToken.NULL) jr.skipValue()
@@ -163,6 +167,7 @@ open class GalleryData : Parcelable {
                     while (jr.hasNext()) pages.add(Page(ImageType.PAGE, jr, actualPage++))
                     jr.endArray()
                 }
+
                 else -> jr.skipValue()
             }
         }
@@ -256,10 +261,12 @@ open class GalleryData : Parcelable {
                     }
                     pageOfType = 0
                 }
+
                 '0'.code, '1'.code, '2'.code, '3'.code, '4'.code, '5'.code, '6'.code, '7'.code, '8'.code, '9'.code -> {
                     pageOfType *= 10
                     pageOfType += actualChar - '0'.code
                 }
+
                 else -> {}
             }
         }
