@@ -13,7 +13,7 @@ import java.util.Objects
 import java.util.regex.Pattern
 
 open class PageFile : File, Parcelable {
-    val ext: ImageExt
+    private val ext: ImageExt
     val page: Int
 
     constructor(ext: ImageExt, file: File, page: Int) : super(file.absolutePath) {
@@ -40,17 +40,15 @@ open class PageFile : File, Parcelable {
         dest.writeByte(ext.ordinal.toByte())
     }
 
-    companion object {
-        @JvmField
-        val CREATOR: Creator<PageFile> = object : Creator<PageFile> {
-            override fun createFromParcel(`in`: Parcel): PageFile {
-                return PageFile(`in`)
-            }
-
-            override fun newArray(size: Int): Array<PageFile?> {
-                return arrayOfNulls(size)
-            }
+    companion object CREATOR : Creator<PageFile> {
+        override fun createFromParcel(parcel: Parcel): PageFile {
+            return PageFile(parcel)
         }
+
+        override fun newArray(size: Int): Array<PageFile?> {
+            return arrayOfNulls(size)
+        }
+
         private val DEFAULT_THUMBNAIL =
             Pattern.compile("^0*1\\.(gif|png|jpg)$", Pattern.CASE_INSENSITIVE)
 

@@ -279,17 +279,13 @@ class Gallery : GenericGallery {
             '}'
     }
 
-    companion object {
-        @JvmField
-        val CREATOR: Creator<Gallery> = object : Creator<Gallery> {
-            override fun createFromParcel(`in`: Parcel): Gallery {
-                download("Reading to parcel")
-                return Gallery(`in`)
-            }
+    companion object CREATOR : Creator<Gallery> {
+        override fun createFromParcel(parcel: Parcel): Gallery {
+            return Gallery(parcel)
+        }
 
-            override fun newArray(size: Int): Array<Gallery?> {
-                return arrayOfNulls(size)
-            }
+        override fun newArray(size: Int): Array<Gallery?> {
+            return arrayOfNulls(size)
         }
 
         fun getPathTitle(title: String?, defaultValue: String): String {

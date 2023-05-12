@@ -83,15 +83,12 @@ class TagsAdapter : RecyclerView.Adapter<TagsAdapter.ViewHolder>, Filterable {
             }
 
             override fun publishResults(constraint: CharSequence?, results: FilterResults) {
-                // Returns true if there are no results.
                 if (results.count == -1) return
                 val newCursor = results.values as Cursor
                 val oldCount = itemCount
                 val newCount = results.count
-                // Closes the cursor and closes the cursor.
                 if (cursor != null) cursor!!.close()
                 cursor = newCursor
-                // Notify the user that the item range has been inserted or removed.
                 if (newCount > oldCount) notifyItemRangeInserted(
                     oldCount,
                     newCount - oldCount
@@ -135,9 +132,7 @@ class TagsAdapter : RecyclerView.Adapter<TagsAdapter.ViewHolder>, Filterable {
                 }
             }
         }
-        // Show a dialog to show a blacklist dialog if tag mode is onLINE.
         if (tagMode != TagMode.ONLINE && logged) holder.master.setOnLongClickListener {
-            // Show a dialog to show a blacklist dialog if not online tags.
             if (!isOnlineTags(ent)) showBlacklistDialog(ent, holder.imgView) else Toast.makeText(
                 context,
                 R.string.tag_already_in_blacklist,
@@ -167,15 +162,12 @@ class TagsAdapter : RecyclerView.Adapter<TagsAdapter.ViewHolder>, Filterable {
 
     @Throws(IOException::class)
     private fun onlineTagUpdate(tag: Tag, add: Boolean, imgView: ImageView) {
-        // Returns true if the user is logged in or not.
         if (!isLogged() || user == null) return
         val sw = StringWriter()
         val jw = JsonWriter(sw)
         jw.beginObject().name("added").beginArray()
-        // Write the tag to the JW.
         if (add) writeTag(jw, tag)
         jw.endArray().name("removed").beginArray()
-        // Write the tag to the JW.
         if (!add) writeTag(jw, tag)
         jw.endArray().endObject()
         val url = String.format(
@@ -191,11 +183,8 @@ class TagsAdapter : RecyclerView.Adapter<TagsAdapter.ViewHolder>, Filterable {
 
             @Throws(IOException::class)
             override fun onResponse(call: Call, response: Response) {
-                // Add or remove a tag.
                 if (response.body.string().contains("ok")) {
-                    // Add or remove a tag.
                     if (add) addOnlineTag(tag) else removeOnlineTag(tag)
-                    // Update the logo if the tag mode is onLINE.
                     if (tagMode == TagMode.ONLINE) updateLogo(
                         imgView,
                         if (add) TagStatus.AVOIDED else TagStatus.DEFAULT

@@ -74,10 +74,10 @@ class ZoomFragment : Fragment() {
         val activity = activity as ZoomActivity?
         assert(arguments != null)
         assert(activity != null)
-        //find views
+
         photoView = rootView.findViewById(R.id.image)
         retryButton = rootView.findViewById(R.id.imageView)
-        //read arguments
+
         val str = requireArguments().getString("URL")
         url = if (str == null) null else Uri.parse(str)
         pageFile = requireArguments().getParcelable("FOLDER")
@@ -92,7 +92,7 @@ class ZoomFragment : Fragment() {
             }
             download(requireView(), x, y, prev, next)
         }
-        photoView.setOnScaleChangeListener { scaleFactor, focusX, focusY ->
+        photoView.setOnScaleChangeListener { _, _, _ ->
             if (zoomChangeListener != null) {
                 zoomChangeListener!!.onZoomChange(rootView, photoView.scale)
             }
@@ -151,7 +151,6 @@ class ZoomFragment : Fragment() {
         )
     }
 
-    @JvmOverloads
     fun loadImage(priority: Priority? = Priority.NORMAL) {
         if (completedDownload) return
         cancelRequest()

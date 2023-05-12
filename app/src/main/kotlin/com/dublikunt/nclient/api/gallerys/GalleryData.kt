@@ -288,16 +288,13 @@ open class GalleryData : Parcelable {
             '}'
     }
 
-    companion object {
-        @JvmField
-        val CREATOR: Creator<GalleryData> = object : Creator<GalleryData> {
-            override fun createFromParcel(`in`: Parcel): GalleryData {
-                return GalleryData(`in`)
-            }
+    companion object CREATOR : Creator<GalleryData> {
+        override fun createFromParcel(parcel: Parcel): GalleryData {
+            return GalleryData(parcel)
+        }
 
-            override fun newArray(size: Int): Array<GalleryData?> {
-                return arrayOfNulls(size)
-            }
+        override fun newArray(size: Int): Array<GalleryData?> {
+            return arrayOfNulls(size)
         }
 
         fun fakeData(): GalleryData {

@@ -11,10 +11,7 @@ import okhttp3.Call
 import okhttp3.OkHttpClient
 import java.io.InputStream
 
-/**
- * A simple model loader for fetching media over http/https using OkHttp.
- */
-class OkHttpUrlLoader     // Public API.
+class OkHttpUrlLoader
     (private val client: Call.Factory) : ModelLoader<GlideUrl, InputStream> {
     override fun handles(url: GlideUrl): Boolean {
         return true
@@ -27,15 +24,8 @@ class OkHttpUrlLoader     // Public API.
     }
 
     class Factory
-    /**
-     * Constructor for a new Factory that runs requests using a static singleton client.
-     */ @JvmOverloads constructor(private val client: Call.Factory = internalClient!!) :
+    @JvmOverloads constructor(private val client: Call.Factory = internalClient!!) :
         ModelLoaderFactory<GlideUrl, InputStream> {
-        /**
-         * Constructor for a new Factory that runs requests using given client.
-         *
-         * @param client this is typically an instance of `OkHttpClient`.
-         */
         override fun build(multiFactory: MultiModelLoaderFactory): ModelLoader<GlideUrl, InputStream> {
             return OkHttpUrlLoader(client)
         }

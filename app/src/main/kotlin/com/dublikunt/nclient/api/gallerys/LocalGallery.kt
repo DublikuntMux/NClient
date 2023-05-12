@@ -34,7 +34,16 @@ class LocalGallery : GenericGallery {
         return hasAdvancedData
     }
 
-    @JvmOverloads
+    private val DUP_PATTERN = Pattern.compile("^(.*)\\.DUP\\d+$")
+
+    private fun createTitle(file: File): String {
+        val name = file.name
+        val matcher = DUP_PATTERN.matcher(name)
+        if (!matcher.matches()) return name
+        val title = matcher.group(1)
+        return title ?: name
+    }
+
     constructor(file: File, jumpDataRetrieve: Boolean = false) {
         val folder1: GalleryFolder? = try {
             GalleryFolder(file)
@@ -147,25 +156,13 @@ class LocalGallery : GenericGallery {
             '}'
     }
 
-    companion object {
-        @JvmField
-        val CREATOR: Creator<LocalGallery> = object : Creator<LocalGallery> {
-            override fun createFromParcel(`in`: Parcel): LocalGallery {
-                return LocalGallery(`in`)
-            }
-
-            override fun newArray(size: Int): Array<LocalGallery?> {
-                return arrayOfNulls(size)
-            }
+    companion object CREATOR : Creator<LocalGallery> {
+        override fun createFromParcel(parcel: Parcel): LocalGallery {
+            return LocalGallery(parcel)
         }
-        private val DUP_PATTERN = Pattern.compile("^(.*)\\.DUP\\d+$")
 
-        private fun createTitle(file: File): String {
-            val name = file.name
-            val matcher = DUP_PATTERN.matcher(name)
-            if (!matcher.matches()) return name
-            val title = matcher.group(1)
-            return title ?: name
+        override fun newArray(size: Int): Array<LocalGallery?> {
+            return arrayOfNulls(size)
         }
     }
 }

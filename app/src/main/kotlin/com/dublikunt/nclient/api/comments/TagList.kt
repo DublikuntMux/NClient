@@ -93,16 +93,13 @@ open class TagList() : Parcelable {
         constructor(c: Collection<Tag>) : super(c)
     }
 
-    companion object {
-        @JvmField
-        val CREATOR: Creator<TagList> = object : Creator<TagList> {
-            override fun createFromParcel(`in`: Parcel): TagList {
-                return TagList(`in`)
-            }
+    companion object CREATOR : Creator<TagList> {
+        override fun createFromParcel(parcel: Parcel): TagList {
+            return TagList(parcel)
+        }
 
-            override fun newArray(size: Int): Array<TagList?> {
-                return arrayOfNulls(size)
-            }
+        override fun newArray(size: Int): Array<TagList?> {
+            return arrayOfNulls(size)
         }
     }
 }

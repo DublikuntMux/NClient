@@ -157,21 +157,19 @@ open class GalleryFolder : Parcelable, Iterable<PageFile> {
         }
     }
 
-    companion object {
-        @JvmField
-        val CREATOR: Creator<GalleryFolder> = object : Creator<GalleryFolder> {
-            override fun createFromParcel(`in`: Parcel): GalleryFolder {
-                return GalleryFolder(`in`)
-            }
-
-            override fun newArray(size: Int): Array<GalleryFolder?> {
-                return arrayOfNulls(size)
-            }
-        }
+    companion object CREATOR : Creator<GalleryFolder> {
         private val FILE_PATTERN =
             Pattern.compile("^0*(\\d{1,9})\\.(gif|png|jpg)$", Pattern.CASE_INSENSITIVE)
         private val ID_FILE_PATTERN = Pattern.compile("^\\.(\\d{1,6})$")
         private const val NOMEDIA_FILE = ".nomedia"
+
+        override fun createFromParcel(parcel: Parcel): GalleryFolder {
+            return GalleryFolder(parcel)
+        }
+
+        override fun newArray(size: Int): Array<GalleryFolder?> {
+            return arrayOfNulls(size)
+        }
 
         fun fromId(context: Context?, id: Int): GalleryFolder? {
             val f = findGalleryFolder(context, id) ?: return null

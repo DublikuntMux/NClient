@@ -6,7 +6,7 @@ object DownloadQueue {
     private val downloadQueue: MutableList<GalleryDownloaderManager> = CopyOnWriteArrayList()
     fun add(x: GalleryDownloaderManager) {
         for (manager in downloadQueue) if (x.downloader().id == manager.downloader().id) {
-            manager.downloader().status = GalleryDownloader.Status.NOT_STARTED
+            manager.downloader().state = GalleryDownloader.Status.NOT_STARTED
             givePriority(manager.downloader())
             return
         }
@@ -24,24 +24,21 @@ object DownloadQueue {
     }
 
     fun clear() {
-        for (x in downloadQueue) x.downloader().status = GalleryDownloader.Status.CANCELED
+        for (x in downloadQueue) x.downloader().state = GalleryDownloader.Status.CANCELED
         downloadQueue.clear()
     }
 
-    @JvmStatic
-    val downloaders: CopyOnWriteArrayList<GalleryDownloader?>
+    val downloaders: CopyOnWriteArrayList<GalleryDownloader>
         get() {
-            val downloaders = CopyOnWriteArrayList<GalleryDownloader?>()
+            val downloaders = CopyOnWriteArrayList<GalleryDownloader>()
             for (manager in downloadQueue) downloaders.add(manager.downloader())
             return downloaders
         }
 
-    @JvmStatic
     fun addObserver(observer: DownloadObserver?) {
         for (manager in downloadQueue) manager.downloader().addObserver(observer)
     }
 
-    @JvmStatic
     fun removeObserver(observer: DownloadObserver) {
         for (manager in downloadQueue) manager.downloader().removeObserver(observer)
     }
@@ -60,14 +57,12 @@ object DownloadQueue {
         return null
     }
 
-    @JvmStatic
     fun remove(downloader: GalleryDownloader?, cancel: Boolean) {
         val manager = findManagerFromDownloader(downloader) ?: return
-        if (cancel) downloader!!.status = GalleryDownloader.Status.CANCELED
+        if (cancel) downloader!!.state = GalleryDownloader.Status.CANCELED
         downloadQueue.remove(manager)
     }
 
-    @JvmStatic
     fun givePriority(downloader: GalleryDownloader?) {
         val manager = findManagerFromDownloader(downloader) ?: return
         downloadQueue.remove(manager)

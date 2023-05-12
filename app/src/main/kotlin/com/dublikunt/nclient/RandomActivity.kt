@@ -112,7 +112,6 @@ class RandomActivity : GeneralActivity() {
     }
 
     companion object {
-        @JvmField
         var loadedGallery: Gallery? = null
     }
 }

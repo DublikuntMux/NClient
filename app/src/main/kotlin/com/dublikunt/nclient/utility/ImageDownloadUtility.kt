@@ -14,7 +14,6 @@ import com.dublikunt.nclient.settings.Global
 import java.io.File
 
 object ImageDownloadUtility {
-    @JvmStatic
     fun preloadImage(context: Context, url: Uri) {
         if (Global.downloadPolicy == Global.DataUsageType.NONE) return
         val manager = GlideX.with(context)
@@ -78,17 +77,14 @@ object ImageDownloadUtility {
         imageView.setImageDrawable(Global.getLogo(imageView.resources))
     }
 
-    @JvmStatic
     fun loadImage(activity: AppCompatActivity, url: Uri?, imageView: ImageView) {
         loadImageOp(activity, imageView, url, 0)
     }
 
-    @JvmStatic
     fun loadImage(activity: AppCompatActivity, file: File?, imageView: ImageView) {
         loadImage(activity, if (file == null) null else Uri.fromFile(file), imageView)
     }
 
-    @JvmStatic
     fun loadImage(@DrawableRes resource: Int, imageView: ImageView) {
         imageView.setImageResource(resource)
     }

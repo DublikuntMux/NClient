@@ -7,7 +7,7 @@ import android.os.Parcelable.Creator
 open class TagType : Parcelable {
     val id: Byte
     val single: String
-    val plural: String?
+    private val plural: String?
 
     private constructor(id: Int, single: String, plural: String?) {
         this.id = id.toByte()
@@ -42,33 +42,25 @@ open class TagType : Parcelable {
         dest.writeString(plural)
     }
 
-    companion object {
+    companion object CREATOR : Creator<TagType> {
         val UNKNOWN = TagType(0, "", null)
         val PARODY = TagType(1, "parody", "parodies")
         val CHARACTER = TagType(2, "character", "characters")
         val TAG = TagType(3, "tag", "tags")
         val ARTIST = TagType(4, "artist", "artists")
         val GROUP = TagType(5, "group", "groups")
-
-        @JvmField
         val LANGUAGE = TagType(6, "language", null)
         val CATEGORY = TagType(7, "category", null)
-
-        @JvmField
         val values = arrayOf(UNKNOWN, PARODY, CHARACTER, TAG, ARTIST, GROUP, LANGUAGE, CATEGORY)
 
-        @JvmField
-        val CREATOR: Creator<TagType?> = object : Creator<TagType?> {
-            override fun createFromParcel(`in`: Parcel): TagType {
-                return TagType(`in`)
-            }
-
-            override fun newArray(size: Int): Array<TagType?> {
-                return arrayOfNulls(size)
-            }
+        override fun createFromParcel(parcel: Parcel): TagType {
+            return TagType(parcel)
         }
 
-        @JvmStatic
+        override fun newArray(size: Int): Array<TagType?> {
+            return arrayOfNulls(size)
+        }
+
         fun typeByName(name: String): TagType {
             for (t in values) if (t.single == name) return t
             return UNKNOWN

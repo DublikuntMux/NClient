@@ -23,12 +23,12 @@ import androidx.recyclerview.widget.RecyclerView
 import com.dublikunt.nclient.adapters.ListAdapter
 import com.dublikunt.nclient.api.Inspector
 import com.dublikunt.nclient.api.Inspector.*
-import com.dublikunt.nclient.api.Inspector.Companion.basicInspector
-import com.dublikunt.nclient.api.Inspector.Companion.favoriteInspector
-import com.dublikunt.nclient.api.Inspector.Companion.galleryInspector
-import com.dublikunt.nclient.api.Inspector.Companion.randomInspector
-import com.dublikunt.nclient.api.Inspector.Companion.searchInspector
-import com.dublikunt.nclient.api.Inspector.Companion.tagInspector
+import com.dublikunt.nclient.api.Inspector.CREATOR.basicInspector
+import com.dublikunt.nclient.api.Inspector.CREATOR.favoriteInspector
+import com.dublikunt.nclient.api.Inspector.CREATOR.galleryInspector
+import com.dublikunt.nclient.api.Inspector.CREATOR.randomInspector
+import com.dublikunt.nclient.api.Inspector.CREATOR.searchInspector
+import com.dublikunt.nclient.api.Inspector.CREATOR.tagInspector
 import com.dublikunt.nclient.api.comments.Ranges
 import com.dublikunt.nclient.api.comments.Tag
 import com.dublikunt.nclient.api.gallerys.Gallery
@@ -762,14 +762,12 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
                     startActivity(intent)
                 }
                 showError(R.string.invalid_response) {
-                    inspector =
-                        inspector.cloneInspector(this@MainActivity, inspector.response!!)
+                    inspector = inspector.cloneInspector(this@MainActivity, inspector.response!!)
                     inspector.start()
                 }
             } else {
                 showError(R.string.unable_to_connect_to_the_site) {
-                    inspector =
-                        inspector.cloneInspector(this@MainActivity, inspector.response!!)
+                    inspector = inspector.cloneInspector(this@MainActivity, inspector.response!!)
                     inspector.start()
                 }
             }

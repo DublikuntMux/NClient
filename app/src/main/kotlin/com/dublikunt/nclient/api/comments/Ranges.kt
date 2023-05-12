@@ -31,7 +31,6 @@ open class Ranges : Parcelable {
         get() = fromDate == UNDEFINED && toDate == UNDEFINED && toPage == UNDEFINED && fromPage == UNDEFINED
 
     fun toQuery(): String {
-        val pageCreated = false
         val builder = StringBuilder()
         if (fromPage != UNDEFINED && toPage != UNDEFINED && fromPage == toPage) {
             builder.append("pages:").append(fromPage).append(' ')
@@ -74,19 +73,16 @@ open class Ranges : Parcelable {
 
     }
 
-    companion object {
-        const val UNDEFINED = -1
-        val UNDEFINED_DATE: TimeUnit? = null
-
-        @JvmField
-        val CREATOR: Creator<Ranges> = object : Creator<Ranges> {
-            override fun createFromParcel(`in`: Parcel): Ranges {
-                return Ranges(`in`)
-            }
-
-            override fun newArray(size: Int): Array<Ranges?> {
-                return arrayOfNulls(size)
-            }
+    companion object CREATOR : Creator<Ranges> {
+        override fun createFromParcel(parcel: Parcel): Ranges {
+            return Ranges(parcel)
         }
+
+        override fun newArray(size: Int): Array<Ranges?> {
+            return arrayOfNulls(size)
+        }
+
+        val UNDEFINED = -1
+        val UNDEFINED_DATE: TimeUnit? = null
     }
 }

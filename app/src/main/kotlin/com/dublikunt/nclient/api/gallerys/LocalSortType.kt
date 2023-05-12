@@ -2,8 +2,6 @@ package com.dublikunt.nclient.api.gallerys
 
 class LocalSortType {
     val type: Type
-
-    @JvmField
     val descending: Boolean
 
     constructor(type: Type, ascending: Boolean) {

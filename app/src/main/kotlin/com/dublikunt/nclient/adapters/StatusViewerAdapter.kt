@@ -74,7 +74,7 @@ class StatusViewerAdapter(private val context: AppCompatActivity, private val st
         return if (galleries != null) galleries!!.count else 0
     }
 
-    fun setGalleries(galleries: Cursor?) {
+    private fun setGalleries(galleries: Cursor?) {
         if (this.galleries != null) this.galleries!!.close()
         this.galleries = galleries
         context.runOnUiThread { notifyDataSetChanged() }

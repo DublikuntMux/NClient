@@ -120,9 +120,6 @@ class DatabaseHelper(private val context: Context) : SQLiteOpenHelper(
         db.execSQL("ALTER TABLE Downloads ADD COLUMN `range_end`   INT NOT NULL DEFAULT -1")
     }
 
-    /**
-     * Add all item which are favorite into the favorite table
-     */
     @get:SuppressLint("Range")
     private val allFavoriteIndex: IntArray
         get() {
@@ -138,14 +135,6 @@ class DatabaseHelper(private val context: Context) : SQLiteOpenHelper(
             return favorites
         }
 
-    /**
-     * Create favorite table
-     * Get all id of favorite gallery
-     * save all galleries
-     * delete and recreate table without favorite column
-     * insert all galleries again
-     * populate favorite
-     */
     private fun insertFavorite(db: SQLiteDatabase) {
         database = db
         db.execSQL(Queries.FavoriteTable.CREATE_TABLE)
@@ -161,9 +150,6 @@ class DatabaseHelper(private val context: Context) : SQLiteOpenHelper(
         }
     }
 
-    /**
-     * Add the columns which contains the sizes of the images
-     */
     private fun updateGalleryWithSizes(db: SQLiteDatabase) {
         db.execSQL("ALTER TABLE Gallery ADD COLUMN `maxW` INT NOT NULL DEFAULT 0")
         db.execSQL("ALTER TABLE Gallery ADD COLUMN `maxH` INT NOT NULL DEFAULT 0")

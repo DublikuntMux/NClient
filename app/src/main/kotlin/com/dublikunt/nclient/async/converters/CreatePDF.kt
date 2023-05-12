@@ -139,7 +139,6 @@ class CreatePDF : JobIntentService() {
     }
 
     companion object {
-        @JvmStatic
         fun startWork(context: Context, gallery: LocalGallery) {
             val i = Intent()
             i.putExtra(context.packageName + ".GALLERY", gallery)

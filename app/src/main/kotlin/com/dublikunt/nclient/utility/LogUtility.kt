@@ -5,7 +5,6 @@ import android.util.Log
 object LogUtility {
     private const val LOGTAG = "NCLIENTLOG"
 
-    @JvmStatic
     fun download(vararg message: Any) {
         if (message.size == 1) Log.d(LOGTAG, "" + message[0]) else Log.d(
             LOGTAG, message.contentToString()
@@ -36,7 +35,6 @@ object LogUtility {
         )
     }
 
-    @JvmStatic
     fun error(message: Any?, throwable: Throwable?) {
         var message = message
         if (message == null) message = ""

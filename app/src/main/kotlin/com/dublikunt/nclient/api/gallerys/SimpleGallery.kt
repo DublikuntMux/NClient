@@ -43,7 +43,7 @@ class SimpleGallery : GenericGallery {
     val mediaId: Int
     var language = Language.UNKNOWN
         private set
-    private lateinit var tags: TagList
+    private var tags: TagList? = null
 
     constructor(`in`: Parcel) {
         title = `in`.readString()!!
@@ -94,11 +94,11 @@ class SimpleGallery : GenericGallery {
     }
 
     fun hasTag(tag: Tag): Boolean {
-        return tags.hasTag(tag)
+        return tags!!.hasTag(tag)
     }
 
     fun hasTags(tags: Collection<Tag>): Boolean {
-        return this.tags.hasTags(tags)
+        return this.tags!!.hasTags(tags)
     }
 
     override fun describeContents(): Int {
@@ -148,24 +148,21 @@ class SimpleGallery : GenericGallery {
         return false
     }
 
-    companion object {
-        @JvmField
-        val CREATOR: Creator<SimpleGallery> = object : Creator<SimpleGallery> {
-            override fun createFromParcel(`in`: Parcel): SimpleGallery {
-                return SimpleGallery(`in`)
-            }
+    private fun extToString(ext: ImageExt): String {
+        return when (ext) {
+            ImageExt.GIF -> "gif"
+            ImageExt.PNG -> "png"
+            ImageExt.JPG -> "jpg"
+        }
+    }
 
-            override fun newArray(size: Int): Array<SimpleGallery?> {
-                return arrayOfNulls(size)
-            }
+    companion object CREATOR : Creator<SimpleGallery> {
+        override fun createFromParcel(parcel: Parcel): SimpleGallery {
+            return SimpleGallery(parcel)
         }
 
-        private fun extToString(ext: ImageExt): String {
-            return when (ext) {
-                ImageExt.GIF -> "gif"
-                ImageExt.PNG -> "png"
-                ImageExt.JPG -> "jpg"
-            }
+        override fun newArray(size: Int): Array<SimpleGallery?> {
+            return arrayOfNulls(size)
         }
     }
 }

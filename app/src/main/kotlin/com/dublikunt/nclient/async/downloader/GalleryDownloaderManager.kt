@@ -103,7 +103,7 @@ class GalleryDownloaderManager {
     private fun endNotification() {
         clearNotificationAction()
         hidePercentage()
-        if (downloaderV2.status != GalleryDownloader.Status.CANCELED) {
+        if (downloaderV2.state != GalleryDownloader.Status.CANCELED) {
             notification!!.setSmallIcon(R.drawable.ic_check)
             notification!!.setContentTitle(
                 String.format(
@@ -187,11 +187,26 @@ class GalleryDownloaderManager {
             )
         } else {
             pStop =
-                PendingIntent.getService(context, 0, stopIntent, PendingIntent.FLAG_CANCEL_CURRENT)
+                PendingIntent.getService(
+                    context,
+                    0,
+                    stopIntent,
+                    PendingIntent.FLAG_CANCEL_CURRENT or PendingIntent.FLAG_IMMUTABLE
+                )
             pPause =
-                PendingIntent.getService(context, 1, pauseIntent, PendingIntent.FLAG_CANCEL_CURRENT)
+                PendingIntent.getService(
+                    context,
+                    1,
+                    pauseIntent,
+                    PendingIntent.FLAG_CANCEL_CURRENT or PendingIntent.FLAG_IMMUTABLE
+                )
             pStart =
-                PendingIntent.getService(context, 2, startIntent, PendingIntent.FLAG_CANCEL_CURRENT)
+                PendingIntent.getService(
+                    context,
+                    2,
+                    startIntent,
+                    PendingIntent.FLAG_CANCEL_CURRENT or PendingIntent.FLAG_IMMUTABLE
+                )
         }
         if (pauseMode) notification!!.addAction(
             R.drawable.ic_play_arrow,

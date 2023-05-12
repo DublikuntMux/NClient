@@ -84,7 +84,7 @@ class HistoryAdapter(private val context: SearchActivity) :
             .putStringSet("history", History.listToSet(this.history)).apply()
     }
 
-    fun removeHistory(pos: Int) {
+    private fun removeHistory(pos: Int) {
         if (pos < 0 || pos >= history!!.size) return
         history.removeAt(pos)
         context.getSharedPreferences("History", 0).edit().putStringSet(

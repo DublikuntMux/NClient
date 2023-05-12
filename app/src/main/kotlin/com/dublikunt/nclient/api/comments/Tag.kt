@@ -8,7 +8,7 @@ import android.util.JsonToken
 import android.util.JsonWriter
 import com.dublikunt.nclient.enums.TagStatus
 import com.dublikunt.nclient.enums.TagType
-import com.dublikunt.nclient.enums.TagType.Companion.typeByName
+import com.dublikunt.nclient.enums.TagType.CREATOR.typeByName
 import com.dublikunt.nclient.utility.LogUtility.download
 import java.io.IOException
 import java.util.*
@@ -65,7 +65,6 @@ class Tag : Parcelable {
         status = TagStatus.values()[`in`.readByte().toInt()]
     }
 
-    @JvmOverloads
     fun toQueryTag(status: TagStatus = this.status): String {
         val builder = StringBuilder()
         if (status === TagStatus.AVOIDED) builder.append('-')
@@ -125,16 +124,13 @@ class Tag : Parcelable {
         parcel.writeByte(status.ordinal.toByte())
     }
 
-    companion object {
-        @JvmField
-        val CREATOR: Creator<Tag> = object : Creator<Tag> {
-            override fun createFromParcel(`in`: Parcel): Tag {
-                return Tag(`in`)
-            }
+    companion object CREATOR : Creator<Tag> {
+        override fun createFromParcel(parcel: Parcel): Tag {
+            return Tag(parcel)
+        }
 
-            override fun newArray(size: Int): Array<Tag?> {
-                return arrayOfNulls(size)
-            }
+        override fun newArray(size: Int): Array<Tag?> {
+            return arrayOfNulls(size)
         }
     }
 }

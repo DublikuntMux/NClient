@@ -14,7 +14,7 @@ open class User : Parcelable {
         private set
     var username: String = ""
         private set
-    var avatarUrl: String = ""
+    private var avatarUrl: String = ""
 
     constructor(reader: JsonReader) {
         reader.beginObject()
@@ -49,16 +49,13 @@ open class User : Parcelable {
         return Uri.parse(String.format(Locale.US, "https://i.%s/%s", host, avatarUrl))
     }
 
-    companion object {
-        @JvmField
-        val CREATOR: Creator<User> = object : Creator<User> {
-            override fun createFromParcel(`in`: Parcel): User {
-                return User(`in`)
-            }
+    companion object CREATOR : Creator<User> {
+        override fun createFromParcel(parcel: Parcel): User {
+            return User(parcel)
+        }
 
-            override fun newArray(size: Int): Array<User?> {
-                return arrayOfNulls(size)
-            }
+        override fun newArray(size: Int): Array<User?> {
+            return arrayOfNulls(size)
         }
     }
 }

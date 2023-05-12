@@ -22,7 +22,6 @@ object Login {
     const val LOGIN_COOKIE = "sessionid"
     lateinit var BASE_HTTP_URL: HttpUrl
 
-    @JvmStatic
     var user: User? = null
         private set
     private var accountTag = false
@@ -66,12 +65,12 @@ object Login {
         clearWebViewCookies(context) //clear webView cookies
     }
 
-    fun clearWebViewCookies(context: Context?) {
+    private fun clearWebViewCookies(context: Context?) {
         try {
             CookieManager.getInstance().removeAllCookies(null)
             CookieManager.getInstance().flush()
         } catch (ignore: Throwable) {
-        } //catch InvocationTargetException randomly thrown
+        }
     }
 
     fun clearOnlineTags() {
@@ -84,13 +83,11 @@ object Login {
         cookieJar.clearSession()
     }
 
-    @JvmStatic
     fun addOnlineTag(tag: Tag) {
         Queries.TagTable.insert(tag)
         Queries.TagTable.updateBlacklistedTag(tag, true)
     }
 
-    @JvmStatic
     fun removeOnlineTag(tag: Tag) {
         Queries.TagTable.updateBlacklistedTag(tag, false)
     }
@@ -132,7 +129,6 @@ object Login {
         return false
     }
 
-    @JvmStatic
     fun isLogged(): Boolean {
         return isLogged(null)
     }
@@ -141,7 +137,6 @@ object Login {
         Login.user = user
     }
 
-    @JvmStatic
     fun isOnlineTags(tag: Tag): Boolean {
         return Queries.TagTable.isBlackListed(tag)
     }

@@ -102,9 +102,7 @@ open class Inspector : Thread, Parcelable {
     }
 
     override fun writeToParcel(dest: Parcel, flags: Int) {
-        if (sortType != null) dest.writeByte(sortType.ordinal.toByte()) else dest.writeByte(
-            SortType.RECENT_ALL_TIME.ordinal.toByte()
-        )
+        dest.writeByte(sortType.ordinal.toByte())
         dest.writeByte((if (isCustom) 1 else 0).toByte())
         dest.writeInt(page)
         dest.writeInt(pageCount)
@@ -112,7 +110,7 @@ open class Inspector : Thread, Parcelable {
         dest.writeString(query)
         dest.writeString(url)
         dest.writeByte(requestType!!.ordinal())
-        if (galleries == null || galleries.size == 0) dest.writeByte(GenericGallery.Type.SIMPLE.ordinal.toByte()) else dest.writeByte(
+        if (galleries.size == 0) dest.writeByte(GenericGallery.Type.SIMPLE.ordinal.toByte()) else dest.writeByte(
             galleries[0].type.ordinal.toByte()
         )
         dest.writeTypedList(galleries)
@@ -153,8 +151,7 @@ open class Inspector : Thread, Parcelable {
     }
 
     private fun createUrl() {
-        val query: String?
-        query = try {
+        val query: String? = try {
             if (this.query == null) null else URLEncoder.encode(this.query, "UTF-8")
         } catch (ignore: UnsupportedEncodingException) {
             this.query
@@ -166,7 +163,7 @@ open class Inspector : Thread, Parcelable {
         ) else if (requestType === ApiRequestType.BYSINGLE) builder.append("g/")
             .append(id) else if (requestType === ApiRequestType.FAVORITE) {
             builder.append("favorites/")
-            if (query != null && query.length > 0) builder.append("?q=").append(query)
+            if (!query.isNullOrEmpty()) builder.append("?q=").append(query)
                 .append('&') else builder.append('?')
             builder.append("page=").append(page)
         } else if (requestType === ApiRequestType.BYSEARCH || requestType === ApiRequestType.BYTAG) {
@@ -261,10 +258,9 @@ open class Inspector : Thread, Parcelable {
         if (scripts.isEmpty()) throw InvalidResponseException()
         val json = trimScriptTag(scripts.last()!!.html()) ?: throw InvalidResponseException()
         val relContainer = document.getElementById("related-container")
-        val rel: Elements
-        rel = if (relContainer != null) relContainer.getElementsByClass("gallery") else Elements()
-        val isFavorite: Boolean
-        isFavorite = try {
+        val rel: Elements =
+            if (relContainer != null) relContainer.getElementsByClass("gallery") else Elements()
+        val isFavorite: Boolean = try {
             document.getElementById("favorite")!!.getElementsByTag("span")[0].text() == "Unfavorite"
         } catch (e: Exception) {
             false
@@ -280,7 +276,7 @@ open class Inspector : Thread, Parcelable {
         s += 7
         scriptHtml = scriptHtml.substring(s, scriptHtml.lastIndexOf(");") - 1)
         scriptHtml = unescapeUnicodeString(scriptHtml)
-        return if (scriptHtml.isEmpty()) null else scriptHtml
+        return scriptHtml.ifEmpty { null }
     }
 
     @Throws(InvalidResponseException::class)
@@ -289,7 +285,7 @@ open class Inspector : Thread, Parcelable {
         galleries = ArrayList(gal.size)
         for (e in gal) galleries.add(SimpleGallery(context!!.get()!!, e))
         gal = document.getElementsByClass("last")
-        pageCount = if (gal.size == 0) Math.max(1, page) else findTotal(gal.last())
+        pageCount = if (gal.size == 0) 1.coerceAtLeast(page) else findTotal(gal.last())
         if (document.getElementById("content") == null) throw InvalidResponseException()
     }
 
@@ -334,16 +330,13 @@ open class Inspector : Thread, Parcelable {
         }
     }
 
-    companion object {
-        @JvmField
-        val CREATOR: Creator<Inspector> = object : Creator<Inspector> {
-            override fun createFromParcel(`in`: Parcel): Inspector {
-                return Inspector(`in`)
-            }
+    companion object CREATOR : Creator<Inspector> {
+        override fun createFromParcel(parcel: Parcel): Inspector {
+            return Inspector(parcel)
+        }
 
-            override fun newArray(size: Int): Array<Inspector?> {
-                return arrayOfNulls(size)
-            }
+        override fun newArray(size: Int): Array<Inspector?> {
+            return arrayOfNulls(size)
         }
 
         fun favoriteInspector(
@@ -430,7 +423,6 @@ open class Inspector : Thread, Parcelable {
 
                     1 -> {
                         inspector.requestType = ApiRequestType.BYTAG
-                        //else by search for the negative tag
                         if (inspector.tag.status !== TagStatus.AVOIDED)
                             inspector.requestType = ApiRequestType.BYSEARCH
                     }

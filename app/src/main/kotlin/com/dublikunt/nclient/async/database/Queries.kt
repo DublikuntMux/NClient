@@ -33,14 +33,10 @@ import java.util.*
 object Queries {
     lateinit var db: SQLiteDatabase
 
-    @JvmStatic
     fun getColumnFromName(cursor: Cursor, name: String?): Int {
         return cursor.getColumnIndex(name)
     }
 
-    /**
-     * Table with information about the galleries
-     */
     object GalleryTable {
         const val TABLE_NAME = "Gallery"
         const val DROP_TABLE = "DROP TABLE IF EXISTS $TABLE_NAME"
@@ -65,7 +61,7 @@ object Queries {
             "`favorite_count` INT               NOT NULL, " +
             "`mediaId`        INT               NOT NULL, " +
             "`pages`          TEXT              NOT NULL," +
-            "`upload`         UNSIGNED BIG INT  NOT NULL," +  //Date
+            "`upload`         UNSIGNED BIG INT  NOT NULL," +
             "`maxW`           INT               NOT NULL," +
             "`maxH`           INT               NOT NULL," +
             "`minW`           INT               NOT NULL," +
@@ -107,11 +103,6 @@ object Queries {
             )
         }
 
-        /**
-         * Retrieve gallery using the id
-         *
-         * @param id id of the gallery to retrieve
-         */
         @Throws(IOException::class)
         fun galleryFromId(id: Int): Gallery? {
             val cursor = db.query(
@@ -138,7 +129,7 @@ object Queries {
             val cursor: Cursor
             var sql = "SELECT * FROM " + TABLE_NAME + " WHERE (" +
                 FAVORITE + " =? OR " + FAVORITE + "=3)"
-            if (query != null && query.isNotEmpty()) {
+            if (!query.isNullOrEmpty()) {
                 sql += " AND (" + TITLE_ENG + " LIKE ? OR " +
                     TITLE_JP + " LIKE ? OR " +
                     TITLE_PRETTY + " LIKE ? )"
@@ -151,9 +142,6 @@ object Queries {
             return cursor
         }
 
-        /**
-         * Retrieve all galleries inside the DB
-         */
         @get:Throws(IOException::class)
         val allGalleries: List<Gallery>
             get() {
@@ -184,7 +172,6 @@ object Queries {
             values.put(MAX_HEIGHT, gallery.maxSize!!.height)
             values.put(MIN_WIDTH, gallery.minSize!!.width)
             values.put(MIN_HEIGHT, gallery.minSize!!.height)
-            //Insert gallery
             db.insertWithOnConflict(
                 TABLE_NAME,
                 null,
@@ -194,12 +181,6 @@ object Queries {
             TagTable.insertTagsForGallery(data)
         }
 
-        /**
-         * Convert a cursor pointing to galleries to a list of galleries, cursor not closed
-         *
-         * @param cursor Cursor to scroll
-         * @return ArrayList of galleries
-         */
         @Throws(IOException::class)
         fun cursorToList(cursor: Cursor): List<Gallery> {
             val galleries: MutableList<Gallery> = ArrayList(cursor.count)
@@ -216,9 +197,6 @@ object Queries {
             GalleryBridgeTable.deleteGallery(id)
         }
 
-        /**
-         * Convert a row of a cursor to a [Gallery]
-         */
         @Throws(IOException::class)
         fun cursorToGallery(cursor: Cursor): Gallery {
             return Gallery(
@@ -230,9 +208,6 @@ object Queries {
             )
         }
 
-        /**
-         * Insert max and min size of a certain [Gallery]
-         */
         fun updateSizes(gallery: Gallery?) {
             if (gallery == null) return
             val values = ContentValues(4)
@@ -266,10 +241,6 @@ object Queries {
         const val STATUS = "status"
         const val ONLINE = "online"
 
-        /**
-         * Convert a [Cursor] row to a [Tag]
-         */
-        @JvmStatic
         fun cursorToTag(cursor: Cursor): Tag {
             return Tag(
                 cursor.getString(cursor.getColumnIndex(NAME)),
@@ -280,10 +251,6 @@ object Queries {
             )
         }
 
-        /**
-         * Fetch all rows inside a [Cursor] and convert them into a [Tag]
-         * The [Cursor] passed as parameter is closed
-         */
         fun getTagsFromCursor(cursor: Cursor): List<Tag> {
             val tags: MutableList<Tag> = ArrayList(cursor.count)
             val i = 0
@@ -296,79 +263,48 @@ object Queries {
             return tags
         }
 
-        /**
-         * Return a cursor which points to a list of [Tag] which have certain properties
-         *
-         * @param query      Retrieve only tags which contains a certain string
-         * @param type       If not null only tags which are of a specific [TagType]
-         * @param online     Retrieve only tags which have been blacklisted from the main site
-         * @param sortByName sort by name or by count
-         */
-        @JvmStatic
         fun getFilterCursor(
             query: String,
             type: TagType?,
             online: Boolean,
             sortByName: Boolean
         ): Cursor {
-            //create query
             val sql = StringBuilder("SELECT * FROM ").append(TABLE_NAME)
             sql.append(" WHERE ")
-            sql.append(COUNT).append(">=? ") //min tag count
+            sql.append(COUNT).append(">=? ")
             if (query.isNotEmpty()) sql.append("AND ").append(NAME)
-                .append(" LIKE ?") //query if is used
-            if (type != null) sql.append("AND ").append(TYPE).append("=? ") //type if is used
-            if (online) sql.append("AND ").append(ONLINE).append("=1 ") //retrieve only online tags
+                .append(" LIKE ?")
+            if (type != null) sql.append("AND ").append(TYPE).append("=? ")
+            if (online) sql.append("AND ").append(ONLINE).append("=1 ")
             if (!online && type == null) sql.append("AND ").append(STATUS)
-                .append("!=0 ") //retrieve only used tags
-            sql.append("ORDER BY ") //sort first by name if provided, the for count
+                .append("!=0 ")
+            sql.append("ORDER BY ")
             if (!sortByName) sql.append(COUNT).append(" DESC,")
             sql.append(NAME).append(" ASC")
 
-            //create parameter list
             val list = ArrayList<String>()
-            list.add("" + minCount) //minium tags (always provided)
-            if (query.isNotEmpty()) list.add("%$query%") //query
-            if (type != null) list.add("" + type.id) //type of the tag
+            list.add("" + minCount)
+            if (query.isNotEmpty()) list.add("%$query%")
+            if (type != null) list.add("" + type.id)
             download("FILTER URL: $sql, ARGS: $list")
             return db.rawQuery(sql.toString(), list.toTypedArray())
         }
 
-        /**
-         * Returns a List of all tags of a specific type and which have a min count
-         *
-         * @param type The type to fetch
-         */
         fun getAllTagOfType(type: TagType): List<Tag> {
             val query =
                 "SELECT * FROM $TABLE_NAME WHERE $TYPE = ? AND $COUNT >= ?"
             return getTagsFromCursor(db.rawQuery(query, arrayOf("" + type.id, "" + minCount)))
         }
 
-        /**
-         * Returns a List of all tags of a specific type
-         *
-         * @param type The type to fetch
-         */
         fun getTrueAllType(type: TagType): List<Tag> {
             val query = "SELECT * FROM $TABLE_NAME WHERE $TYPE = ?"
             return getTagsFromCursor(db.rawQuery(query, arrayOf("" + type.id)))
         }
 
-        /**
-         * Returns a List of all tags of a specific status
-         *
-         * @param status The status to fetch
-         */
-        @JvmStatic
         fun getAllStatus(status: TagStatus): List<Tag> {
             val query = "SELECT * FROM $TABLE_NAME WHERE $STATUS = ?"
             return getTagsFromCursor(db.rawQuery(query, arrayOf("" + status.ordinal)))
         }
-
-        /**
-         * Returns a List of all tags which are AVOIDED or ACCEPTED
-         */
 
         val allFiltered: List<Tag>
             get() {
@@ -381,18 +317,11 @@ object Queries {
                 )
             }
 
-        /**
-         * Returns a List of all tags which are AVOIDED or ACCEPTED of a specific type
-         */
-        fun getAllFilteredByType(type: TagType?): List<Tag> {
+        fun getAllFilteredByType(type: TagType): List<Tag> {
             val query = "SELECT * FROM $TABLE_NAME WHERE $STATUS != ?"
             return getTagsFromCursor(db.rawQuery(query, arrayOf("" + TagStatus.DEFAULT.ordinal)))
         }
 
-        /**
-         * Returns a List of all tags which have been blacklisted from the site
-         */
-        @JvmStatic
         val allOnlineBlacklisted: List<Tag>
             get() {
                 val query = "SELECT * FROM $TABLE_NAME WHERE $ONLINE = 1"
@@ -403,9 +332,6 @@ object Queries {
                 return t
             }
 
-        /**
-         * Returns true if the tag has been blacklisted form the main site
-         */
         fun isBlackListed(tag: Tag): Boolean {
             val query =
                 "SELECT $IDTAG FROM $TABLE_NAME WHERE $IDTAG=? AND $ONLINE=1"
@@ -415,10 +341,6 @@ object Queries {
             return x
         }
 
-        /**
-         * Returns the tag which has a specific if, null if it does not exists
-         */
-        @JvmStatic
         fun getTagById(id: Int): Tag? {
             val query = "SELECT * FROM $TABLE_NAME WHERE $IDTAG = ?"
             val c = db.rawQuery(query, arrayOf("" + id))
@@ -427,7 +349,6 @@ object Queries {
             c.close()
             return t
         }
-
 
         fun updateStatus(id: Int, status: TagStatus): Int {
             val values = ContentValues(1)
@@ -441,9 +362,6 @@ object Queries {
             )
         }
 
-        /**
-         * Update status and count of a specific tag
-         */
         fun updateTag(tag: Tag): Int {
             insert(tag)
             val values = ContentValues(2)
@@ -458,8 +376,6 @@ object Queries {
             )
         }
 
-        @JvmOverloads
-        @JvmStatic
         fun insert(tag: Tag, replace: Boolean = false) {
             val values = ContentValues(5)
             values.put(IDTAG, tag.id)
@@ -511,9 +427,6 @@ object Queries {
             )
         }
 
-        /**
-         * Get the first `count` tags of `type`, ordered by tag count
-         */
         fun getTopTags(type: TagType, count: Int): List<Tag> {
             val query =
                 "SELECT * FROM $TABLE_NAME WHERE $TYPE=? ORDER BY $COUNT DESC LIMIT ?;"
@@ -521,11 +434,6 @@ object Queries {
             return getTagsFromCursor(cursor)
         }
 
-        /**
-         * Retrieve the status of a tag from the DB and set it
-         *
-         * @return the status if the tag exists, null otherwise
-         */
         fun getStatus(tag: Tag): TagStatus? {
             val query = "SELECT " + STATUS + " FROM " + TABLE_NAME +
                 " WHERE " + IDTAG + " =?"
@@ -547,11 +455,6 @@ object Queries {
             return tag
         }
 
-        /**
-         * @param tagString a comma-separated list of integers (maybe vulnerable)
-         * @return the tags with id contained inside the list
-         */
-        @JvmStatic
         fun getTagsFromListOfInt(tagString: String): TagList {
             val tags = TagList()
             val query =
@@ -565,9 +468,6 @@ object Queries {
             return tags
         }
 
-        /**
-         * Return a list of tags which contain name and are of a certain type
-         */
         fun search(name: String, type: TagType): List<Tag> {
             val query =
                 "SELECT * FROM $TABLE_NAME WHERE $NAME LIKE ? AND $TYPE=?"
@@ -576,11 +476,6 @@ object Queries {
             return getTagsFromCursor(c)
         }
 
-        /**
-         * Search a tag by name and type
-         *
-         * @return The Tag if found, null otehrwise
-         */
         fun searchTag(name: String, type: TagType): Tag? {
             var tag: Tag? = null
             val query = "SELECT * FROM $TABLE_NAME WHERE $NAME = ? AND $TYPE=?"
@@ -591,9 +486,6 @@ object Queries {
             return tag
         }
 
-        /**
-         * Insert all tags owned by a gallery and link it using [GalleryBridgeTable]
-         */
         fun insertTagsForGallery(gallery: GalleryData) {
             val tags = gallery.tags
             var len: Int
@@ -602,13 +494,11 @@ object Queries {
                 len = tags.getCount(t)
                 for (i in 0 until len) {
                     tag = tags.getTag(t, i)
-                    insert(tag) //Insert tag
-                    GalleryBridgeTable.insert(gallery.id, tag.id) //Insert link
+                    insert(tag)
+                    GalleryBridgeTable.insert(gallery.id, tag.id)
                 }
             }
         }
-
-        /*To avoid conflict between the import process and the ScrapeTags*/
 
         fun insertScrape(tag: Tag, b: Boolean) {
             if (db.isOpen) insert(tag, b)
@@ -630,7 +520,7 @@ object Queries {
 
         fun addGallery(downloader: GalleryDownloader) {
             val gallery = downloader.gallery
-            GalleryTable.insert(gallery)
+            GalleryTable.insert(gallery!!)
             val values = ContentValues(3)
             values.put(ID_GALLERY, gallery.id)
             values.put(RANGE_START, downloader.start)
@@ -814,7 +704,7 @@ object Queries {
             db.delete(TABLE_NAME, "$ID_GALLERY=?", arrayOf("" + id))
         }
 
-        fun getTagCursorForGallery(id: Int): Cursor {
+        private fun getTagCursorForGallery(id: Int): Cursor {
             val query = String.format(
                 Locale.US, "SELECT * FROM %s WHERE %s IN (SELECT %s FROM %s WHERE %s=%d)",
                 TagTable.TABLE_NAME,
@@ -872,12 +762,6 @@ object Queries {
             }
         }
 
-        /**
-         * Get all favorites galleries which title contains `query`
-         *
-         * @param orderByTitle true if order by title, false order by latest
-         * @return cursor which points to the galleries
-         */
         fun getAllFavoriteGalleriesCursor(
             query: CharSequence,
             orderByTitle: Boolean,
@@ -899,12 +783,7 @@ object Queries {
             )
         }
 
-        /**
-         * Get all favorites galleries
-         *
-         * @return cursor which points to the galleries
-         */
-        val allFavoriteGalleriesCursor: Cursor
+        private val allFavoriteGalleriesCursor: Cursor
             get() {
                 val query = String.format(
                     Locale.US, "SELECT * FROM %s WHERE %s IN (SELECT %s FROM %s)",
@@ -916,9 +795,6 @@ object Queries {
                 return db.rawQuery(query, null)
             }
 
-        /**
-         * Retrieve all favorite galleries
-         */
         @get:Throws(IOException::class)
         val allFavoriteGalleries: List<Gallery>
             get() {
@@ -959,7 +835,7 @@ object Queries {
             return totalFavorite
         }
 
-        fun countFavorite(): Int {
+        private fun countFavorite(): Int {
             var totalFavorite = 0
             val query = "SELECT COUNT(*) FROM $TABLE_NAME"
             val c = db.rawQuery(query, null)
@@ -1050,7 +926,6 @@ object Queries {
             db.delete(TABLE_NAME, "$GALLERY=?", arrayOf("" + id))
         }
 
-        @JvmStatic
         fun getStatus(id: Int): Status {
             val cursor = db.query(
                 TABLE_NAME,

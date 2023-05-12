@@ -11,7 +11,7 @@ import com.dublikunt.nclient.enums.ImageType
 
 open class Page : Parcelable {
     val page: Int
-    val imageType: ImageType
+    private val imageType: ImageType
     lateinit var imageExt: ImageExt
     var size: Size = Size(0, 0)
 
@@ -21,14 +21,12 @@ open class Page : Parcelable {
         page = 0
     }
 
-    @JvmOverloads
     constructor(type: ImageType, ext: ImageExt, page: Int = 0) {
         imageType = type
         imageExt = ext
         this.page = page
     }
 
-    @JvmOverloads
     constructor(type: ImageType, reader: JsonReader, page: Int = 0) {
         imageType = type
         this.page = page
@@ -36,8 +34,8 @@ open class Page : Parcelable {
         while (reader.peek() != JsonToken.END_OBJECT) {
             when (reader.nextName()) {
                 "t" -> imageExt = stringToExt(reader.nextString())
-                "w" -> size!!.width = reader.nextInt()
-                "h" -> size!!.height = reader.nextInt()
+                "w" -> size.width = reader.nextInt()
+                "h" -> size.height = reader.nextInt()
                 else -> reader.skipValue()
             }
         }
@@ -58,8 +56,8 @@ open class Page : Parcelable {
     override fun writeToParcel(dest: Parcel, flags: Int) {
         dest.writeInt(page)
         dest.writeParcelable(size, flags)
-        dest.writeByte((if (imageExt == null) ImageExt.JPG.ordinal else imageExt!!.ordinal).toByte())
-        dest.writeByte((imageType?.ordinal ?: ImageType.PAGE.ordinal).toByte())
+        dest.writeByte((imageExt.ordinal).toByte())
+        dest.writeByte(imageType.ordinal.toByte())
     }
 
     val imageExtChar: Char
@@ -74,16 +72,13 @@ open class Page : Parcelable {
             '}'
     }
 
-    companion object {
-        @JvmField
-        val CREATOR: Creator<Page> = object : Creator<Page> {
-            override fun createFromParcel(`in`: Parcel): Page {
-                return Page(`in`)
-            }
+    companion object CREATOR : Creator<Page> {
+        override fun createFromParcel(parcel: Parcel): Page {
+            return Page(parcel)
+        }
 
-            override fun newArray(size: Int): Array<Page?> {
-                return arrayOfNulls(size)
-            }
+        override fun newArray(size: Int): Array<Page?> {
+            return arrayOfNulls(size)
         }
 
         fun stringToExt(ext: String): ImageExt {

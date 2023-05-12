@@ -75,7 +75,7 @@ class CommentAdapter(
                 }
             }).setMethod("POST", AuthRequest.EMPTY_BODY).start()
         }
-        if (c.avatarUrl == null || Global.downloadPolicy != Global.DataUsageType.FULL) loadImage(
+        if (Global.downloadPolicy != Global.DataUsageType.FULL) loadImage(
             R.drawable.ic_person,
             holder.userImage
         ) else loadImage(

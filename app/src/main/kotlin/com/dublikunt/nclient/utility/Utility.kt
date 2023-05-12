@@ -19,11 +19,9 @@ object Utility {
     val RANDOM = Random(System.nanoTime())
     const val ORIGINAL_URL = "nhentai.net"
 
-    @JvmStatic
     val baseUrl: String
         get() = "https://$host/"
 
-    @JvmStatic
     val host: String?
         get() = Global.mirror
 
@@ -52,7 +50,6 @@ object Utility {
         }
     }
 
-    @JvmStatic
     fun unescapeUnicodeString(scriptHtml: String?): String {
         if (scriptHtml == null) return ""
         val reader = StringReader(scriptHtml)

@@ -26,9 +26,9 @@ class DownloadGallery : JobIntentService() {
                 assert(mode != null)
                 when (mode) {
                     "STOP" -> DownloadQueue.remove(id, true)
-                    "PAUSE" -> manager.downloader().status = GalleryDownloader.Status.PAUSED
+                    "PAUSE" -> manager.downloader().state = GalleryDownloader.Status.PAUSED
                     "START" -> {
-                        manager.downloader().status =
+                        manager.downloader().state =
                             GalleryDownloader.Status.NOT_STARTED
                         DownloadQueue.givePriority(manager.downloader())
                         startWork(this)
@@ -98,7 +98,7 @@ class DownloadGallery : JobIntentService() {
             try {
                 val g = getAllDownloads(context)
                 for (gg in g) {
-                    gg.downloader().status = GalleryDownloader.Status.PAUSED
+                    gg.downloader().state = GalleryDownloader.Status.PAUSED
                     DownloadQueue.add(gg)
                 }
                 PageChecker().start()
@@ -112,7 +112,6 @@ class DownloadGallery : JobIntentService() {
             downloadGallery(context, gallery, start, end)
         }
 
-        @JvmStatic
         fun startWork(context: Context?) {
             if (context != null) enqueueWork(
                 context,

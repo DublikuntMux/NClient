@@ -48,7 +48,7 @@ class LocalAdapter(private val context: LocalActivity, myDataset: ArrayList<Loca
     MultichoiceAdapter<Any, LocalAdapter.ViewHolder>(), Filterable {
     private val statuses = SparseIntArray()
     private lateinit var dataset: MutableList<LocalGallery>
-    private lateinit var galleryDownloaders: MutableList<GalleryDownloader?>
+    private lateinit var galleryDownloader: MutableList<GalleryDownloader>
     private val comparatorByName = Comparator { o1: Any, o2: Any ->
         if (o1 === o2) return@Comparator 0
         val b1 = o1 is LocalGallery
@@ -73,10 +73,9 @@ class LocalAdapter(private val context: LocalActivity, myDataset: ArrayList<Loca
         if (o1 === o2) return@Comparator 0
         val b1 = o1 is LocalGallery
         val b2 = o2 is LocalGallery
-        //downloading manga are newer
         if (b1 && !b2) return@Comparator -1
         if (!b1 && b2) return@Comparator 1
-        if (b1 /*&&b2*/) {
+        if (b1) {
             val res =
                 (o1 as LocalGallery).directory.lastModified() - (o2 as LocalGallery).directory.lastModified()
             if (res != 0L) return@Comparator if (res < 0) -1 else 1
@@ -103,7 +102,7 @@ class LocalAdapter(private val context: LocalActivity, myDataset: ArrayList<Loca
 
         override fun triggerEndDownload(downloader: GalleryDownloader?) {
             val l = downloader!!.localGallery()
-            galleryDownloaders.remove(downloader)
+            galleryDownloader.remove(downloader)
             if (l != null) {
                 dataset.remove(l)
                 dataset.add(l)
@@ -126,10 +125,10 @@ class LocalAdapter(private val context: LocalActivity, myDataset: ArrayList<Loca
     init {
         dataset = CopyOnWriteArrayList(myDataset)
         colCount = context.colCount
-        galleryDownloaders = downloaders
+        galleryDownloader = downloaders
         lastQuery = context.query
         filter = ArrayList(myDataset)
-        filter.addAll(listOf(galleryDownloaders))
+        filter.addAll(listOf(galleryDownloader))
         addObserver(observer)
         sortElements()
     }
@@ -143,7 +142,7 @@ class LocalAdapter(private val context: LocalActivity, myDataset: ArrayList<Loca
     }
 
     private fun createHash(
-        galleryDownloaders: List<GalleryDownloader?>,
+        galleryDownloaders: List<GalleryDownloader>,
         dataset: List<LocalGallery>
     ): ArrayList<Any> {
         val hashMap = HashMap<String?, Any>(dataset.size + galleryDownloaders.size)
@@ -153,7 +152,7 @@ class LocalAdapter(private val context: LocalActivity, myDataset: ArrayList<Loca
             ) hashMap[gall.trueTitle] = gall
         }
         for (gall in galleryDownloaders) {
-            if (gall != null && gall.truePathTitle.lowercase()
+            if (gall.truePathTitle.lowercase()
                     .contains(lastQuery)
             ) hashMap[gall.truePathTitle] = gall
         }
@@ -187,7 +186,7 @@ class LocalAdapter(private val context: LocalActivity, myDataset: ArrayList<Loca
     }
 
     private fun sortElements() {
-        filter = createHash(galleryDownloaders, dataset)
+        filter = createHash(galleryDownloader, dataset)
     }
 
     override fun onCreateMultichoiceViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -249,11 +248,11 @@ class LocalAdapter(private val context: LocalActivity, myDataset: ArrayList<Loca
         loadImage(context, downloader.thumbnail, holder.imgView)
         holder.title.text = downloader.truePathTitle
         holder.cancelButton.setOnClickListener { removeDownloader(downloader) }
-        when (downloader.status) {
+        when (downloader.state) {
             GalleryDownloader.Status.PAUSED -> {
                 holder.playButton.setImageResource(R.drawable.ic_play_arrow)
                 holder.playButton.setOnClickListener {
-                    downloader.status = GalleryDownloader.Status.NOT_STARTED
+                    downloader.state = GalleryDownloader.Status.NOT_STARTED
                     startWork(context)
                     notifyItemChanged(position)
                 }
@@ -262,7 +261,7 @@ class LocalAdapter(private val context: LocalActivity, myDataset: ArrayList<Loca
             GalleryDownloader.Status.DOWNLOADING -> {
                 holder.playButton.setImageResource(R.drawable.ic_pause)
                 holder.playButton.setOnClickListener {
-                    downloader.status = GalleryDownloader.Status.PAUSED
+                    downloader.state = GalleryDownloader.Status.PAUSED
                     notifyItemChanged(position)
                 }
             }
@@ -276,10 +275,10 @@ class LocalAdapter(private val context: LocalActivity, myDataset: ArrayList<Loca
         }
         holder.progress.text = context.getString(R.string.percentage_format, percentage)
         holder.progress.visibility =
-            if (downloader.status === GalleryDownloader.Status.NOT_STARTED) View.GONE else View.VISIBLE
+            if (downloader.state === GalleryDownloader.Status.NOT_STARTED) View.GONE else View.VISIBLE
         holder.progressBar.progress = percentage
         holder.progressBar.isIndeterminate =
-            downloader.status === GalleryDownloader.Status.NOT_STARTED
+            downloader.state === GalleryDownloader.Status.NOT_STARTED
         setTint(holder.playButton.drawable)
         setTint(holder.cancelButton.drawable)
     }
@@ -289,7 +288,7 @@ class LocalAdapter(private val context: LocalActivity, myDataset: ArrayList<Loca
         if (position < 0) return
         filter.removeAt(position)
         remove(downloader, true)
-        galleryDownloaders.remove(downloader)
+        galleryDownloader.remove(downloader)
         context.runOnUiThread { notifyItemRemoved(position) }
     }
 
@@ -374,7 +373,7 @@ class LocalAdapter(private val context: LocalActivity, myDataset: ArrayList<Loca
                 if (lastQuery == query) return null
                 val results = FilterResults()
                 lastQuery = query
-                results.values = createHash(galleryDownloaders, dataset)
+                results.values = createHash(galleryDownloader, dataset)
                 return results
             }
 
@@ -403,7 +402,7 @@ class LocalAdapter(private val context: LocalActivity, myDataset: ArrayList<Loca
     fun startSelected() {
         for (o in selected) {
             if (o !is GalleryDownloader) continue
-            if (o.status === GalleryDownloader.Status.PAUSED) o.status =
+            if (o.state === GalleryDownloader.Status.PAUSED) o.state =
                 GalleryDownloader.Status.NOT_STARTED
         }
         context.runOnUiThread { notifyDataSetChanged() }
@@ -412,7 +411,7 @@ class LocalAdapter(private val context: LocalActivity, myDataset: ArrayList<Loca
     fun pauseSelected() {
         for (o in selected) {
             if (o !is GalleryDownloader) continue
-            o.status = GalleryDownloader.Status.PAUSED
+            o.state = GalleryDownloader.Status.PAUSED
         }
         context.runOnUiThread { notifyDataSetChanged() }
     }
@@ -434,7 +433,7 @@ class LocalAdapter(private val context: LocalActivity, myDataset: ArrayList<Loca
         val overlay: View
         val title: MaterialTextView
         val pages: MaterialTextView
-        val flag: MaterialTextView?
+        val flag: MaterialTextView
         val progress: MaterialTextView
         val layout: ViewGroup
         val playButton: ImageButton

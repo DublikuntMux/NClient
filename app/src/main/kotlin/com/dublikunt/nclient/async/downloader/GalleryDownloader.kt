@@ -25,21 +25,21 @@ import java.util.regex.Pattern
 import kotlin.math.max
 
 class GalleryDownloader(
-    private val context: Context,
+    context: Context,
     title: String?,
     var thumbnail: Uri?,
     val id: Int
 ) {
     private val observers = CopyOnWriteArraySet<DownloadObserver>()
     private val urls: MutableList<PageContainer?> = ArrayList()
-    var status = Status.NOT_STARTED
+    var state = Status.NOT_STARTED
     var truePathTitle: String
         private set
     var start = -1
         private set
     var end = -1
         private set
-    lateinit var gallery: Gallery
+    var gallery: Gallery? = null
         private set
     var folder: File? = null
         private set
@@ -109,7 +109,7 @@ class GalleryDownloader(
     }
 
     fun localGallery(): LocalGallery? {
-        return if (status != Status.FINISHED || folder == null) null else LocalGallery(folder!!)
+        return if (state != Status.FINISHED || folder == null) null else LocalGallery(folder!!)
     }
 
     fun addObserver(observer: DownloadObserver?) {
@@ -118,13 +118,12 @@ class GalleryDownloader(
     }
 
     fun canBeFetched(): Boolean {
-        return status != Status.FINISHED && status != Status.PAUSED
+        return state != Status.FINISHED && state != Status.PAUSED
     }
 
-    @JvmName("setStatusNormal")
-    fun setStatus(status: Status) {
-        if (this.status == status) return
-        this.status = status
+    private fun setStatus(status: Status) {
+        if (this.state == status) return
+        this.state = status
         if (status == Status.CANCELED) {
             download("Delete 95: $id")
             onCancel()
@@ -139,11 +138,11 @@ class GalleryDownloader(
         while (urls.isNotEmpty()) {
             downloadPage(urls[0])
             Utility.threadSleep(50)
-            if (status == Status.PAUSED) {
+            if (state == Status.PAUSED) {
                 onPause()
                 return
             }
-            if (status == Status.CANCELED) {
+            if (state == Status.CANCELED) {
                 onCancel()
                 return
             }
@@ -228,12 +227,12 @@ class GalleryDownloader(
 
     private fun createPages() {
         var i = start
-        while (i <= end && i < gallery.pageCount) {
+        while (i <= end && i < gallery!!.pageCount) {
             urls.add(
                 PageContainer(
                     i + 1,
-                    gallery.getHighPage(i).toString(),
-                    gallery.getPageExtension(i)
+                    gallery!!.getHighPage(i).toString(),
+                    gallery!!.getPageExtension(i)
                 )
             )
             i++
@@ -262,7 +261,7 @@ class GalleryDownloader(
         val nomedia = File(folder, ".nomedia")
         download("NOMEDIA: $nomedia for id $id")
         val writer = FileWriter(nomedia)
-        gallery.jsonWrite(writer)
+        gallery!!.jsonWrite(writer)
         writer.close()
     }
 
@@ -302,12 +301,12 @@ class GalleryDownloader(
         }
 
         private fun usableFolder(file: File, id: Int): Boolean {
-            if (!file.exists()) return true //folder not exists
-            if (File(file, ".$id").exists()) return true //same id
+            if (!file.exists()) return true
+            if (File(file, ".$id").exists()) return true
             val files =
-                file.listFiles { _: File?, name: String? -> ID_FILE.matcher(name).matches() }
-            if (files != null && files.isNotEmpty()) return false //has id but not equal
-            val localGallery = LocalGallery(file) //read id from metadata
+                file.listFiles { _: File, name: String -> ID_FILE.matcher(name).matches() }
+            if (files != null && files.isNotEmpty()) return false
+            val localGallery = LocalGallery(file)
             return localGallery.id == id
         }
     }

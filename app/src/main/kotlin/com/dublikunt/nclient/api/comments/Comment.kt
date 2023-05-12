@@ -56,16 +56,13 @@ open class Comment : Parcelable {
     val avatarUrl: Uri
         get() = poster.getAvatarUrl()
 
-    companion object {
-        @JvmField
-        val CREATOR: Creator<Comment> = object : Creator<Comment> {
-            override fun createFromParcel(`in`: Parcel): Comment {
-                return Comment(`in`)
-            }
+    companion object CREATOR : Creator<Comment> {
+        override fun createFromParcel(parcel: Parcel): Comment {
+            return Comment(parcel)
+        }
 
-            override fun newArray(size: Int): Array<Comment?> {
-                return arrayOfNulls(size)
-            }
+        override fun newArray(size: Int): Array<Comment?> {
+            return arrayOfNulls(size)
         }
     }
 }

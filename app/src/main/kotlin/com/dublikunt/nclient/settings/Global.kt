@@ -63,31 +63,18 @@ object Global {
     var client: OkHttpClient? = null
     var OLD_GALLERYFOLDER: File? = null
     lateinit var MAINFOLDER: File
-
-    @JvmStatic
     var DOWNLOADFOLDER: File? = null
-
     var SCREENFOLDER: File? = null
-
-
     var PDFFOLDER: File? = null
     var UPDATEFOLDER: File? = null
-
-
     var ZIPFOLDER: File? = null
     var TORRENTFOLDER: File? = null
     var BACKUPFOLDER: File? = null
     private var onlyLanguage: Language? = null
-
-    @JvmStatic
     lateinit var titleType: TitleType
         private set
-
-    @JvmStatic
     lateinit var sortType: SortType
         private set
-
-    @JvmStatic
     lateinit var localSortType: LocalSortType
         private set
     private var invertFix = false
@@ -96,15 +83,12 @@ object Global {
     private var hideMultitask = false
     var isEnableBeta = false
     private var volumeOverride = false
-
     var isZoomOneColumn = false
         private set
     var isKeepHistory = false
         private set
     var isLockScreen = false
         private set
-
-    @JvmStatic
     var isOnlyTag = false
         private set
     private var showTitles = false
@@ -121,8 +105,6 @@ object Global {
         private set
     var columnCount = 0
         private set
-
-    @JvmStatic
     var maxId = 0
         private set
     var galleryWidth = -1
@@ -155,8 +137,6 @@ object Global {
     private var screenSize: Point? = null
     private var infiniteScrollMain: Boolean = false
     private var infiniteScrollFavorite: Boolean = false
-
-    @JvmStatic
     fun recursiveSize(path: File): Long {
         if (path.isFile) return path.length()
         var size: Long = 0
@@ -211,8 +191,8 @@ object Global {
         val files = getUsableFolders(context)
         val path = context.getSharedPreferences("Settings", Context.MODE_PRIVATE)
             .getString(context.getString(R.string.key_save_path), getDefaultFileParent(context))
-        var rootFolder = File(path)
-        //in case the permission is removed
+        var rootFolder = File(path!!)
+
         if (!files.contains(rootFolder) && !isExternalStorageManager) rootFolder = File(
             getDefaultFileParent(context)
         )
@@ -238,7 +218,7 @@ object Global {
 
     private fun initGallerySize() {
         galleryHeight = screenSize!!.y / 2
-        galleryWidth = galleryHeight * 3 / 4 //the ratio is 3:4
+        galleryWidth = galleryHeight * 3 / 4
     }
 
     val screenHeight: Int
@@ -353,7 +333,6 @@ object Global {
         download("Assegning: $localSortType")
     }
 
-    @JvmStatic
     val downloadPolicy: DataUsageType?
         get() {
             return when (type) {
@@ -446,12 +425,10 @@ object Global {
         return defaultZoom.toFloat() / 100f
     }
 
-    @JvmStatic
     fun removeAvoidedGalleries(): Boolean {
         return removeAvoidedGalleries
     }
 
-    @JvmStatic
     fun getOnlyLanguage(): Language {
         return onlyLanguage!!
     }
@@ -517,7 +494,6 @@ object Global {
         columnCount = count
     }
 
-    @JvmStatic
     fun updateMaxId(context: Context, id: Int) {
         context.getSharedPreferences("Settings", 0).edit()
             .putInt(context.getString(R.string.key_max_id), id).apply()
@@ -556,7 +532,6 @@ object Global {
         shareURL(context, gallery.title, Utility.baseUrl + "g/" + gallery.id)
     }
 
-    @JvmStatic
     fun setTint(drawable: Drawable?) {
         if (drawable == null) return
         DrawableCompat.setTint(
@@ -648,7 +623,6 @@ object Global {
         return findGalleryFolder(DOWNLOADFOLDER, id)
     }
 
-    @JvmStatic
     fun findGalleryFolder(context: Context?, id: Int): File? {
         if (id < 1) return null
         if (context == null) return findGalleryFolder(id)
@@ -663,8 +637,8 @@ object Global {
 
     private fun updateConfigurationNightMode(activity: AppCompatActivity, c: Configuration) {
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
-        c.uiMode = c.uiMode and Configuration.UI_MODE_NIGHT_MASK.inv() //clear night mode bits
-        c.uiMode = c.uiMode or Configuration.UI_MODE_NIGHT_NO //disable night mode
+        c.uiMode = c.uiMode and Configuration.UI_MODE_NIGHT_MASK.inv()
+        c.uiMode = c.uiMode or Configuration.UI_MODE_NIGHT_NO
     }
 
     private fun invertFix(context: AppCompatActivity) {
@@ -686,7 +660,6 @@ object Global {
         }
     }
 
-    @JvmStatic
     fun recursiveDelete(file: File?) {
         if (file == null || !file.exists()) return
         if (file.isDirectory) {
