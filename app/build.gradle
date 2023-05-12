@@ -5,6 +5,14 @@ apply plugin: 'com.google.gms.google-services'
 apply plugin: 'com.google.firebase.crashlytics'
 apply plugin: 'com.google.firebase.firebase-perf'
 
+kotlin {
+    sourceSets.all {
+        languageSettings {
+            languageVersion = "2.0"
+        }
+    }
+}
+
 android {
     compileSdk 33
     buildToolsVersion '34.0.0 rc4'
@@ -14,9 +22,9 @@ android {
         applicationId 'com.dublikunt.nclient'
         minSdk 24
         targetSdk 33
-        versionCode 205
+        versionCode 206
         multiDexEnabled true
-        versionName '2.0.5'
+        versionName '2.0.6'
         vectorDrawables.useSupportLibrary true
         proguardFiles 'proguard-rules.pro'
     }
