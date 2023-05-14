@@ -22,7 +22,7 @@ object GlideX {
 
     fun with(view: View): RequestManager? {
         return try {
-            Glide.with(view!!)
+            Glide.with(view)
         } catch (ignore: VerifyError) {
             null
         } catch (ignore: IllegalStateException) {
@@ -32,7 +32,7 @@ object GlideX {
 
     fun with(context: Context): RequestManager? {
         return try {
-            Glide.with(context!!)
+            Glide.with(context)
         } catch (ignore: VerifyError) {
             null
         } catch (ignore: IllegalStateException) {
@@ -42,7 +42,7 @@ object GlideX {
 
     fun with(fragment: Fragment): RequestManager? {
         return try {
-            Glide.with(fragment!!)
+            Glide.with(fragment)
         } catch (ignore: VerifyError) {
             null
         } catch (ignore: IllegalStateException) {
@@ -52,7 +52,7 @@ object GlideX {
 
     fun with(fragmentActivity: FragmentActivity): RequestManager? {
         return try {
-            Glide.with(fragmentActivity!!)
+            Glide.with(fragmentActivity)
         } catch (ignore: VerifyError) {
             null
         } catch (ignore: IllegalStateException) {
@@ -62,7 +62,7 @@ object GlideX {
 
     fun with(activity: AppCompatActivity): RequestManager? {
         return try {
-            Glide.with(activity!!)
+            Glide.with(activity)
         } catch (ignore: VerifyError) {
             null
         } catch (ignore: IllegalStateException) {

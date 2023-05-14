@@ -65,11 +65,10 @@ class ZoomActivity : GeneralActivity() {
         side = preferences.getBoolean(VOLUME_SIDE_KEY, true)
         setContentView(R.layout.activity_zoom)
 
-        //read arguments
         gallery = intent.getParcelableExtra("$packageName.GALLERY")!!
         val page = intent.extras!!.getInt("$packageName.PAGE", 1) - 1
         directory = gallery.galleryFolder
-        //toolbar setup
+
         toolbar = findViewById(R.id.toolbar)
         setSupportActionBar(toolbar)
         supportActionBar!!.setDisplayHomeAsUpEnabled(true)
@@ -83,9 +82,7 @@ class ZoomActivity : GeneralActivity() {
         )
         if (Global.isLockScreen) window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
 
-
-        //find views
-        val mSectionsPagerAdapter: SectionsPagerAdapter = SectionsPagerAdapter(this)
+        val mSectionsPagerAdapter = SectionsPagerAdapter(this)
         mViewPager = findViewById(R.id.container)
         mViewPager.adapter = mSectionsPagerAdapter
         mViewPager.orientation = preferences.getInt(
@@ -99,18 +96,16 @@ class ZoomActivity : GeneralActivity() {
         seekBar = findViewById(R.id.seekBar)
         view = findViewById(R.id.view)
 
-        //initial setup for views
         changeLayout(resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE)
         mViewPager.keepScreenOn = Global.isLockScreen
         findViewById<View>(R.id.prev).setOnClickListener { changeClosePage(false) }
         findViewById<View>(R.id.next).setOnClickListener { changeClosePage(true) }
         seekBar.max = gallery.pageCount - 1
-        if (Global.useRtl()) {
+        if (Global.useRtl) {
             seekBar.rotationY = 180f
             mViewPager.layoutDirection = ViewPager2.LAYOUT_DIRECTION_RTL
         }
 
-        //Adding listeners
         mViewPager.registerOnPageChangeCallback(object : OnPageChangeCallback() {
             override fun onPageSelected(newPage: Int) {
                 val oldPage = actualPage
@@ -206,7 +201,7 @@ class ZoomActivity : GeneralActivity() {
 
     fun changeClosePage(next: Boolean) {
         var next = next
-        if (Global.useRtl()) next = !next
+        if (Global.useRtl) next = !next
         if (next && mViewPager.currentItem < mViewPager.adapter!!.itemCount - 1) changePage(
             mViewPager.currentItem + 1
         )
@@ -231,10 +226,6 @@ class ZoomActivity : GeneralActivity() {
             0
         )
         view.layoutParams = lp
-    }
-
-    fun geViewPager(): ViewPager2? {
-        return mViewPager
     }
 
     private fun changeLayout(landscape: Boolean) {
@@ -271,16 +262,12 @@ class ZoomActivity : GeneralActivity() {
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        // Inflate the menu; this adds items to the action bar if it is present.
         menuInflater.inflate(R.menu.menu_zoom, menu)
         Utility.tintMenu(menu)
         return true
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
         val id = item.itemId
         if (id == R.id.rotate) {
             actualFragment!!.rotate()
@@ -303,12 +290,12 @@ class ZoomActivity : GeneralActivity() {
 
     private fun openSendImageDialog() {
         val builder = MaterialAlertDialogBuilder(this)
-        builder.setPositiveButton(R.string.yes) { _: DialogInterface?, _: Int ->
+        builder.setPositiveButton(R.string.yes) { _: DialogInterface, _: Int ->
             sendImage(
                 true
             )
         }
-            .setNegativeButton(R.string.no) { _: DialogInterface?, _: Int ->
+            .setNegativeButton(R.string.no) { _: DialogInterface, _: Int ->
                 sendImage(
                     false
                 )
@@ -376,7 +363,7 @@ class ZoomActivity : GeneralActivity() {
 
     private fun downloadPage() {
         val output = File(
-            Global.SCREENFOLDER,
+            Global.screenFolder,
             gallery.id.toString() + "-" + (mViewPager.currentItem + 1) + ".jpg"
         )
         Utility.saveImage(actualFragment!!.drawable, output)
@@ -425,10 +412,10 @@ class ZoomActivity : GeneralActivity() {
             f.setZoomChangeListener(object : ZoomFragment.OnZoomChangeListener {
                 override fun onZoomChange(v: View?, zoomLevel: Float) {
                     try {
-                        val Scroll = zoomLevel < 1.1f
-                        if (Scroll != allowScroll) {
+                        val scroll = zoomLevel < 1.1f
+                        if (scroll != allowScroll) {
                             setUserInput(!allowScroll)
-                            allowScroll = Scroll
+                            allowScroll = scroll
                         }
                     } catch (ignored: Exception) {
                     }

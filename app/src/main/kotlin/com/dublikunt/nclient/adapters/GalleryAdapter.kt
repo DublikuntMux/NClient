@@ -30,12 +30,12 @@ import com.dublikunt.nclient.enums.SpecialTagIds
 import com.dublikunt.nclient.enums.TagType
 import com.dublikunt.nclient.files.GalleryFolder
 import com.dublikunt.nclient.settings.Global
-import com.dublikunt.nclient.settings.Global.SCREENFOLDER
 import com.dublikunt.nclient.settings.Global.applyFastScroller
 import com.dublikunt.nclient.settings.Global.downloadPolicy
 import com.dublikunt.nclient.settings.Global.findGalleryFolder
 import com.dublikunt.nclient.settings.Global.hasStoragePermission
 import com.dublikunt.nclient.settings.Global.isZoomOneColumn
+import com.dublikunt.nclient.settings.Global.screenFolder
 import com.dublikunt.nclient.settings.Global.useRtl
 import com.dublikunt.nclient.utility.ImageDownloadUtility.downloadPage
 import com.dublikunt.nclient.utility.ImageDownloadUtility.loadImage
@@ -291,7 +291,7 @@ class GalleryAdapter(
                 2 -> insert(gallery.id, pos)
                 3 -> {
                     val name = String.format(Locale.US, "%d-%d.jpg", gallery.id, pos)
-                    Utility.saveImage(imgView.drawable, File(SCREENFOLDER, name))
+                    Utility.saveImage(imgView.drawable, File(screenFolder, name))
                 }
             }
         }.show()
@@ -397,7 +397,7 @@ class GalleryAdapter(
         init {
             master = v.findViewById(R.id.master)
             pageNumber = v.findViewById(R.id.page_number)
-            if (useRtl()) v.rotationY = 180f
+            if (useRtl) v.rotationY = 180f
             if (type == Type.RELATED) applyFastScroller(master.findViewById(R.id.recycler))
         }
     }

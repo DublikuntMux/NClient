@@ -272,7 +272,7 @@ class GeneralPreferenceFragment : PreferenceFragmentCompat() {
         storagePreference!!.entries = strings.toTypedArray()
         storagePreference.entryValues = strings.toTypedArray()
         storagePreference.summary = act.getSharedPreferences("Settings", Context.MODE_PRIVATE)
-            .getString(getString(R.string.key_save_path), Global.MAINFOLDER.parent)
+            .getString(getString(R.string.key_save_path), Global.mainFolder.parent)
         storagePreference.onPreferenceChangeListener =
             Preference.OnPreferenceChangeListener { preference: Preference, newValue: Any ->
                 preference.summary = newValue.toString()

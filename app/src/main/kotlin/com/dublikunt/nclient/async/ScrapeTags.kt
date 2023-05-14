@@ -21,7 +21,7 @@ class ScrapeTags : JobIntentService() {
     @get:Throws(IOException::class)
     private val newVersionCode: Int
         get() {
-            val x = client!!.newCall(Request.Builder().url(VERSION).build()).execute()
+            val x = client.newCall(Request.Builder().url(VERSION).build()).execute()
             val body = x.body
             try {
                 val k = body.string().trim { it <= ' ' }.toInt()
@@ -60,7 +60,7 @@ class ScrapeTags : JobIntentService() {
 
     @Throws(IOException::class)
     private fun fetchTags() {
-        val x = client!!.newCall(Request.Builder().url(TAGS).build()).execute()
+        val x = client.newCall(Request.Builder().url(TAGS).build()).execute()
         val body = x.body
         val reader = JsonReader(body.charStream())
         reader.beginArray()

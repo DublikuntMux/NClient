@@ -20,11 +20,7 @@ import com.dublikunt.nclient.enums.SortType
 import com.dublikunt.nclient.enums.SpecialTagIds
 import com.dublikunt.nclient.enums.TagStatus
 import com.dublikunt.nclient.enums.TagType
-import com.dublikunt.nclient.settings.Global.client
-import com.dublikunt.nclient.settings.Global.getOnlyLanguage
-import com.dublikunt.nclient.settings.Global.isOnlyTag
-import com.dublikunt.nclient.settings.Global.removeAvoidedGalleries
-import com.dublikunt.nclient.settings.Global.sortType
+import com.dublikunt.nclient.settings.Global
 import com.dublikunt.nclient.utility.LogUtility
 import com.dublikunt.nclient.utility.Utility.baseUrl
 import com.dublikunt.nclient.utility.Utility.unescapeUnicodeString
@@ -198,7 +194,7 @@ open class Inspector : Thread, Parcelable {
     @Throws(IOException::class)
     fun createDocument(): Boolean {
         if (htmlDocument != null) return true
-        val response = client!!.newCall(Request.Builder().url(url).build()).execute()
+        val response = Global.client.newCall(Request.Builder().url(url).build()).execute()
         this.htmlDocument = (Jsoup.parse(response.body.byteStream(), "UTF-8", baseUrl))
         response.close()
         return response.code == HttpURLConnection.HTTP_OK
@@ -376,7 +372,7 @@ open class Inspector : Thread, Parcelable {
         }
 
         fun basicInspector(context: Context, page: Int, response: InspectorResponse): Inspector {
-            return searchInspector(context, null, null, page, sortType, null, response)
+            return searchInspector(context, null, null, page, Global.sortType, null, response)
         }
 
         fun tagInspector(
@@ -387,7 +383,7 @@ open class Inspector : Thread, Parcelable {
             response: InspectorResponse
         ): Inspector {
             val tags: Collection<Tag>
-            if (!isOnlyTag) {
+            if (!Global.isOnlyTag) {
                 tags = defaultTags
                 tags.add(tag)
             } else {
@@ -408,7 +404,7 @@ open class Inspector : Thread, Parcelable {
             val inspector = Inspector(context, response)
             inspector.isCustom = tags != null
             inspector.tags = if (inspector.isCustom) HashSet(tags) else defaultTags
-            (inspector.tags).addAll(getLanguageTags(getOnlyLanguage()))
+            (inspector.tags).addAll(getLanguageTags(Global.onlyLanguage))
             inspector.page = page
             inspector.pageCount = 0
             inspector.ranges = ranges
@@ -437,8 +433,8 @@ open class Inspector : Thread, Parcelable {
         private val defaultTags: HashSet<Tag>
             get() {
                 val tags = HashSet(getAllStatus(TagStatus.ACCEPTED))
-                tags.addAll(getLanguageTags(getOnlyLanguage()))
-                if (removeAvoidedGalleries()) tags.addAll(getAllStatus(TagStatus.AVOIDED))
+                tags.addAll(getLanguageTags(Global.onlyLanguage))
+                if (Global.removeAvoidedGalleries()) tags.addAll(getAllStatus(TagStatus.AVOIDED))
                 tags.addAll(allOnlineBlacklisted)
                 return tags
             }

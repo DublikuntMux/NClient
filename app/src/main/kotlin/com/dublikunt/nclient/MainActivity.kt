@@ -153,7 +153,7 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
                 inspector.searchTitle
 
             ModeType.TAG -> supportActionBar!!.title =
-                inspector.tag!!.name
+                inspector.tag.name
 
             ModeType.NORMAL -> supportActionBar!!.setTitle(com.franmontiel.persistentcookiejar.R.string.app_name)
             else -> supportActionBar!!.title = "WTF"
@@ -185,7 +185,7 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
         recycler.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                 if (inspecting) return
-                if (!Global.isInfiniteScrollMain()) return
+                if (!Global.infiniteScrollMain) return
                 if (refresher.isRefreshing) return
 
                 val manager = (recycler.layoutManager as CustomGridLayoutManager?)!!
@@ -206,7 +206,7 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
 
     fun showPageSwitcher(actualPage: Int, totalPage: Int) {
         pageSwitcher.setPages(totalPage, actualPage)
-        if (Global.isInfiniteScrollMain()) {
+        if (Global.infiniteScrollMain) {
             hidePageSwitcher()
         }
     }
@@ -413,7 +413,7 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
     }
 
     private fun changeUsedLanguage(item: MenuItem) {
-        when (Global.getOnlyLanguage()) {
+        when (Global.onlyLanguage) {
             Language.ENGLISH -> Global.updateOnlyLanguage(this, Language.JAPANESE)
             Language.JAPANESE -> Global.updateOnlyLanguage(this, Language.CHINESE)
             Language.CHINESE -> Global.updateOnlyLanguage(this, Language.ALL)
@@ -486,8 +486,8 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
         initializeSearchItem(menu.findItem(R.id.search))
         if (modeType == ModeType.TAG) {
             val item = menu.findItem(R.id.tag_manager)
-            item.isVisible = inspector.tag!!.id > 0
-            val ts = inspector.tag!!.status
+            item.isVisible = inspector.tag.id > 0
+            val ts = inspector.tag.status
             updateTagStatus(item, ts)
         }
         Utility.tintMenu(menu)
@@ -520,7 +520,7 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
     }
 
     private fun showLanguageIcon(item: MenuItem) {
-        when (Global.getOnlyLanguage()) {
+        when (Global.onlyLanguage) {
             Language.JAPANESE -> {
                 item.setTitle(R.string.only_japanese)
                 item.setIcon(R.drawable.ic_jpbw)

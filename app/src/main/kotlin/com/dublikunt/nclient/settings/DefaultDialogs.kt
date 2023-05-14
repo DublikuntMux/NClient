@@ -27,7 +27,7 @@ object DefaultDialogs {
         val v = View.inflate(builder.context, R.layout.page_changer, null)
         build.setView(v)
         val seekBar = v.findViewById<SeekBar>(R.id.seekBar)
-        if (useRtl()) seekBar.rotationY = 180f
+        if (useRtl) seekBar.rotationY = 180f
         val totalPage = v.findViewById<TextView>(R.id.page)
         val actualPage = v.findViewById<TextInputEditText>(R.id.edit_page)
         v.findViewById<View>(R.id.prev).setOnClickListener {

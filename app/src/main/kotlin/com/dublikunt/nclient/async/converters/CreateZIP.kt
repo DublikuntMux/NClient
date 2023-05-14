@@ -33,7 +33,7 @@ class CreateZIP : JobIntentService() {
         val gallery = intent.getParcelableExtra<LocalGallery>("$packageName.GALLERY") ?: return
         preExecute(gallery.directory)
         try {
-            val file = File(Global.ZIPFOLDER, gallery.title + ".zip")
+            val file = File(Global.zipFolder, gallery.title + ".zip")
             val o = FileOutputStream(file)
             val out = ZipOutputStream(o)
             out.setLevel(Deflater.BEST_COMPRESSION)

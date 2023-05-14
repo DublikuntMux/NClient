@@ -41,12 +41,12 @@ object Login {
     }
 
     private fun removeCookie() {
-        val cookieJar = client!!.cookieJar as CustomCookieJar
+        val cookieJar = client.cookieJar as CustomCookieJar
         cookieJar.removeCookie(LOGIN_COOKIE)
     }
 
     fun removeCloudflareCookies() {
-        val cookieJar = client!!.cookieJar as CustomCookieJar
+        val cookieJar = client.cookieJar as CustomCookieJar
         val cookies = cookieJar.loadForRequest(BASE_HTTP_URL)
         for (cookie in cookies) {
             if (cookie.name == LOGIN_COOKIE) {
@@ -57,7 +57,7 @@ object Login {
     }
 
     fun logout(context: Context?) {
-        val cookieJar = client!!.cookieJar as CustomCookieJar
+        val cookieJar = client.cookieJar as CustomCookieJar
         removeCookie()
         cookieJar.clearSession()
         updateUser(null) //remove user
@@ -78,7 +78,7 @@ object Login {
     }
 
     fun clearCookies() {
-        val cookieJar = client!!.cookieJar as CustomCookieJar
+        val cookieJar = client.cookieJar as CustomCookieJar
         cookieJar.clear()
         cookieJar.clearSession()
     }
@@ -93,7 +93,7 @@ object Login {
     }
 
     fun hasCookie(name: String): Boolean {
-        val cookies = client!!.cookieJar.loadForRequest(
+        val cookies = client.cookieJar.loadForRequest(
             BASE_HTTP_URL
         )
         for (c in cookies) {
@@ -105,7 +105,7 @@ object Login {
     }
 
     fun isLogged(context: Context?): Boolean {
-        val cookies = client!!.cookieJar.loadForRequest(
+        val cookies = client.cookieJar.loadForRequest(
             BASE_HTTP_URL
         )
         download("Cookies: $cookies")

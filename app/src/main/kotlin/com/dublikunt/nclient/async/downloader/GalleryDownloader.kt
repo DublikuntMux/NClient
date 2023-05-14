@@ -176,7 +176,7 @@ class GalleryDownloader(
         download("Saving into: " + filePath + "," + page.url)
         if (filePath.exists() && !isCorrupted(filePath)) return true
         try {
-            val r = client!!.newCall(Request.Builder().url(page.url).build()).execute()
+            val r = client.newCall(Request.Builder().url(page.url).build()).execute()
             if (r.code != 200) {
                 r.close()
                 return false
@@ -240,7 +240,7 @@ class GalleryDownloader(
     }
 
     private fun createFolder() {
-        folder = findFolder(Global.DOWNLOADFOLDER, truePathTitle, id)
+        folder = findFolder(Global.downloadFolder, truePathTitle, id)
         folder!!.mkdirs()
         try {
             writeNoMedia()

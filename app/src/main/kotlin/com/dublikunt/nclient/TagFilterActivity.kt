@@ -33,13 +33,10 @@ class TagFilterActivity : GeneralActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_tag_filter)
 
-        //init toolbar
         val toolbar = findViewById<MaterialToolbar>(R.id.toolbar)
         setSupportActionBar(toolbar)
         supportActionBar!!.setDisplayHomeAsUpEnabled(true)
 
-        // Create the adapter that will return a fragment for each of the three
-        // primary sections of the activity.
         val mTagTypePageAdapter = TagTypePageAdapter(this)
         mViewPager = findViewById(R.id.container)
         mViewPager.adapter = mTagTypePageAdapter
@@ -106,7 +103,6 @@ class TagFilterActivity : GeneralActivity() {
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        // Inflate the menu; this adds items to the action bar if it is present.
         menuInflater.inflate(R.menu.menu_tag_filter, menu)
         updateSortItem(menu.findItem(R.id.sort_by_name))
         searchView = (menu.findItem(R.id.search).actionView as SearchView?)!!
@@ -135,9 +131,6 @@ class TagFilterActivity : GeneralActivity() {
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
         val id = item.itemId
         val page = actualFragment
         when (id) {

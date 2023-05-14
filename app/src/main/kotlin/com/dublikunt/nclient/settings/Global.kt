@@ -60,82 +60,56 @@ object Global {
     private val lastDisplay = DisplayMetrics()
 
     @JvmStatic
-    var client: OkHttpClient? = null
-    var OLD_GALLERYFOLDER: File? = null
-    lateinit var MAINFOLDER: File
-    var DOWNLOADFOLDER: File? = null
-    var SCREENFOLDER: File? = null
-    var PDFFOLDER: File? = null
-    var UPDATEFOLDER: File? = null
-    var ZIPFOLDER: File? = null
-    var TORRENTFOLDER: File? = null
-    var BACKUPFOLDER: File? = null
-    private var onlyLanguage: Language? = null
+    lateinit var client: OkHttpClient
+    lateinit var oldGalleryFolder: File
+    lateinit var mainFolder: File
+    lateinit var downloadFolder: File
+    lateinit var screenFolder: File
+    lateinit var pdfFolder: File
+    lateinit var updateFolder: File
+    lateinit var zipFolder: File
+    lateinit var torrentFolder: File
+    lateinit var backupFolder: File
+    lateinit var onlyLanguage: Language
     lateinit var titleType: TitleType
-        private set
     lateinit var sortType: SortType
-        private set
     lateinit var localSortType: LocalSortType
-        private set
     private var invertFix = false
     var isButtonChangePage = false
-        private set
     private var hideMultitask = false
-    var isEnableBeta = false
+    private var isEnableBeta = false
     private var volumeOverride = false
     var isZoomOneColumn = false
-        private set
     var isKeepHistory = false
-        private set
     var isLockScreen = false
-        private set
     var isOnlyTag = false
-        private set
-    private var showTitles = false
+    var showTitles = false
     private var removeAvoidedGalleries = false
-    private var useRtl = false
+    var useRtl = false
     var theme: ThemeScheme = ThemeScheme.DARK
-        private set
-    private var usageMobile: DataUsageType? = null
-    private var usageWifi: DataUsageType? = null
-    private var lastVersion: String? = null
+    private lateinit var usageMobile: DataUsageType
+    private lateinit var usageWifi: DataUsageType
+    private lateinit var lastVersion: String
     var mirror: String? = null
-        private set
     var maxHistory = 0
-        private set
     var columnCount = 0
-        private set
     var maxId = 0
-        private set
     var galleryWidth = -1
-        private set
     var galleryHeight = -1
-        private set
     var colPortStatus = 0
-        private set
     var colLandStatus = 0
-        private set
     var colPortHistory = 0
-        private set
     var colLandHistory = 0
-        private set
     var colPortMain = 0
-        private set
     var colLandMain = 0
-        private set
     var colPortDownload = 0
-        private set
     var colLandDownload = 0
-        private set
     var colLandFavorite = 0
-        private set
     var colPortFavorite = 0
-        private set
     private var defaultZoom = 0
     var offscreenLimit = 0
-        private set
-    private var screenSize: Point? = null
-    private var infiniteScrollMain: Boolean = false
+    private var screenSize: Point = Point()
+    var infiniteScrollMain: Boolean = false
     private var infiniteScrollFavorite: Boolean = false
     fun recursiveSize(path: File): Long {
         if (path.isFile) return path.length()
@@ -150,18 +124,11 @@ object Global {
             .getInt(context.getString(R.string.key_favorite_limit), 10)
     }
 
-    fun getLastVersion(context: Context?): String? {
-        if (context != null) lastVersion =
+    fun getLastVersion(context: Context): String {
+        lastVersion =
             context.getSharedPreferences("Settings", 0).getString("last_version", "0.0.0")
+                .toString()
         return lastVersion
-    }
-
-    fun isInfiniteScrollMain(): Boolean {
-        return infiniteScrollMain
-    }
-
-    fun isInfiniteScrollFavorite(): Boolean {
-        return infiniteScrollFavorite
     }
 
     fun setLastVersion(context: Context) {
@@ -179,12 +146,12 @@ object Global {
         get() = "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/106.0.0.0 Mobile Safari/537.36"
 
     fun getDefaultFileParent(context: Context): String {
-        val f: File? = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            context.getExternalFilesDir(null)
+        val f: File = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            context.getExternalFilesDir(null)!!
         } else {
             Environment.getExternalStorageDirectory()
         }
-        return f!!.absolutePath
+        return f.absolutePath
     }
 
     private fun initFilesTree(context: Context) {
@@ -196,35 +163,32 @@ object Global {
         if (!files.contains(rootFolder) && !isExternalStorageManager) rootFolder = File(
             getDefaultFileParent(context)
         )
-        MAINFOLDER = File(rootFolder, MAINFOLDER_NAME)
-        download(MAINFOLDER)
-        OLD_GALLERYFOLDER =
+        mainFolder = File(rootFolder, MAINFOLDER_NAME)
+        download(mainFolder)
+        oldGalleryFolder =
             File(context.getExternalFilesDir(Environment.DIRECTORY_PICTURES), MAINFOLDER_NAME)
-        DOWNLOADFOLDER = File(MAINFOLDER, DOWNLOADFOLDER_NAME)
-        SCREENFOLDER = File(MAINFOLDER, SCREENFOLDER_NAME)
-        PDFFOLDER = File(MAINFOLDER, PDFFOLDER_NAME)
-        UPDATEFOLDER = File(MAINFOLDER, UPDATEFOLDER_NAME)
-        ZIPFOLDER = File(MAINFOLDER, ZIPFOLDER_NAME)
-        TORRENTFOLDER = File(MAINFOLDER, TORRENTFOLDER_NAME)
-        BACKUPFOLDER = File(MAINFOLDER, BACKUPFOLDER_NAME)
+        downloadFolder = File(mainFolder, DOWNLOADFOLDER_NAME)
+        screenFolder = File(mainFolder, SCREENFOLDER_NAME)
+        pdfFolder = File(mainFolder, PDFFOLDER_NAME)
+        updateFolder = File(mainFolder, UPDATEFOLDER_NAME)
+        zipFolder = File(mainFolder, ZIPFOLDER_NAME)
+        torrentFolder = File(mainFolder, TORRENTFOLDER_NAME)
+        backupFolder = File(mainFolder, BACKUPFOLDER_NAME)
     }
 
     fun initScreenSize(activity: AppCompatActivity) {
-        if (screenSize == null) {
-            screenSize = Point()
-            activity.windowManager.defaultDisplay.getSize(screenSize)
-        }
+        activity.windowManager.defaultDisplay.getSize(screenSize)
     }
 
     private fun initGallerySize() {
-        galleryHeight = screenSize!!.y / 2
+        galleryHeight = screenSize.y / 2
         galleryWidth = galleryHeight * 3 / 4
     }
 
     val screenHeight: Int
-        get() = screenSize!!.y
+        get() = screenSize.y
     val screenWidth: Int
-        get() = screenSize!!.x
+        get() = screenSize.x
 
     private fun initTitleType(context: Context) {
         val s = context.getSharedPreferences("Settings", 0)
@@ -236,18 +200,18 @@ object Global {
         }
     }
 
-    fun getDeviceWidth(activity: AppCompatActivity?): Int {
+    fun getDeviceWidth(activity: AppCompatActivity): Int {
         getDeviceMetrics(activity)
         return lastDisplay.widthPixels
     }
 
-    fun getDeviceHeight(activity: AppCompatActivity?): Int {
+    fun getDeviceHeight(activity: AppCompatActivity): Int {
         getDeviceMetrics(activity)
         return lastDisplay.heightPixels
     }
 
-    private fun getDeviceMetrics(activity: AppCompatActivity?) {
-        activity?.windowManager?.defaultDisplay?.getMetrics(lastDisplay)
+    private fun getDeviceMetrics(activity: AppCompatActivity) {
+        activity.windowManager.defaultDisplay.getMetrics(lastDisplay)
     }
 
     fun initFromShared(context: Context) {
@@ -265,7 +229,6 @@ object Global {
         localSortType = LocalSortType(shared.getInt(context.getString(R.string.key_local_sort), 0))
         useRtl = shared.getBoolean(context.getString(R.string.key_use_rtl), false)
         mirror = shared.getString(context.getString(R.string.key_site_mirror), Utility.ORIGINAL_URL)
-            .toString()
         isKeepHistory = shared.getBoolean(context.getString(R.string.key_keep_history), true)
         removeAvoidedGalleries =
             shared.getBoolean(context.getString(R.string.key_remove_ignored), true)
@@ -333,7 +296,7 @@ object Global {
         download("Assegning: $localSortType")
     }
 
-    val downloadPolicy: DataUsageType?
+    val downloadPolicy: DataUsageType
         get() {
             return when (type) {
                 ConnectionType.WIFI -> usageWifi
@@ -346,7 +309,7 @@ object Global {
         return volumeOverride
     }
 
-    fun reloadHttpClient(context: Context) {
+    private fun reloadHttpClient(context: Context) {
         val preferences = context.getSharedPreferences("Login", 0)
         Login.setLoginShared(preferences)
         val builder: OkHttpClient.Builder = OkHttpClient.Builder()
@@ -358,16 +321,15 @@ object Global {
             )
         builder.addInterceptor(CustomInterceptor(true))
         client = builder.build()
-        client!!.dispatcher.maxRequests = 25
-        client!!.dispatcher.maxRequestsPerHost = 25
-        for (cookie in client!!.cookieJar.loadForRequest(Login.BASE_HTTP_URL)) {
+        client.dispatcher.maxRequests = 25
+        client.dispatcher.maxRequestsPerHost = 25
+        for (cookie in client.cookieJar.loadForRequest(Login.BASE_HTTP_URL)) {
             download("Cookie: $cookie")
         }
         Login.isLogged(context)
     }
 
     private fun initHttpClient(context: Context) {
-        if (client != null) return
         reloadHttpClient(context)
     }
 
@@ -414,11 +376,12 @@ object Global {
             .getBoolean(context.getString(R.string.key_check_update), true)
     }
 
-    val logo: Int
-        get() = if (theme == ThemeScheme.LIGHT) R.drawable.ic_logo_dark else R.drawable.ic_logo
-
-    fun getLogo(resources: Resources?): Drawable? {
-        return ResourcesCompat.getDrawable(resources!!, logo, null)
+    fun getLogo(resources: Resources): Drawable {
+        return ResourcesCompat.getDrawable(
+            resources,
+            if (theme == ThemeScheme.LIGHT) R.drawable.ic_logo_dark else R.drawable.ic_logo,
+            null
+        )!!
     }
 
     fun getDefaultZoom(): Float {
@@ -429,48 +392,35 @@ object Global {
         return removeAvoidedGalleries
     }
 
-    fun getOnlyLanguage(): Language {
-        return onlyLanguage!!
-    }
-
-
-    fun useRtl(): Boolean {
-        return useRtl
-    }
-
-    fun showTitles(): Boolean {
-        return showTitles
-    }
-
     fun initStorage(context: Context) {
         if (!hasStoragePermission(context)) return
         initFilesTree(context)
         val bools = booleanArrayOf(
-            MAINFOLDER.mkdirs(),
-            DOWNLOADFOLDER!!.mkdir(),
-            PDFFOLDER!!.mkdir(),
-            UPDATEFOLDER!!.mkdir(),
-            SCREENFOLDER!!.mkdir(),
-            ZIPFOLDER!!.mkdir(),
-            TORRENTFOLDER!!.mkdir(),
-            BACKUPFOLDER!!.mkdir()
+            mainFolder.mkdirs(),
+            downloadFolder.mkdir(),
+            pdfFolder.mkdir(),
+            updateFolder.mkdir(),
+            screenFolder.mkdir(),
+            zipFolder.mkdir(),
+            torrentFolder.mkdir(),
+            backupFolder.mkdir()
         )
         download(
             """
                 0:${context.filesDir}
-                1:$MAINFOLDER${bools[0]}
-                2:$DOWNLOADFOLDER${bools[1]}
-                3:$PDFFOLDER${bools[2]}
-                4:$UPDATEFOLDER${bools[3]}
-                5:$SCREENFOLDER${bools[4]}
-                5:$ZIPFOLDER${bools[5]}
-                5:$TORRENTFOLDER${bools[5]}
-                6:$BACKUPFOLDER${bools[6]}
+                1:$mainFolder${bools[0]}
+                2:$downloadFolder${bools[1]}
+                3:$pdfFolder${bools[2]}
+                4:$updateFolder${bools[3]}
+                5:$screenFolder${bools[4]}
+                5:$zipFolder${bools[5]}
+                5:$torrentFolder${bools[5]}
+                6:$backupFolder${bools[6]}
 
                 """.trimIndent()
         )
         try {
-            File(MAINFOLDER, ".nomedia").createNewFile()
+            File(mainFolder, ".nomedia").createNewFile()
         } catch (e: IOException) {
             e.printStackTrace()
         }
@@ -516,7 +466,7 @@ object Global {
         } else 0
     }
 
-    fun shareURL(context: Context, title: String, url: String) {
+    private fun shareURL(context: Context, title: String, url: String) {
         val sendIntent = Intent()
         sendIntent.action = Intent.ACTION_SEND
         sendIntent.putExtra(Intent.EXTRA_TEXT, "$title: $url")
@@ -620,7 +570,7 @@ object Global {
     }
 
     private fun findGalleryFolder(id: Int): File? {
-        return findGalleryFolder(DOWNLOADFOLDER, id)
+        return findGalleryFolder(downloadFolder, id)
     }
 
     fun findGalleryFolder(context: Context?, id: Int): File? {

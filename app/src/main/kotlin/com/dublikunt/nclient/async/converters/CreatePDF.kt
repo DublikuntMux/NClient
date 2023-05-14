@@ -54,8 +54,8 @@ class CreatePDF : JobIntentService() {
         notification!!.setProgress(totalPage, 0, true)
         notify(getString(R.string.channel2_name), notId, notification!!.build())
         try {
-            var finalPath = Global.PDFFOLDER
-            finalPath!!.mkdirs()
+            var finalPath = Global.pdfFolder
+            finalPath.mkdirs()
             finalPath = File(finalPath, gallery.title + ".pdf")
             finalPath.createNewFile()
             download("Generating PDF at: $finalPath")

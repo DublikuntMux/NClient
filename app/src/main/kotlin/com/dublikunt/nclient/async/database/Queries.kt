@@ -655,7 +655,7 @@ object Queries {
             values.put(URL, inspector.url)
             values.put(PAGE, inspector.page)
             values.put(TYPE, inspector.requestType!!.ordinal())
-            values.put(TAG_ID, tag?.id ?: 0)
+            values.put(TAG_ID, tag.id)
             download("ADDED: " + inspector.url)
             db.insertWithOnConflict(TABLE_NAME, null, values, SQLiteDatabase.CONFLICT_IGNORE)
         }

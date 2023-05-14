@@ -22,8 +22,8 @@ class AuthRequest(
     }
 
     override fun run() {
-        CSRFGet({ token: String ->
-            client!!.newCall(
+        CSRFGet(CSRFGet.Response { token: String ->
+            client.newCall(
                 Request.Builder().url(url)
                     .addHeader("Referer", referer)
                     .addHeader("X-CSRFToken", token)

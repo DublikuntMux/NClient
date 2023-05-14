@@ -31,7 +31,7 @@ class CommentsFetcher(private val commentActivity: CommentActivity, private val 
     private fun populateComments() {
         val url = String.format(Locale.US, COMMENT_API_URL, id)
         try {
-            val response = client!!.newCall(Request.Builder().url(url).build()).execute()
+            val response = client.newCall(Request.Builder().url(url).build()).execute()
             val body = response.body
             val reader = JsonReader(InputStreamReader(body.byteStream()))
             if (reader.peek() == JsonToken.BEGIN_ARRAY) {

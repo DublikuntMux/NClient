@@ -78,7 +78,7 @@ class GalleryActivity : BaseActivity() {
             Queries.HistoryTable.addGallery((gallery as Gallery).toSimpleGallery())
         }
         LogUtility.download("" + gallery)
-        if (Global.useRtl()) recycler.rotationY = 180f
+        if (Global.useRtl) recycler.rotationY = 180f
         isLocal = intent.getBooleanExtra("$packageName.ISLOCAL", false)
         zoom = intent.getIntExtra("$packageName.ZOOM", 0)
         refresher.isEnabled = false
@@ -302,7 +302,7 @@ class GalleryActivity : BaseActivity() {
 
             @Throws(IOException::class)
             override fun onResponse(call: Call, response: Response) {
-                val file = File(Global.TORRENTFOLDER, gallery.id.toString() + ".torrent")
+                val file = File(Global.torrentFolder, gallery.id.toString() + ".torrent")
                 Utility.writeStreamToFile(response.body.byteStream(), file)
                 val intent = Intent(Intent.ACTION_VIEW)
                 val torrentUri: Uri = FileProvider.getUriForFile(
@@ -344,15 +344,15 @@ class GalleryActivity : BaseActivity() {
         builder.setSingleChoiceItems(
             adapter,
             statuses.indexOf(statusString)
-        ) { _: DialogInterface?, which: Int -> statusString = statuses[which] }
+        ) { _: DialogInterface, which: Int -> statusString = statuses[which] }
         builder
-            .setNeutralButton(R.string.add) { _: DialogInterface?, _: Int -> createNewStatusDialog() }
-            .setNegativeButton(R.string.remove_status) { _: DialogInterface?, _: Int ->
+            .setNeutralButton(R.string.add) { _: DialogInterface, _: Int -> createNewStatusDialog() }
+            .setNegativeButton(R.string.remove_status) { _: DialogInterface, _: Int ->
                 Queries.StatusMangaTable.remove(
                     gallery.id
                 )
             }
-            .setPositiveButton(R.string.ok) { _: DialogInterface?, _: Int ->
+            .setPositiveButton(R.string.ok) { _: DialogInterface, _: Int ->
                 Queries.StatusMangaTable.insert(
                     gallery,
                     statusString
@@ -397,7 +397,7 @@ class GalleryActivity : BaseActivity() {
         }
         builder.setView(layout)
         builder.setTitle(R.string.create_new_status)
-        builder.setPositiveButton(R.string.ok) { _: DialogInterface?, _: Int ->
+        builder.setPositiveButton(R.string.ok) { _: DialogInterface, _: Int ->
             val newName = name.text.toString()
             if (newName.length < 2) {
                 Toast.makeText(this, R.string.name_too_short, Toast.LENGTH_SHORT).show()
@@ -410,7 +410,7 @@ class GalleryActivity : BaseActivity() {
             val status = StatusManager.add(name.text.toString(), newStatusColor)
             Queries.StatusMangaTable.insert(gallery, status)
         }
-        builder.setNegativeButton(R.string.cancel) { _: DialogInterface?, _: Int -> updateStatus() }
+        builder.setNegativeButton(R.string.cancel) { _: DialogInterface, _: Int -> updateStatus() }
         builder.setOnCancelListener { updateStatus() }
         builder.show()
     }

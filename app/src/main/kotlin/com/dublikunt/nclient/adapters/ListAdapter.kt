@@ -55,7 +55,7 @@ class ListAdapter(private val context: BaseActivity) :
         val holderPos = holder.bindingAdapterPosition
         if (holderPos >= mDataset.size) return
         val ent = mDataset[holderPos]
-        if (!Global.showTitles()) {
+        if (!Global.showTitles) {
             holder.title.alpha = 0f
             holder.flag.alpha = 0f
         } else {
@@ -75,7 +75,7 @@ class ListAdapter(private val context: BaseActivity) :
         holder.pages.visibility = View.GONE
         holder.title.text = ent.title
         holder.flag.visibility = View.VISIBLE
-        if (Global.getOnlyLanguage() == Language.ALL || context is GalleryActivity) {
+        if (Global.onlyLanguage == Language.ALL || context is GalleryActivity) {
             holder.flag.text = Global.getLanguageFlag(ent.language)
         } else holder.flag.visibility = View.GONE
         holder.title.setOnClickListener {

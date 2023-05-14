@@ -40,7 +40,7 @@ class LocalActivity : BaseActivity() {
     var colCount = 0
         private set
     private var idGalleryPosition = -1
-    private var folder = Global.MAINFOLDER
+    private var folder = Global.mainFolder
     private var searchView: SearchView? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

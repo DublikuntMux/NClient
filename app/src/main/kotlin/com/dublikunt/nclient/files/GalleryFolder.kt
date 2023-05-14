@@ -7,7 +7,7 @@ import android.os.Parcelable.Creator
 import androidx.collection.SparseArrayCompat
 import com.dublikunt.nclient.api.comments.Page
 import com.dublikunt.nclient.enums.SpecialTagIds
-import com.dublikunt.nclient.settings.Global.DOWNLOADFOLDER
+import com.dublikunt.nclient.settings.Global.downloadFolder
 import com.dublikunt.nclient.settings.Global.findGalleryFolder
 import java.io.File
 import java.util.Objects
@@ -26,8 +26,8 @@ open class GalleryFolder : Parcelable, Iterable<PageFile> {
     var galleryDataFile: File? = null
         private set
 
-    constructor(child: String) : this(DOWNLOADFOLDER, child) {}
-    constructor(parent: File?, child: String) : this(File(parent, child)) {}
+    constructor(child: String) : this(downloadFolder, child)
+    constructor(parent: File?, child: String) : this(File(parent, child))
     constructor(file: File) {
         folder = file
         require(folder.isDirectory) { "File is not a folder" }
@@ -87,7 +87,6 @@ open class GalleryFolder : Parcelable, Iterable<PageFile> {
                 matcher.group(2)
             )[0].code
         )
-            ?: return
         pageArray.append(page, PageFile(ext, f, page))
         if (page > max) max = page
         if (page < min) min = page

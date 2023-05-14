@@ -57,7 +57,7 @@ class ZoomFragment : Fragment() {
     private fun calculateScaleFactor(width: Int, height: Int): Float {
         val activity = activity
         if (height < width * 2) return Global.getDefaultZoom()
-        var finalSize = Global.getDeviceWidth(activity as AppCompatActivity?).toFloat() * height /
+        var finalSize = Global.getDeviceWidth(activity as AppCompatActivity).toFloat() * height /
             (Global.getDeviceHeight(activity).toFloat() * width)
         finalSize = max(finalSize, Global.getDefaultZoom())
         finalSize = min(finalSize, MAX_SCALE)

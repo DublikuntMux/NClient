@@ -70,7 +70,6 @@ class SearchActivity : GeneralActivity() {
         supportActionBar!!.setDisplayShowTitleEnabled(false)
         inputMethodManager = getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
 
-        //find IDs
         searchView = findViewById(R.id.search)
         val recyclerView = findViewById<RecyclerView>(R.id.recycler)
         groups = arrayOf(
@@ -99,7 +98,6 @@ class SearchActivity : GeneralActivity() {
             false
         }
 
-        //init recyclerview
         recyclerView.layoutManager = CustomLinearLayoutManager(this)
         recyclerView.adapter = adapter
         recyclerView.addItemDecoration(DividerItemDecoration(this, DividerItemDecoration.VERTICAL))
@@ -115,7 +113,7 @@ class SearchActivity : GeneralActivity() {
                 i.putExtra("$packageName.ADVANCED", advanced)
                 if (advanced) {
                     val tt = ArrayList<Tag>(tags.size)
-                    for (t in tags) if (t.tag.status == TagStatus.ACCEPTED) tt.add(t.tag as Tag)
+                    for (t in tags) if (t.tag.status == TagStatus.ACCEPTED) tt.add(t.tag)
                     i.putParcelableArrayListExtra("$packageName.TAGS", tt)
                     i.putExtra("$packageName.RANGES", ranges)
                 }
@@ -278,7 +276,6 @@ class SearchActivity : GeneralActivity() {
     }
 
     private fun populateGroup() {
-        //add top tags
         for (type in arrayOf(
             TagType.TAG,
             TagType.PARODY,
@@ -291,34 +288,33 @@ class SearchActivity : GeneralActivity() {
                 Global.getFavoriteLimit(this)
             )) addChipTag(t, close = true, canBeAvoided = true)
         }
-        //add already filtered tags
+
         for (t in Queries.TagTable.allFiltered) if (!tagAlreadyExist(t)) addChipTag(
             t,
             close = true,
             canBeAvoided = true
         )
-        //add categories
+
         for (t in Queries.TagTable.getTrueAllType(TagType.CATEGORY)) addChipTag(
             t,
             close = false,
             canBeAvoided = false
         )
-        //add languages
+
         for (t in Queries.TagTable.getTrueAllType(TagType.LANGUAGE)) {
-            if (t.id == SpecialTagIds.LANGUAGE_ENGLISH.toInt() && Global.getOnlyLanguage() == Language.ENGLISH) t.status =
-                TagStatus.ACCEPTED else if (t.id == SpecialTagIds.LANGUAGE_JAPANESE.toInt() && Global.getOnlyLanguage() == Language.JAPANESE) t.status =
-                TagStatus.ACCEPTED else if (t.id == SpecialTagIds.LANGUAGE_CHINESE.toInt() && Global.getOnlyLanguage() == Language.CHINESE) t.status =
+            if (t.id == SpecialTagIds.LANGUAGE_ENGLISH.toInt() && Global.onlyLanguage == Language.ENGLISH) t.status =
+                TagStatus.ACCEPTED else if (t.id == SpecialTagIds.LANGUAGE_JAPANESE.toInt() && Global.onlyLanguage == Language.JAPANESE) t.status =
+                TagStatus.ACCEPTED else if (t.id == SpecialTagIds.LANGUAGE_CHINESE.toInt() && Global.onlyLanguage == Language.CHINESE) t.status =
                 TagStatus.ACCEPTED
             addChipTag(t, false, canBeAvoided = false)
         }
-        //add online tags
+
         if (Login.useAccountTag()) for (t in Queries.TagTable.allOnlineBlacklisted) if (!tagAlreadyExist(
                 t
             )
         ) addChipTag(t, true, canBeAvoided = true)
-        //add + button
+
         for (type in TagType.values) {
-            //ignore these tags
             if (type === TagType.UNKNOWN || type === TagType.LANGUAGE || type === TagType.CATEGORY) {
                 addChip[type.id.toInt()] = null
                 continue

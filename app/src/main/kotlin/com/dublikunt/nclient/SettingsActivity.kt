@@ -26,9 +26,9 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 
 class SettingsActivity : GeneralActivity() {
     lateinit var fragment: GeneralPreferenceFragment
-    private lateinit var IMPORT_ZIP: ActivityResultLauncher<String>
-    private lateinit var SAVE_SETTINGS: ActivityResultLauncher<String>
-    private lateinit var REQUEST_STORAGE_MANAGER: ActivityResultLauncher<Any?>
+    private lateinit var importZip: ActivityResultLauncher<String>
+    private lateinit var saveSettings: ActivityResultLauncher<String>
+    private lateinit var requestStorageManager: ActivityResultLauncher<Any?>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -51,12 +51,12 @@ class SettingsActivity : GeneralActivity() {
     }
 
     private fun registerActivities() {
-        IMPORT_ZIP =
+        importZip =
             registerForActivityResult(ActivityResultContracts.GetContent()) { selectedFile: Uri? ->
                 if (selectedFile == null) return@registerForActivityResult
                 importSettings(selectedFile)
             }
-        SAVE_SETTINGS = registerForActivityResult(object :
+        saveSettings = registerForActivityResult(object :
             ActivityResultContracts.CreateDocument("application/zip") {
             override fun createIntent(context: Context, input: String): Intent {
                 val i: Intent = super.createIntent(context, input)
@@ -68,7 +68,7 @@ class SettingsActivity : GeneralActivity() {
             exportSettings(selectedFile)
         })
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            REQUEST_STORAGE_MANAGER =
+            requestStorageManager =
                 registerForActivityResult(object : ActivityResultContract<Any?, Any?>() {
                     @RequiresApi(api = Build.VERSION_CODES.R)
                     override fun createIntent(context: Context, input: Any?): Intent {
@@ -105,12 +105,12 @@ class SettingsActivity : GeneralActivity() {
     }
 
     fun importSettings() {
-        IMPORT_ZIP.launch("application/zip")
+        importZip.launch("application/zip")
     }
 
     fun exportSettings() {
         val name = Exporter.defaultExportName(this)
-        SAVE_SETTINGS.launch(name)
+        saveSettings.launch(name)
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -128,7 +128,7 @@ class SettingsActivity : GeneralActivity() {
         builder.setTitle(R.string.requesting_storage_access)
         builder.setMessage(R.string.request_storage_manager_summary)
         builder.setPositiveButton(R.string.ok) { _: DialogInterface?, _: Int ->
-            REQUEST_STORAGE_MANAGER.launch(
+            requestStorageManager.launch(
                 null
             )
         }

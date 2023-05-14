@@ -32,7 +32,7 @@ class ChipTag : Chip {
     }
 
     override fun getTag(): Tag {
-        return tag!!
+        return tag
     }
 
     private fun setTag(tag: Tag) {
@@ -42,12 +42,12 @@ class ChipTag : Chip {
     }
 
     fun changeStatus(status: TagStatus) {
-        tag!!.status = status
+        tag.status = status
         loadStatusIcon()
     }
 
     fun updateStatus() {
-        when (tag!!.status) {
+        when (tag.status) {
             TagStatus.DEFAULT -> changeStatus(TagStatus.ACCEPTED)
             TagStatus.ACCEPTED -> changeStatus(if (canBeAvoided) TagStatus.AVOIDED else TagStatus.DEFAULT)
             TagStatus.AVOIDED -> changeStatus(TagStatus.DEFAULT)
@@ -57,10 +57,10 @@ class ChipTag : Chip {
     private fun loadStatusIcon() {
         val drawable = ContextCompat.getDrawable(
             context,
-            if (tag!!.status == TagStatus.ACCEPTED) R.drawable.ic_check else if (tag!!.status == TagStatus.AVOIDED) R.drawable.ic_close else R.drawable.ic_void
+            if (tag.status == TagStatus.ACCEPTED) R.drawable.ic_check else if (tag.status == TagStatus.AVOIDED) R.drawable.ic_close else R.drawable.ic_void
         )
         if (drawable == null) {
-            setChipIconResource(if (tag!!.status == TagStatus.ACCEPTED) R.drawable.ic_check else if (tag!!.status == TagStatus.AVOIDED) R.drawable.ic_close else R.drawable.ic_void)
+            setChipIconResource(if (tag.status == TagStatus.ACCEPTED) R.drawable.ic_check else if (tag.status == TagStatus.AVOIDED) R.drawable.ic_close else R.drawable.ic_void)
             return
         }
         chipIcon = drawable

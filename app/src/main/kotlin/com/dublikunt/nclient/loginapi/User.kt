@@ -31,7 +31,7 @@ class User private constructor(val username: String, id: String, codename: Strin
 
         fun createUser(createUser: CreateUser?) {
             Global.client
-                ?.newCall(Request.Builder().url(Login.BASE_HTTP_URL).build())
+                .newCall(Request.Builder().url(Login.BASE_HTTP_URL).build())
                 ?.enqueue(object : Callback {
                     override fun onFailure(call: Call, e: IOException) {}
 

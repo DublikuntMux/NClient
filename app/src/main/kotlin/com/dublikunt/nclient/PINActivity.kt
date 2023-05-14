@@ -16,7 +16,7 @@ class PINActivity : GeneralActivity() {
     private var pin = ""
     private var confirmPin: String? = null
     private var setMode = false
-    private var preferences: SharedPreferences? = null
+    private lateinit var preferences: SharedPreferences
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_pin)
@@ -70,11 +70,11 @@ class PINActivity : GeneralActivity() {
         get() = confirmPin != null
 
     private fun hasPin(): Boolean {
-        return preferences!!.getBoolean("has_pin", false)
+        return preferences.getBoolean("has_pin", false)
     }
 
     private fun setPin(pin: String?) {
-        val editor = preferences!!.edit()
+        val editor = preferences.edit()
         editor.putBoolean("has_pin", true)
         editor.putString("pin", pin)
         editor.apply()
@@ -88,7 +88,7 @@ class PINActivity : GeneralActivity() {
     }
 
     private val truePin: String?
-        get() = preferences!!.getString("pin", null)
+        get() = preferences.getString("pin", null)
 
     private fun checkPin() {
         if (setMode) {

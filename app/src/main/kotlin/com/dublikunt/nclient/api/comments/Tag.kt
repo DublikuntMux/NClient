@@ -98,7 +98,7 @@ class Tag : Parcelable {
     }
 
     fun toScrapedString(): String {
-        return String.format(Locale.US, "%d,%d,%d,%s", count, id, type!!.id, name)
+        return String.format(Locale.US, "%d,%d,%d,%s", count, id, type.id, name)
     }
 
     override fun equals(o: Any?): Boolean {
