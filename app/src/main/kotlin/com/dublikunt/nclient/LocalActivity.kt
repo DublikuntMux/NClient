@@ -44,6 +44,7 @@ class LocalActivity : BaseActivity() {
     private var searchView: SearchView? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        Global.initStorage(this)
         setContentView(R.layout.app_bar_main)
         toolbar = findViewById(R.id.toolbar)
         setSupportActionBar(toolbar)

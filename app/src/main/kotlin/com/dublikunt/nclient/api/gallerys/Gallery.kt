@@ -81,7 +81,7 @@ class Gallery : GenericGallery {
         download(toString())
     }
 
-    private constructor() {
+    constructor() {
         isOnlineFavorite = false
         galleryData = GalleryData.fakeData()
         folder = null

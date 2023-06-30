@@ -155,7 +155,7 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
             ModeType.TAG -> supportActionBar!!.title =
                 inspector.tag.name
 
-            ModeType.NORMAL -> supportActionBar!!.setTitle(com.franmontiel.persistentcookiejar.R.string.app_name)
+            ModeType.NORMAL -> supportActionBar!!.setTitle(R.string.app_name)
             else -> supportActionBar!!.title = "WTF"
         }
     }
@@ -174,7 +174,7 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
         setSupportActionBar(toolbar)
         val bar = supportActionBar!!
         bar.setDisplayShowTitleEnabled(true)
-        bar.setTitle(com.franmontiel.persistentcookiejar.R.string.app_name)
+        bar.setTitle(R.string.app_name)
     }
 
     @Suppress("InvalidSetHasFixedSize")
@@ -655,7 +655,12 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
         val intent: Intent
         if (item.itemId == R.id.downloaded) {
-            if (Global.hasStoragePermission(this)) startLocalActivity() else requestStorage()
+            if (Global.hasStoragePermission(this)) {
+                intent = Intent(this, LocalActivity::class.java)
+                startActivity(intent)
+            } else {
+                requestStorage()
+            }
         } else if (item.itemId == R.id.bookmarks) {
             intent = Intent(this, BookmarkActivity::class.java)
             startActivity(intent)
@@ -689,7 +694,6 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
             intent = Intent(this, StatusViewerActivity::class.java)
             startActivity(intent)
         }
-        //drawerLayout.closeDrawer(GravityCompat.START);
         return true
     }
 
@@ -709,12 +713,10 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         Global.initStorage(this)
-        if (requestCode == 1 && grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) startLocalActivity()
-    }
-
-    private fun startLocalActivity() {
-        val i = Intent(this, LocalActivity::class.java)
-        startActivity(i)
+        if (requestCode == 1 && grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED){
+            val i = Intent(this, LocalActivity::class.java)
+            startActivity(i)
+        }
     }
 
     /**

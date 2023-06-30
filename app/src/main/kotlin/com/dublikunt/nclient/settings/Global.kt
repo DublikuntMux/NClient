@@ -145,7 +145,7 @@ object Global {
     val userAgent: String
         get() = "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/106.0.0.0 Mobile Safari/537.36"
 
-    fun getDefaultFileParent(context: Context): String {
+    private fun getDefaultFileParent(context: Context): String {
         val f: File = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
             context.getExternalFilesDir(null)!!
         } else {
