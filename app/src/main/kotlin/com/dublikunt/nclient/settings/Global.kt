@@ -1,6 +1,5 @@
 package com.dublikunt.nclient.settings
 
-import android.Manifest
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Context
@@ -393,7 +392,6 @@ object Global {
     }
 
     fun initStorage(context: Context) {
-        if (!hasStoragePermission(context)) return
         initFilesTree(context)
         val bools = booleanArrayOf(
             mainFolder.mkdirs(),
@@ -528,15 +526,6 @@ object Global {
         strings.addAll(listOf(*files))
         return strings
     }
-
-
-    fun hasStoragePermission(context: Context): Boolean {
-        return ContextCompat.checkSelfPermission(
-            context,
-            Manifest.permission.WRITE_EXTERNAL_STORAGE
-        ) == PackageManager.PERMISSION_GRANTED
-    }
-
 
     fun isJPEGCorrupted(path: String): Boolean {
         if (!File(path).exists()) return true

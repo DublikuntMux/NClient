@@ -24,7 +24,7 @@ import java.io.IOException
 class CreatePDF : JobIntentService() {
     private var notId = 0
     private var totalPage = 0
-    private var notification: NotificationCompat.Builder? = null
+    private lateinit var notification: NotificationCompat.Builder
     override fun onHandleWork(intent: Intent) {
         if (!hasPDFCapabilities()) {
             return
@@ -47,12 +47,12 @@ class CreatePDF : JobIntentService() {
                 document.finishPage(p)
                 bitmap.recycle()
             }
-            notification!!.setProgress(totalPage - 1, a + 1, false)
-            notify(getString(R.string.channel2_name), notId, notification!!.build())
+            notification.setProgress(totalPage - 1, a + 1, false)
+            notify(getString(R.string.channel2_name), notId, notification.build())
         }
-        notification!!.setContentText(getString(R.string.writing_pdf))
-        notification!!.setProgress(totalPage, 0, true)
-        notify(getString(R.string.channel2_name), notId, notification!!.build())
+        notification.setContentText(getString(R.string.writing_pdf))
+        notification.setProgress(totalPage, 0, true)
+        notify(getString(R.string.channel2_name), notId, notification.build())
         try {
             var finalPath = Global.pdfFolder
             finalPath.mkdirs()
@@ -63,17 +63,17 @@ class CreatePDF : JobIntentService() {
             document.writeTo(out)
             out.close()
             document.close()
-            notification!!.setProgress(0, 0, false)
-            notification!!.setContentTitle(getString(R.string.created_pdf))
-            notification!!.setContentText(gallery.title)
+            notification.setProgress(0, 0, false)
+            notification.setContentTitle(getString(R.string.created_pdf))
+            notification.setContentText(gallery.title)
             createIntentOpen(finalPath)
-            notify(getString(R.string.channel2_name), notId, notification!!.build())
+            notify(getString(R.string.channel2_name), notId, notification.build())
             download(finalPath.absolutePath)
         } catch (e: IOException) {
-            notification!!.setContentTitle(getString(R.string.error_pdf))
-            notification!!.setContentText(getString(R.string.failed))
-            notification!!.setProgress(0, 0, false)
-            notify(getString(R.string.channel2_name), notId, notification!!.build())
+            notification.setContentTitle(getString(R.string.error_pdf))
+            notification.setContentText(getString(R.string.failed))
+            notification.setProgress(0, 0, false)
+            notify(getString(R.string.channel2_name), notId, notification.build())
             throw RuntimeException("Error generating file", e)
         } finally {
             document.close()
@@ -102,7 +102,7 @@ class CreatePDF : JobIntentService() {
                 )
             }
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                notification!!.setContentIntent(
+                notification.setContentIntent(
                     PendingIntent.getActivity(
                         applicationContext,
                         0,
@@ -111,12 +111,12 @@ class CreatePDF : JobIntentService() {
                     )
                 )
             } else {
-                notification!!.setContentIntent(
+                notification.setContentIntent(
                     PendingIntent.getActivity(
                         applicationContext,
                         0,
                         i,
-                        0
+                        PendingIntent.FLAG_UPDATE_CURRENT
                     )
                 )
             }
@@ -127,7 +127,7 @@ class CreatePDF : JobIntentService() {
 
     private fun preExecute(file: File) {
         notification = NotificationCompat.Builder(applicationContext, Global.CHANNEL_ID2)
-        notification!!.setSmallIcon(R.drawable.ic_picture_as_pdf)
+        notification.setSmallIcon(R.drawable.ic_picture_as_pdf)
             .setOnlyAlertOnce(true)
             .setStyle(NotificationCompat.BigTextStyle().bigText(file.name))
             .setContentTitle(getString(R.string.channel2_title))
@@ -135,7 +135,7 @@ class CreatePDF : JobIntentService() {
             .setProgress(totalPage - 1, 0, false)
             .setPriority(NotificationCompat.PRIORITY_DEFAULT)
             .setCategory(NotificationCompat.CATEGORY_STATUS)
-        notify(getString(R.string.channel2_name), notId, notification!!.build())
+        notify(getString(R.string.channel2_name), notId, notification.build())
     }
 
     companion object {

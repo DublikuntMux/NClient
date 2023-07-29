@@ -1,6 +1,5 @@
 package com.dublikunt.nclient
 
-import android.Manifest
 import android.annotation.SuppressLint
 import android.content.DialogInterface
 import android.content.Intent
@@ -253,10 +252,10 @@ class GalleryActivity : BaseActivity() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         val id = item.itemId
         if (id == R.id.download_gallery) {
-            if (Global.hasStoragePermission(this)) RangeSelector(
+            RangeSelector(
                 this,
                 gallery as Gallery
-            ).show() else requestStorage()
+            ).show()
         } else if (id == R.id.add_online_gallery) addToFavorite(item) else if (id == R.id.change_view) updateColumnCount(
             true
         ) else if (id == R.id.download_torrent) downloadTorrent() else if (id == R.id.load_internet) toInternet() else if (id == R.id.manage_status) updateStatus() else if (id == R.id.share) Global.shareGallery(
@@ -284,9 +283,6 @@ class GalleryActivity : BaseActivity() {
     }
 
     private fun downloadTorrent() {
-        if (!Global.hasStoragePermission(this)) {
-            return
-        }
         val url = String.format(Locale.US, Utility.baseUrl + "g/%d/download", gallery.id)
         val referer = String.format(Locale.US, Utility.baseUrl + "g/%d/", gallery.id)
         AuthRequest(referer, url, object : Callback {
@@ -484,15 +480,6 @@ class GalleryActivity : BaseActivity() {
                 runOnUiThread { startActivity(intent) }
             }
         }).start()
-    }
-
-    private fun requestStorage() {
-        requestPermissions(
-            arrayOf(
-                Manifest.permission.WRITE_EXTERNAL_STORAGE,
-                Manifest.permission.READ_EXTERNAL_STORAGE
-            ), 1
-        )
     }
 
     override fun onRequestPermissionsResult(

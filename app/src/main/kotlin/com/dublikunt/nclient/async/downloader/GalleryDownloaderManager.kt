@@ -21,7 +21,7 @@ class GalleryDownloaderManager {
     private val notificationId = NotificationSettings.notificationId
     private val downloaderV2: GalleryDownloader
     private val context: Context
-    private var notification: NotificationCompat.Builder? = null
+    private var notification: NotificationCompat.Builder
     private var gallery: Gallery? = null
     private val observer: DownloadObserver = object : DownloadObserver {
         override fun triggerStartDownload(downloader: GalleryDownloader) {
@@ -61,12 +61,14 @@ class GalleryDownloaderManager {
     constructor(context: Context, gallery: Gallery, start: Int, end: Int) {
         this.context = context
         this.gallery = gallery
+        this.notification = NotificationCompat.Builder(context, Global.CHANNEL_ID1)
         downloaderV2 = GalleryDownloader(context, gallery, start, end)
         downloaderV2.addObserver(observer)
     }
 
     constructor(context: Context, title: String?, thumbnail: Uri?, id: Int) {
         this.context = context
+        this.notification = NotificationCompat.Builder(context, Global.CHANNEL_ID1)
         downloaderV2 = GalleryDownloader(context, title, thumbnail, id)
         downloaderV2.addObserver(observer)
     }
@@ -93,7 +95,7 @@ class GalleryDownloaderManager {
                     context, 0, notifyIntent, PendingIntent.FLAG_UPDATE_CURRENT
                 )
             }
-        notification!!.setContentIntent(notifyPendingIntent)
+        notification.setContentIntent(notifyPendingIntent)
     }
 
     fun downloader(): GalleryDownloader {
@@ -104,8 +106,8 @@ class GalleryDownloaderManager {
         clearNotificationAction()
         hidePercentage()
         if (downloaderV2.state != GalleryDownloader.Status.CANCELED) {
-            notification!!.setSmallIcon(R.drawable.ic_check)
-            notification!!.setContentTitle(
+            notification.setSmallIcon(R.drawable.ic_check)
+            notification.setContentTitle(
                 String.format(
                     Locale.US,
                     context.getString(R.string.completed_format),
@@ -113,8 +115,8 @@ class GalleryDownloaderManager {
                 )
             )
         } else {
-            notification!!.setSmallIcon(R.drawable.ic_close)
-            notification!!.setContentTitle(
+            notification.setSmallIcon(R.drawable.ic_close)
+            notification.setContentTitle(
                 String.format(
                     Locale.US,
                     context.getString(R.string.cancelled_format),
@@ -129,12 +131,12 @@ class GalleryDownloaderManager {
     }
 
     private fun setPercentage(reach: Int, total: Int) {
-        notification!!.setProgress(total, reach, false)
+        notification.setProgress(total, reach, false)
     }
 
     private fun prepareNotification() {
         notification = NotificationCompat.Builder(context.applicationContext, Global.CHANNEL_ID1)
-        notification!!.setOnlyAlertOnce(true)
+        notification.setOnlyAlertOnce(true)
             .setContentTitle(
                 String.format(
                     Locale.US,
@@ -149,7 +151,7 @@ class GalleryDownloaderManager {
 
     @SuppressLint("RestrictedApi")
     private fun clearNotificationAction() {
-        notification!!.mActions.clear()
+        notification.mActions.clear()
     }
 
     private fun addActionToNotification(pauseMode: Boolean) {
@@ -208,16 +210,16 @@ class GalleryDownloaderManager {
                     PendingIntent.FLAG_CANCEL_CURRENT or PendingIntent.FLAG_IMMUTABLE
                 )
         }
-        if (pauseMode) notification!!.addAction(
+        if (pauseMode) notification.addAction(
             R.drawable.ic_play_arrow,
             context.getString(R.string.resume),
             pStart
-        ) else notification!!.addAction(
+        ) else notification.addAction(
             R.drawable.ic_pause,
             context.getString(R.string.pause),
             pPause
         )
-        notification!!.addAction(R.drawable.ic_close, context.getString(R.string.cancel), pStop)
+        notification.addAction(R.drawable.ic_close, context.getString(R.string.cancel), pStop)
     }
 
     @Synchronized
@@ -226,7 +228,7 @@ class GalleryDownloaderManager {
             notify(
                 context.getString(R.string.channel1_name),
                 notificationId,
-                notification!!.build()
+                notification.build()
             )
         } catch (ignore: NullPointerException) {
         } catch (ignore: ConcurrentModificationException) {

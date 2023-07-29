@@ -119,7 +119,7 @@ class CreateZIP : JobIntentService() {
                         applicationContext,
                         0,
                         i,
-                        0
+                        PendingIntent.FLAG_UPDATE_CURRENT
                     )
                 )
             }

@@ -1,6 +1,5 @@
 package com.dublikunt.nclient
 
-import android.Manifest
 import android.animation.Animator
 import android.animation.AnimatorListenerAdapter
 import android.content.DialogInterface
@@ -272,9 +271,7 @@ class ZoomActivity : GeneralActivity() {
         if (id == R.id.rotate) {
             actualFragment!!.rotate()
         } else if (id == R.id.save_page) {
-            if (Global.hasStoragePermission(this)) {
-                downloadPage()
-            } else requestStorage()
+            downloadPage()
         } else if (id == R.id.share) {
             if (gallery.id <= 0) sendImage(false) else openSendImageDialog()
         } else if (id == android.R.id.home) {
@@ -303,15 +300,6 @@ class ZoomActivity : GeneralActivity() {
             .setCancelable(true).setTitle(R.string.send_with_title)
             .setMessage(R.string.caption_send_with_title)
             .show()
-    }
-
-    private fun requestStorage() {
-        requestPermissions(
-            arrayOf(
-                Manifest.permission.WRITE_EXTERNAL_STORAGE,
-                Manifest.permission.READ_EXTERNAL_STORAGE
-            ), 1
-        )
     }
 
     override fun onRequestPermissionsResult(

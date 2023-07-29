@@ -259,10 +259,6 @@ class GeneralPreferenceFragment : PreferenceFragmentCompat() {
     }
 
     private fun initStoragePaths(storagePreference: ListPreference?) {
-        if (!Global.hasStoragePermission(act)) {
-            storagePreference!!.isVisible = false
-            return
-        }
         val files = Global.getUsableFolders(act)
         val strings: MutableList<CharSequence> = ArrayList(files.size + 1)
         for (f in files) {

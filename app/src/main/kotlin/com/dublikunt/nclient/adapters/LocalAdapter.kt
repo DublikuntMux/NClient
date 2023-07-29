@@ -41,8 +41,10 @@ import com.dublikunt.nclient.utility.Utility
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.textview.MaterialTextView
 import java.io.File
+import java.util.Collections
 import java.util.Locale
 import java.util.concurrent.CopyOnWriteArrayList
+
 
 class LocalAdapter(private val context: LocalActivity, myDataset: ArrayList<LocalGallery>) :
     MultichoiceAdapter<Any, LocalAdapter.ViewHolder>(), Filterable {
@@ -73,16 +75,9 @@ class LocalAdapter(private val context: LocalActivity, myDataset: ArrayList<Loca
         if (o1 === o2) return@Comparator 0
         val b1 = o1 is LocalGallery
         val b2 = o2 is LocalGallery
-        if (b1 && !b2) return@Comparator -1
-        if (!b1 && b2) return@Comparator 1
-        if (b1) {
-            val res =
-                (o1 as LocalGallery).directory.lastModified() - (o2 as LocalGallery).directory.lastModified()
-            if (res != 0L) return@Comparator if (res < 0) -1 else 1
-        }
-        val s1 = if (b1) (o1 as LocalGallery).title else (o1 as GalleryDownloader).truePathTitle
-        val s2 = if (b2) (o2 as LocalGallery).title else (o2 as GalleryDownloader).truePathTitle
-        s1.compareTo(s2)
+        val d1 = if (b1) (o1 as LocalGallery).directory.lastModified() else Long.MAX_VALUE
+        val d2 = if (b2) (o2 as LocalGallery).directory.lastModified() else Long.MAX_VALUE
+        return@Comparator if (d1 != d2) d1.compareTo(d2) else comparatorByName.compare(o1, o2)
     }
     private lateinit var filter: ArrayList<Any>
     private var lastQuery: String
@@ -166,7 +161,10 @@ class LocalAdapter(private val context: LocalActivity, myDataset: ArrayList<Loca
         if (type.type === LocalSortType.Type.RANDOM) {
             arr.shuffle(Utility.RANDOM)
         } else {
-            arr.sortWith(getComparator(type.type))
+            try {
+                Collections.sort(arr, getComparator(type.type))
+            } catch (ignore: IllegalArgumentException) {
+            }
             if (type.descending) arr.reverse()
         }
     }

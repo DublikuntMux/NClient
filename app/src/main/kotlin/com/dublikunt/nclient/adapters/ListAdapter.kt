@@ -32,7 +32,6 @@ class ListAdapter(private val context: BaseActivity) :
 
     init {
         mDataset = ArrayList()
-        Global.hasStoragePermission(context)
         queryString = Tags.avoidedTags
     }
 

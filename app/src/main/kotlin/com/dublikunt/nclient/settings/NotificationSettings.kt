@@ -1,5 +1,6 @@
 package com.dublikunt.nclient.settings
 
+import android.annotation.SuppressLint
 import android.app.Notification
 import android.content.Context
 import androidx.core.app.NotificationManagerCompat
@@ -25,14 +26,13 @@ class NotificationSettings private constructor(private val notificationManager: 
             trimArray()
         }
 
-
-        fun notify(channel: String?, notificationId: Int, notification: Notification?) {
+        fun notify(channel: String?, notificationId: Int, notification: Notification) {
             if (maximumNotification == 0) return
             notificationArray.remove(Integer.valueOf(notificationId))
             notificationArray.add(notificationId)
             trimArray()
             download("Notification count: " + notificationArray.size)
-            notificationSettings.notificationManager.notify(notificationId, notification!!)
+            notificationSettings.notificationManager.notify(notificationId, notification)
         }
 
 

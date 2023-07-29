@@ -30,7 +30,7 @@ import java.io.File
 
 class LocalActivity : BaseActivity() {
     private lateinit var optionMenu: Menu
-    private lateinit var adapter: LocalAdapter
+    private var adapter: LocalAdapter? = null
     private val listener: MultichoiceListener = object : DefaultMultichoiceListener() {
         override fun choiceChanged() {
             setMenuVisibility(optionMenu)
@@ -61,7 +61,7 @@ class LocalActivity : BaseActivity() {
 
     fun setAdapter(adapter: LocalAdapter) {
         this.adapter = adapter
-        this.adapter.addListener(listener)
+        this.adapter!!.addListener(listener)
         recycler.adapter = adapter
     }
 
@@ -93,12 +93,12 @@ class LocalActivity : BaseActivity() {
     }
 
     private fun setMenuVisibility(menu: Menu) {
-        val mode = adapter.mode
+        val mode = adapter!!.mode
         var hasGallery = false
         var hasDownloads = false
         if (mode == MultichoiceAdapter.Mode.SELECTING) {
-            hasGallery = adapter.hasSelectedClass(LocalGallery::class.java)
-            hasDownloads = adapter.hasSelectedClass(GalleryDownloader::class.java)
+            hasGallery = adapter!!.hasSelectedClass(LocalGallery::class.java)
+            hasDownloads = adapter!!.hasSelectedClass(GalleryDownloader::class.java)
         }
         menu.findItem(R.id.search).isVisible = mode == MultichoiceAdapter.Mode.NORMAL
         menu.findItem(R.id.sort_by_name).isVisible = mode == MultichoiceAdapter.Mode.NORMAL
@@ -120,20 +120,20 @@ class LocalActivity : BaseActivity() {
     }
 
     override fun onDestroy() {
-        adapter.removeObserver()
+        adapter!!.removeObserver()
         super.onDestroy()
     }
 
     override fun changeLayout(landscape: Boolean) {
         colCount = if (landscape) landscapeColumnCount else portraitColumnCount
-        adapter.setColCount(colCount)
+        if (adapter != null) adapter!!.setColCount(colCount)
         super.changeLayout(landscape)
     }
 
     override fun onResume() {
         super.onResume()
         if (idGalleryPosition != -1) {
-            adapter.updateColor(idGalleryPosition)
+            adapter!!.updateColor(idGalleryPosition)
             idGalleryPosition = -1
         }
     }
@@ -145,27 +145,27 @@ class LocalActivity : BaseActivity() {
             }
 
             R.id.pause_all -> {
-                adapter.pauseSelected()
+                adapter!!.pauseSelected()
             }
 
             R.id.start_all -> {
-                adapter.startSelected()
+                adapter!!.startSelected()
             }
 
             R.id.delete_all -> {
-                adapter.deleteSelected()
+                adapter!!.deleteSelected()
             }
 
             R.id.pdf_all -> {
-                adapter.pdfSelected()
+                adapter!!.pdfSelected()
             }
 
             R.id.zip_all -> {
-                adapter.zipSelected()
+                adapter!!.zipSelected()
             }
 
             R.id.select_all -> {
-                adapter.selectAll()
+                adapter!!.selectAll()
             }
 
             R.id.folder_choose -> {
@@ -173,7 +173,7 @@ class LocalActivity : BaseActivity() {
             }
 
             R.id.random_favorite -> {
-                adapter.viewRandom()
+                adapter!!.viewRandom()
             }
 
             R.id.sort_by_name -> {
@@ -212,7 +212,7 @@ class LocalActivity : BaseActivity() {
             val newSortType = LocalSortType(typeSelected, descending)
             if (sortType == newSortType) return@setPositiveButton
             Global.setLocalSortType(this@LocalActivity, newSortType)
-            adapter.sortChanged()
+            adapter!!.sortChanged()
         }
             .setNeutralButton(R.string.cancel, null)
             .setTitle(R.string.sort_select_type)

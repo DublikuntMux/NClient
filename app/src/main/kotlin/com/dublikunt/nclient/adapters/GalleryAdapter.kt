@@ -33,7 +33,6 @@ import com.dublikunt.nclient.settings.Global
 import com.dublikunt.nclient.settings.Global.applyFastScroller
 import com.dublikunt.nclient.settings.Global.downloadPolicy
 import com.dublikunt.nclient.settings.Global.findGalleryFolder
-import com.dublikunt.nclient.settings.Global.hasStoragePermission
 import com.dublikunt.nclient.settings.Global.isZoomOneColumn
 import com.dublikunt.nclient.settings.Global.screenFolder
 import com.dublikunt.nclient.settings.Global.useRtl
@@ -67,7 +66,7 @@ class GalleryAdapter(
         try {
             if (gallery is LocalGallery) {
                 directory = gallery.galleryFolder
-            } else if (hasStoragePermission(context)) {
+            } else {
                 if (gallery.id != -1) {
                     val f = findGalleryFolder(context, gallery.id)
                     if (f != null) directory = GalleryFolder(f)
@@ -281,7 +280,7 @@ class GalleryAdapter(
         adapter.add(context.getString(R.string.share))
         adapter.add(context.getString(R.string.rotate_image))
         adapter.add(context.getString(R.string.bookmark_here))
-        if (hasStoragePermission(context)) adapter.add(context.getString(R.string.save_page))
+        adapter.add(context.getString(R.string.save_page))
         val builder = MaterialAlertDialogBuilder(context)
         builder.setTitle(R.string.settings).setIcon(R.drawable.ic_share)
         builder.setAdapter(adapter) { _: DialogInterface?, which: Int ->

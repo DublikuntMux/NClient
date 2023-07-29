@@ -21,7 +21,9 @@ class BookmarkAdapter(private val bookmarkActivity: BookmarkActivity) :
         Queries.BookmarkTable.bookmarks as MutableList<Bookmark>
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        return ViewHolder(LayoutInflater.from(parent.context).inflate(LAYOUT, parent, false))
+        return ViewHolder(
+            LayoutInflater.from(parent.context).inflate(R.layout.bookmark_layout, parent, false)
+        )
     }
 
     override fun onBindViewHolder(holder: ViewHolder, pos: Int) {
@@ -69,9 +71,5 @@ class BookmarkAdapter(private val bookmarkActivity: BookmarkActivity) :
             queryText = itemView.findViewById(R.id.title)
             rootLayout = itemView.findViewById(R.id.master_layout)
         }
-    }
-
-    companion object {
-        private const val LAYOUT = R.layout.bookmark_layout
     }
 }

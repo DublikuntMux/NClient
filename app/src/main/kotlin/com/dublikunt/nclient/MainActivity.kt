@@ -6,6 +6,7 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.content.res.Configuration
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -18,6 +19,7 @@ import android.widget.ImageView
 import androidx.annotation.StringRes
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.widget.SearchView
+import androidx.core.content.ContextCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.recyclerview.widget.RecyclerView
 import com.dublikunt.nclient.adapters.ListAdapter
@@ -110,9 +112,44 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-
         selectStartMode(intent, packageName)
         LogUtility.download("Main started with mode $modeType")
+
+        if (ContextCompat.checkSelfPermission(
+                this,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE
+            ) == PackageManager.PERMISSION_DENIED
+        ) {
+            when (Build.VERSION.SDK_INT) {
+                Build.VERSION_CODES.TIRAMISU -> {
+                    requestPermissions(
+                        arrayOf(
+                            Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                            Manifest.permission.READ_EXTERNAL_STORAGE,
+                            Manifest.permission.MANAGE_EXTERNAL_STORAGE,
+                            Manifest.permission.POST_NOTIFICATIONS
+                        ), 101
+                    )
+                }
+                Build.VERSION_CODES.S -> {
+                    requestPermissions(
+                        arrayOf(
+                            Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                            Manifest.permission.READ_EXTERNAL_STORAGE,
+                            Manifest.permission.MANAGE_EXTERNAL_STORAGE
+                        ), 101
+                    )
+                }
+                else -> {
+                    requestPermissions(
+                        arrayOf(
+                            Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                            Manifest.permission.READ_EXTERNAL_STORAGE,
+                        ), 101
+                    )
+                }
+            }
+        }
 
         findUsefulViews()
         initializeToolbar()
@@ -655,12 +692,8 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
         val intent: Intent
         if (item.itemId == R.id.downloaded) {
-            if (Global.hasStoragePermission(this)) {
-                intent = Intent(this, LocalActivity::class.java)
-                startActivity(intent)
-            } else {
-                requestStorage()
-            }
+            intent = Intent(this, LocalActivity::class.java)
+            startActivity(intent)
         } else if (item.itemId == R.id.bookmarks) {
             intent = Intent(this, BookmarkActivity::class.java)
             startActivity(intent)
@@ -697,15 +730,6 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
         return true
     }
 
-    private fun requestStorage() {
-        requestPermissions(
-            arrayOf(
-                Manifest.permission.WRITE_EXTERNAL_STORAGE,
-                Manifest.permission.READ_EXTERNAL_STORAGE
-            ), 1
-        )
-    }
-
     override fun onRequestPermissionsResult(
         requestCode: Int,
         permissions: Array<String>,
@@ -713,7 +737,7 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         Global.initStorage(this)
-        if (requestCode == 1 && grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED){
+        if (requestCode == 1 && grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
             val i = Intent(this, LocalActivity::class.java)
             startActivity(i)
         }
