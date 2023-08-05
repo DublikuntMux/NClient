@@ -12,8 +12,6 @@ import android.view.MenuItem
 import android.view.View
 import android.view.ViewConfiguration
 import android.view.WindowManager
-import android.widget.SeekBar
-import android.widget.SeekBar.OnSeekBarChangeListener
 import android.widget.Toast
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.WindowCompat
@@ -36,6 +34,7 @@ import com.dublikunt.nclient.utility.LogUtility
 import com.dublikunt.nclient.utility.Utility
 import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.android.material.slider.Slider
 import com.google.android.material.textview.MaterialTextView
 import java.io.File
 
@@ -48,7 +47,7 @@ class ZoomActivity : GeneralActivity() {
     private lateinit var pageManagerLabel: MaterialTextView
     private lateinit var cornerPageViewer: MaterialTextView
     private lateinit var pageSwitcher: View
-    private lateinit var seekBar: SeekBar
+    private lateinit var seekBar: Slider
     private lateinit var toolbar: MaterialToolbar
     private lateinit var view: View
     private var directory: GalleryFolder? = null
@@ -99,7 +98,7 @@ class ZoomActivity : GeneralActivity() {
         mViewPager.keepScreenOn = Global.isLockScreen
         findViewById<View>(R.id.prev).setOnClickListener { changeClosePage(false) }
         findViewById<View>(R.id.next).setOnClickListener { changeClosePage(true) }
-        seekBar.max = gallery.pageCount - 1
+        seekBar.valueTo = (gallery.pageCount - 1).toFloat()
         if (Global.useRtl) {
             seekBar.rotationY = 180f
             mViewPager.layoutDirection = ViewPager2.LAYOUT_DIRECTION_RTL
@@ -111,7 +110,7 @@ class ZoomActivity : GeneralActivity() {
                 actualPage = newPage
                 LogUtility.download("Page selected: $newPage from page $oldPage")
                 setPageText(newPage + 1)
-                seekBar.progress = newPage
+                seekBar.value = newPage.toFloat()
                 clearFarRequests(oldPage, newPage)
                 makeNearRequests(newPage)
             }
@@ -131,21 +130,14 @@ class ZoomActivity : GeneralActivity() {
                     })
             )
         }
-        seekBar.setOnSeekBarChangeListener(object : OnSeekBarChangeListener {
-            override fun onProgressChanged(seekBar: SeekBar, progress: Int, fromUser: Boolean) {
-                if (fromUser) {
-                    setPageText(progress + 1)
-                }
-            }
-
-            override fun onStartTrackingTouch(seekBar: SeekBar) {}
-            override fun onStopTrackingTouch(seekBar: SeekBar) {
-                changePage(seekBar.progress)
+        seekBar.addOnChangeListener(Slider.OnChangeListener { _, value, fromUser ->
+            if (fromUser) {
+                setPageText(value.toInt() + 1)
             }
         })
         changePage(page)
         setPageText(page + 1)
-        seekBar.progress = page
+        seekBar.value = page.toFloat()
     }
 
     private fun setUserInput(enabled: Boolean) {

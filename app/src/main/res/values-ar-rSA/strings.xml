@@ -82,7 +82,7 @@
     <string name="random_manga">عمل عشوائي</string>
     <string name="save_page">اِحفظ الصفحة</string>
     <string name="page_count_format" formatted="true">%d صفحةً(صفحاتٍ)</string>
-    <string name="upload_date_format" formatted="true">رُفِع بتاريخ %s عند الـ %s</string>
+    <string name="upload_date_format" formatted="true">رُفِع بتاريخ %1$s عند الـ %2$s</string>
     <string name="favorite_count_format" formatted="true">مُفضَّل عند %d أشخاص(شخصًا)</string>
     <string name="favorite_manga">الأعمال المُفضَّلة</string>
     <string name="setting_on_remove_ignored">الأعمال ذات الوسوم المُتجاهَلة لن تُعرض</string>

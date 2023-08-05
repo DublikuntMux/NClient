@@ -80,7 +80,7 @@
     <string name="random_manga">ランダムギャラリー</string>
     <string name="save_page">現在のページを保存する</string>
     <string name="page_count_format" formatted="true">%dページ</string>
-    <string name="upload_date_format" formatted="true">%sの%sにアップロード</string>
+    <string name="upload_date_format" formatted="true">%1$sの%2$sにアップロード</string>
     <string name="favorite_count_format" formatted="true">%dお気に入り</string>
     <string name="favorite_manga">お気に入りのギャラリー</string>
     <string name="setting_on_remove_ignored">タグが無視されているギャラリーは表示されません</string>

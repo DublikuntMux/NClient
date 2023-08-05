@@ -80,7 +80,7 @@
     <string name="random_manga">随机漫画</string>
     <string name="save_page">保存页数</string>
     <string name="page_count_format" formatted="true">%d 页</string>
-    <string name="upload_date_format" formatted="true">上传于 %s 在 %s</string>
+    <string name="upload_date_format" formatted="true">上传于 %1$s 在 %2$s</string>
     <string name="favorite_count_format" formatted="true">%d 收藏</string>
     <string name="favorite_manga">收藏漫画</string>
     <string name="setting_on_remove_ignored">不显示带有已忽略标签的画廊</string>

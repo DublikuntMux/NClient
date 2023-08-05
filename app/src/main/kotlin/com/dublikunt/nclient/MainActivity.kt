@@ -124,16 +124,22 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
                 Build.VERSION_CODES.TIRAMISU -> {
                     requestPermissions(
                         arrayOf(
+                            Manifest.permission.INTERNET,
+                            Manifest.permission.WAKE_LOCK,
+                            Manifest.permission.ACCESS_NETWORK_STATE,
                             Manifest.permission.WRITE_EXTERNAL_STORAGE,
                             Manifest.permission.READ_EXTERNAL_STORAGE,
                             Manifest.permission.MANAGE_EXTERNAL_STORAGE,
-                            Manifest.permission.POST_NOTIFICATIONS
+                            Manifest.permission.POST_NOTIFICATIONS,
                         ), 101
                     )
                 }
                 Build.VERSION_CODES.S -> {
                     requestPermissions(
                         arrayOf(
+                            Manifest.permission.INTERNET,
+                            Manifest.permission.WAKE_LOCK,
+                            Manifest.permission.ACCESS_NETWORK_STATE,
                             Manifest.permission.WRITE_EXTERNAL_STORAGE,
                             Manifest.permission.READ_EXTERNAL_STORAGE,
                             Manifest.permission.MANAGE_EXTERNAL_STORAGE
@@ -143,6 +149,9 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
                 else -> {
                     requestPermissions(
                         arrayOf(
+                            Manifest.permission.INTERNET,
+                            Manifest.permission.WAKE_LOCK,
+                            Manifest.permission.ACCESS_NETWORK_STATE,
                             Manifest.permission.WRITE_EXTERNAL_STORAGE,
                             Manifest.permission.READ_EXTERNAL_STORAGE,
                         ), 101

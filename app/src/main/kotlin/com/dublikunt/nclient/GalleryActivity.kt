@@ -321,7 +321,7 @@ class GalleryActivity : BaseActivity() {
                 }
                 file.deleteOnExit()
             }
-        }).setMethod("GET", null).start()
+        }).setMethod("GET", AuthRequest.EMPTY_BODY).start()
     }
 
     private fun updateStatus() {

@@ -14,15 +14,15 @@ class AuthRequest(
     private val callback: Callback
 ) : Thread() {
     private lateinit var method: String
-    private var body: RequestBody? = null
-    fun setMethod(method: String, body: RequestBody?): AuthRequest {
+    private var body: RequestBody = EMPTY_BODY
+    fun setMethod(method: String, body: RequestBody): AuthRequest {
         this.method = method
         this.body = body
         return this
     }
 
     override fun run() {
-        CSRFGet(CSRFGet.Response { token: String ->
+        CSRFGet({ token: String ->
             client.newCall(
                 Request.Builder().url(url)
                     .addHeader("Referer", referer)

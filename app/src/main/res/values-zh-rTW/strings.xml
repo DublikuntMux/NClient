@@ -80,7 +80,7 @@
     <string name="random_manga">隨機漫畫</string>
     <string name="save_page">保存頁數</string>
     <string name="page_count_format" formatted="true">%d 頁</string>
-    <string name="upload_date_format" formatted="true">上傳於 %s 在 %s</string>
+    <string name="upload_date_format" formatted="true">上傳於 %1$s 在 %2$s</string>
     <string name="favorite_count_format" formatted="true">%d 收藏</string>
     <string name="favorite_manga">收藏漫畫</string>
     <string name="setting_on_remove_ignored">不顯示帶有已忽略標籤的圖庫</string>

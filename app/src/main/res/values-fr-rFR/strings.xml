@@ -85,7 +85,7 @@
     <string name="random_manga">Galerie aléatoire</string>
     <string name="save_page">Enregistrer la page</string>
     <string name="page_count_format" formatted="true">%d pages</string>
-    <string name="upload_date_format" formatted="true">Ajouté le %s à %s</string>
+    <string name="upload_date_format" formatted="true">Ajouté le %1$s à %2$s</string>
     <string name="favorite_count_format" formatted="true">%d favoris</string>
     <string name="favorite_manga">Galeries favorites</string>
     <string name="setting_on_remove_ignored">Les galeries avec des tags ignorés ne seront pas

@@ -83,7 +83,7 @@
     <string name="random_manga">Випадкова галерея</string>
     <string name="save_page">Зберегти сторінку</string>
     <string name="page_count_format" formatted="true">%d сторінок</string>
-    <string name="upload_date_format" formatted="true">Завантажено %s о %s</string>
+    <string name="upload_date_format" formatted="true">Завантажено %1$s о %2$s</string>
     <string name="favorite_count_format" formatted="true">%d уподобань</string>
     <string name="favorite_manga">Уподобані галереї</string>
     <string name="setting_on_remove_ignored">Галереї з ігнорованими мітками не будуть показані</string>

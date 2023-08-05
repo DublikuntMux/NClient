@@ -85,7 +85,7 @@
     <string name="random_manga">Rastgele Galeri</string>
     <string name="save_page">Sayfayı kaydet</string>
     <string name="page_count_format" formatted="true">%d Sayfa</string>
-    <string name="upload_date_format" formatted="true">%s tarihinde %s saatinde yüklendi</string>
+    <string name="upload_date_format" formatted="true">%1$s tarihinde %2$s saatinde yüklendi</string>
     <string name="favorite_count_format" formatted="true">%d Favori</string>
     <string name="favorite_manga">Favoriler</string>
     <string name="setting_on_remove_ignored">Dikkate alınmayan etiket içeren galeriler

@@ -84,7 +84,7 @@
     <string name="random_manga">Manga aleatorio</string>
     <string name="save_page">Guardar la página</string>
     <string name="page_count_format" formatted="true">%d páginas</string>
-    <string name="upload_date_format" formatted="true">Subido el %s a las %s</string>
+    <string name="upload_date_format" formatted="true">Subido el %1$s a las %2$s</string>
     <string name="favorite_count_format" formatted="true">%d favoritos</string>
     <string name="favorite_manga">Manga favorito</string>
     <string name="setting_on_remove_ignored">Las galerías con etiquetas ignoradas no se mostrarán</string>

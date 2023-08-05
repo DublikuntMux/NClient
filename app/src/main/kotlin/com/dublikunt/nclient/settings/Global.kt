@@ -142,7 +142,7 @@ object Global {
 
 
     val userAgent: String
-        get() = "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/106.0.0.0 Mobile Safari/537.36"
+        get() = "Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N)"
 
     private fun getDefaultFileParent(context: Context): String {
         val f: File = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
@@ -308,7 +308,7 @@ object Global {
         return volumeOverride
     }
 
-    private fun reloadHttpClient(context: Context) {
+    fun reloadHttpClient(context: Context) {
         val preferences = context.getSharedPreferences("Login", 0)
         Login.setLoginShared(preferences)
         val builder: OkHttpClient.Builder = OkHttpClient.Builder()
