@@ -295,4 +295,6 @@
     <string name="confirm">Підтвердити</string>
     <string name="сolor_selection">Вибір кольору</string>
     <string name="main">Основне</string>
+    <string name="fetching_cloudflare_token">Отримання токіни Cloudflare ...</string>
+    <string name="hide">Приховати</string>
 </resources>

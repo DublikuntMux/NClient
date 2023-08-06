@@ -60,12 +60,9 @@
 
     </LinearLayout>
 
-    <com.google.android.material.slider.Slider
+    <SeekBar
         android:id="@+id/seekBar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="20dp"
-        android:valueFrom="1"
-        android:valueTo="10"
-        android:stepSize="1"/>
+        android:layout_margin="24dp" />
 </LinearLayout>

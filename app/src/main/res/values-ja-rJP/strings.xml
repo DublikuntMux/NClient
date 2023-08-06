@@ -287,4 +287,6 @@
     <string name="confirm">確認</string>
     <string name="сolor_selection">色の選択</string>
     <string name="main">主要</string>
+    <string name="fetching_cloudflare_token">Cloudflareトークンを取得しています …</string>
+    <string name="hide">隠れる</string>
 </resources>

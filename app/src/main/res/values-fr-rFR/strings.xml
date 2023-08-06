@@ -301,4 +301,6 @@
     <string name="confirm">Сonfirmer</string>
     <string name="сolor_selection">Sélection de couleur</string>
     <string name="main">Principal</string>
+    <string name="fetching_cloudflare_token">Cloudflare tokin krije ...</string>
+    <string name="hide">Cacher</string>
 </resources>

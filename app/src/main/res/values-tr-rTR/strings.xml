@@ -296,4 +296,6 @@
     <string name="confirm">Onaylamak</string>
     <string name="сolor_selection">Renk seçimi</string>
     <string name="main">Ana</string>
+    <string name="fetching_cloudflare_token">Cloudflare tokeni alınıyor…</string>
+    <string name="hide">Saklamak</string>
 </resources>

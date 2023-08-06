@@ -296,4 +296,6 @@
     <string name="confirm">Confermare</string>
     <string name="сolor_selection">Selezione del colore</string>
     <string name="main">Principale</string>
+    <string name="fetching_cloudflare_token">Ottenere tokin Cloudflare ...</string>
+    <string name="hide">Nascondere</string>
 </resources>

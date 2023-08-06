@@ -290,4 +290,6 @@
     <string name="confirm">يتأكد</string>
     <string name="сolor_selection">اختيار اللون</string>
     <string name="main">رئيسي</string>
+    <string name="fetching_cloudflare_token">الحصول على جلد الغيوم ...</string>
+    <string name="hide">يخفي</string>
 </resources>

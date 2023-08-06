@@ -369,5 +369,7 @@
     <string name="confirm">Сonfirm</string>
     <string name="сolor_selection">Color selection</string>
     <string name="main">Main</string>
+    <string name="fetching_cloudflare_token">Fetching Cloudflare token …</string>
+    <string name="hide">Hide</string>
 
 </resources>

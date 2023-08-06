@@ -287,4 +287,6 @@
     <string name="confirm">确认</string>
     <string name="сolor_selection">颜色选择</string>
     <string name="main">主要的</string>
+    <string name="fetching_cloudflare_token">获取Cloudflare。 ...</string>
+    <string name="hide">隱藏</string>
 </resources>

@@ -5,7 +5,6 @@ import androidx.annotation.Nullable;
 import com.dublikunt.nclient.settings.Global;
 
 import java.io.IOException;
-import java.util.Objects;
 
 import okhttp3.Request;
 
@@ -22,7 +21,9 @@ public class CSRFGet extends Thread {
     @Override
     public void run() {
         try {
-            okhttp3.Response response = Objects.requireNonNull(Global.getClient()).newCall(new Request.Builder().url(url).build()).execute();
+            assert Global.getClient() != null;
+            okhttp3.Response response = Global.getClient().newCall(new Request.Builder().url(url).build()).execute();
+            if (response.body() == null) throw new NullPointerException("Error retrieving url");
             String token = response.body().string();
             token = token.substring(token.lastIndexOf("csrf_token"));
             token = token.substring(token.indexOf('"') + 1);
