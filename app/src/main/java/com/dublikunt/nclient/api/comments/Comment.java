@@ -6,16 +6,24 @@ import android.os.Parcelable;
 import android.util.JsonReader;
 import android.util.JsonToken;
 
+import androidx.annotation.NonNull;
+
+import org.jetbrains.annotations.Contract;
+
 import java.io.IOException;
 import java.util.Date;
 
 public class Comment implements Parcelable {
-    public static final Creator<Comment> CREATOR = new Creator<Comment>() {
+    public static final Creator<Comment> CREATOR = new Creator<>() {
+        @NonNull
+        @Contract("_ -> new")
         @Override
         public Comment createFromParcel(Parcel in) {
             return new Comment(in);
         }
 
+        @NonNull
+        @Contract(value = "_ -> new", pure = true)
         @Override
         public Comment[] newArray(int size) {
             return new Comment[size];
@@ -26,7 +34,7 @@ public class Comment implements Parcelable {
     private Date postDate;
     private String body;
 
-    public Comment(JsonReader reader) throws IOException {
+    public Comment(@NonNull JsonReader reader) throws IOException {
         reader.beginObject();
         while (reader.peek() != JsonToken.END_OBJECT) {
             switch (reader.nextName()) {
@@ -50,7 +58,7 @@ public class Comment implements Parcelable {
         reader.endObject();
     }
 
-    protected Comment(Parcel in) {
+    protected Comment(@NonNull Parcel in) {
         id = in.readInt();
         poster = in.readParcelable(User.class.getClassLoader());
         body = in.readString();
@@ -63,7 +71,7 @@ public class Comment implements Parcelable {
     }
 
     @Override
-    public void writeToParcel(Parcel dest, int flags) {
+    public void writeToParcel(@NonNull Parcel dest, int flags) {
         dest.writeInt(id);
         dest.writeParcelable(poster, flags);
         dest.writeString(body);

@@ -13,7 +13,7 @@
  See the License for the specific language governing permissions and
  limitations under the License.
  */
-package com.dublikunt.nclient.github.chrisbanes.photoview;
+package com.dublikunt.nclient.photoview;
 
 interface OnGestureListener {
 

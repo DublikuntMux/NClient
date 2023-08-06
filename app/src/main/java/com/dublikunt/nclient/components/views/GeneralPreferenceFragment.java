@@ -5,7 +5,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
-import android.os.Build;
 import android.os.Bundle;
 import android.util.JsonWriter;
 import android.util.Pair;
@@ -13,6 +12,7 @@ import android.view.View;
 import android.webkit.CookieManager;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.widget.AppCompatAutoCompleteTextView;
 import androidx.preference.ListPreference;
 import androidx.preference.PreferenceFragmentCompat;
@@ -49,7 +49,7 @@ public class GeneralPreferenceFragment extends PreferenceFragmentCompat {
         this.act = act;
     }
 
-    public void setType(SettingsActivity.Type type) {
+    public void setType(@NonNull SettingsActivity.Type type) {
         switch (type) {
             case MAIN:
                 mainMenu();
@@ -182,7 +182,6 @@ public class GeneralPreferenceFragment extends PreferenceFragmentCompat {
             manageCustomPath();
             return false;
         });
-        //clear cache if pressed
         findPreference(getString(R.string.key_cache)).setSummary(getString(R.string.cache_size_formatted, cacheSize));
         findPreference(getString(R.string.key_cookie)).setOnPreferenceClickListener(preference -> {
             Login.clearCookies();
@@ -250,14 +249,14 @@ public class GeneralPreferenceFragment extends PreferenceFragmentCompat {
         }).setNegativeButton(R.string.cancel, null).show();
     }
 
-    private void changeLauncher(PackageManager pm, ComponentName name, boolean enabled) {
+    private void changeLauncher(@NonNull PackageManager pm, ComponentName name, boolean enabled) {
         int enableState = enabled ? PackageManager.COMPONENT_ENABLED_STATE_ENABLED : PackageManager.COMPONENT_ENABLED_STATE_DISABLED;
         pm.setComponentEnabledSetting(name, enableState, PackageManager.DONT_KILL_APP);
     }
 
 
     private void initStoragePaths(ListPreference storagePreference) {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT || !Global.hasStoragePermission(act)) {
+        if (!Global.hasStoragePermission(act)) {
             storagePreference.setVisible(false);
             return;
         }
@@ -272,7 +271,7 @@ public class GeneralPreferenceFragment extends PreferenceFragmentCompat {
         storagePreference.setEntryValues(strings.toArray(new CharSequence[0]));
         storagePreference.setSummary(
             act.getSharedPreferences("Settings", Context.MODE_PRIVATE)
-                .getString(getString(R.string.key_save_path), Global.MAINFOLDER.getParent())
+                .getString(getString(R.string.key_save_path), Global.MainFolder.getParent())
         );
         storagePreference.setOnPreferenceChangeListener((preference, newValue) -> {
             preference.setSummary(newValue.toString());
@@ -280,6 +279,7 @@ public class GeneralPreferenceFragment extends PreferenceFragmentCompat {
         });
     }
 
+    @NonNull
     private String getDataSettings(Context context) throws IOException {
         String[] names = new String[]{"Settings", "ScrapedTags"};
         StringWriter sw = new StringWriter();
@@ -299,7 +299,7 @@ public class GeneralPreferenceFragment extends PreferenceFragmentCompat {
         return settings;
     }
 
-    private void processSharedFromName(JsonWriter writer, Context context, String name) throws IOException {
+    private void processSharedFromName(@NonNull JsonWriter writer, @NonNull Context context, String name) throws IOException {
         writer.name(name);
         writer.beginObject();
         SharedPreferences preferences = context.getSharedPreferences(name, 0);
@@ -309,7 +309,7 @@ public class GeneralPreferenceFragment extends PreferenceFragmentCompat {
         writer.endObject();
     }
 
-    private void writeEntry(JsonWriter writer, Map.Entry<String, ?> entry) throws IOException {
+    private void writeEntry(@NonNull JsonWriter writer, @NonNull Map.Entry<String, ?> entry) throws IOException {
         writer.name(entry.getKey());
         if (entry.getValue() instanceof Integer) writer.value((Integer) entry.getValue());
         else if (entry.getValue() instanceof Boolean) writer.value((Boolean) entry.getValue());

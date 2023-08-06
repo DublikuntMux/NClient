@@ -16,7 +16,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.dublikunt.nclient.GalleryActivity;
 import com.dublikunt.nclient.R;
 import com.dublikunt.nclient.components.status.Status;
 import com.dublikunt.nclient.components.status.StatusManager;
@@ -30,8 +29,8 @@ import java.util.Collections;
 import java.util.List;
 
 public class StatusManagerAdapter extends RecyclerView.Adapter<StatusManagerAdapter.ViewHolder> {
-    private List<Status> statusList;
-    private Activity activity;
+    private final List<Status> statusList;
+    private final Activity activity;
     private int newColor;
 
     public StatusManagerAdapter(Activity activity) {

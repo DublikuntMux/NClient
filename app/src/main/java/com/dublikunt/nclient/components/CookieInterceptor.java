@@ -4,6 +4,7 @@ import android.view.View;
 import android.webkit.CookieManager;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.dublikunt.nclient.components.activities.GeneralActivity;
 import com.dublikunt.nclient.components.views.CFTokenView;
@@ -15,15 +16,6 @@ import java.util.HashMap;
 public class CookieInterceptor {
     private static volatile boolean intercepting = false;
     private static volatile boolean webViewHidden = false;
-
-    public static void hideWebView() {
-        webViewHidden = true;
-        CFTokenView tokenView = GeneralActivity.getLastCFView();
-        if (tokenView != null) {
-            tokenView.post(() -> tokenView.setVisibility(View.GONE));
-        }
-    }
-
     @NonNull
     private final Manager manager;
     String cookies = null;
@@ -33,6 +25,15 @@ public class CookieInterceptor {
         this.manager = manager;
     }
 
+    public static void hideWebView() {
+        webViewHidden = true;
+        CFTokenView tokenView = GeneralActivity.getLastCFView();
+        if (tokenView != null) {
+            tokenView.post(() -> tokenView.setVisibility(View.GONE));
+        }
+    }
+
+    @Nullable
     private CFTokenView setupWebView() {
         CFTokenView tokenView = GeneralActivity.getLastCFView();
         if (tokenView == null) return null;
@@ -54,7 +55,7 @@ public class CookieInterceptor {
 
     private void interceptInternal() {
         CFTokenView web = getWebView();
-        if(!webViewHidden)
+        if (!webViewHidden)
             web.post(() -> web.setVisibility(View.VISIBLE));
         CookieManager manager = CookieManager.getInstance();
         HashMap<String, String> cookiesMap = new HashMap<>();
@@ -78,7 +79,7 @@ public class CookieInterceptor {
     }
 
     public void intercept() {
-        while(!manager.endInterceptor()){
+        while (!manager.endInterceptor()) {
             while (intercepting) {
                 Utility.threadSleep(100);
             }

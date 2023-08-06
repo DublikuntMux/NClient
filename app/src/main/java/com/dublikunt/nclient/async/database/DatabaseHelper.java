@@ -1,10 +1,13 @@
 package com.dublikunt.nclient.async.database;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.graphics.Color;
+
+import androidx.annotation.NonNull;
 
 import com.dublikunt.nclient.R;
 import com.dublikunt.nclient.api.components.Gallery;
@@ -20,7 +23,6 @@ import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 
-@SuppressWarnings("deprecation")
 public class DatabaseHelper extends SQLiteOpenHelper {
     static final String DATABASE_NAME = "Entries.db";
     private static final int DATABASE_VERSION = 13;
@@ -38,10 +40,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         insertLanguageTags();
         insertCategoryTags();
         insertDefaultStatus();
-        //Queries.DebugDatabase.dumpDatabase(db);
     }
 
-    private void createAllTables(SQLiteDatabase db) {
+    private void createAllTables(@NonNull SQLiteDatabase db) {
         db.execSQL(Queries.GalleryTable.CREATE_TABLE);
         db.execSQL(Queries.TagTable.CREATE_TABLE);
         db.execSQL(Queries.GalleryBridgeTable.CREATE_TABLE);
@@ -54,7 +55,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.execSQL(Queries.StatusMangaTable.CREATE_TABLE);
 
     }
-    // TODO: 28/10/20 Add search history to DB instead of shared
 
     private void insertCategoryTags() {
         Tag[] types = {
@@ -94,7 +94,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     }
 
-    private void addStatusTables(SQLiteDatabase db) {
+    private void addStatusTables(@NonNull SQLiteDatabase db) {
         db.execSQL(Queries.StatusTable.CREATE_TABLE);
         db.execSQL(Queries.StatusMangaTable.CREATE_TABLE);
         insertDefaultStatus();
@@ -109,18 +109,17 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         StatusManager.add(StatusManager.DEFAULT_STATUS, Color.BLACK);
     }
 
-    private void updateFavoriteTable(SQLiteDatabase db) {
+    private void updateFavoriteTable(@NonNull SQLiteDatabase db) {
         db.execSQL("ALTER TABLE Favorite ADD COLUMN `time` INT NOT NULL DEFAULT " + new Date().getTime());
     }
 
-    private void addRangeColumn(SQLiteDatabase db) {
+    private void addRangeColumn(@NonNull SQLiteDatabase db) {
         db.execSQL("ALTER TABLE Downloads ADD COLUMN `range_start` INT NOT NULL DEFAULT -1");
         db.execSQL("ALTER TABLE Downloads ADD COLUMN `range_end`   INT NOT NULL DEFAULT -1");
     }
 
-    /**
-     * Add all item which are favorite into the favorite table
-     */
+    @SuppressLint("Range")
+    @NonNull
     private int[] getAllFavoriteIndex() {
         Cursor c = Queries.GalleryTable.getAllFavoriteCursorDeprecated("%", false);
         int[] favorites = new int[c.getCount()];
@@ -134,14 +133,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return favorites;
     }
 
-    /**
-     * Create favorite table
-     * Get all id of favorite gallery
-     * save all galleries
-     * delete and recreate table without favorite column
-     * insert all galleries again
-     * populate favorite
-     */
     private void insertFavorite(SQLiteDatabase db) {
         Database.setDatabase(db);
         db.execSQL(Queries.FavoriteTable.CREATE_TABLE);
@@ -157,10 +148,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         }
     }
 
-    /**
-     * Add the columns which contains the sizes of the images
-     */
-    private void updateGalleryWithSizes(SQLiteDatabase db) {
+    private void updateGalleryWithSizes(@NonNull SQLiteDatabase db) {
         db.execSQL("ALTER TABLE Gallery ADD COLUMN `maxW` INT NOT NULL DEFAULT 0");
         db.execSQL("ALTER TABLE Gallery ADD COLUMN `maxH` INT NOT NULL DEFAULT 0");
         db.execSQL("ALTER TABLE Gallery ADD COLUMN `minW` INT NOT NULL DEFAULT 0");

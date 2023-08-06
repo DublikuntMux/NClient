@@ -9,6 +9,7 @@ import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.LinearLayout;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.widget.Toolbar;
 
 import com.dublikunt.nclient.adapters.LocalAdapter;
@@ -41,7 +42,7 @@ public class LocalActivity extends BaseActivity {
     private Toolbar toolbar;
     private int colCount;
     private int idGalleryPosition = -1;
-    private File folder = Global.MAINFOLDER;
+    private File folder = Global.MainFolder;
     private androidx.appcompat.widget.SearchView searchView;
 
     @Override
@@ -74,7 +75,6 @@ public class LocalActivity extends BaseActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.download, menu);
         getMenuInflater().inflate(R.menu.local_multichoice, menu);
         this.optionMenu = menu;
@@ -148,7 +148,7 @@ public class LocalActivity extends BaseActivity {
         }
     }
 
-    public boolean onOptionsItemSelected(MenuItem item) {
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         if (item.getItemId() == android.R.id.home) {
             onBackPressed();
             return true;
@@ -203,23 +203,17 @@ public class LocalActivity extends BaseActivity {
         switchMaterial.setChecked(sortType.descending);
         builder.setView(view);
         builder.setPositiveButton(R.string.ok, (dialog, which) -> {
-            int typeSelectedIndex = group.indexOfChild(group.findViewById(group.getCheckedChipId()));
-            LocalSortType.Type typeSelected = LocalSortType.Type.values()[typeSelectedIndex];
-            boolean descending = switchMaterial.isChecked();
-            LocalSortType newSortType = new LocalSortType(typeSelected, descending);
-            if (sortType.equals(newSortType)) return;
-            Global.setLocalSortType(LocalActivity.this, newSortType);
-            if (adapter != null) adapter.sortChanged();
-        })
+                int typeSelectedIndex = group.indexOfChild(group.findViewById(group.getCheckedChipId()));
+                LocalSortType.Type typeSelected = LocalSortType.Type.values()[typeSelectedIndex];
+                boolean descending = switchMaterial.isChecked();
+                LocalSortType newSortType = new LocalSortType(typeSelected, descending);
+                if (sortType.equals(newSortType)) return;
+                Global.setLocalSortType(LocalActivity.this, newSortType);
+                if (adapter != null) adapter.sortChanged();
+            })
             .setNeutralButton(R.string.cancel, null)
             .setTitle(R.string.sort_select_type)
             .show();
-
-
-       /* boolean sortByName=Global.isLocalSortByName();
-        item.setIcon(sortByName?R.drawable.ic_sort_by_alpha:R.drawable.ic_access_time);
-        item.setTitle(sortByName?R.string.sort_by_title:R.string.sort_by_latest);
-        Global.setTint(item.getIcon());*/
     }
 
     @Override

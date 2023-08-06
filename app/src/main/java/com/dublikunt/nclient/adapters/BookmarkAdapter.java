@@ -52,23 +52,13 @@ public class BookmarkAdapter extends RecyclerView.Adapter<BookmarkAdapter.ViewHo
         holder.rootLayout.setOnClickListener(v -> loadBookmark(bookmark));
     }
 
-    /**
-     * Start an {@link MainActivity} with <code>bookmark</code> as query and page
-     *
-     * @param bookmark bookmark to load
-     */
-    private void loadBookmark(Bookmark bookmark) {
+    private void loadBookmark(@NonNull Bookmark bookmark) {
         Intent i = new Intent(bookmarkActivity, MainActivity.class);
         i.putExtra(bookmarkActivity.getPackageName() + ".BYBOOKMARK", true);
         i.putExtra(bookmarkActivity.getPackageName() + ".INSPECTOR", bookmark.createInspector(bookmarkActivity, null));
         IntentUtility.startAnotherActivity(bookmarkActivity, i);
     }
 
-    /**
-     * remove bookmark from the adapter at <code>position</code>
-     *
-     * @param position index to delete
-     */
     private void removeBookmarkAtPosition(int position) {
         if (position >= bookmarks.size()) return;
         Bookmark bookmark = bookmarks.get(position);
@@ -96,5 +86,4 @@ public class BookmarkAdapter extends RecyclerView.Adapter<BookmarkAdapter.ViewHo
             rootLayout = itemView.findViewById(R.id.master_layout);
         }
     }
-
 }

@@ -102,6 +102,7 @@ public class CommentActivity extends BaseActivity {
         this.adapter = adapter;
     }
 
+    @NonNull
     private String createRequestString(String text) {
         try {
             StringWriter writer = new StringWriter();
@@ -128,7 +129,7 @@ public class CommentActivity extends BaseActivity {
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         if (item.getItemId() == android.R.id.home) {
             onBackPressed();
             return true;

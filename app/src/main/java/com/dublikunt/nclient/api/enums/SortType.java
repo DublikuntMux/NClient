@@ -11,7 +11,6 @@ public enum SortType {
     POPULAR_DAILY(R.string.sort_popular_day, "popular-today"),
     POPULAR_MONTH(R.string.sort_popoular_month, "popular-month");
 
-
     private final int nameId;
     @Nullable
     private final String urlAddition;

@@ -1,4 +1,4 @@
-package com.dublikunt.nclient.github.chrisbanes.photoview;
+package com.dublikunt.nclient.photoview;
 
 import android.view.MotionEvent;
 import android.widget.ImageView;
@@ -24,9 +24,8 @@ class Util {
         if (scaleType == null) {
             return false;
         }
-        switch (scaleType) {
-            case MATRIX:
-                throw new IllegalStateException("Matrix scale type is not supported");
+        if (scaleType == ImageView.ScaleType.MATRIX) {
+            throw new IllegalStateException("Matrix scale type is not supported");
         }
         return true;
     }

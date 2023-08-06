@@ -19,7 +19,6 @@ import com.google.android.material.textfield.TextInputEditText;
 import java.util.Locale;
 
 public class PageSwitcher extends CardView {
-
     private LinearLayout master;
     private MaterialButton prev, next;
     private TextInputEditText text;
@@ -75,7 +74,7 @@ public class PageSwitcher extends CardView {
     }
 
     private void init(Context context) {
-        master = (LinearLayout) LayoutInflater.from(context).inflate(R.layout.page_switcher, this, true).findViewById(R.id.master_layout);
+        master = LayoutInflater.from(context).inflate(R.layout.page_switcher, this, true).findViewById(R.id.master_layout);
         prev = master.findViewById(R.id.prev);
         next = master.findViewById(R.id.next);
         text = master.findViewById(R.id.page_index);
@@ -137,12 +136,12 @@ public class PageSwitcher extends CardView {
         }
 
         @Override
-        public void onPrevClicked(PageSwitcher switcher) {
+        public void onPrevClicked(@NonNull PageSwitcher switcher) {
             switcher.setActualPage(switcher.getActualPage() - 1);
         }
 
         @Override
-        public void onNextClicked(PageSwitcher switcher) {
+        public void onNextClicked(@NonNull PageSwitcher switcher) {
             switcher.setActualPage(switcher.getActualPage() + 1);
         }
     }

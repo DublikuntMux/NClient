@@ -20,12 +20,11 @@ import okhttp3.Request;
 import okhttp3.Response;
 
 public class CustomInterceptor implements Interceptor {
-    private final boolean logRequests;
     private static final CookieInterceptor.Manager MANAGER = new CookieInterceptor.Manager() {
         boolean tokenFound = false;
 
         @Override
-        public void applyCookie(String key, String value) {
+        public void applyCookie(@NonNull String key, String value) {
             Cookie cookie = Cookie.parse(Login.BASE_HTTP_URL, key + "=" + value + "; Max-Age=31449600; Path=/; SameSite=Lax");
             Global.client.cookieJar().saveFromResponse(Login.BASE_HTTP_URL, Collections.singletonList(cookie));
             tokenFound |= key.equals("csrftoken");
@@ -44,6 +43,7 @@ public class CustomInterceptor implements Interceptor {
 
         }
     };
+    private final boolean logRequests;
     @Nullable
     private final Context context;
 
@@ -54,7 +54,7 @@ public class CustomInterceptor implements Interceptor {
 
     @NonNull
     @Override
-    public Response intercept(Chain chain) throws IOException {
+    public Response intercept(@NonNull Chain chain) throws IOException {
         Request request = chain.request();
         boolean rec = request.header("rec") != null;
         if (logRequests)

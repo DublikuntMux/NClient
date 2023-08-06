@@ -15,8 +15,9 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <view class="com.dublikunt.nclient.components.views.CFTokenView$CFTokenWebView"
+    <view
         android:id="@+id/webView"
+        class="com.dublikunt.nclient.components.views.CFTokenView$CFTokenWebView"
         android:layout_width="0dp"
         android:layout_height="0dp"
         app:layout_constraintBottom_toBottomOf="parent"

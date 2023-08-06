@@ -30,7 +30,7 @@ import com.dublikunt.nclient.async.database.Queries;
 import com.dublikunt.nclient.components.classes.Size;
 import com.dublikunt.nclient.components.widgets.CustomGridLayoutManager;
 import com.dublikunt.nclient.files.GalleryFolder;
-import com.dublikunt.nclient.github.chrisbanes.photoview.PhotoView;
+import com.dublikunt.nclient.photoview.PhotoView;
 import com.dublikunt.nclient.settings.Global;
 import com.dublikunt.nclient.utility.ImageDownloadUtility;
 import com.dublikunt.nclient.utility.LogUtility;
@@ -65,7 +65,7 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.ViewHold
     private Policy policy;
     private int colCount;
 
-    public GalleryAdapter(GalleryActivity cont, GenericGallery gallery, int colCount) {
+    public GalleryAdapter(GalleryActivity cont, @NonNull GenericGallery gallery, int colCount) {
         this.context = cont;
         this.gallery = gallery;
         maxSize = gallery.getMaxSize();
@@ -154,7 +154,7 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.ViewHold
         }
     }
 
-    private void loadRelatedLayout(ViewHolder holder) {
+    private void loadRelatedLayout(@NonNull ViewHolder holder) {
         LogUtility.d("Called RElated");
         final RecyclerView recyclerView = holder.master.findViewById(R.id.recycler);
         if (gallery.isLocal()) {
@@ -174,7 +174,7 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.ViewHold
         }
     }
 
-    private void loadTagLayout(ViewHolder holder) {
+    private void loadTagLayout(@NonNull ViewHolder holder) {
         final ViewGroup vg = holder.master.findViewById(R.id.tag_master);
         final TextView idContainer = holder.master.findViewById(R.id.id_num);
         initializeIdContainer(idContainer);
@@ -235,7 +235,7 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.ViewHold
         });
     }
 
-    private void addInfoLayout(ViewHolder holder, GalleryData gallery) {
+    private void addInfoLayout(@NonNull ViewHolder holder, @NonNull GalleryData gallery) {
         TextView text = holder.master.findViewById(R.id.page_count);
         text.setText(context.getString(R.string.page_count_format, gallery.getPageCount()));
         text = holder.master.findViewById(R.id.upload_date);
@@ -254,7 +254,7 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.ViewHold
         context.runOnUiThread(() -> notifyItemRangeChanged(0, getItemCount()));
     }
 
-    private void loadPageLayout(ViewHolder holder) {
+    private void loadPageLayout(@NonNull ViewHolder holder) {
         final int pos = holder.getBindingAdapterPosition();
         final ImageView imgView = holder.master.findViewById(R.id.image);
 
@@ -300,10 +300,7 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.ViewHold
             imgView.setOnLongClickListener(listener);
             holder.master.setOnLongClickListener(listener);
         }
-
         loadImageOnPolicy(imgView, pos);
-
-
     }
 
     private void optionDialog(ImageView imgView, final int pos) {
@@ -328,7 +325,7 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.ViewHold
                     break;
                 case 3:
                     String name = String.format(Locale.US, "%d-%d.jpg", gallery.getId(), pos);
-                    Utility.saveImage(imgView.getDrawable(), new File(Global.SCREENFOLDER, name));
+                    Utility.saveImage(imgView.getDrawable(), new File(Global.ScreenFolder, name));
                     break;
             }
         }).show();
@@ -343,7 +340,7 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.ViewHold
             .show();
     }
 
-    private void sendImage(ImageView img, int pos, boolean text) {
+    private void sendImage(@NonNull ImageView img, int pos, boolean text) {
         Utility.sendImage(context, img.getDrawable(), text ? gallery.sharePageUrl(pos - 1) : null);
     }
 
@@ -418,5 +415,4 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.ViewHold
             if (type == Type.RELATED) Global.applyFastScroller(master.findViewById(R.id.recycler));
         }
     }
-
 }

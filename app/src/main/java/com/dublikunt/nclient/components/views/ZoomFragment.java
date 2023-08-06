@@ -33,16 +33,11 @@ import com.dublikunt.nclient.api.components.GenericGallery;
 import com.dublikunt.nclient.components.GlideX;
 import com.dublikunt.nclient.files.GalleryFolder;
 import com.dublikunt.nclient.files.PageFile;
-import com.dublikunt.nclient.github.chrisbanes.photoview.PhotoView;
+import com.dublikunt.nclient.photoview.PhotoView;
 import com.dublikunt.nclient.settings.Global;
 import com.dublikunt.nclient.utility.LogUtility;
 
 public class ZoomFragment extends Fragment {
-
-    public interface OnZoomChangeListener {
-        void onZoomChange(View v, float zoomLevel);
-    }
-
     private static final float MAX_SCALE = 4f;
     private static final float CHANGE_PAGE_THRESHOLD = .2f;
     private PhotoView photoView = null;
@@ -55,11 +50,11 @@ public class ZoomFragment extends Fragment {
     private OnZoomChangeListener zoomChangeListener;
     private ImageViewTarget<Drawable> target = null;
 
-
     public ZoomFragment() {
     }
 
-    public static ZoomFragment newInstance(GenericGallery gallery, int page, @Nullable GalleryFolder directory) {
+    @NonNull
+    public static ZoomFragment newInstance(@NonNull GenericGallery gallery, int page, @Nullable GalleryFolder directory) {
         Bundle args = new Bundle();
         args.putString("URL", gallery.isLocal() ? null : ((Gallery) gallery).getPageUrl(page).toString());
         args.putParcelable("FOLDER", directory == null ? null : directory.getPage(page + 1));
@@ -76,7 +71,6 @@ public class ZoomFragment extends Fragment {
     public void setClickListener(View.OnClickListener clickListener) {
         this.clickListener = clickListener;
     }
-
 
     public void setZoomChangeListener(OnZoomChangeListener zoomChangeListener) {
         this.zoomChangeListener = zoomChangeListener;
@@ -101,10 +95,8 @@ public class ZoomFragment extends Fragment {
         ZoomActivity activity = (ZoomActivity) getActivity();
         assert getArguments() != null;
         assert activity != null;
-        //find views
         photoView = rootView.findViewById(R.id.image);
         retryButton = rootView.findViewById(R.id.imageView);
-        //read arguments
         String str = getArguments().getString("URL");
         url = str == null ? null : Uri.parse(str);
         pageFile = getArguments().getParcelable("FOLDER");
@@ -120,11 +112,11 @@ public class ZoomFragment extends Fragment {
             LogUtility.d(view, x, y, prev, next);
         });
 
-        photoView.setOnScaleChangeListener((float scaleFactor, float focusX, float focusY)->{
-            if(this.zoomChangeListener!=null) {
+        photoView.setOnScaleChangeListener((float scaleFactor, float focusX, float focusY) -> {
+            if (this.zoomChangeListener != null) {
                 this.zoomChangeListener.onZoomChange(rootView, photoView.getScale());
             }
-            });
+        });
 
         photoView.setMaximumScale(MAX_SCALE);
         retryButton.setOnClickListener(v -> loadImage());
@@ -141,7 +133,7 @@ public class ZoomFragment extends Fragment {
                 photoView.setImageDrawable(resource);
             }
 
-            void applyDrawable(ImageView toShow, ImageView toHide, Drawable drawable) {
+            void applyDrawable(@NonNull ImageView toShow, @NonNull ImageView toHide, Drawable drawable) {
                 toShow.setVisibility(View.VISIBLE);
                 toHide.setVisibility(View.GONE);
                 toShow.setImageDrawable(drawable);
@@ -176,7 +168,7 @@ public class ZoomFragment extends Fragment {
         };
     }
 
-    private void scalePhoto(Drawable drawable) {
+    private void scalePhoto(@NonNull Drawable drawable) {
         photoView.setScale(calculateScaleFactor(
             drawable.getIntrinsicWidth(),
             drawable.getIntrinsicHeight()
@@ -249,5 +241,9 @@ public class ZoomFragment extends Fragment {
 
     public void rotate() {
         updateDegree();
+    }
+
+    public interface OnZoomChangeListener {
+        void onZoomChange(View v, float zoomLevel);
     }
 }

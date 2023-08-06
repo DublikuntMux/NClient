@@ -4,7 +4,6 @@ import android.content.Context;
 
 import androidx.annotation.NonNull;
 
-import com.dublikunt.nclient.api.components.Tag;
 import com.dublikunt.nclient.api.enums.TagStatus;
 import com.dublikunt.nclient.api.enums.TagType;
 import com.dublikunt.nclient.async.database.Queries;
@@ -12,33 +11,35 @@ import com.dublikunt.nclient.async.database.Queries;
 import java.util.List;
 import java.util.Set;
 
-@SuppressWarnings({"unused", "UnusedReturnValue"})
-public class TagV2 {
-    public static final int MAXTAGS = 100;
+public class Tag {
+    public static final int MaxTags = 100;
     private static int minCount;
     private static boolean sortByName;
 
-    public static List<Tag> getTagSet(TagType type) {
+    @NonNull
+    public static List<com.dublikunt.nclient.api.components.Tag> getTagSet(TagType type) {
         return Queries.TagTable.getAllTagOfType(type);
     }
 
-    public static List<Tag> getTagStatus(TagStatus status) {
+    @NonNull
+    public static List<com.dublikunt.nclient.api.components.Tag> getTagStatus(TagStatus status) {
         return Queries.TagTable.getAllStatus(status);
     }
 
-    public static String getQueryString(String query, @NonNull Set<Tag> all) {
+    @NonNull
+    public static String getQueryString(String query, @NonNull Set<com.dublikunt.nclient.api.components.Tag> all) {
         StringBuilder builder = new StringBuilder();
-        for (Tag t : all)
+        for (com.dublikunt.nclient.api.components.Tag t : all)
             if (!query.contains(t.getName())) builder.append('+').append(t.toQueryTag());
         return builder.toString();
     }
 
-    public static List<Tag> getListPrefer(boolean removeIgnoredGalleries) {
+    public static List<com.dublikunt.nclient.api.components.Tag> getListPrefer(boolean removeIgnoredGalleries) {
         return removeIgnoredGalleries ? Queries.TagTable.getAllFiltered() :
             Queries.TagTable.getAllStatus(TagStatus.ACCEPTED);
     }
 
-    public static TagStatus updateStatus(Tag t) {
+    public static TagStatus updateStatus(@NonNull com.dublikunt.nclient.api.components.Tag t) {
         TagStatus old = t.getStatus();
         switch (t.getStatus()) {
             case ACCEPTED:
@@ -60,34 +61,34 @@ public class TagV2 {
         Queries.TagTable.resetAllStatus();
     }
 
-    public static boolean containTag(Tag[] tags, Tag t) {
-        for (Tag t1 : tags) if (t.equals(t1)) return true;
+    public static boolean containTag(@NonNull com.dublikunt.nclient.api.components.Tag[] tags, com.dublikunt.nclient.api.components.Tag t) {
+        for (com.dublikunt.nclient.api.components.Tag t1 : tags) if (t.equals(t1)) return true;
         return false;
     }
 
 
-    public static TagStatus getStatus(Tag tag) {
+    public static TagStatus getStatus(com.dublikunt.nclient.api.components.Tag tag) {
         return Queries.TagTable.getStatus(tag);
     }
 
 
     public static boolean maxTagReached() {
-        return getListPrefer(Global.removeAvoidedGalleries()).size() >= MAXTAGS;
+        return getListPrefer(Global.removeAvoidedGalleries()).size() >= MaxTags;
     }
 
-    public static void updateMinCount(Context context, int min) {
+    public static void updateMinCount(@NonNull Context context, int min) {
         context.getSharedPreferences("ScrapedTags", 0).edit().putInt("min_count", minCount = min).apply();
     }
 
-    public static void initMinCount(Context context) {
+    public static void initMinCount(@NonNull Context context) {
         minCount = context.getSharedPreferences("ScrapedTags", 0).getInt("min_count", 25);
     }
 
-    public static void initSortByName(Context context) {
+    public static void initSortByName(@NonNull Context context) {
         sortByName = context.getSharedPreferences("ScrapedTags", 0).getBoolean("sort_by_name", false);
     }
 
-    public static boolean updateSortByName(Context context) {
+    public static boolean updateSortByName(@NonNull Context context) {
         context.getSharedPreferences("ScrapedTags", 0).edit().putBoolean("sort_by_name", sortByName = !sortByName).apply();
         return sortByName;
     }
@@ -100,10 +101,12 @@ public class TagV2 {
         return minCount;
     }
 
+    @NonNull
     public static String getAvoidedTags() {
         StringBuilder builder = new StringBuilder();
-        List<Tag> tags = Queries.TagTable.getAllStatus(TagStatus.AVOIDED);
-        for (Tag t : tags) builder.append('+').append(t.toQueryTag(TagStatus.AVOIDED));
+        List<com.dublikunt.nclient.api.components.Tag> tags = Queries.TagTable.getAllStatus(TagStatus.AVOIDED);
+        for (com.dublikunt.nclient.api.components.Tag t : tags)
+            builder.append('+').append(t.toQueryTag(TagStatus.AVOIDED));
         return builder.toString();
     }
 }

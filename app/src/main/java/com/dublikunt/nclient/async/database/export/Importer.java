@@ -21,7 +21,7 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
 class Importer {
-    private static void importSharedPreferences(Context context, String sharedName, InputStream stream) throws IOException {
+    private static void importSharedPreferences(Context context, @NonNull String sharedName, InputStream stream) throws IOException {
         JsonReader reader = new JsonReader(new InputStreamReader(stream));
         if (sharedName.contains("/")) {
             String[] names = sharedName.split("/");
@@ -60,7 +60,7 @@ class Importer {
             }
             reader.endObject();
         }
-        editor.commit();
+        editor.apply();
     }
 
     private static void importDB(InputStream stream) throws IOException {

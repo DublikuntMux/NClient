@@ -1,10 +1,10 @@
 package com.dublikunt.nclient.components;
 
-import android.app.Activity;
 import android.content.Context;
 import android.view.View;
 
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 
@@ -58,7 +58,7 @@ public class GlideX {
     }
 
     @Nullable
-    public static RequestManager with(Activity activity) {
+    public static RequestManager with(AppCompatActivity activity) {
         try {
             return Glide.with(activity);
         } catch (VerifyError | IllegalStateException ignore) {

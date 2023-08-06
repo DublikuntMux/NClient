@@ -15,6 +15,8 @@ import com.dublikunt.nclient.api.enums.TitleType;
 import com.dublikunt.nclient.async.database.Queries;
 import com.dublikunt.nclient.utility.Utility;
 
+import org.jetbrains.annotations.Contract;
+
 import java.io.IOException;
 import java.io.StringReader;
 import java.io.StringWriter;
@@ -25,11 +27,15 @@ import java.util.Objects;
 
 public class GalleryData implements Parcelable {
     public static final Creator<GalleryData> CREATOR = new Creator<GalleryData>() {
+        @NonNull
+        @Contract("_ -> new")
         @Override
         public GalleryData createFromParcel(Parcel in) {
             return new GalleryData(in);
         }
 
+        @NonNull
+        @Contract(value = "_ -> new", pure = true)
         @Override
         public GalleryData[] newArray(int size) {
             return new GalleryData[size];
@@ -55,7 +61,7 @@ public class GalleryData implements Parcelable {
         parseJSON(jr);
     }
 
-    public GalleryData(Cursor cursor, @NonNull TagList tagList) throws IOException {
+    public GalleryData(@NonNull Cursor cursor, @NonNull TagList tagList) throws IOException {
         id = cursor.getInt(Queries.getColumnFromName(cursor, Queries.GalleryTable.IDGALLERY));
         mediaId = cursor.getInt(Queries.getColumnFromName(cursor, Queries.GalleryTable.MEDIAID));
         favoriteCount = cursor.getInt(Queries.getColumnFromName(cursor, Queries.GalleryTable.FAVORITE_COUNT));
@@ -70,7 +76,7 @@ public class GalleryData implements Parcelable {
         this.tags = tagList;
     }
 
-    protected GalleryData(Parcel in) {
+    protected GalleryData(@NonNull Parcel in) {
         uploadDate = new Date(in.readLong());
         favoriteCount = in.readInt();
         id = in.readInt();
@@ -84,6 +90,7 @@ public class GalleryData implements Parcelable {
         valid = in.readByte() != 0;
     }
 
+    @NonNull
     public static GalleryData fakeData() {
         GalleryData galleryData = new GalleryData();
         galleryData.id = SpecialTagIds.INVALID_ID;
@@ -95,7 +102,7 @@ public class GalleryData implements Parcelable {
         return galleryData;
     }
 
-    private void parseJSON(JsonReader jr) throws IOException {
+    private void parseJSON(@NonNull JsonReader jr) throws IOException {
         jr.beginObject();
         while (jr.peek() != JsonToken.END_OBJECT) {
             switch (jr.nextName()) {
@@ -135,11 +142,11 @@ public class GalleryData implements Parcelable {
         jr.endObject();
     }
 
-    private void setTitle(TitleType type, String title) {
+    private void setTitle(@NonNull TitleType type, String title) {
         titles[type.ordinal()] = Utility.unescapeUnicodeString(title);
     }
 
-    private void readTitles(JsonReader jr) throws IOException {
+    private void readTitles(@NonNull JsonReader jr) throws IOException {
         jr.beginObject();
         while (jr.peek() != JsonToken.END_OBJECT) {
             switch (jr.nextName()) {
@@ -161,7 +168,7 @@ public class GalleryData implements Parcelable {
         jr.endObject();
     }
 
-    private void readTags(JsonReader jr) throws IOException {
+    private void readTags(@NonNull JsonReader jr) throws IOException {
         jr.beginArray();
         while (jr.hasNext()) {
             Tag createdTag = new Tag(jr);
@@ -172,7 +179,7 @@ public class GalleryData implements Parcelable {
         tags.sort((o1, o2) -> o2.getCount() - o1.getCount());
     }
 
-    private void readImages(JsonReader jr) throws IOException {
+    private void readImages(@NonNull JsonReader jr) throws IOException {
         int actualPage = 0;
         jr.beginObject();
         while (jr.peek() != JsonToken.END_OBJECT) {
@@ -230,7 +237,7 @@ public class GalleryData implements Parcelable {
         return titles[i];
     }
 
-    public String getTitle(TitleType type) {
+    public String getTitle(@NonNull TitleType type) {
         return titles[type.ordinal()];
     }
 
@@ -264,7 +271,7 @@ public class GalleryData implements Parcelable {
     }
 
     @Override
-    public void writeToParcel(Parcel dest, int flags) {
+    public void writeToParcel(@NonNull Parcel dest, int flags) {
         dest.writeLong(uploadDate.getTime());
         dest.writeInt(favoriteCount);
         dest.writeInt(id);
@@ -278,7 +285,7 @@ public class GalleryData implements Parcelable {
         dest.writeByte((byte) (valid ? 1 : 0));
     }
 
-    private void writeInterval(StringWriter writer, int intervalLen, ImageExt referencePage) {
+    private void writeInterval(@NonNull StringWriter writer, int intervalLen, ImageExt referencePage) {
         writer.write(Integer.toString(intervalLen));
         writer.write(Page.extToChar(referencePage));
     }

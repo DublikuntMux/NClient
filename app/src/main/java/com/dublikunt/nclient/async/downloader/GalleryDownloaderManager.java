@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 
+import androidx.annotation.NonNull;
 import androidx.core.app.NotificationCompat;
 
 import com.dublikunt.nclient.GalleryActivity;
@@ -26,7 +27,7 @@ public class GalleryDownloaderManager {
 
     private final DownloadObserver observer = new DownloadObserver() {
         @Override
-        public void triggerStartDownload(GalleryDownloader downloader) {
+        public void triggerStartDownload(@NonNull GalleryDownloader downloader) {
             gallery = downloader.getGallery();
             prepareNotification();
             addActionToNotification(false);
@@ -48,7 +49,7 @@ public class GalleryDownloaderManager {
         }
 
         @Override
-        public void triggerCancelDownload(GalleryDownloader downloader) {
+        public void triggerCancelDownload(@NonNull GalleryDownloader downloader) {
             cancelNotification();
             Global.recursiveDelete(downloader.getFolder());
         }
@@ -81,7 +82,6 @@ public class GalleryDownloaderManager {
         Intent notifyIntent = new Intent(context, GalleryActivity.class);
         notifyIntent.putExtra(context.getPackageName() + ".GALLERY", downloaderV2.localGallery());
         notifyIntent.putExtra(context.getPackageName() + ".ISLOCAL", true);
-        // Create the PendingIntent
 
         PendingIntent notifyPendingIntent;
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S) {
@@ -101,8 +101,6 @@ public class GalleryDownloaderManager {
     }
 
     private void endNotification() {
-        //notification=new NotificationCompat.Builder(context.getApplicationContext(), Global.CHANNEL_ID1);
-        //notification.setOnlyAlertOnce(true).setSmallIcon(R.drawable.ic_check).setAutoCancel(true);
         clearNotificationAction();
         hidePercentage();
         if (downloaderV2.getStatus() != GalleryDownloader.Status.CANCELED) {
@@ -123,7 +121,7 @@ public class GalleryDownloaderManager {
     }
 
     private void prepareNotification() {
-        notification = new NotificationCompat.Builder(context.getApplicationContext(), Global.CHANNEL_ID1);
+        notification = new NotificationCompat.Builder(context.getApplicationContext(), Global.channelID1);
         notification.setOnlyAlertOnce(true)
 
             .setContentTitle(String.format(Locale.US, context.getString(R.string.downloading_format), gallery.getTitle()))
@@ -142,10 +140,6 @@ public class GalleryDownloaderManager {
         Intent startIntent = new Intent(context, DownloadGallery.class);
         Intent stopIntent = new Intent(context, DownloadGallery.class);
         Intent pauseIntent = new Intent(context, DownloadGallery.class);
-
-        //stopIntent.setAction("STOP");
-        //startIntent.setAction("START");
-        //pauseIntent.setAction("PAUSE");
 
         stopIntent.putExtra(context.getPackageName() + ".ID", downloaderV2.getId());
         pauseIntent.putExtra(context.getPackageName() + ".ID", downloaderV2.getId());

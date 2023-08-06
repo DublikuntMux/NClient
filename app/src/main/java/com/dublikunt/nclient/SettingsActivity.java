@@ -33,6 +33,7 @@ public class SettingsActivity extends GeneralActivity {
     private ActivityResultLauncher<String> IMPORT_ZIP;
     private ActivityResultLauncher<String> SAVE_SETTINGS;
     private ActivityResultLauncher<Object> REQUEST_STORAGE_MANAGER;
+    private int selectedItem;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,8 +52,6 @@ public class SettingsActivity extends GeneralActivity {
         fragment.setType(SettingsActivity.Type.values()[getIntent().getIntExtra(getPackageName() + ".TYPE", SettingsActivity.Type.MAIN.ordinal())]);
 
     }
-
-    private int selectedItem;
 
     private void registerActivities() {
         IMPORT_ZIP = registerForActivityResult(new ActivityResultContracts.GetContent(), selectedFile -> {
@@ -74,7 +73,7 @@ public class SettingsActivity extends GeneralActivity {
 
         });
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            REQUEST_STORAGE_MANAGER = registerForActivityResult(new ActivityResultContract<Object, Object>() {
+            REQUEST_STORAGE_MANAGER = registerForActivityResult(new ActivityResultContract<>() {
 
                 @RequiresApi(api = Build.VERSION_CODES.R)
                 @NonNull
@@ -119,7 +118,7 @@ public class SettingsActivity extends GeneralActivity {
     }
 
     private void importOldVersion() {
-        String[] files = Global.BACKUPFOLDER.list();
+        String[] files = Global.BackupFolder.list();
         if (files == null || files.length == 0) return;
         selectedItem = 0;
         MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(this);
@@ -129,7 +128,7 @@ public class SettingsActivity extends GeneralActivity {
         });
 
         builder.setPositiveButton(R.string.ok, (dialog, which) -> {
-            importSettings(Uri.fromFile(new File(Global.BACKUPFOLDER, files[selectedItem])));
+            importSettings(Uri.fromFile(new File(Global.BackupFolder, files[selectedItem])));
         }).setNegativeButton(R.string.cancel, null);
         builder.show();
     }
@@ -139,7 +138,7 @@ public class SettingsActivity extends GeneralActivity {
         if (SAVE_SETTINGS != null)
             SAVE_SETTINGS.launch(name);
         else {
-            File f = new File(Global.BACKUPFOLDER, name);
+            File f = new File(Global.BackupFolder, name);
             exportSettings(Uri.fromFile(f));
         }
     }

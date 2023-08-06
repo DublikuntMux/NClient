@@ -25,6 +25,7 @@ import com.dublikunt.nclient.settings.Global;
 import com.dublikunt.nclient.utility.LogUtility;
 import com.dublikunt.nclient.utility.Utility;
 
+import org.jetbrains.annotations.Contract;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
@@ -40,12 +41,16 @@ import java.util.Set;
 
 public class Gallery extends GenericGallery {
     public static final Creator<Gallery> CREATOR = new Creator<Gallery>() {
+        @NonNull
+        @Contract("_ -> new")
         @Override
         public Gallery createFromParcel(Parcel in) {
             LogUtility.d("Reading to parcel");
             return new Gallery(in);
         }
 
+        @NonNull
+        @Contract(value = "_ -> new", pure = true)
         @Override
         public Gallery[] newArray(int size) {
             return new Gallery[size];
@@ -60,7 +65,7 @@ public class Gallery extends GenericGallery {
     private Language language = Language.UNKNOWN;
     private Size maxSize = new Size(0, 0), minSize = new Size(Integer.MAX_VALUE, Integer.MAX_VALUE);
 
-    public Gallery(Context context, String json, Elements related, boolean isFavorite) throws IOException {
+    public Gallery(Context context, String json, @NonNull Elements related, boolean isFavorite) throws IOException {
         LogUtility.d("Found JSON: " + json);
         JsonReader reader = new JsonReader(new StringReader(json));
         this.related = new ArrayList<>(related.size());
@@ -72,7 +77,7 @@ public class Gallery extends GenericGallery {
         onlineFavorite = isFavorite;
     }
 
-    public Gallery(Cursor cursor, TagList tags) throws IOException {
+    public Gallery(@NonNull Cursor cursor, TagList tags) throws IOException {
         maxSize.setWidth(cursor.getInt(Queries.getColumnFromName(cursor, Queries.GalleryTable.MAX_WIDTH)));
         maxSize.setHeight(cursor.getInt(Queries.getColumnFromName(cursor, Queries.GalleryTable.MAX_HEIGHT)));
         minSize.setWidth(cursor.getInt(Queries.getColumnFromName(cursor, Queries.GalleryTable.MIN_WIDTH)));
@@ -90,7 +95,7 @@ public class Gallery extends GenericGallery {
         folder = null;
     }
 
-    public Gallery(Parcel in) {
+    public Gallery(@NonNull Parcel in) {
         maxSize = in.readParcelable(Size.class.getClassLoader());
         minSize = in.readParcelable(Size.class.getClassLoader());
         galleryData = in.readParcelable(GalleryData.class.getClassLoader());
@@ -112,7 +117,7 @@ public class Gallery extends GenericGallery {
         return getPathTitle(title, "");
     }
 
-    public static Language loadLanguage(TagList tags) {
+    public static Language loadLanguage(@NonNull TagList tags) {
         for (Tag tag : tags.retrieveForType(TagType.LANGUAGE)) {
             switch (tag.getId()) {
                 case SpecialTagIds.LANGUAGE_JAPANESE:
@@ -126,11 +131,13 @@ public class Gallery extends GenericGallery {
         return Language.UNKNOWN;
     }
 
+    @NonNull
+    @Contract(" -> new")
     public static Gallery emptyGallery() {
         return new Gallery();
     }
 
-    private void calculateSizes(GalleryData galleryData) {
+    private void calculateSizes(@NonNull GalleryData galleryData) {
         Size actualSize;
         for (Page page : galleryData.getPages()) {
             actualSize = page.getSize();
@@ -324,7 +331,7 @@ public class Gallery extends GenericGallery {
         writer.flush();
     }
 
-    private void toJsonTags(JsonWriter writer) throws IOException {
+    private void toJsonTags(@NonNull JsonWriter writer) throws IOException {
         writer.name("tags");
         writer.beginArray();
         for (Tag t : getTags().getAllTagsSet())
@@ -332,7 +339,7 @@ public class Gallery extends GenericGallery {
         writer.endArray();
     }
 
-    private void toJsonTitle(JsonWriter writer) throws IOException {
+    private void toJsonTitle(@NonNull JsonWriter writer) throws IOException {
         String title;
         writer.name("title");
         writer.beginObject();
@@ -351,7 +358,7 @@ public class Gallery extends GenericGallery {
     }
 
     @Override
-    public void writeToParcel(Parcel dest, int flags) {
+    public void writeToParcel(@NonNull Parcel dest, int flags) {
         dest.writeParcelable(maxSize, flags);
         dest.writeParcelable(minSize, flags);
         dest.writeParcelable(galleryData, flags);

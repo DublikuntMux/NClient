@@ -1,11 +1,7 @@
 package com.dublikunt.nclient;
 
-import android.Manifest;
 import android.annotation.SuppressLint;
-import android.annotation.TargetApi;
-import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Build;
@@ -26,11 +22,10 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.widget.Toolbar;
-import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
 
 import com.dublikunt.nclient.adapters.GalleryAdapter;
-import com.dublikunt.nclient.api.InspectorV3;
+import com.dublikunt.nclient.api.Inspector;
 import com.dublikunt.nclient.api.components.Gallery;
 import com.dublikunt.nclient.api.components.GenericGallery;
 import com.dublikunt.nclient.async.database.Queries;
@@ -48,10 +43,7 @@ import com.dublikunt.nclient.utility.Utility;
 import com.google.android.material.appbar.CollapsingToolbarLayout;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.snackbar.Snackbar;
-import com.skydoves.colorpickerview.ActionMode;
-import com.skydoves.colorpickerview.ColorEnvelope;
 import com.skydoves.colorpickerview.ColorPickerDialog;
-import com.skydoves.colorpickerview.ColorPickerView;
 import com.skydoves.colorpickerview.listeners.ColorEnvelopeListener;
 
 import java.io.File;
@@ -129,7 +121,7 @@ public class GalleryActivity extends BaseActivity {
                     zoom = 0;
                 }
             }
-            InspectorV3.galleryInspector(this, id, new InspectorV3.DefaultInspectorResponse() {
+            Inspector.galleryInspector(this, id, new Inspector.DefaultInspectorResponse() {
                 @Override
                 public void onSuccess(List<GenericGallery> galleries) {
                     if (galleries.size() > 0) {
@@ -179,7 +171,6 @@ public class GalleryActivity extends BaseActivity {
         int page = Queries.ResumeTable.pageFromId(gallery.getId());
         if (page < 0) return;
         Snackbar snack = Snackbar.make(toolbar, getString(R.string.resume_from_page, page), Snackbar.LENGTH_LONG);
-        //Should be already compensated
         snack.setAction(R.string.resume, v -> new Thread(() -> {
             runOnUiThread(() -> recycler.scrollToPosition(page));
             if (Global.getColumnCount() != 1) return;
@@ -227,7 +218,7 @@ public class GalleryActivity extends BaseActivity {
     }
 
 
-    public void initFavoriteIcon(Menu menu) {
+    public void initFavoriteIcon(@NonNull Menu menu) {
         boolean onlineFavorite = !isLocal && ((Gallery) gallery).isOnlineFavorite();
         boolean unknown = getIntent().getBooleanExtra(getPackageName() + ".UNKNOWN", false);
         MenuItem item = menu.findItem(R.id.add_online_gallery);
@@ -252,7 +243,7 @@ public class GalleryActivity extends BaseActivity {
         return true;
     }
 
-    private void menuItemsVisible(Menu menu) {
+    private void menuItemsVisible(@NonNull Menu menu) {
         boolean isLogged = Login.isLogged();
         boolean isValidOnline = gallery.isValid() && !isLocal;
         onlineFavoriteItem = menu.findItem(R.id.add_online_gallery);
@@ -275,13 +266,10 @@ public class GalleryActivity extends BaseActivity {
     }
 
     @Override
-    public boolean onOptionsItemSelected(final MenuItem item) {
+    public boolean onOptionsItemSelected(@NonNull final MenuItem item) {
         int id = item.getItemId();
         if (id == R.id.download_gallery) {
-            if (Global.hasStoragePermission(this))
-                new RangeSelector(this, (Gallery) gallery).show();
-            else
-                requestStorage();
+            new RangeSelector(this, (Gallery) gallery).show();
         } else if (id == R.id.add_online_gallery) addToFavorite(item);
         else if (id == R.id.change_view) updateColumnCount(true);
         else if (id == R.id.download_torrent) downloadTorrent();
@@ -311,7 +299,7 @@ public class GalleryActivity extends BaseActivity {
     }
 
     private void downloadTorrent() {
-        if(!Global.hasStoragePermission(this)){
+        if (!Global.hasStoragePermission(this)) {
             return;
         }
 
@@ -320,28 +308,28 @@ public class GalleryActivity extends BaseActivity {
 
         new AuthRequest(referer, url, new Callback() {
             @Override
-            public void onFailure(@NonNull Call call,@NonNull  IOException e) {
+            public void onFailure(@NonNull Call call, @NonNull IOException e) {
                 GalleryActivity.this.runOnUiThread(() ->
                     Toast.makeText(GalleryActivity.this, R.string.failed, Toast.LENGTH_SHORT).show()
                 );
             }
 
             @Override
-            public void onResponse(@NonNull Call call,@NonNull Response response) throws IOException {
-                File file=new File(Global.TORRENTFOLDER,gallery.getId()+".torrent");
+            public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+                File file = new File(Global.TorrentFolder, gallery.getId() + ".torrent");
                 Utility.writeStreamToFile(response.body().byteStream(), file);
-                Intent intent=new Intent(Intent.ACTION_VIEW);
+                Intent intent = new Intent(Intent.ACTION_VIEW);
                 Uri torrentUri;
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
                     torrentUri = FileProvider.getUriForFile(GalleryActivity.this, GalleryActivity.this.getPackageName() + ".provider", file);
                     intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-                }else{
-                    torrentUri=Uri.fromFile(file);
+                } else {
+                    torrentUri = Uri.fromFile(file);
                 }
                 intent.setDataAndType(torrentUri, "application/x-bittorrent");
                 try {
                     GalleryActivity.this.startActivity(intent);
-                }catch (RuntimeException ignore){
+                } catch (RuntimeException ignore) {
                     runOnUiThread(() ->
                         Toast.makeText(GalleryActivity.this, R.string.failed, Toast.LENGTH_SHORT).show()
                     );
@@ -349,7 +337,7 @@ public class GalleryActivity extends BaseActivity {
                 }
                 file.deleteOnExit();
             }
-        }).setMethod("GET",null).start();
+        }).setMethod("GET", null).start();
     }
 
     private void updateStatus() {
@@ -493,7 +481,7 @@ public class GalleryActivity extends BaseActivity {
 
     private void toInternet() {
         refresher.setEnabled(true);
-        InspectorV3.galleryInspector(this, gallery.getId(), new InspectorV3.DefaultInspectorResponse() {
+        Inspector.galleryInspector(this, gallery.getId(), new Inspector.DefaultInspectorResponse() {
             @Override
             public void onSuccess(List<GenericGallery> galleries) {
                 if (galleries.size() == 0) return;
@@ -503,18 +491,5 @@ public class GalleryActivity extends BaseActivity {
                 runOnUiThread(() -> startActivity(intent));
             }
         }).start();
-    }
-
-    @TargetApi(Build.VERSION_CODES.M)
-    private void requestStorage() {
-        requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE}, 1);
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        Global.initStorage(this);
-        if (requestCode == 1 && grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED)
-            new RangeSelector(this, (Gallery) gallery).show();
     }
 }

@@ -7,10 +7,12 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+
 import com.dublikunt.nclient.components.activities.GeneralActivity;
 
 public class CopyToClipboardActivity extends GeneralActivity {
-    public static void copyTextToClipboard(Context context, String text) {
+    public static void copyTextToClipboard(@NonNull Context context, String text) {
         ClipboardManager clipboard = (ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);
         ClipData clip = ClipData.newPlainText("text", text);
         if (clipboard != null)

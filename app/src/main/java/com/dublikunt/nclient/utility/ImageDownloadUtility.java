@@ -7,6 +7,7 @@ import android.net.Uri;
 import android.widget.ImageView;
 
 import androidx.annotation.DrawableRes;
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.bumptech.glide.RequestBuilder;
@@ -66,12 +67,12 @@ public class ImageDownloadUtility {
         return shouldFull ? gallery.getPageUrl(page) : gallery.getLowPage(page);
     }
 
-    public static void downloadPage(Activity activity, ImageView imageView, Gallery gallery, int page, boolean shouldFull) {
+    public static void downloadPage(Activity activity, ImageView imageView, @NonNull Gallery gallery, int page, boolean shouldFull) {
         shouldFull = gallery.getPageExtension(page).equals("gif") || shouldFull;
         loadImageOp(activity, imageView, getUrlForGallery(gallery, page, shouldFull), 0);
     }
 
-    private static void loadLogo(ImageView imageView) {
+    private static void loadLogo(@NonNull ImageView imageView) {
         imageView.setImageDrawable(Global.getLogo(imageView.getResources()));
     }
 
@@ -83,10 +84,7 @@ public class ImageDownloadUtility {
         loadImage(activity, file == null ? null : Uri.fromFile(file), imageView);
     }
 
-    /**
-     * Load Resource using id
-     */
-    public static void loadImage(@DrawableRes int resource, ImageView imageView) {
+    public static void loadImage(@DrawableRes int resource, @NonNull ImageView imageView) {
         imageView.setImageResource(resource);
     }
 }

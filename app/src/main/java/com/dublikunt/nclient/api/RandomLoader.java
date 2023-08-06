@@ -1,5 +1,7 @@
 package com.dublikunt.nclient.api;
 
+import androidx.annotation.NonNull;
+
 import com.dublikunt.nclient.RandomActivity;
 import com.dublikunt.nclient.api.components.Gallery;
 import com.dublikunt.nclient.api.components.GenericGallery;
@@ -14,27 +16,6 @@ public class RandomLoader {
     private final RandomActivity activity;
     private boolean galleryHasBeenRequested;
 
-    private final InspectorV3.InspectorResponse response = new InspectorV3.DefaultInspectorResponse() {
-        @Override
-        public void onFailure(Exception e) {
-            loadRandomGallery();
-        }
-
-        @Override
-        public void onSuccess(List<GenericGallery> galleryList) {
-            if (galleryList.size() == 0 || !galleryList.get(0).isValid()) {
-                loadRandomGallery();
-                return;
-            }
-            Gallery gallery = (Gallery) galleryList.get(0);
-            galleries.add(gallery);
-            ImageDownloadUtility.preloadImage(activity, gallery.getCover());
-            if (galleryHasBeenRequested)
-                requestGallery();//requestGallery will call loadRandomGallery
-            else if (galleries.size() < MAXLOADED) loadRandomGallery();
-        }
-    };
-
     public RandomLoader(RandomActivity activity) {
         this.activity = activity;
         galleries = new ArrayList<>(MAXLOADED);
@@ -44,8 +25,27 @@ public class RandomLoader {
 
     private void loadRandomGallery() {
         if (galleries.size() >= MAXLOADED) return;
-        InspectorV3.randomInspector(activity, response, false).start();
-    }
+        Inspector.randomInspector(activity, response, false).start();
+    }    private final Inspector.InspectorResponse response = new Inspector.DefaultInspectorResponse() {
+        @Override
+        public void onFailure(Exception e) {
+            loadRandomGallery();
+        }
+
+        @Override
+        public void onSuccess(@NonNull List<GenericGallery> galleryList) {
+            if (galleryList.size() == 0 || !galleryList.get(0).isValid()) {
+                loadRandomGallery();
+                return;
+            }
+            Gallery gallery = (Gallery) galleryList.get(0);
+            galleries.add(gallery);
+            ImageDownloadUtility.preloadImage(activity, gallery.getCover());
+            if (galleryHasBeenRequested)
+                requestGallery();
+            else if (galleries.size() < MAXLOADED) loadRandomGallery();
+        }
+    };
 
     public void requestGallery() {
         galleryHasBeenRequested = true;
@@ -60,4 +60,6 @@ public class RandomLoader {
         }
         loadRandomGallery();
     }
+
+
 }

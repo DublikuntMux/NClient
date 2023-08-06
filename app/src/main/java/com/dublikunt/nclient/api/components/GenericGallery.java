@@ -11,7 +11,6 @@ import com.dublikunt.nclient.utility.Utility;
 import java.util.Locale;
 
 public abstract class GenericGallery implements Parcelable {
-
     public abstract int getId();
 
     public abstract Type getType();
@@ -42,5 +41,4 @@ public abstract class GenericGallery implements Parcelable {
     public abstract GalleryData getGalleryData();
 
     public enum Type {COMPLETE, LOCAL, SIMPLE}
-
 }

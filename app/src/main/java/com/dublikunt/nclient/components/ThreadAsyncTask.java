@@ -2,12 +2,11 @@ package com.dublikunt.nclient.components;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.dublikunt.nclient.settings.Global;
-
 public abstract class ThreadAsyncTask<Params, Progress, Result> {
 
     private final AppCompatActivity activity;
     private Thread thread;
+
     public ThreadAsyncTask(AppCompatActivity activity) {
         this.activity = activity;
     }
@@ -29,12 +28,11 @@ public abstract class ThreadAsyncTask<Params, Progress, Result> {
     protected abstract Result doInBackground(Params... params);
 
     protected final void publishProgress(Progress... values) {
-        if (!Global.isDestroyed(activity))
+        if (!activity.isDestroyed())
             activity.runOnUiThread(() -> onProgressUpdate(values));
     }
 
     class AsyncThread extends Thread {
-
         Params[] params;
 
         AsyncThread(Params[] params) {
@@ -43,10 +41,10 @@ public abstract class ThreadAsyncTask<Params, Progress, Result> {
 
         @Override
         public void run() {
-            if (!Global.isDestroyed(activity))
+            if (!activity.isDestroyed())
                 activity.runOnUiThread(ThreadAsyncTask.this::onPreExecute);
             Result result = doInBackground(params);
-            if (!Global.isDestroyed(activity))
+            if (!activity.isDestroyed())
                 activity.runOnUiThread(() -> onPostExecute(result));
         }
     }

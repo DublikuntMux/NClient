@@ -15,6 +15,8 @@ import com.dublikunt.nclient.api.components.Gallery;
 import com.dublikunt.nclient.async.downloader.DownloadGallery;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
+import org.jetbrains.annotations.Contract;
+
 public class RangeSelector extends MaterialAlertDialogBuilder {
     private final Gallery gallery;
     private SeekBar s1, s2;
@@ -37,14 +39,20 @@ public class RangeSelector extends MaterialAlertDialogBuilder {
         setCancelable(true);
     }
 
+    @NonNull
+    @Contract(pure = true)
     private View.OnClickListener getPrevListener(SeekBar s) {
         return v -> s.setProgress(s.getProgress() - 1);
     }
 
+    @NonNull
+    @Contract(pure = true)
     private View.OnClickListener getNextListener(SeekBar s) {
         return v -> s.setProgress(s.getProgress() + 1);
     }
 
+    @NonNull
+    @Contract("_ -> new")
     private SeekBar.OnSeekBarChangeListener getSeekBarListener(TextView t) {
         return new SeekBar.OnSeekBarChangeListener() {
             @Override
@@ -62,7 +70,7 @@ public class RangeSelector extends MaterialAlertDialogBuilder {
         };
     }
 
-    private void applyLogic(LinearLayout layout, boolean start) {
+    private void applyLogic(@NonNull LinearLayout layout, boolean start) {
         ImageButton prev = layout.findViewById(R.id.prev);
         ImageButton next = layout.findViewById(R.id.next);
         TextView pages = layout.findViewById(R.id.pages);

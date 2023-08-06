@@ -9,6 +9,7 @@ import android.view.View;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.widget.ImageViewCompat;
 
@@ -38,8 +39,6 @@ public class RandomActivity extends GeneralActivity {
         setContentView(R.layout.activity_random);
         loader = new RandomLoader(this);
 
-
-        //init components id
         Toolbar toolbar = findViewById(R.id.toolbar);
         FloatingActionButton shuffle = findViewById(R.id.shuffle);
         ImageButton share = findViewById(R.id.share);
@@ -50,7 +49,6 @@ public class RandomActivity extends GeneralActivity {
         title = findViewById(R.id.title);
         page = findViewById(R.id.pages);
 
-        //init toolbar
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowTitleEnabled(true);
@@ -94,7 +92,7 @@ public class RandomActivity extends GeneralActivity {
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         if (item.getItemId() == android.R.id.home) {
             finish();
             return true;
@@ -105,7 +103,7 @@ public class RandomActivity extends GeneralActivity {
 
     public void loadGallery(Gallery gallery) {
         loadedGallery = gallery;
-        if (Global.isDestroyed(this)) return;
+        if (this.isDestroyed()) return;
         ImageDownloadUtility.loadImage(this, gallery.getCover(), thumbnail);
         language.setText(Global.getLanguageFlag(gallery.getLanguage()));
         isFavorite = Favorites.isFavorite(loadedGallery);

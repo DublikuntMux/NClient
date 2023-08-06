@@ -2,10 +2,7 @@ package com.dublikunt.nclient.settings;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.os.Build;
 import android.webkit.CookieManager;
-import android.webkit.CookieSyncManager;
-import android.webkit.WebView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -52,49 +49,28 @@ public class Login {
     }
 
 
-    public static void removeCloudflareCookies() {
-        CustomCookieJar cookieJar = (CustomCookieJar) Global.client.cookieJar();
-        List<Cookie> cookies = cookieJar.loadForRequest(BASE_HTTP_URL);
-        for (Cookie cookie : cookies) {
-            if (cookie.name().equals(LOGIN_COOKIE)) {
-                continue;
-            }
-            cookieJar.removeCookie(cookie.name());
-        }
-    }
-
     public static void logout(Context context) {
         CustomCookieJar cookieJar = (CustomCookieJar) Global.client.cookieJar();
         removeCookie(LOGIN_COOKIE);
         cookieJar.clearSession();
-        updateUser(null);//remove user
-        clearOnlineTags();//remove online tags
-        clearWebViewCookies(context);//clear webView cookies
+        updateUser(null);
+        clearOnlineTags();
+        clearWebViewCookies(context);
     }
 
     public static void clearWebViewCookies(Context context) {
         try {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1) {
-                CookieManager.getInstance().removeAllCookies(null);
-                CookieManager.getInstance().flush();
-            } else {
-                CookieSyncManager cookieSyncMngr = CookieSyncManager.createInstance(context);
-                cookieSyncMngr.startSync();
-                CookieManager cookieManager = CookieManager.getInstance();
-                cookieManager.removeAllCookie();
-                cookieManager.removeSessionCookie();
-                cookieSyncMngr.stopSync();
-                cookieSyncMngr.sync();
-            }
+            CookieManager.getInstance().removeAllCookies(null);
+            CookieManager.getInstance().flush();
         } catch (Throwable ignore) {
-        }//catch InvocationTargetException randomly thrown
+        }
     }
 
     public static void clearOnlineTags() {
         Queries.TagTable.removeAllBlacklisted();
     }
 
-    public static void clearCookies(){
+    public static void clearCookies() {
         CustomCookieJar cookieJar = (CustomCookieJar) Global.getClient().cookieJar();
         cookieJar.clear();
         cookieJar.clearSession();
@@ -135,7 +111,6 @@ public class Login {
         }
         if (context != null) logout(context);
         return false;
-        //return sessionId!=null;
     }
 
     public static boolean isLogged() {
@@ -154,8 +129,5 @@ public class Login {
 
     public static boolean isOnlineTags(Tag tag) {
         return Queries.TagTable.isBlackListed(tag);
-    }
-
-    public static void hasLogged(WebView webView) {
     }
 }

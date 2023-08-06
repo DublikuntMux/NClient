@@ -8,7 +8,6 @@ import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
-import android.os.Build;
 import android.view.Menu;
 import android.view.MenuItem;
 
@@ -18,6 +17,8 @@ import androidx.core.content.FileProvider;
 
 import com.dublikunt.nclient.R;
 import com.dublikunt.nclient.settings.Global;
+
+import org.jetbrains.annotations.Contract;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -33,8 +34,9 @@ import java.util.Random;
 public class Utility {
     public static final Random RANDOM = new Random(System.nanoTime());
     public static final String ORIGINAL_URL = "nhentai.net";
-    public static final String PROTOCOL = Build.VERSION.SDK_INT <= Build.VERSION_CODES.LOLLIPOP ? "http://" : "https://";
 
+    @NonNull
+    @Contract(pure = true)
     public static String getBaseUrl() {
         return "https://" + Utility.getHost() + "/";
     }
@@ -44,7 +46,7 @@ public class Utility {
         return Global.getMirror();
     }
 
-    private static void parseEscapedCharacter(Reader reader, Writer writer) throws IOException {
+    private static void parseEscapedCharacter(@NonNull Reader reader, Writer writer) throws IOException {
         int toCreate, read;
         switch (read = reader.read()) {
             case 'u':
@@ -93,7 +95,7 @@ public class Utility {
         }
     }
 
-    public static void tintMenu(Menu menu) {
+    public static void tintMenu(@NonNull Menu menu) {
         int x = menu.size();
         for (int i = 0; i < x; i++) {
             MenuItem item = menu.getItem(i);
@@ -124,7 +126,7 @@ public class Utility {
         }
     }
 
-    public static long writeStreamToFile(InputStream inputStream, File filePath) throws IOException {
+    public static long writeStreamToFile(@NonNull InputStream inputStream, File filePath) throws IOException {
         FileOutputStream outputStream = new FileOutputStream(filePath);
         int read;
         long totalByte = 0;
@@ -166,7 +168,5 @@ public class Utility {
         } catch (IOException e) {
             e.printStackTrace();
         }
-
     }
-
 }

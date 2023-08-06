@@ -4,7 +4,6 @@ import android.os.Bundle;
 import android.view.MenuItem;
 import android.webkit.CookieManager;
 import android.webkit.WebView;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -21,11 +20,7 @@ import java.util.Collections;
 
 import okhttp3.Cookie;
 
-/**
- * A login screen that offers login via email/password.
- */
 public class LoginActivity extends GeneralActivity {
-    public TextView invalid;
     CookieWaiter waiter;
     WebView webView;
 
@@ -82,7 +77,7 @@ public class LoginActivity extends GeneralActivity {
             finish();
         }
 
-        String fetchCookie(String cookies) {
+        String fetchCookie(@NonNull String cookies) {
             int start = cookies.indexOf("sessionid");
             start = cookies.indexOf('=', start) + 1;
             int end = cookies.indexOf(';', start);

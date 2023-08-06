@@ -1,5 +1,8 @@
 package com.dublikunt.nclient.async.downloader;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -16,12 +19,14 @@ public class DownloadQueue {
         downloadQueue.add(x);
     }
 
+    @Nullable
     public static GalleryDownloader fetchForData() {
         for (GalleryDownloaderManager x : downloadQueue)
             if (!x.downloader().hasData()) return x.downloader();
         return null;
     }
 
+    @Nullable
     public static GalleryDownloaderManager fetch() {
         for (GalleryDownloaderManager x : downloadQueue)
             if (x.downloader().canBeFetched()) return x;
@@ -34,6 +39,7 @@ public class DownloadQueue {
         downloadQueue.clear();
     }
 
+    @NonNull
     public static CopyOnWriteArrayList<GalleryDownloader> getDownloaders() {
         CopyOnWriteArrayList<GalleryDownloader> downloaders = new CopyOnWriteArrayList<>();
         for (GalleryDownloaderManager manager : downloadQueue)
@@ -51,6 +57,7 @@ public class DownloadQueue {
             manager.downloader().removeObserver(observer);
     }
 
+    @Nullable
     private static GalleryDownloaderManager findManagerFromDownloader(GalleryDownloader downloader) {
         for (GalleryDownloaderManager manager : downloadQueue)
             if (manager.downloader() == downloader)
@@ -62,6 +69,7 @@ public class DownloadQueue {
         remove(findDownloaderFromId(id), cancel);
     }
 
+    @Nullable
     private static GalleryDownloader findDownloaderFromId(int id) {
         for (GalleryDownloaderManager manager : downloadQueue)
             if (manager.downloader().getId() == id) return manager.downloader();
@@ -83,6 +91,7 @@ public class DownloadQueue {
         downloadQueue.add(0, manager);
     }
 
+    @Nullable
     public static GalleryDownloaderManager managerFromId(int id) {
         for (GalleryDownloaderManager manager : downloadQueue)
             if (manager.downloader().getId() == id) return manager;

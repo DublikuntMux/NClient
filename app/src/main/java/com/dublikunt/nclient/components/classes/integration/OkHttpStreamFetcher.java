@@ -21,9 +21,6 @@ import okhttp3.Request;
 import okhttp3.Response;
 import okhttp3.ResponseBody;
 
-/**
- * Fetches an {@link InputStream} using the okhttp library.
- */
 public class OkHttpStreamFetcher implements DataFetcher<InputStream>, okhttp3.Callback {
     private static final String TAG = "OkHttpFetcher";
     private final Call.Factory client;
@@ -31,12 +28,9 @@ public class OkHttpStreamFetcher implements DataFetcher<InputStream>, okhttp3.Ca
     private InputStream stream;
     private ResponseBody responseBody;
     private DataCallback<? super InputStream> callback;
-    // call may be accessed on the main thread while the object is in use on other threads. All other
-    // accesses to variables may occur on different threads, but only one at a time.
+
     private volatile Call call;
 
-    // Public API.
-    @SuppressWarnings("WeakerAccess")
     public OkHttpStreamFetcher(Call.Factory client, GlideUrl url) {
         this.client = client;
         this.url = url;

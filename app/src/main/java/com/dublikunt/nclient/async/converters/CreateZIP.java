@@ -8,6 +8,7 @@ import android.content.pm.ResolveInfo;
 import android.net.Uri;
 import android.os.Build;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.JobIntentService;
 import androidx.core.app.NotificationCompat;
@@ -29,8 +30,6 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
 public class CreateZIP extends JobIntentService {
-    // TODO: 11/04/20 REFACTOR CREATE ZIP AND PDF
-
     private final byte[] buffer = new byte[1024];
     private int notId;
     private NotificationCompat.Builder notification;
@@ -38,7 +37,7 @@ public class CreateZIP extends JobIntentService {
     public CreateZIP() {
     }
 
-    public static void startWork(Context context, LocalGallery gallery) {
+    public static void startWork(@NonNull Context context, LocalGallery gallery) {
         Intent i = new Intent();
         i.putExtra(context.getPackageName() + ".GALLERY", gallery);
         enqueueWork(context, CreateZIP.class, 555, i);
@@ -51,7 +50,7 @@ public class CreateZIP extends JobIntentService {
         if (gallery == null) return;
         preExecute(gallery.getDirectory());
         try {
-            File file = new File(Global.ZIPFOLDER, gallery.getTitle() + ".zip");
+            File file = new File(Global.ZipFolder, gallery.getTitle() + ".zip");
             FileOutputStream o = new FileOutputStream(file);
             ZipOutputStream out = new ZipOutputStream(o);
             out.setLevel(Deflater.BEST_COMPRESSION);
@@ -116,14 +115,14 @@ public class CreateZIP extends JobIntentService {
                 notification.setContentIntent(PendingIntent.getActivity(getApplicationContext(), 0, i, PendingIntent.FLAG_IMMUTABLE));
             }
             LogUtility.d(apkURI.toString());
-        } catch (IllegalArgumentException ignore) {//sometimes the uri isn't available
+        } catch (IllegalArgumentException ignore) {
 
         }
     }
 
-    private void preExecute(File file) {
+    private void preExecute(@NonNull File file) {
         notId = NotificationSettings.getNotificationId();
-        notification = new NotificationCompat.Builder(getApplicationContext(), Global.CHANNEL_ID3);
+        notification = new NotificationCompat.Builder(getApplicationContext(), Global.channelID3);
         notification.setSmallIcon(R.drawable.ic_archive)
             .setOnlyAlertOnce(true)
             .setContentText(file.getName())

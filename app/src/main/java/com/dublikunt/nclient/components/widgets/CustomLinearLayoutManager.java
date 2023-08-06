@@ -10,7 +10,6 @@ public class CustomLinearLayoutManager extends LinearLayoutManager {
         super(context);
     }
 
-
     @Override
     public boolean supportsPredictiveItemAnimations() {
         return false;

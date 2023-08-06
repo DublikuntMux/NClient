@@ -17,7 +17,7 @@ import com.dublikunt.nclient.adapters.TagsAdapter;
 import com.dublikunt.nclient.api.enums.TagType;
 import com.dublikunt.nclient.async.ScrapeTags;
 import com.dublikunt.nclient.settings.Global;
-import com.dublikunt.nclient.settings.TagV2;
+import com.dublikunt.nclient.settings.Tag;
 
 public class TagTypePage extends Fragment {
     private TagType type;
@@ -32,7 +32,7 @@ public class TagTypePage extends Fragment {
     private static int getTag(int page) {
         switch (page) {
             case 0:
-                return TagType.UNKNOWN.getId();//tags with status
+                return TagType.UNKNOWN.getId();
             case 1:
                 return TagType.TAG.getId();
             case 2:
@@ -44,11 +44,12 @@ public class TagTypePage extends Fragment {
             case 5:
                 return TagType.GROUP.getId();
             case 6:
-                return TagType.CATEGORY.getId();//online blacklisted tags
+                return TagType.CATEGORY.getId();
         }
         return -1;
     }
 
+    @NonNull
     public static TagTypePage newInstance(int page) {
         TagTypePage fragment = new TagTypePage();
         Bundle args = new Bundle();
@@ -92,7 +93,7 @@ public class TagTypePage extends Fragment {
     }
 
     public void reset() {
-        if (type.equals(TagType.UNKNOWN)) TagV2.resetAllStatus();
+        if (type.equals(TagType.UNKNOWN)) Tag.resetAllStatus();
         else if (!type.equals(TagType.CATEGORY)) {
             ScrapeTags.startWork(activity);
         }

@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 
+import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 
 import com.dublikunt.nclient.R;
@@ -43,7 +44,7 @@ public class ChipTag extends Chip {
         return tag;
     }
 
-    private void setTag(Tag tag) {
+    private void setTag(@NonNull Tag tag) {
         this.tag = tag;
         setText(tag.getName());
         loadStatusIcon();

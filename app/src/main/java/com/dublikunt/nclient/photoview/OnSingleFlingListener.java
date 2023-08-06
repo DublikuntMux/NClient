@@ -1,4 +1,4 @@
-package com.dublikunt.nclient.github.chrisbanes.photoview;
+package com.dublikunt.nclient.photoview;
 
 import android.view.MotionEvent;
 

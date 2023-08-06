@@ -10,6 +10,7 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 
 import androidx.annotation.DrawableRes;
+import androidx.annotation.NonNull;
 import androidx.annotation.StringRes;
 
 import com.dublikunt.nclient.R;
@@ -18,7 +19,7 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import java.util.Locale;
 
 public class DefaultDialogs {
-    public static void pageChangerDialog(final Builder builder) {
+    public static void pageChangerDialog(@NonNull final Builder builder) {
         MaterialAlertDialogBuilder build = new MaterialAlertDialogBuilder(builder.context);
         if (builder.title != 0) build.setTitle(builder.context.getString(builder.title));
         if (builder.drawable != 0) build.setIcon(builder.drawable);
@@ -112,7 +113,6 @@ public class DefaultDialogs {
         }
     }
 
-    @SuppressWarnings("UnusedReturnValue")
     public static class Builder {
         private final Context context;
         DialogResults dialogs;

@@ -1,11 +1,9 @@
 package com.dublikunt.nclient.adapters;
 
-import android.os.Build;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -19,6 +17,8 @@ import com.dublikunt.nclient.settings.Global;
 import com.dublikunt.nclient.settings.Login;
 import com.dublikunt.nclient.utility.ImageDownloadUtility;
 import com.dublikunt.nclient.utility.Utility;
+import com.google.android.material.button.MaterialButton;
+import com.google.android.material.textview.MaterialTextView;
 
 import java.io.IOException;
 import java.text.DateFormat;
@@ -58,9 +58,7 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.ViewHold
         int position = holder.getBindingAdapterPosition();
         Comment c = comments.get(position);
         holder.layout.setOnClickListener(v1 -> {
-            if (Build.VERSION.SDK_INT > Build.VERSION_CODES.ICE_CREAM_SANDWICH_MR1) {
-                context.runOnUiThread(() -> holder.body.setMaxLines(holder.body.getMaxLines() == 7 ? 999 : 7));
-            }
+            context.runOnUiThread(() -> holder.body.setMaxLines(holder.body.getMaxLines() == 7 ? 999 : 7));
         });
         holder.close.setVisibility(c.getPosterId() != userId ? View.GONE : View.VISIBLE);
         holder.user.setText(c.getUsername());
@@ -102,10 +100,10 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.ViewHold
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
         final ImageButton userImage;
-        final ImageButton close;
-        final TextView user;
-        final TextView body;
-        final TextView date;
+        final MaterialButton close;
+        final MaterialTextView user;
+        final MaterialTextView body;
+        final MaterialTextView date;
         final ConstraintLayout layout;
 
         public ViewHolder(@NonNull View v) {

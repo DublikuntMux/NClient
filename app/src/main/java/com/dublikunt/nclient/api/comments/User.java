@@ -6,18 +6,26 @@ import android.os.Parcelable;
 import android.util.JsonReader;
 import android.util.JsonToken;
 
+import androidx.annotation.NonNull;
+
 import com.dublikunt.nclient.utility.Utility;
+
+import org.jetbrains.annotations.Contract;
 
 import java.io.IOException;
 import java.util.Locale;
 
 public class User implements Parcelable {
-    public static final Creator<User> CREATOR = new Creator<User>() {
+    public static final Creator<User> CREATOR = new Creator<>() {
+        @NonNull
+        @Contract("_ -> new")
         @Override
         public User createFromParcel(Parcel in) {
             return new User(in);
         }
 
+        @NonNull
+        @Contract(value = "_ -> new", pure = true)
         @Override
         public User[] newArray(int size) {
             return new User[size];
@@ -26,7 +34,7 @@ public class User implements Parcelable {
     private int id;
     private String username, avatarUrl;
 
-    public User(JsonReader reader) throws IOException {
+    public User(@NonNull JsonReader reader) throws IOException {
         reader.beginObject();
         while (reader.peek() != JsonToken.END_OBJECT) {
             switch (reader.nextName()) {
@@ -47,7 +55,7 @@ public class User implements Parcelable {
         reader.endObject();
     }
 
-    protected User(Parcel in) {
+    protected User(@NonNull Parcel in) {
         id = in.readInt();
         username = in.readString();
         avatarUrl = in.readString();
@@ -59,7 +67,7 @@ public class User implements Parcelable {
     }
 
     @Override
-    public void writeToParcel(Parcel dest, int flags) {
+    public void writeToParcel(@NonNull Parcel dest, int flags) {
         dest.writeInt(id);
         dest.writeString(username);
         dest.writeString(avatarUrl);

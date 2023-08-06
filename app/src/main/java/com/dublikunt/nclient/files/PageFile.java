@@ -5,11 +5,14 @@ import android.net.Uri;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.dublikunt.nclient.api.components.Page;
 import com.dublikunt.nclient.api.enums.ImageExt;
 import com.dublikunt.nclient.settings.Global;
+
+import org.jetbrains.annotations.Contract;
 
 import java.io.File;
 import java.util.Objects;
@@ -17,12 +20,16 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class PageFile extends File implements Parcelable {
-    public static final Creator<PageFile> CREATOR = new Creator<PageFile>() {
+    public static final Creator<PageFile> CREATOR = new Creator<>() {
+        @NonNull
+        @Contract("_ -> new")
         @Override
         public PageFile createFromParcel(Parcel in) {
             return new PageFile(in);
         }
 
+        @NonNull
+        @Contract(value = "_ -> new", pure = true)
         @Override
         public PageFile[] newArray(int size) {
             return new PageFile[size];
@@ -33,21 +40,18 @@ public class PageFile extends File implements Parcelable {
     private final ImageExt ext;
     private final int page;
 
-    public PageFile(ImageExt ext, File file, int page) {
+    public PageFile(ImageExt ext, @NonNull File file, int page) {
         super(file.getAbsolutePath());
         this.ext = ext;
         this.page = page;
     }
 
-    protected PageFile(Parcel in) {
+    protected PageFile(@NonNull Parcel in) {
         super(in.readString());
         page = in.readInt();
         ext = ImageExt.values()[in.readByte()];
     }
 
-    /**
-     * This only works with app-created files with format %03d.%s
-     */
     private static @Nullable
     PageFile fastThumbnail(File folder) {
         for (ImageExt ext : ImageExt.values()) {
@@ -93,11 +97,9 @@ public class PageFile extends File implements Parcelable {
     }
 
     @Override
-    public void writeToParcel(Parcel dest, int flags) {
+    public void writeToParcel(@NonNull Parcel dest, int flags) {
         dest.writeString(this.getAbsolutePath());
         dest.writeInt(page);
         dest.writeByte((byte) ext.ordinal());
     }
-
-
 }

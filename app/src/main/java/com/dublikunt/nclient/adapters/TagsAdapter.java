@@ -17,14 +17,13 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.dublikunt.nclient.R;
 import com.dublikunt.nclient.TagFilterActivity;
-import com.dublikunt.nclient.api.components.Tag;
 import com.dublikunt.nclient.api.enums.TagStatus;
 import com.dublikunt.nclient.api.enums.TagType;
 import com.dublikunt.nclient.async.database.Queries;
 import com.dublikunt.nclient.settings.AuthRequest;
 import com.dublikunt.nclient.settings.Global;
 import com.dublikunt.nclient.settings.Login;
-import com.dublikunt.nclient.settings.TagV2;
+import com.dublikunt.nclient.settings.Tag;
 import com.dublikunt.nclient.utility.ImageDownloadUtility;
 import com.dublikunt.nclient.utility.LogUtility;
 import com.dublikunt.nclient.utility.Utility;
@@ -64,7 +63,7 @@ public class TagsAdapter extends RecyclerView.Adapter<TagsAdapter.ViewHolder> im
         getFilter().filter(query);
     }
 
-    private static void writeTag(JsonWriter jw, Tag tag) throws IOException {
+    private static void writeTag(@NonNull JsonWriter jw, @NonNull com.dublikunt.nclient.api.components.Tag tag) throws IOException {
         jw.beginObject();
         jw.name("id").value(tag.getId());
         jw.name("name").value(tag.getName());
@@ -80,10 +79,10 @@ public class TagsAdapter extends RecyclerView.Adapter<TagsAdapter.ViewHolder> im
                 FilterResults results = new FilterResults();
                 if (constraint == null) constraint = "";
                 force = false;
-                wasSortedByName = TagV2.isSortedByName();
+                wasSortedByName = Tag.isSortedByName();
 
                 lastQuery = constraint.toString();
-                Cursor tags = Queries.TagTable.getFilterCursor(lastQuery, type, tagMode == TagMode.ONLINE, TagV2.isSortedByName());
+                Cursor tags = Queries.TagTable.getFilterCursor(lastQuery, type, tagMode == TagMode.ONLINE, Tag.isSortedByName());
                 results.count = tags.getCount();
                 results.values = tags;
 
@@ -114,17 +113,17 @@ public class TagsAdapter extends RecyclerView.Adapter<TagsAdapter.ViewHolder> im
     @Override
     public void onBindViewHolder(@NonNull final TagsAdapter.ViewHolder holder, int position) {
         cursor.moveToPosition(position);
-        final Tag ent = Queries.TagTable.cursorToTag(cursor);
+        final com.dublikunt.nclient.api.components.Tag ent = Queries.TagTable.cursorToTag(cursor);
         holder.title.setText(ent.getName());
         holder.count.setText(String.format(Locale.US, "%d", ent.getCount()));
         holder.master.setOnClickListener(v -> {
             switch (tagMode) {
                 case OFFLINE:
                 case TYPE:
-                    if (TagV2.maxTagReached() && ent.getStatus() == TagStatus.DEFAULT) {
-                        context.runOnUiThread(() -> Toast.makeText(context, context.getString(R.string.tags_max_reached, TagV2.MAXTAGS), Toast.LENGTH_LONG).show());
+                    if (Tag.maxTagReached() && ent.getStatus() == TagStatus.DEFAULT) {
+                        context.runOnUiThread(() -> Toast.makeText(context, context.getString(R.string.tags_max_reached, Tag.MaxTags), Toast.LENGTH_LONG).show());
                     } else {
-                        TagV2.updateStatus(ent);
+                        Tag.updateStatus(ent);
                         updateLogo(holder.imgView, ent.getStatus());
                     }
                     break;
@@ -152,7 +151,7 @@ public class TagsAdapter extends RecyclerView.Adapter<TagsAdapter.ViewHolder> im
         return cursor == null ? 0 : cursor.getCount();
     }
 
-    private void showBlacklistDialog(final Tag tag, final ImageView imgView) {
+    private void showBlacklistDialog(final com.dublikunt.nclient.api.components.Tag tag, final ImageView imgView) {
         MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(context);
         builder.setIcon(R.drawable.ic_star_border).setTitle(R.string.add_to_online_blacklist).setMessage(R.string.are_you_sure);
         builder.setPositiveButton(R.string.yes, (dialogInterface, i) -> {
@@ -164,7 +163,7 @@ public class TagsAdapter extends RecyclerView.Adapter<TagsAdapter.ViewHolder> im
         }).setNegativeButton(R.string.no, null).show();
     }
 
-    private void onlineTagUpdate(final Tag tag, final boolean add, final ImageView imgView) throws IOException {
+    private void onlineTagUpdate(final com.dublikunt.nclient.api.components.Tag tag, final boolean add, final ImageView imgView) throws IOException {
         if (!Login.isLogged() || Login.getUser() == null) return;
         StringWriter sw = new StringWriter();
         JsonWriter jw = new JsonWriter(sw);
@@ -198,7 +197,7 @@ public class TagsAdapter extends RecyclerView.Adapter<TagsAdapter.ViewHolder> im
             switch (s) {
                 case DEFAULT:
                     img.setImageDrawable(null);
-                    break;//ImageDownloadUtility.loadImage(R.drawable.ic_void,img); break;
+                    break;
                 case ACCEPTED:
                     ImageDownloadUtility.loadImage(R.drawable.ic_check, img);
                     Global.setTint(img.getDrawable());
@@ -232,6 +231,4 @@ public class TagsAdapter extends RecyclerView.Adapter<TagsAdapter.ViewHolder> im
             master = v.findViewById(R.id.master_layout);
         }
     }
-
-
 }

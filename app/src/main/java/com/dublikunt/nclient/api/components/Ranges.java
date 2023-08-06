@@ -3,21 +3,26 @@ package com.dublikunt.nclient.api.components;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.StringRes;
 
 import com.dublikunt.nclient.R;
 
+import org.jetbrains.annotations.Contract;
+
 public class Ranges implements Parcelable {
-
-
     public static final int UNDEFINED = -1;
     public static final TimeUnit UNDEFINED_DATE = null;
     public static final Creator<Ranges> CREATOR = new Creator<Ranges>() {
+        @NonNull
+        @Contract("_ -> new")
         @Override
         public Ranges createFromParcel(Parcel in) {
             return new Ranges(in);
         }
 
+        @NonNull
+        @Contract(value = "_ -> new", pure = true)
         @Override
         public Ranges[] newArray(int size) {
             return new Ranges[size];
@@ -30,7 +35,7 @@ public class Ranges implements Parcelable {
     public Ranges() {
     }
 
-    protected Ranges(Parcel in) {
+    protected Ranges(@NonNull Parcel in) {
         int date;
         fromPage = in.readInt();
         toPage = in.readInt();
@@ -117,7 +122,7 @@ public class Ranges implements Parcelable {
     }
 
     @Override
-    public void writeToParcel(Parcel dest, int flags) {
+    public void writeToParcel(@NonNull Parcel dest, int flags) {
         dest.writeInt(fromPage);
         dest.writeInt(toPage);
         dest.writeInt(fromDate);
@@ -154,5 +159,4 @@ public class Ranges implements Parcelable {
             return val;
         }
     }
-
 }

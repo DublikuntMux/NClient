@@ -12,14 +12,10 @@ import com.dublikunt.nclient.components.status.StatusManager;
 import java.util.List;
 import java.util.Locale;
 
-/**
- * A [FragmentPagerAdapter] that returns a fragment corresponding to
- * one of the sections/tabs/pages.
- */
 public class SectionsPagerAdapter extends FragmentStateAdapter {
     List<String> statuses;
 
-    public SectionsPagerAdapter(StatusViewerActivity context) {
+    public SectionsPagerAdapter(@NonNull StatusViewerActivity context) {
         super(context.getSupportFragmentManager(), context.getLifecycle());
         statuses = StatusManager.getNames();
     }
