@@ -10,7 +10,6 @@ import androidx.appcompat.widget.Toolbar;
 
 import com.dublikunt.nclient.adapters.ListAdapter;
 import com.dublikunt.nclient.async.database.Queries;
-import com.dublikunt.nclient.components.activities.BaseActivity;
 import com.dublikunt.nclient.settings.Global;
 import com.dublikunt.nclient.utility.Utility;
 

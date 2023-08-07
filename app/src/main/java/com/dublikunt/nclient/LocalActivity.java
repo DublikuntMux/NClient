@@ -18,7 +18,6 @@ import com.dublikunt.nclient.api.local.LocalGallery;
 import com.dublikunt.nclient.api.local.LocalSortType;
 import com.dublikunt.nclient.async.converters.CreatePDF;
 import com.dublikunt.nclient.async.downloader.GalleryDownloader;
-import com.dublikunt.nclient.components.activities.BaseActivity;
 import com.dublikunt.nclient.components.classes.MultichoiceAdapter;
 import com.dublikunt.nclient.settings.Global;
 import com.dublikunt.nclient.utility.Utility;

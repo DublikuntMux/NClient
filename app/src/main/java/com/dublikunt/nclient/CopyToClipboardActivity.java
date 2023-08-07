@@ -9,8 +9,6 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 
-import com.dublikunt.nclient.components.activities.GeneralActivity;
-
 public class CopyToClipboardActivity extends GeneralActivity {
     public static void copyTextToClipboard(@NonNull Context context, String text) {
         ClipboardManager clipboard = (ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);

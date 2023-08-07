@@ -16,7 +16,6 @@ import com.dublikunt.nclient.adapters.FavoriteAdapter;
 import com.dublikunt.nclient.api.components.Gallery;
 import com.dublikunt.nclient.async.database.Queries;
 import com.dublikunt.nclient.async.downloader.DownloadGallery;
-import com.dublikunt.nclient.components.activities.BaseActivity;
 import com.dublikunt.nclient.components.views.PageSwitcher;
 import com.dublikunt.nclient.settings.Global;
 import com.dublikunt.nclient.utility.Utility;

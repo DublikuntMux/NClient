@@ -29,7 +29,6 @@ import com.dublikunt.nclient.api.Inspector;
 import com.dublikunt.nclient.api.components.Gallery;
 import com.dublikunt.nclient.api.components.GenericGallery;
 import com.dublikunt.nclient.async.database.Queries;
-import com.dublikunt.nclient.components.activities.BaseActivity;
 import com.dublikunt.nclient.components.status.Status;
 import com.dublikunt.nclient.components.status.StatusManager;
 import com.dublikunt.nclient.components.views.RangeSelector;
@@ -299,10 +298,6 @@ public class GalleryActivity extends BaseActivity {
     }
 
     private void downloadTorrent() {
-        if (!Global.hasStoragePermission(this)) {
-            return;
-        }
-
         String url = String.format(Locale.US, Utility.getBaseUrl() + "g/%d/download", gallery.getId());
         String referer = String.format(Locale.US, Utility.getBaseUrl() + "g/%d/", gallery.getId());
 

@@ -45,7 +45,6 @@ import com.dublikunt.nclient.async.database.Queries;
 import com.dublikunt.nclient.async.downloader.DownloadGallery;
 import com.dublikunt.nclient.components.CookieInterceptor;
 import com.dublikunt.nclient.components.GlideX;
-import com.dublikunt.nclient.components.activities.BaseActivity;
 import com.dublikunt.nclient.components.views.PageSwitcher;
 import com.dublikunt.nclient.components.widgets.CustomGridLayoutManager;
 import com.dublikunt.nclient.settings.Global;
@@ -153,6 +152,45 @@ public class MainActivity extends BaseActivity
         selectStartMode(getIntent(), getPackageName());
         LogUtility.d("Main started with mode " + modeType);
 
+        if (ContextCompat.checkSelfPermission(
+            this,
+            Manifest.permission.WRITE_EXTERNAL_STORAGE
+        ) == PackageManager.PERMISSION_DENIED
+        ) {
+            switch (Build.VERSION.SDK_INT) {
+                case Build.VERSION_CODES.TIRAMISU -> requestPermissions(
+                    new String[]{
+                        Manifest.permission.INTERNET,
+                        Manifest.permission.WAKE_LOCK,
+                        Manifest.permission.ACCESS_NETWORK_STATE,
+                        Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                        Manifest.permission.READ_EXTERNAL_STORAGE,
+                        Manifest.permission.MANAGE_EXTERNAL_STORAGE,
+                        Manifest.permission.POST_NOTIFICATIONS,
+                    }, 101
+                );
+                case Build.VERSION_CODES.S -> requestPermissions(
+                    new String[]{
+                        Manifest.permission.INTERNET,
+                        Manifest.permission.WAKE_LOCK,
+                        Manifest.permission.ACCESS_NETWORK_STATE,
+                        Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                        Manifest.permission.READ_EXTERNAL_STORAGE,
+                        Manifest.permission.MANAGE_EXTERNAL_STORAGE
+                    }, 101
+                );
+                default -> requestPermissions(
+                    new String[]{
+                        Manifest.permission.INTERNET,
+                        Manifest.permission.WAKE_LOCK,
+                        Manifest.permission.ACCESS_NETWORK_STATE,
+                        Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                        Manifest.permission.READ_EXTERNAL_STORAGE,
+                }, 101
+                );
+            }
+        }
+
         findUsefulViews();
         initializeToolbar();
         initializeNavigationView();
@@ -172,47 +210,6 @@ public class MainActivity extends BaseActivity
         } else {
             LogUtility.e(getIntent().getExtras());
         }
-
-        if (ContextCompat.checkSelfPermission(
-            this,
-            Manifest.permission.WRITE_EXTERNAL_STORAGE
-        ) == PackageManager.PERMISSION_DENIED
-        ) {
-            if (Build.VERSION.SDK_INT == Build.VERSION_CODES.TIRAMISU) {
-                requestPermissions(
-                    new String[]{
-                        Manifest.permission.INTERNET,
-                        Manifest.permission.WAKE_LOCK,
-                        Manifest.permission.ACCESS_NETWORK_STATE,
-                        Manifest.permission.WRITE_EXTERNAL_STORAGE,
-                        Manifest.permission.READ_EXTERNAL_STORAGE,
-                        Manifest.permission.MANAGE_EXTERNAL_STORAGE,
-                        Manifest.permission.POST_NOTIFICATIONS
-                    }, 1
-                );
-            } else if (Build.VERSION.SDK_INT == Build.VERSION_CODES.S) {
-                requestPermissions(
-                    new String[]{
-                        Manifest.permission.INTERNET,
-                        Manifest.permission.WAKE_LOCK,
-                        Manifest.permission.ACCESS_NETWORK_STATE,
-                        Manifest.permission.WRITE_EXTERNAL_STORAGE,
-                        Manifest.permission.READ_EXTERNAL_STORAGE,
-                        Manifest.permission.MANAGE_EXTERNAL_STORAGE
-                    }, 1
-                );
-            } else {
-                requestPermissions(
-                    new String[]{
-                        Manifest.permission.INTERNET,
-                        Manifest.permission.WAKE_LOCK,
-                        Manifest.permission.ACCESS_NETWORK_STATE,
-                        Manifest.permission.WRITE_EXTERNAL_STORAGE,
-                        Manifest.permission.READ_EXTERNAL_STORAGE,
-                    }, 1
-                );
-            }
-        }
     }
 
     private void manageDrawer() {
@@ -227,21 +224,11 @@ public class MainActivity extends BaseActivity
 
     private void setActivityTitle() {
         switch (modeType) {
-            case FAVORITE:
-                getSupportActionBar().setTitle(R.string.favorite_online_manga);
-                break;
-            case SEARCH:
-                getSupportActionBar().setTitle(inspector.getSearchTitle());
-                break;
-            case TAG:
-                getSupportActionBar().setTitle(inspector.getTag().getName());
-                break;
-            case NORMAL:
-                getSupportActionBar().setTitle(R.string.app_name);
-                break;
-            default:
-                getSupportActionBar().setTitle("WTF");
-                break;
+            case FAVORITE -> getSupportActionBar().setTitle(R.string.favorite_online_manga);
+            case SEARCH -> getSupportActionBar().setTitle(inspector.getSearchTitle());
+            case TAG -> getSupportActionBar().setTitle(inspector.getTag().getName());
+            case NORMAL -> getSupportActionBar().setTitle(R.string.app_name);
+            default -> getSupportActionBar().setTitle("WTF");
         }
     }
 
@@ -288,7 +275,7 @@ public class MainActivity extends BaseActivity
         changeLayout(getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE);
     }
 
-    private boolean lastGalleryReached(CustomGridLayoutManager manager) {
+    private boolean lastGalleryReached(@NonNull CustomGridLayoutManager manager) {
         return manager.findLastVisibleItemPosition() >= (recycler.getAdapter().getItemCount() - 1 - manager.getSpanCount());
     }
 
@@ -753,7 +740,8 @@ public class MainActivity extends BaseActivity
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         Intent intent;
         if (item.getItemId() == R.id.downloaded) {
-            startLocalActivity();
+            intent = new Intent(this, LocalActivity.class);
+            startActivity(intent);
         } else if (item.getItemId() == R.id.bookmarks) {
             intent = new Intent(this, BookmarkActivity.class);
             startActivity(intent);
@@ -791,19 +779,6 @@ public class MainActivity extends BaseActivity
             startActivity(intent);
         }
         return true;
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        Global.initStorage(this);
-        if (requestCode == 1 && grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED)
-            startLocalActivity();
-    }
-
-    private void startLocalActivity() {
-        Intent i = new Intent(this, LocalActivity.class);
-        startActivity(i);
     }
 
     /**

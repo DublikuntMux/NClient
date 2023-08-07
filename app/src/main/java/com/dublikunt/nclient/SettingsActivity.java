@@ -20,7 +20,6 @@ import androidx.appcompat.widget.Toolbar;
 
 import com.dublikunt.nclient.async.database.export.Exporter;
 import com.dublikunt.nclient.async.database.export.Manager;
-import com.dublikunt.nclient.components.activities.GeneralActivity;
 import com.dublikunt.nclient.components.views.GeneralPreferenceFragment;
 import com.dublikunt.nclient.settings.Global;
 import com.dublikunt.nclient.utility.LogUtility;

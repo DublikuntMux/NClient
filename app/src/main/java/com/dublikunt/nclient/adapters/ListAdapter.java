@@ -19,7 +19,7 @@ import com.dublikunt.nclient.api.SimpleGallery;
 import com.dublikunt.nclient.api.components.GenericGallery;
 import com.dublikunt.nclient.api.enums.Language;
 import com.dublikunt.nclient.async.database.Queries;
-import com.dublikunt.nclient.components.activities.BaseActivity;
+import com.dublikunt.nclient.BaseActivity;
 import com.dublikunt.nclient.settings.Global;
 import com.dublikunt.nclient.settings.Tag;
 import com.dublikunt.nclient.utility.ImageDownloadUtility;

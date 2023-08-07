@@ -81,7 +81,6 @@ public class Global {
     private static boolean invertFix, buttonChangePage, hideMultitask, volumeOverride, zoomOneColumn, keepHistory, lockScreen, onlyTag, showTitles, removeAvoidedGalleries, useRtl;
     private static ThemeScheme theme;
     private static DataUsageType usageMobile, usageWifi;
-    private static String lastVersion, mirror;
     private static int maxHistory, columnCount, maxId, galleryWidth = -1, galleryHeight = -1;
     private static int colPortStat, colLandStat, colPortHist, colLandHist, colPortMain, colLandMain, colPortDownload, colLandDownload, colLandFavorite, colPortFavorite;
     private static boolean infiniteScrollMain, infiniteScrollFavorite, exactTagMatch;
@@ -257,7 +256,6 @@ public class Global {
         shared.edit().remove("local_sort").apply();
         localSortType = new LocalSortType(shared.getInt(context.getString(R.string.key_local_sort), 0));
         useRtl = shared.getBoolean(context.getString(R.string.key_use_rtl), false);
-        mirror = shared.getString(context.getString(R.string.key_site_mirror), Utility.ORIGINAL_URL);
         keepHistory = shared.getBoolean(context.getString(R.string.key_keep_history), true);
         removeAvoidedGalleries = shared.getBoolean(context.getString(R.string.key_remove_ignored), true);
         invertFix = shared.getBoolean(context.getString(R.string.key_inverted_fix), true);
@@ -313,10 +311,6 @@ public class Global {
         context.getSharedPreferences("Settings", 0).edit().putInt(context.getString(R.string.key_local_sort), localSortType.hashCode()).apply();
         Global.localSortType = localSortType;
         LogUtility.d("Assegning: " + localSortType);
-    }
-
-    public static String getMirror() {
-        return mirror;
     }
 
     public static DataUsageType getDownloadPolicy() {
@@ -490,7 +484,6 @@ public class Global {
     }
 
     public static void initStorage(Context context) {
-        if (!Global.hasStoragePermission(context)) return;
         Global.initFilesTree(context);
         boolean[] bools = new boolean[]{
             Global.MainFolder.mkdirs(),
@@ -604,10 +597,6 @@ public class Global {
         File[] files = context.getExternalFilesDirs(null);
         strings.addAll(Arrays.asList(files));
         return strings;
-    }
-
-    public static boolean hasStoragePermission(Context context) {
-        return ContextCompat.checkSelfPermission(context, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED;
     }
 
     public static boolean isJPEGCorrupted(String path) {

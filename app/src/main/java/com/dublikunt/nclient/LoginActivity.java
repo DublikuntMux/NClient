@@ -9,7 +9,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar;
 
-import com.dublikunt.nclient.components.activities.GeneralActivity;
 import com.dublikunt.nclient.loginapi.User;
 import com.dublikunt.nclient.settings.Global;
 import com.dublikunt.nclient.settings.Login;

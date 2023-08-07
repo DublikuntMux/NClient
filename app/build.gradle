@@ -27,13 +27,12 @@ android {
         multiDexEnabled true
         versionName '2.1.0'
         vectorDrawables.useSupportLibrary true
-        proguardFiles 'proguard-rules.pro'
     }
     buildTypes {
         release {
             minifyEnabled true
             shrinkResources true
-            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt')
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
             versionNameSuffix "-release"
             resValue "string", "app_name", "NClient"
             packagingOptions {
@@ -51,8 +50,8 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_11
-        targetCompatibility JavaVersion.VERSION_11
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
     }
     packagingOptions {
         resources {

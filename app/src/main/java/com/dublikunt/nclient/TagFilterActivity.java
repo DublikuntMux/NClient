@@ -17,7 +17,6 @@ import androidx.viewpager2.adapter.FragmentStateAdapter;
 import androidx.viewpager2.widget.ViewPager2;
 
 import com.dublikunt.nclient.adapters.TagsAdapter;
-import com.dublikunt.nclient.components.activities.GeneralActivity;
 import com.dublikunt.nclient.components.widgets.CustomGridLayoutManager;
 import com.dublikunt.nclient.components.widgets.TagTypePage;
 import com.dublikunt.nclient.settings.DefaultDialogs;

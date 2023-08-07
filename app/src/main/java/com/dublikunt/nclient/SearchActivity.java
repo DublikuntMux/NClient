@@ -30,7 +30,6 @@ import com.dublikunt.nclient.api.enums.SpecialTagIds;
 import com.dublikunt.nclient.api.enums.TagStatus;
 import com.dublikunt.nclient.api.enums.TagType;
 import com.dublikunt.nclient.async.database.Queries;
-import com.dublikunt.nclient.components.activities.GeneralActivity;
 import com.dublikunt.nclient.components.widgets.ChipTag;
 import com.dublikunt.nclient.components.widgets.CustomLinearLayoutManager;
 import com.dublikunt.nclient.settings.DefaultDialogs;

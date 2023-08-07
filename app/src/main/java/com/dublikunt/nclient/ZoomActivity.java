@@ -25,7 +25,6 @@ import androidx.viewpager2.widget.ViewPager2;
 import com.bumptech.glide.Priority;
 import com.dublikunt.nclient.api.components.GenericGallery;
 import com.dublikunt.nclient.async.database.Queries;
-import com.dublikunt.nclient.components.activities.GeneralActivity;
 import com.dublikunt.nclient.components.views.ZoomFragment;
 import com.dublikunt.nclient.files.GalleryFolder;
 import com.dublikunt.nclient.settings.DefaultDialogs;

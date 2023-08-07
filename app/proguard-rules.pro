@@ -1,5 +1,4 @@
 -optimizationpasses 10
--dontusemixedcaseclassnames
 -dontskipnonpubliclibraryclasses
 -dontskipnonpubliclibraryclassmembers
 -dontpreverify
@@ -8,5 +7,3 @@
 -allowaccessmodification
 -repackageclasses
 -verbose
--keepattributes LineNumberTable,SourceFile
--renamesourcefileattribute SourceFile

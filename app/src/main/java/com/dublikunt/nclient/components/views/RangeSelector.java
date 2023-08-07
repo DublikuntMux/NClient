@@ -2,7 +2,6 @@ package com.dublikunt.nclient.components.views;
 
 import android.content.Context;
 import android.view.View;
-import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
@@ -13,7 +12,9 @@ import androidx.annotation.NonNull;
 import com.dublikunt.nclient.R;
 import com.dublikunt.nclient.api.components.Gallery;
 import com.dublikunt.nclient.async.downloader.DownloadGallery;
+import com.google.android.material.button.MaterialButton;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+import com.google.android.material.textview.MaterialTextView;
 
 import org.jetbrains.annotations.Contract;
 
@@ -71,9 +72,9 @@ public class RangeSelector extends MaterialAlertDialogBuilder {
     }
 
     private void applyLogic(@NonNull LinearLayout layout, boolean start) {
-        ImageButton prev = layout.findViewById(R.id.prev);
-        ImageButton next = layout.findViewById(R.id.next);
-        TextView pages = layout.findViewById(R.id.pages);
+        MaterialButton prev = layout.findViewById(R.id.prev);
+        MaterialButton next = layout.findViewById(R.id.next);
+        MaterialTextView pages = layout.findViewById(R.id.pages);
         SeekBar seekBar = layout.findViewById(R.id.seekBar);
         prev.setOnClickListener(getPrevListener(seekBar));
         next.setOnClickListener(getNextListener(seekBar));
@@ -84,5 +85,4 @@ public class RangeSelector extends MaterialAlertDialogBuilder {
         if (start) s1 = seekBar;
         else s2 = seekBar;
     }
-
 }

@@ -6,7 +6,6 @@ import android.os.Bundle;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
-import com.dublikunt.nclient.components.activities.GeneralActivity;
 import com.dublikunt.nclient.settings.Global;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textview.MaterialTextView;

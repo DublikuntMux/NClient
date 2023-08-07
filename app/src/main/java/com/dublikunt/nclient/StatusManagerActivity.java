@@ -8,7 +8,6 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.dublikunt.nclient.adapters.StatusManagerAdapter;
-import com.dublikunt.nclient.components.activities.GeneralActivity;
 import com.dublikunt.nclient.components.widgets.CustomLinearLayoutManager;
 
 public class StatusManagerActivity extends GeneralActivity {

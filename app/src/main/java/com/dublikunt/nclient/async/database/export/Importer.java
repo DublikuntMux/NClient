@@ -83,7 +83,6 @@ class Importer {
                             reader.nextNull();
                             break;
                         case NUMBER:
-                            //there are no doubles in the DB
                             values.put(fieldName, reader.nextLong());
                             break;
                         case STRING:

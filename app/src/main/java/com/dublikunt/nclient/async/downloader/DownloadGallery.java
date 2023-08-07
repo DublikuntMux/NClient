@@ -105,7 +105,7 @@ public class DownloadGallery extends JobIntentService {
 
     @Override
     protected void onHandleWork(@NonNull Intent intent) {
-        for (; ; ) {
+        for (; ;) {
             obtainData();
             GalleryDownloaderManager entry = DownloadQueue.fetch();
             if (entry == null) {

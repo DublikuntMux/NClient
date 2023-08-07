@@ -220,16 +220,6 @@ public class GeneralPreferenceFragment extends PreferenceFragmentCompat {
             act.importSettings();
             return true;
         });
-
-        ListPreference mirror = findPreference(getString(R.string.key_site_mirror));
-        mirror.setSummary(
-            act.getSharedPreferences("Settings", Context.MODE_PRIVATE)
-                .getString(getString(R.string.key_site_mirror), Utility.ORIGINAL_URL)
-        );
-        mirror.setOnPreferenceChangeListener((preference, newValue) -> {
-            preference.setSummary(newValue.toString());
-            return true;
-        });
     }
 
     public void manageCustomPath() {
@@ -254,12 +244,7 @@ public class GeneralPreferenceFragment extends PreferenceFragmentCompat {
         pm.setComponentEnabledSetting(name, enableState, PackageManager.DONT_KILL_APP);
     }
 
-
     private void initStoragePaths(ListPreference storagePreference) {
-        if (!Global.hasStoragePermission(act)) {
-            storagePreference.setVisible(false);
-            return;
-        }
         List<File> files = Global.getUsableFolders(act);
         List<CharSequence> strings = new ArrayList<>(files.size() + 1);
         for (File f : files) {

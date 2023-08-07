@@ -74,7 +74,7 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.ViewHold
         try {
             if (gallery instanceof LocalGallery) {
                 directory = gallery.getGalleryFolder();
-            } else if (Global.hasStoragePermission(cont)) {
+            } else {
                 if (gallery.getId() != -1) {
                     File f = Global.findGalleryFolder(context, gallery.getId());
                     if (f != null) directory = new GalleryFolder(f);
@@ -308,8 +308,7 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.ViewHold
         adapter.add(context.getString(R.string.share));
         adapter.add(context.getString(R.string.rotate_image));
         adapter.add(context.getString(R.string.bookmark_here));
-        if (Global.hasStoragePermission(context))
-            adapter.add(context.getString(R.string.save_page));
+        adapter.add(context.getString(R.string.save_page));
         MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(context);
         builder.setTitle(R.string.settings).setIcon(R.drawable.ic_share);
         builder.setAdapter(adapter, (dialog, which) -> {
