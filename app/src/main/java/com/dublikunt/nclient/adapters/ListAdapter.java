@@ -11,6 +11,7 @@ import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.dublikunt.nclient.BaseActivity;
 import com.dublikunt.nclient.GalleryActivity;
 import com.dublikunt.nclient.MainActivity;
 import com.dublikunt.nclient.R;
@@ -19,7 +20,6 @@ import com.dublikunt.nclient.api.SimpleGallery;
 import com.dublikunt.nclient.api.components.GenericGallery;
 import com.dublikunt.nclient.api.enums.Language;
 import com.dublikunt.nclient.async.database.Queries;
-import com.dublikunt.nclient.BaseActivity;
 import com.dublikunt.nclient.settings.Global;
 import com.dublikunt.nclient.settings.Tag;
 import com.dublikunt.nclient.utility.ImageDownloadUtility;

@@ -4,10 +4,8 @@ import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.widget.AppCompatImageButton;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -17,6 +15,8 @@ import com.dublikunt.nclient.R;
 import com.dublikunt.nclient.async.database.Queries;
 import com.dublikunt.nclient.components.classes.Bookmark;
 import com.dublikunt.nclient.utility.IntentUtility;
+import com.google.android.material.button.MaterialButton;
+import com.google.android.material.textview.MaterialTextView;
 
 import java.util.List;
 
@@ -73,9 +73,9 @@ public class BookmarkAdapter extends RecyclerView.Adapter<BookmarkAdapter.ViewHo
     }
 
     static class ViewHolder extends RecyclerView.ViewHolder {
-        final AppCompatImageButton deleteButton;
-        final TextView queryText;
-        final TextView pageLabel;
+        final MaterialButton deleteButton;
+        final MaterialTextView queryText;
+        final MaterialTextView pageLabel;
         final ConstraintLayout rootLayout;
 
         ViewHolder(@NonNull View itemView) {

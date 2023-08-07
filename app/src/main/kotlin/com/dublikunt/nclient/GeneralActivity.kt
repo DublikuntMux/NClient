@@ -52,6 +52,7 @@ abstract class GeneralActivity : AppCompatActivity() {
 
     companion object {
         private var lastActivity: WeakReference<GeneralActivity>? = null
+
         @JvmStatic
         val lastCFView: CFTokenView?
             get() {

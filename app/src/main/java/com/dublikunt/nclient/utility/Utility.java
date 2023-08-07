@@ -8,7 +8,6 @@ import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
-import android.os.Build;
 import android.view.Menu;
 import android.view.MenuItem;
 
@@ -18,8 +17,6 @@ import androidx.core.content.FileProvider;
 
 import com.dublikunt.nclient.R;
 import com.dublikunt.nclient.settings.Global;
-
-import org.jetbrains.annotations.Contract;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -34,10 +31,12 @@ import java.util.Random;
 
 public class Utility {
     public static final Random RANDOM = new Random(System.nanoTime());
+
     @NonNull
     public static String getBaseUrl() {
         return "https://" + Utility.getHost() + "/";
     }
+
     @NonNull
     public static String getHost() {
         return "nhentai.net";

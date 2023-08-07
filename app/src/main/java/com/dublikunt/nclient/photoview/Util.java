@@ -3,6 +3,8 @@ package com.dublikunt.nclient.photoview;
 import android.view.MotionEvent;
 import android.widget.ImageView;
 
+import androidx.annotation.NonNull;
+
 class Util {
 
     static void checkZoomLevels(float minZoom, float midZoom,
@@ -16,7 +18,7 @@ class Util {
         }
     }
 
-    static boolean hasDrawable(ImageView imageView) {
+    static boolean hasDrawable(@NonNull ImageView imageView) {
         return imageView.getDrawable() != null;
     }
 

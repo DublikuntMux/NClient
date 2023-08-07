@@ -1,6 +1,5 @@
 package com.dublikunt.nclient.settings;
 
-import android.Manifest;
 import android.app.Activity;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;

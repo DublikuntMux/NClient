@@ -29,7 +29,6 @@ import com.dublikunt.nclient.components.launcher.LauncherReal;
 import com.dublikunt.nclient.settings.Global;
 import com.dublikunt.nclient.settings.Login;
 import com.dublikunt.nclient.utility.LogUtility;
-import com.dublikunt.nclient.utility.Utility;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 import java.io.File;

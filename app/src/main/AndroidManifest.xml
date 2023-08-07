@@ -109,8 +109,8 @@
 
                 <data android:scheme="http" />
                 <data android:scheme="https" />
-                <data android:host="nhentai.net"/>
-                <data android:pathPattern="/g/.*"/>
+                <data android:host="nhentai.net" />
+                <data android:pathPattern="/g/.*" />
             </intent-filter>
 
             <meta-data

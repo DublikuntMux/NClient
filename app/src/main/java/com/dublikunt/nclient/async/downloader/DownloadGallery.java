@@ -86,17 +86,13 @@ public class DownloadGallery extends JobIntentService {
                 LogUtility.d("IntentAction: " + mode + " for id " + id);
                 assert mode != null;
                 switch (mode) {
-                    case "STOP":
-                        DownloadQueue.remove(id, true);
-                        break;
-                    case "PAUSE":
-                        manager.downloader().setStatus(GalleryDownloader.Status.PAUSED);
-                        break;
-                    case "START":
+                    case "STOP" -> DownloadQueue.remove(id, true);
+                    case "PAUSE" -> manager.downloader().setStatus(GalleryDownloader.Status.PAUSED);
+                    case "START" -> {
                         manager.downloader().setStatus(GalleryDownloader.Status.NOT_STARTED);
                         DownloadQueue.givePriority(manager.downloader());
                         startWork(this);
-                        break;
+                    }
                 }
             }
         }
@@ -105,7 +101,7 @@ public class DownloadGallery extends JobIntentService {
 
     @Override
     protected void onHandleWork(@NonNull Intent intent) {
-        for (; ;) {
+        for (; ; ) {
             obtainData();
             GalleryDownloaderManager entry = DownloadQueue.fetch();
             if (entry == null) {
