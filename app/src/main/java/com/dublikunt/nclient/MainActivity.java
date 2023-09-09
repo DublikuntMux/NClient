@@ -116,7 +116,7 @@ public class MainActivity extends BaseActivity
         boolean tokenFound = false;
 
         @Override
-        public void applyCookie(String key, String value) {
+        public void applyCookie(@NonNull String key, String value) {
             Cookie cookie = Cookie.parse(Login.BASE_HTTP_URL, key + "=" + value + "; Max-Age=31449600; Path=/; SameSite=Lax");
             Global.client.cookieJar().saveFromResponse(Login.BASE_HTTP_URL, Collections.singletonList(cookie));
             tokenFound |= key.equals("csrftoken");
