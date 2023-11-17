@@ -347,7 +347,7 @@ public class ZoomActivity extends GeneralActivity {
     }
 
     private void downloadPage() {
-        final File output = new File(Global.SCREENFOLDER, gallery.getId() + "-" + (mViewPager.getCurrentItem() + 1) + ".jpg");
+        final File output = new File(Global.screenFolder, gallery.getId() + "-" + (mViewPager.getCurrentItem() + 1) + ".jpg");
         Utility.saveImage(getActualFragment().getDrawable(), output);
     }
 

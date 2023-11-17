@@ -312,7 +312,7 @@ public class GalleryDownloader {
     }
 
     private void createFolder() {
-        folder = findFolder(Global.DownloadFolder, title, id);
+        folder = findFolder(Global.downloadFolder, title, id);
         folder.mkdirs();
         try {
             writeNoMedia();

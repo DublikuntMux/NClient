@@ -48,7 +48,7 @@ public class GalleryFolder implements Parcelable, Iterable<PageFile> {
     private File nomedia;
 
     public GalleryFolder(@NonNull String child) {
-        this(Global.DOWNLOADFOLDER, child);
+        this(Global.downloadFolder, child);
     }
 
     public GalleryFolder(@Nullable File parent, @NonNull String child) {

@@ -43,7 +43,7 @@ public class LocalActivity extends BaseActivity {
     private Toolbar toolbar;
     private int colCount;
     private int idGalleryPosition = -1;
-    private File folder = Global.MAINFOLDER;
+    private File folder = Global.mainFolder;
     private androidx.appcompat.widget.SearchView searchView;
 
     @Override

@@ -6,7 +6,7 @@ import android.webkit.CookieManager;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.dublikunt.nclient.GeneralActivity;
+import com.dublikunt.nclient.components.activities.GeneralActivity;
 import com.dublikunt.nclient.components.views.CFTokenView;
 import com.dublikunt.nclient.utility.LogUtility;
 import com.dublikunt.nclient.utility.Utility;

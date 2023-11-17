@@ -313,7 +313,7 @@ public class GalleryActivity extends BaseActivity {
 
             @Override
             public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
-                File file = new File(Global.TORRENTFOLDER, gallery.getId() + ".torrent");
+                File file = new File(Global.torrentFolder, gallery.getId() + ".torrent");
                 Utility.writeStreamToFile(response.body().byteStream(), file);
                 Intent intent = new Intent(Intent.ACTION_VIEW);
                 Uri torrentUri;

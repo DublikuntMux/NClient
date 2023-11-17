@@ -27,7 +27,6 @@ android {
             versionNameSuffix "-release"
             resValue "string", "app_name", "NClient"
             packagingOptions {
-                exclude "**/kotlin-tooling-metadata.json"
                 exclude "**/README.md"
                 exclude "**/CHANGES"
                 exclude "**/*.version"

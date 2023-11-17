@@ -17,6 +17,7 @@ import androidx.recyclerview.widget.DividerItemDecoration;
 import com.dublikunt.nclient.adapters.CommentAdapter;
 import com.dublikunt.nclient.api.comments.Comment;
 import com.dublikunt.nclient.api.comments.CommentsFetcher;
+import com.dublikunt.nclient.components.activities.BaseActivity;
 import com.dublikunt.nclient.settings.AuthRequest;
 import com.dublikunt.nclient.settings.Login;
 import com.dublikunt.nclient.utility.Utility;

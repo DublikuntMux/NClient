@@ -50,7 +50,7 @@ public class CreateZIP extends JobIntentService {
         if (gallery == null) return;
         preExecute(gallery.getDirectory());
         try {
-            File file = new File(Global.ZipFolder, gallery.getTitle() + ".zip");
+            File file = new File(Global.zipFolder, gallery.getTitle() + ".zip");
             FileOutputStream o = new FileOutputStream(file);
             ZipOutputStream out = new ZipOutputStream(o);
             out.setLevel(Deflater.BEST_COMPRESSION);

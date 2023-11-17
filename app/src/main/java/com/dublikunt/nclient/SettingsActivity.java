@@ -119,7 +119,7 @@ public class SettingsActivity extends GeneralActivity {
     }
 
     private void importOldVersion() {
-        String[] files = Global.BACKUPFOLDER.list();
+        String[] files = Global.backupFolder.list();
         if (files == null || files.length == 0) return;
         selectedItem = 0;
         MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(this);
@@ -129,7 +129,7 @@ public class SettingsActivity extends GeneralActivity {
         });
 
         builder.setPositiveButton(R.string.ok, (dialog, which) -> {
-            importSettings(Uri.fromFile(new File(Global.BACKUPFOLDER, files[selectedItem])));
+            importSettings(Uri.fromFile(new File(Global.backupFolder, files[selectedItem])));
         }).setNegativeButton(R.string.cancel, null);
         builder.show();
     }
@@ -139,7 +139,7 @@ public class SettingsActivity extends GeneralActivity {
         if (SAVE_SETTINGS != null)
             SAVE_SETTINGS.launch(name);
         else {
-            File f = new File(Global.BACKUPFOLDER, name);
+            File f = new File(Global.backupFolder, name);
             exportSettings(Uri.fromFile(f));
         }
     }

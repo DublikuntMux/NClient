@@ -1,6 +1,6 @@
 # NClient
 
-Dublikunt Max app to see nhentai.net website from modern android app written on kotlin.
+Dublikunt Max app to see nhentai.net website from modern android app written on java.
 
 ## Features
 
@@ -32,7 +32,6 @@ Dublikunt Max app to see nhentai.net website from modern android app written on 
 ### Currently
 
 - Add icons
-- Move all code to kotlin
 - Use only matrilineal design
 - Remove all compilation warnings
 

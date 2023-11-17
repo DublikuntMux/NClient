@@ -10,6 +10,7 @@ import androidx.appcompat.widget.SearchView;
 import androidx.appcompat.widget.Toolbar;
 import androidx.viewpager2.widget.ViewPager2;
 
+import com.dublikunt.nclient.components.activities.GeneralActivity;
 import com.dublikunt.nclient.settings.Global;
 import com.dublikunt.nclient.ui.main.PlaceholderFragment;
 import com.dublikunt.nclient.ui.main.SectionsPagerAdapter;

@@ -57,26 +57,25 @@ import okhttp3.Cookie;
 import okhttp3.OkHttpClient;
 
 public class Global {
-    public static final String CHANNEL_ID1 = "download_gallery", CHANNEL_ID2 = "create_pdf", CHANNEL_ID3 = "create_zip";
-    private static final String MAINFOLDER_NAME = "NClientV2";
-    private static final String DOWNLOADFOLDER_NAME = "Download";
-    private static final String SCREENFOLDER_NAME = "Screen";
-    private static final String PDFFOLDER_NAME = "PDF";
-    private static final String UPDATEFOLDER_NAME = "Update";
-    private static final String ZIPFOLDER_NAME = "ZIP";
-    private static final String BACKUPFOLDER_NAME = "Backup";
-    private static final String TORRENTFOLDER_NAME = "Torrents";
+    public static final String channelID1 = "download_gallery", channelID2 = "create_pdf", channelID3 = "create_zip";
+    private static final String mainFolderName = "NClientV2";
+    private static final String downloadFolderName = "Download";
+    private static final String screenFolderName = "Screen";
+    private static final String pdfFolderName = "PDF";
+    private static final String updateFolderName = "Update";
+    private static final String zipFolderName = "ZIP";
+    private static final String backupFolderName = "Backup";
+    private static final String torrentFolderName = "Torrents";
     private static final DisplayMetrics lastDisplay = new DisplayMetrics();
     public static OkHttpClient client = null;
-    public static File OLD_GALLERYFOLDER;
-    public static File MAINFOLDER;
-    public static File DOWNLOADFOLDER;
-    public static File SCREENFOLDER;
-    public static File PDFFOLDER;
-    public static File UPDATEFOLDER;
-    public static File ZIPFOLDER;
-    public static File TORRENTFOLDER;
-    public static File BACKUPFOLDER;
+    public static File mainFolder;
+    public static File downloadFolder;
+    public static File screenFolder;
+    public static File pdfFolder;
+    public static File updateFolder;
+    public static File zipFolder;
+    public static File backupFolder;
+    public static File torrentFolder;
     private static Language onlyLanguage;
     private static TitleType titleType;
     private static SortType sortType;
@@ -161,16 +160,15 @@ public class Global {
 
         if (!files.contains(ROOTFOLDER) && !isExternalStorageManager())
             ROOTFOLDER = new File(getDefaultFileParent(context));
-        MAINFOLDER = new File(ROOTFOLDER, MAINFOLDER_NAME);
-        LogUtility.d(MAINFOLDER);
-        OLD_GALLERYFOLDER = new File(context.getExternalFilesDir(Environment.DIRECTORY_PICTURES), MAINFOLDER_NAME);
-        DOWNLOADFOLDER = new File(MAINFOLDER, DOWNLOADFOLDER_NAME);
-        SCREENFOLDER = new File(MAINFOLDER, SCREENFOLDER_NAME);
-        PDFFOLDER = new File(MAINFOLDER, PDFFOLDER_NAME);
-        UPDATEFOLDER = new File(MAINFOLDER, UPDATEFOLDER_NAME);
-        ZIPFOLDER = new File(MAINFOLDER, ZIPFOLDER_NAME);
-        TORRENTFOLDER = new File(MAINFOLDER, TORRENTFOLDER_NAME);
-        BACKUPFOLDER = new File(MAINFOLDER, BACKUPFOLDER_NAME);
+        mainFolder = new File(ROOTFOLDER, mainFolderName);
+        LogUtility.d(mainFolder);
+        downloadFolder = new File(mainFolder, downloadFolderName);
+        screenFolder = new File(mainFolder, screenFolderName);
+        pdfFolder = new File(mainFolder, pdfFolderName);
+        updateFolder = new File(mainFolder, updateFolderName);
+        zipFolder = new File(mainFolder, zipFolderName);
+        torrentFolder = new File(mainFolder, torrentFolderName);
+        backupFolder = new File(mainFolder, backupFolderName);
     }
 
     @Nullable
@@ -513,29 +511,29 @@ public class Global {
     public static void initStorage(Context context) {
         Global.initFilesTree(context);
         boolean[] bools = new boolean[]{
-            Global.MAINFOLDER.mkdirs(),
-            Global.DOWNLOADFOLDER.mkdir(),
-            Global.PDFFOLDER.mkdir(),
-            Global.UPDATEFOLDER.mkdir(),
-            Global.SCREENFOLDER.mkdir(),
-            Global.ZIPFOLDER.mkdir(),
-            Global.TORRENTFOLDER.mkdir(),
-            Global.BACKUPFOLDER.mkdir(),
+            Global.mainFolder.mkdirs(),
+            Global.downloadFolder.mkdir(),
+            Global.pdfFolder.mkdir(),
+            Global.updateFolder.mkdir(),
+            Global.screenFolder.mkdir(),
+            Global.zipFolder.mkdir(),
+            Global.torrentFolder.mkdir(),
+            Global.backupFolder.mkdir(),
         };
         LogUtility.d(
             "0:" + context.getFilesDir() + '\n' +
-                "1:" + Global.MAINFOLDER + bools[0] + '\n' +
-                "2:" + Global.DOWNLOADFOLDER + bools[1] + '\n' +
-                "3:" + Global.PDFFOLDER + bools[2] + '\n' +
-                "4:" + Global.UPDATEFOLDER + bools[3] + '\n' +
-                "5:" + Global.SCREENFOLDER + bools[4] + '\n' +
-                "5:" + Global.ZIPFOLDER + bools[5] + '\n' +
-                "5:" + Global.TORRENTFOLDER + bools[5] + '\n' +
-                "6:" + Global.BACKUPFOLDER + bools[6] + '\n'
+                "1:" + Global.mainFolder + bools[0] + '\n' +
+                "2:" + Global.downloadFolder + bools[1] + '\n' +
+                "3:" + Global.pdfFolder + bools[2] + '\n' +
+                "4:" + Global.updateFolder + bools[3] + '\n' +
+                "5:" + Global.screenFolder + bools[4] + '\n' +
+                "5:" + Global.zipFolder + bools[5] + '\n' +
+                "5:" + Global.torrentFolder + bools[5] + '\n' +
+                "6:" + Global.backupFolder + bools[6] + '\n'
         );
 
         try {
-            new File(Global.MAINFOLDER, ".nomedia").createNewFile();
+            new File(Global.mainFolder, ".nomedia").createNewFile();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -602,9 +600,9 @@ public class Global {
 
     private static void loadNotificationChannel(@NonNull Context context) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            NotificationChannel channel1 = new NotificationChannel(CHANNEL_ID1, context.getString(R.string.channel1_name), NotificationManager.IMPORTANCE_DEFAULT);
-            NotificationChannel channel2 = new NotificationChannel(CHANNEL_ID2, context.getString(R.string.channel2_name), NotificationManager.IMPORTANCE_DEFAULT);
-            NotificationChannel channel3 = new NotificationChannel(CHANNEL_ID3, context.getString(R.string.channel3_name), NotificationManager.IMPORTANCE_DEFAULT);
+            NotificationChannel channel1 = new NotificationChannel(channelID1, context.getString(R.string.channel1_name), NotificationManager.IMPORTANCE_DEFAULT);
+            NotificationChannel channel2 = new NotificationChannel(channelID2, context.getString(R.string.channel2_name), NotificationManager.IMPORTANCE_DEFAULT);
+            NotificationChannel channel3 = new NotificationChannel(channelID3, context.getString(R.string.channel3_name), NotificationManager.IMPORTANCE_DEFAULT);
             channel1.setDescription(context.getString(R.string.channel1_description));
             channel2.setDescription(context.getString(R.string.channel2_description));
             channel3.setDescription(context.getString(R.string.channel3_description));
@@ -660,7 +658,7 @@ public class Global {
 
     @Nullable
     private static File findGalleryFolder(int id) {
-        return findGalleryFolder(Global.DOWNLOADFOLDER, id);
+        return findGalleryFolder(Global.downloadFolder, id);
     }
 
     @Nullable
@@ -668,8 +666,8 @@ public class Global {
         if (id < 1) return null;
         if (context == null) return findGalleryFolder(id);
         for (File dir : getUsableFolders(context)) {
-            dir = new File(dir, MAINFOLDER_NAME);
-            dir = new File(dir, DOWNLOADFOLDER_NAME);
+            dir = new File(dir, mainFolderName);
+            dir = new File(dir, downloadFolderName);
             File f = findGalleryFolder(dir, id);
             if (f != null) return f;
         }

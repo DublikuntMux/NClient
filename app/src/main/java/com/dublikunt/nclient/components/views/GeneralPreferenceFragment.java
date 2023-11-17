@@ -255,7 +255,7 @@ public class GeneralPreferenceFragment extends PreferenceFragmentCompat {
         storagePreference.setEntryValues(strings.toArray(new CharSequence[0]));
         storagePreference.setSummary(
             act.getSharedPreferences("Settings", Context.MODE_PRIVATE)
-                .getString(getString(R.string.key_save_path), Global.MainFolder.getParent())
+                .getString(getString(R.string.key_save_path), Global.mainFolder.getParent())
         );
         storagePreference.setOnPreferenceChangeListener((preference, newValue) -> {
             preference.setSummary(newValue.toString());
