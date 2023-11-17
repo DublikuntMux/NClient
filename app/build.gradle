@@ -14,9 +14,9 @@ android {
         applicationId "com.dublikunt.nclient"
         minSdk 24
         targetSdk 34
-        versionCode 211
+        versionCode 212
         multiDexEnabled true
-        versionName '2.1.1'
+        versionName '2.1.2'
         vectorDrawables.useSupportLibrary true
     }
     buildTypes {
@@ -27,6 +27,8 @@ android {
             versionNameSuffix "-release"
             resValue "string", "app_name", "NClient"
             packagingOptions {
+                exclude "**/DebugProbesKt.bin"
+                exclude "**/kotlin-tooling-metadata.json"
                 exclude "**/README.md"
                 exclude "**/CHANGES"
                 exclude "**/*.version"
@@ -44,7 +46,7 @@ android {
     }
     packagingOptions {
         resources {
-            excludes += "**/*.properties"
+            excludes += ['**/*.kotlin_builtins', '**/*.kotlin_module', '**/*.properties']
         }
     }
     dependenciesInfo {
@@ -61,6 +63,7 @@ dependencies {
     implementation 'androidx.viewpager2:viewpager2:1.1.0-beta02'
     implementation 'androidx.recyclerview:recyclerview:1.3.2'
     implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.1.0'
+    implementation 'androidx.work:work-runtime:2.8.1'
     implementation 'androidx.core:core:1.12.0'
     implementation 'com.google.android.material:material:1.10.0'
 
