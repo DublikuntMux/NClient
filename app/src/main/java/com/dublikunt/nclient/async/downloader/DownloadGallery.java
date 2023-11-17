@@ -26,8 +26,7 @@ public class DownloadGallery extends JobIntentService {
         if (gallery.isValid() && gallery instanceof Gallery)
             downloadGallery(context, (Gallery) gallery);
         if (gallery.getId() > 0) {
-            if (gallery instanceof SimpleGallery) {
-                SimpleGallery simple = (SimpleGallery) gallery;
+            if (gallery instanceof SimpleGallery simple) {
                 downloadGallery(context, gallery.getTitle(), simple.getThumbnail(), simple.getId());
             } else downloadGallery(context, null, null, gallery.getId());
         }

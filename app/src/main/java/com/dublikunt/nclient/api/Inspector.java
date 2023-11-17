@@ -31,6 +31,7 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.lang.ref.WeakReference;
 import java.net.HttpURLConnection;
 import java.net.URLEncoder;
@@ -215,8 +216,10 @@ public class Inspector extends Thread implements Parcelable {
     }
 
     @Override
-    public void writeToParcel(@NonNull Parcel dest, int flags) {
-        dest.writeByte((byte) (Objects.requireNonNullElse(sortType, SortType.RECENT_ALL_TIME).ordinal()));
+    public void writeToParcel(Parcel dest, int flags) {
+        if (sortType != null)
+            dest.writeByte((byte) (sortType.ordinal()));
+        else dest.writeByte((byte) SortType.RECENT_ALL_TIME.ordinal());
         dest.writeByte((byte) (custom ? 1 : 0));
         dest.writeInt(page);
         dest.writeInt(pageCount);
@@ -233,6 +236,7 @@ public class Inspector extends Thread implements Parcelable {
     }
 
     public String getSearchTitle() {
+        //triggered only when in searchMode
         if (query.length() > 0) return query;
         return url.replace(Utility.getBaseUrl() + "search/?q=", "").replace('+', ' ');
     }
@@ -247,18 +251,18 @@ public class Inspector extends Thread implements Parcelable {
     }
 
     public Inspector cloneInspector(Context context, InspectorResponse response) {
-        Inspector inspector = new Inspector(context, response);
-        inspector.query = query;
-        inspector.url = url;
-        inspector.tags = tags;
-        inspector.requestType = requestType;
-        inspector.sortType = sortType;
-        inspector.pageCount = pageCount;
-        inspector.page = page;
-        inspector.id = id;
-        inspector.custom = custom;
-        inspector.ranges = ranges;
-        return inspector;
+        Inspector Inspector = new Inspector(context, response);
+        Inspector.query = query;
+        Inspector.url = url;
+        Inspector.tags = tags;
+        Inspector.requestType = requestType;
+        Inspector.sortType = sortType;
+        Inspector.pageCount = pageCount;
+        Inspector.page = page;
+        Inspector.id = id;
+        Inspector.custom = custom;
+        Inspector.ranges = ranges;
+        return Inspector;
     }
 
     private void tryByAllPopular() {
@@ -270,7 +274,11 @@ public class Inspector extends Thread implements Parcelable {
 
     private void createUrl() {
         String query;
-        query = this.query == null ? null : URLEncoder.encode(this.query, StandardCharsets.UTF_8);
+        try {
+            query = this.query == null ? null : URLEncoder.encode(this.query, "UTF-8");
+        } catch (UnsupportedEncodingException ignore) {
+            query = this.query;
+        }
         StringBuilder builder = new StringBuilder(Utility.getBaseUrl());
         if (requestType == ApiRequestType.BYALL) builder.append("?page=").append(page);
         else if (requestType == ApiRequestType.RANDOM) builder.append("random/");
@@ -475,6 +483,12 @@ public class Inspector extends Thread implements Parcelable {
         return t;
     }
 
+    public static class InvalidResponseException extends Exception {
+        public InvalidResponseException() {
+            super();
+        }
+    }
+
     public interface InspectorResponse {
         boolean shouldStart(Inspector inspector);
 
@@ -485,12 +499,6 @@ public class Inspector extends Thread implements Parcelable {
         void onStart();
 
         void onEnd();
-    }
-
-    public static class InvalidResponseException extends Exception {
-        public InvalidResponseException() {
-            super();
-        }
     }
 
     public static abstract class DefaultInspectorResponse implements InspectorResponse {

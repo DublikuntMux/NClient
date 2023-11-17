@@ -21,7 +21,7 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 class FavoriteActivity : BaseActivity() {
     private lateinit var adapter: FavoriteAdapter
     private lateinit var pageSwitcher: PageSwitcher
-    private lateinit var searchView: SearchView
+    private var searchView: SearchView? = null
     private var sortByTitle = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -72,7 +72,7 @@ class FavoriteActivity : BaseActivity() {
     override fun onResume() {
         refresher.isEnabled = true
         refresher.isRefreshing = true
-        val query = searchView.query.toString()
+        val query = searchView?.query.toString()
         pageSwitcher.setTotalPage(calculatePages(query))
         adapter.forceReload()
         super.onResume()
@@ -86,7 +86,7 @@ class FavoriteActivity : BaseActivity() {
         menu.findItem(R.id.only_language).isVisible = false
         menu.findItem(R.id.add_bookmark).isVisible = false
         searchView = (menu.findItem(R.id.search).actionView as SearchView)
-        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+        searchView!!.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String): Boolean {
                 return true
             }
