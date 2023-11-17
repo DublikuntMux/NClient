@@ -1,5 +1,7 @@
 package com.dublikunt.nclient.components.classes;
 
+import androidx.annotation.NonNull;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -22,7 +24,8 @@ public class History {
         }
     }
 
-    public static List<History> setToList(Set<String> set) {
+    @NonNull
+    public static List<History> setToList(@NonNull Set<String> set) {
         List<History> h = new ArrayList<>(set.size());
         for (String s : set) h.add(new History(s, true));
         Collections.sort(h, (o2, o1) -> {
@@ -34,7 +37,8 @@ public class History {
         return h;
     }
 
-    public static Set<String> listToSet(List<History> list) {
+    @NonNull
+    public static Set<String> listToSet(@NonNull List<History> list) {
         HashSet<String> s = new HashSet<>(list.size());
         for (History h : list) s.add(h.date.getTime() + "|" + h.value);
         return s;

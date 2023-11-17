@@ -23,7 +23,7 @@ import com.dublikunt.nclient.components.widgets.TagTypePage;
 import com.dublikunt.nclient.settings.DefaultDialogs;
 import com.dublikunt.nclient.settings.Global;
 import com.dublikunt.nclient.settings.Login;
-import com.dublikunt.nclient.settings.TagV2;
+import com.dublikunt.nclient.settings.Tag;
 import com.dublikunt.nclient.utility.LogUtility;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.tabs.TabLayout;
@@ -45,20 +45,16 @@ public class TagFilterActivity extends GeneralActivity {
         //Global.initActivity(this);
         setContentView(R.layout.activity_tag_filter);
 
-        //init toolbar
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        // Create the adapter that will return a fragment for each of the three
-        // primary sections of the activity.
         TagTypePageAdapter mTagTypePageAdapter = new TagTypePageAdapter(this);
         mViewPager = findViewById(R.id.container);
         mViewPager.setAdapter(mTagTypePageAdapter);
         mViewPager.setOffscreenPageLimit(1);
 
         TabLayout tabLayout = findViewById(R.id.tabs);
-
 
         LogUtility.d("ISNULL?" + (tabLayout == null));
         mViewPager.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
@@ -135,15 +131,14 @@ public class TagFilterActivity extends GeneralActivity {
         return 0;
     }
 
-    private void updateSortItem(MenuItem item) {
-        item.setIcon(TagV2.isSortedByName() ? R.drawable.ic_sort_by_alpha : R.drawable.ic_sort);
-        item.setTitle(TagV2.isSortedByName() ? R.string.sort_by_title : R.string.sort_by_popular);
+    private void updateSortItem(@NonNull MenuItem item) {
+        item.setIcon(Tag.isSortedByName() ? R.drawable.ic_sort_by_alpha : R.drawable.ic_sort);
+        item.setTitle(Tag.isSortedByName() ? R.string.sort_by_title : R.string.sort_by_popular);
         Global.setTint(item.getIcon());
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_tag_filter, menu);
         updateSortItem(menu.findItem(R.id.sort_by_name));
         searchView = (androidx.appcompat.widget.SearchView) menu.findItem(R.id.search).getActionView();
@@ -179,16 +174,13 @@ public class TagFilterActivity extends GeneralActivity {
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         int id = item.getItemId();
         TagTypePage page = getActualFragment();
         if (id == R.id.reset_tags) createDialog();
         else if (id == R.id.set_min_count) minCountBuild();
         else if (id == R.id.sort_by_name) {
-            TagV2.updateSortByName(this);
+            Tag.updateSortByName(this);
             updateSortItem(item);
             if (page != null)
                 page.refilter(searchView.getQuery().toString());
@@ -198,7 +190,7 @@ public class TagFilterActivity extends GeneralActivity {
     }
 
     private void minCountBuild() {
-        int min = TagV2.getMinCount();
+        int min = Tag.getMinCount();
         DefaultDialogs.Builder builder = new DefaultDialogs.Builder(this);
         builder.setActual(min).setMax(100).setMin(2);
         builder.setYesbtn(R.string.ok).setNobtn(R.string.cancel);
@@ -206,7 +198,7 @@ public class TagFilterActivity extends GeneralActivity {
             @Override
             public void positive(int actual) {
                 LogUtility.d("ACTUAL: " + actual);
-                TagV2.updateMinCount(TagFilterActivity.this, actual);
+                Tag.updateMinCount(TagFilterActivity.this, actual);
                 TagTypePage page = getActualFragment();
                 if (page != null) {
                     page.changeSize();
@@ -215,7 +207,6 @@ public class TagFilterActivity extends GeneralActivity {
         });
         DefaultDialogs.pageChangerDialog(builder);
     }
-
 
     @Override
     public void onConfigurationChanged(@NonNull Configuration newConfig) {
@@ -241,10 +232,8 @@ public class TagFilterActivity extends GeneralActivity {
         }
     }
 
-
     static class TagTypePageAdapter extends FragmentStateAdapter {
-
-        TagTypePageAdapter(TagFilterActivity activity) {
+        TagTypePageAdapter(@NonNull TagFilterActivity activity) {
             super(activity.getSupportFragmentManager(), activity.getLifecycle());
         }
 

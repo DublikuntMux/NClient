@@ -1,11 +1,13 @@
 package com.dublikunt.nclient.api;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Parcel;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.dublikunt.nclient.api.components.Gallery;
 import com.dublikunt.nclient.api.components.GalleryData;
@@ -23,6 +25,7 @@ import com.dublikunt.nclient.settings.Global;
 import com.dublikunt.nclient.utility.LogUtility;
 import com.dublikunt.nclient.utility.Utility;
 
+import org.jetbrains.annotations.Contract;
 import org.jsoup.nodes.Element;
 
 import java.util.Collection;
@@ -30,11 +33,15 @@ import java.util.Locale;
 
 public class SimpleGallery extends GenericGallery {
     public static final Creator<SimpleGallery> CREATOR = new Creator<SimpleGallery>() {
+        @NonNull
+        @Contract("_ -> new")
         @Override
         public SimpleGallery createFromParcel(Parcel in) {
             return new SimpleGallery(in);
         }
 
+        @NonNull
+        @Contract(value = "_ -> new", pure = true)
         @Override
         public SimpleGallery[] newArray(int size) {
             return new SimpleGallery[size];
@@ -46,7 +53,7 @@ public class SimpleGallery extends GenericGallery {
     private Language language = Language.UNKNOWN;
     private TagList tags;
 
-    public SimpleGallery(Parcel in) {
+    public SimpleGallery(@NonNull Parcel in) {
         title = in.readString();
         id = in.readInt();
         mediaId = in.readInt();
@@ -54,22 +61,15 @@ public class SimpleGallery extends GenericGallery {
         language = Language.values()[in.readByte()];
     }
 
-    public boolean hasTag(Tag tag) {
-        return tags.hasTag(tag);
-    }
-
-    public boolean hasTags(Collection<Tag> tags) {
-        return this.tags.hasTags(tags);
-    }
-
-    public SimpleGallery(Cursor c) {
+    @SuppressLint("Range")
+    public SimpleGallery(@NonNull Cursor c) {
         title = c.getString(c.getColumnIndex(Queries.HistoryTable.TITLE));
         id = c.getInt(c.getColumnIndex(Queries.HistoryTable.ID));
         mediaId = c.getInt(c.getColumnIndex(Queries.HistoryTable.MEDIAID));
         thumbnail = ImageExt.values()[c.getInt(c.getColumnIndex(Queries.HistoryTable.THUMB))];
     }
 
-    public SimpleGallery(Context context, Element e) {
+    public SimpleGallery(Context context, @NonNull Element e) {
         String temp;
         String tags = e.attr("data-tags").replace(' ', ',');
         this.tags = Queries.TagTable.getTagsFromListOfInt(tags);
@@ -85,14 +85,16 @@ public class SimpleGallery extends GenericGallery {
         if (context != null && id > Global.getMaxId()) Global.updateMaxId(context, id);
     }
 
-    public SimpleGallery(Gallery gallery) {
+    public SimpleGallery(@NonNull Gallery gallery) {
         title = gallery.getTitle();
         mediaId = gallery.getMediaId();
         id = gallery.getId();
         thumbnail = gallery.getThumb();
     }
 
-    private static String extToString(ImageExt ext) {
+    @Nullable
+    @Contract(pure = true)
+    private static String extToString(@NonNull ImageExt ext) {
         switch (ext) {
             case GIF:
                 return "gif";
@@ -102,6 +104,14 @@ public class SimpleGallery extends GenericGallery {
                 return "jpg";
         }
         return null;
+    }
+
+    public boolean hasTag(Tag tag) {
+        return tags.hasTag(tag);
+    }
+
+    public boolean hasTags(Collection<Tag> tags) {
+        return this.tags.hasTags(tags);
     }
 
     public Language getLanguage() {
@@ -160,13 +170,12 @@ public class SimpleGallery extends GenericGallery {
     }
 
     @Override
-    public void writeToParcel(Parcel dest, int flags) {
+    public void writeToParcel(@NonNull Parcel dest, int flags) {
         dest.writeString(title);
         dest.writeInt(id);
         dest.writeInt(mediaId);
         dest.writeByte((byte) thumbnail.ordinal());
         dest.writeByte((byte) language.ordinal());
-        //TAGS AREN'T WRITTEN
     }
 
     public Uri getThumbnail() {

@@ -3,13 +3,21 @@ package com.dublikunt.nclient.components.classes;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import androidx.annotation.NonNull;
+
+import org.jetbrains.annotations.Contract;
+
 public class Size implements Parcelable {
     public static final Creator<Size> CREATOR = new Creator<Size>() {
+        @NonNull
+        @Contract("_ -> new")
         @Override
         public Size createFromParcel(Parcel in) {
             return new Size(in);
         }
 
+        @NonNull
+        @Contract(value = "_ -> new", pure = true)
         @Override
         public Size[] newArray(int size) {
             return new Size[size];
@@ -22,7 +30,7 @@ public class Size implements Parcelable {
         this.height = height;
     }
 
-    protected Size(Parcel in) {
+    protected Size(@NonNull Parcel in) {
         width = in.readInt();
         height = in.readInt();
     }
@@ -49,7 +57,7 @@ public class Size implements Parcelable {
     }
 
     @Override
-    public void writeToParcel(Parcel dest, int flags) {
+    public void writeToParcel(@NonNull Parcel dest, int flags) {
         dest.writeInt(width);
         dest.writeInt(height);
     }

@@ -9,6 +9,8 @@ import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.LinearLayout;
 
+import androidx.activity.OnBackPressedCallback;
+import androidx.annotation.NonNull;
 import androidx.appcompat.widget.Toolbar;
 
 import com.dublikunt.nclient.adapters.LocalAdapter;
@@ -60,6 +62,16 @@ public class LocalActivity extends BaseActivity {
         refresher.setOnRefreshListener(() -> new FakeInspector(this, folder).execute(this));
         changeLayout(getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE);
         new FakeInspector(this, folder).execute(this);
+
+        getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackPressed() {
+                if (adapter != null && adapter.getMode() == MultichoiceAdapter.Mode.SELECTING)
+                    adapter.deselectAll();
+                else
+                    finish();
+            }
+        });
     }
 
     public void setAdapter(LocalAdapter adapter) {
@@ -74,7 +86,6 @@ public class LocalActivity extends BaseActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.download, menu);
         getMenuInflater().inflate(R.menu.local_multichoice, menu);
         this.optionMenu = menu;
@@ -148,7 +159,7 @@ public class LocalActivity extends BaseActivity {
         }
     }
 
-    public boolean onOptionsItemSelected(MenuItem item) {
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         if (item.getItemId() == android.R.id.home) {
             onBackPressed();
             return true;
@@ -174,14 +185,6 @@ public class LocalActivity extends BaseActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    @Override
-    public void onBackPressed() {
-        if (adapter != null && adapter.getMode() == MultichoiceAdapter.Mode.SELECTING)
-            adapter.deselectAll();
-        else
-            super.onBackPressed();
-    }
-
     private void showDialogFolderChoose() {
         List<File> strings = Global.getUsableFolders(this);
         ArrayAdapter adapter = new ArrayAdapter(this, android.R.layout.select_dialog_singlechoice, strings);
@@ -203,23 +206,17 @@ public class LocalActivity extends BaseActivity {
         switchMaterial.setChecked(sortType.descending);
         builder.setView(view);
         builder.setPositiveButton(R.string.ok, (dialog, which) -> {
-            int typeSelectedIndex = group.indexOfChild(group.findViewById(group.getCheckedChipId()));
-            LocalSortType.Type typeSelected = LocalSortType.Type.values()[typeSelectedIndex];
-            boolean descending = switchMaterial.isChecked();
-            LocalSortType newSortType = new LocalSortType(typeSelected, descending);
-            if (sortType.equals(newSortType)) return;
-            Global.setLocalSortType(LocalActivity.this, newSortType);
-            if (adapter != null) adapter.sortChanged();
-        })
+                int typeSelectedIndex = group.indexOfChild(group.findViewById(group.getCheckedChipId()));
+                LocalSortType.Type typeSelected = LocalSortType.Type.values()[typeSelectedIndex];
+                boolean descending = switchMaterial.isChecked();
+                LocalSortType newSortType = new LocalSortType(typeSelected, descending);
+                if (sortType.equals(newSortType)) return;
+                Global.setLocalSortType(LocalActivity.this, newSortType);
+                if (adapter != null) adapter.sortChanged();
+            })
             .setNeutralButton(R.string.cancel, null)
             .setTitle(R.string.sort_select_type)
             .show();
-
-
-       /* boolean sortByName=Global.isLocalSortByName();
-        item.setIcon(sortByName?R.drawable.ic_sort_by_alpha:R.drawable.ic_access_time);
-        item.setTitle(sortByName?R.string.sort_by_title:R.string.sort_by_latest);
-        Global.setTint(item.getIcon());*/
     }
 
     @Override

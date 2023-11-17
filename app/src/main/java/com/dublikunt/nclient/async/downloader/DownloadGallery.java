@@ -22,12 +22,11 @@ public class DownloadGallery extends JobIntentService {
     private static final Object lock = new Object();
     private static final int JOB_DOWNLOAD_GALLERY_ID = 9999;
 
-    public static void downloadGallery(Context context, GenericGallery gallery) {
+    public static void downloadGallery(Context context, @NonNull GenericGallery gallery) {
         if (gallery.isValid() && gallery instanceof Gallery)
             downloadGallery(context, (Gallery) gallery);
         if (gallery.getId() > 0) {
-            if (gallery instanceof SimpleGallery) {
-                SimpleGallery simple = (SimpleGallery) gallery;
+            if (gallery instanceof SimpleGallery simple) {
                 downloadGallery(context, gallery.getTitle(), simple.getThumbnail(), simple.getId());
             } else downloadGallery(context, null, null, gallery.getId());
         }
@@ -134,6 +133,4 @@ public class DownloadGallery extends JobIntentService {
             downloader = DownloadQueue.fetchForData();
         }
     }
-
-
 }

@@ -1,8 +1,6 @@
 package com.dublikunt.nclient.components.views;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
-import android.os.Build;
 import android.util.AttributeSet;
 import android.view.ViewGroup;
 import android.webkit.CookieManager;
@@ -20,15 +18,14 @@ import com.dublikunt.nclient.components.CookieInterceptor;
 import com.dublikunt.nclient.settings.Global;
 
 public class CFTokenView {
-
     private final ViewGroup masterLayout;
     private final CFTokenWebView webView;
     private final Button button;
 
-    public CFTokenView(ViewGroup masterLayout) {
+    public CFTokenView(@NonNull ViewGroup masterLayout) {
         this.masterLayout = masterLayout;
-        webView=masterLayout.findViewById(R.id.webView);
-        button=masterLayout.findViewById(R.id.hideWebView);
+        webView = masterLayout.findViewById(R.id.webView);
+        button = masterLayout.findViewById(R.id.hideWebView);
         button.setOnClickListener(v -> CookieInterceptor.hideWebView());
     }
 
@@ -48,8 +45,7 @@ public class CFTokenView {
         masterLayout.post(o);
     }
 
-
-    public static class CFTokenWebView extends WebView{
+    public static class CFTokenWebView extends WebView {
         public CFTokenWebView(@NonNull Context context) {
             super(context);
             init();
@@ -72,12 +68,9 @@ public class CFTokenView {
 
         private void forceAcceptCookies() {
             CookieManager.getInstance().setAcceptCookie(true);
-            if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                CookieManager.getInstance().setAcceptThirdPartyCookies(this, true);
-            }
+            CookieManager.getInstance().setAcceptThirdPartyCookies(this, true);
         }
 
-        @SuppressLint("SetJavaScriptEnabled")
         private void applyWebViewSettings() {
             setWebChromeClient(new WebChromeClient());
             setWebViewClient(new WebViewClient());
@@ -94,7 +87,5 @@ public class CFTokenView {
             webSettings.setUserAgentString(Global.getUserAgent());
             webSettings.setAllowContentAccess(true);
         }
-
     }
-
 }

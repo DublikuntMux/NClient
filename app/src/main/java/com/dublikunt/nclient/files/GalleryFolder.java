@@ -13,6 +13,8 @@ import com.dublikunt.nclient.api.enums.ImageExt;
 import com.dublikunt.nclient.api.enums.SpecialTagIds;
 import com.dublikunt.nclient.settings.Global;
 
+import org.jetbrains.annotations.Contract;
+
 import java.io.File;
 import java.util.Iterator;
 import java.util.Objects;
@@ -20,13 +22,16 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class GalleryFolder implements Parcelable, Iterable<PageFile> {
-
     public static final Creator<GalleryFolder> CREATOR = new Creator<GalleryFolder>() {
+        @NonNull
+        @Contract("_ -> new")
         @Override
         public GalleryFolder createFromParcel(Parcel in) {
             return new GalleryFolder(in);
         }
 
+        @NonNull
+        @Contract(value = "_ -> new", pure = true)
         @Override
         public GalleryFolder[] newArray(int size) {
             return new GalleryFolder[size];
@@ -58,8 +63,7 @@ public class GalleryFolder implements Parcelable, Iterable<PageFile> {
         parseFiles();
     }
 
-
-    protected GalleryFolder(Parcel in) {
+    protected GalleryFolder(@NonNull Parcel in) {
         folder = new File(Objects.requireNonNull(in.readString()));
         id = in.readInt();
         min = in.readInt();
@@ -87,7 +91,7 @@ public class GalleryFolder implements Parcelable, Iterable<PageFile> {
         }
     }
 
-    private void elaborateFile(File f) {
+    private void elaborateFile(@NonNull File f) {
         String name = f.getName();
 
         Matcher matcher = FILE_PATTERN.matcher(name);
@@ -101,7 +105,7 @@ public class GalleryFolder implements Parcelable, Iterable<PageFile> {
         if (nomedia == null && name.equals(NOMEDIA_FILE)) nomedia = f;
     }
 
-    private int elaborateId(Matcher matcher) {
+    private int elaborateId(@NonNull Matcher matcher) {
         return Integer.parseInt(Objects.requireNonNull(matcher.group(1)));
     }
 
@@ -133,7 +137,7 @@ public class GalleryFolder implements Parcelable, Iterable<PageFile> {
         return min;
     }
 
-    private void elaboratePage(File f, Matcher matcher) {
+    private void elaboratePage(File f, @NonNull Matcher matcher) {
         int page = Integer.parseInt(Objects.requireNonNull(matcher.group(1)));
         ImageExt ext = Page.charToExt(Objects.requireNonNull(matcher.group(2)).charAt(0));
         if (ext == null) return;
@@ -156,7 +160,7 @@ public class GalleryFolder implements Parcelable, Iterable<PageFile> {
     }
 
     @Override
-    public void writeToParcel(Parcel dest, int flags) {
+    public void writeToParcel(@NonNull Parcel dest, int flags) {
         dest.writeString(folder.getAbsolutePath());
         dest.writeInt(id);
         dest.writeInt(min);

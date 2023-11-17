@@ -8,6 +8,8 @@ import android.net.Uri;
 import android.text.format.DateFormat;
 import android.util.JsonWriter;
 
+import androidx.annotation.NonNull;
+
 import com.dublikunt.nclient.SettingsActivity;
 import com.dublikunt.nclient.async.database.Queries;
 import com.dublikunt.nclient.settings.Database;
@@ -83,6 +85,7 @@ public class Exporter {
         writer.flush();
     }
 
+    @NonNull
     public static String defaultExportName(SettingsActivity context) {
         Date actualTime = new Date();
         String date = DateFormat.getDateFormat(context).format(actualTime).replaceAll("[^0-9]*", "");
@@ -90,7 +93,7 @@ public class Exporter {
         return String.format("Backup_%s_%s.zip", date, time);
     }
 
-    public static void exportData(SettingsActivity context, Uri selectedFile) throws IOException {
+    public static void exportData(@NonNull SettingsActivity context, Uri selectedFile) throws IOException {
 
         OutputStream outputStream = context.getContentResolver().openOutputStream(selectedFile);
         ZipOutputStream zip = new ZipOutputStream(outputStream);
@@ -105,12 +108,10 @@ public class Exporter {
             exportSharedPreferences(context, shared, zip);
             zip.closeEntry();
         }
-
         zip.close();
-
     }
 
-    private static void exportSharedPreferences(Context context, String sharedName, OutputStream stream) throws IOException {
+    private static void exportSharedPreferences(@NonNull Context context, String sharedName, OutputStream stream) throws IOException {
         JsonWriter writer = new JsonWriter(new OutputStreamWriter(stream));
         SharedPreferences pref = context.getSharedPreferences(sharedName, 0);
         Map<String, ?> map = pref.getAll();
@@ -147,6 +148,4 @@ public class Exporter {
     enum SharedType {
         FLOAT, INT, LONG, STRING_SET, STRING, BOOLEAN
     }
-
-
 }

@@ -14,6 +14,7 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.widget.AppCompatAutoCompleteTextView;
 import androidx.appcompat.widget.SearchView;
@@ -70,7 +71,7 @@ public class SearchActivity extends GeneralActivity {
         super.onCreate(savedInstanceState);
         //Global.initActivity(this);
         setContentView(R.layout.activity_search);
-        //init toolbar
+
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         assert getSupportActionBar() != null;
@@ -79,7 +80,6 @@ public class SearchActivity extends GeneralActivity {
 
         inputMethodManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
 
-        //find IDs
         searchView = findViewById(R.id.search);
         RecyclerView recyclerView = findViewById(R.id.recycler);
 
@@ -105,7 +105,6 @@ public class SearchActivity extends GeneralActivity {
             return false;
         });
 
-        //init recyclerview
         recyclerView.setLayoutManager(new CustomLinearLayoutManager(this));
         recyclerView.setAdapter(adapter);
         recyclerView.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL));
@@ -261,17 +260,16 @@ public class SearchActivity extends GeneralActivity {
     }
 
     private void populateGroup() {
-        //add top tags
         for (TagType type : new TagType[]{TagType.TAG, TagType.PARODY, TagType.CHARACTER, TagType.ARTIST, TagType.GROUP}) {
             for (Tag t : Queries.TagTable.getTopTags(type, Global.getFavoriteLimit(this)))
                 addChipTag(t, true, true);
         }
-        //add already filtered tags
+
         for (Tag t : Queries.TagTable.getAllFiltered())
             if (!tagAlreadyExist(t)) addChipTag(t, true, true);
-        //add categories
+
         for (Tag t : Queries.TagTable.getTrueAllType(TagType.CATEGORY)) addChipTag(t, false, false);
-        //add languages
+
         for (Tag t : Queries.TagTable.getTrueAllType(TagType.LANGUAGE)) {
             if (t.getId() == SpecialTagIds.LANGUAGE_ENGLISH && Global.getOnlyLanguage() == Language.ENGLISH)
                 t.setStatus(TagStatus.ACCEPTED);
@@ -281,13 +279,12 @@ public class SearchActivity extends GeneralActivity {
                 t.setStatus(TagStatus.ACCEPTED);
             addChipTag(t, false, false);
         }
-        //add online tags
+
         if (Login.useAccountTag()) for (Tag t : Queries.TagTable.getAllOnlineBlacklisted())
             if (!tagAlreadyExist(t))
                 addChipTag(t, true, true);
-        //add + button
+
         for (TagType type : TagType.values) {
-            //ignore these tags
             if (type == TagType.UNKNOWN || type == TagType.LANGUAGE || type == TagType.CATEGORY) {
                 addChip[type.getId()] = null;
                 continue;
@@ -299,6 +296,7 @@ public class SearchActivity extends GeneralActivity {
         }
     }
 
+    @NonNull
     private Chip createAddChip(TagType type, ChipGroup group) {
         Chip c = (Chip) getLayoutInflater().inflate(R.layout.chip_layout, group, false);
         c.setCloseIconVisible(false);
@@ -316,7 +314,7 @@ public class SearchActivity extends GeneralActivity {
         return false;
     }
 
-    private void addChipTag(Tag t, boolean close, boolean canBeAvoided) {
+    private void addChipTag(@NonNull Tag t, boolean close, boolean canBeAvoided) {
         ChipGroup cg = getGroup(t.getType());
         ChipTag c = (ChipTag) getLayoutInflater().inflate(R.layout.chip_layout_entry, cg, false);
         c.init(t, close, canBeAvoided);
@@ -349,7 +347,7 @@ public class SearchActivity extends GeneralActivity {
         inputMethodManager.showSoftInput(autoComplete, InputMethodManager.SHOW_IMPLICIT);
     }
 
-    private ChipGroup getGroup(TagType type) {
+    private ChipGroup getGroup(@NonNull TagType type) {
         return groups[type.getId()];
     }
 
@@ -362,7 +360,7 @@ public class SearchActivity extends GeneralActivity {
         builder.setTitle(R.string.insert_tag_name);
         try {
             alertDialog = builder.show();
-        } catch (IllegalStateException e) {//the autoComplete is still attached to another View
+        } catch (IllegalStateException e) {
             ((ViewGroup) autoComplete.getParent()).removeView(autoComplete);
             alertDialog = builder.show();
         }
@@ -375,7 +373,7 @@ public class SearchActivity extends GeneralActivity {
         if (tag == null) tag = new Tag(name, 0, customId++, loadedTag, TagStatus.ACCEPTED);
         LogUtility.d("CREATED WITH ID: " + tag.getId());
         if (tagAlreadyExist(tag)) return;
-        //remove add, insert new tag, reinsert add
+
         if (getGroup(loadedTag) != null) getGroup(loadedTag).removeView(addChip[loadedTag.getId()]);
         addChipTag(tag, true, true);
         getGroup(loadedTag).addView(addChip[loadedTag.getId()]);
@@ -396,7 +394,7 @@ public class SearchActivity extends GeneralActivity {
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         if (item.getItemId() == android.R.id.home) {
             finish();
             return true;
@@ -409,6 +407,4 @@ public class SearchActivity extends GeneralActivity {
         }
         return super.onOptionsItemSelected(item);
     }
-
-
 }

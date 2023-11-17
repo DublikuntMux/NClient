@@ -72,7 +72,7 @@ public class PINActivity extends GeneralActivity {
         MaterialButton utility = findViewById(R.id.utility);
         utility.setOnClickListener(v -> {
             if (setMode && isConfirming()) {
-                checkPin();//will go in wrong branch
+                checkPin();
             } else {
                 finish();
             }
@@ -107,22 +107,22 @@ public class PINActivity extends GeneralActivity {
     }
 
     private void checkPin() {
-        if (setMode) {//if password should be set
-            if (!isConfirming()) {//now password must be confirmed
+        if (setMode) {
+            if (!isConfirming()) {
                 confirmPin = pin;
                 pin = "";
                 text.setText(R.string.confirm_pin);
-            } else if (confirmPin.equals(pin)) {//password confirmed
+            } else if (confirmPin.equals(pin)) {
                 setPin(confirmPin);
                 finish();
-            } else {//wrong confirmed password
+            } else {
                 confirmPin = null;
                 text.setText(R.string.insert_pin);
                 pin = "";
             }
-        } else if (pin.equals(getTruePin())) {//right password
+        } else if (pin.equals(getTruePin())) {
             finish();
-        } else {//wrong password
+        } else {
             text.setText(R.string.wrong_pin);
             pin = "";
         }

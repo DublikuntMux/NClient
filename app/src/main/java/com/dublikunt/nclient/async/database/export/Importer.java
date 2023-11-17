@@ -21,7 +21,7 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
 class Importer {
-    private static void importSharedPreferences(Context context, String sharedName, InputStream stream) throws IOException {
+    private static void importSharedPreferences(Context context, @NonNull String sharedName, InputStream stream) throws IOException {
         JsonReader reader = new JsonReader(new InputStreamReader(stream));
         if (sharedName.contains("/")) {
             String[] names = sharedName.split("/");
@@ -83,7 +83,6 @@ class Importer {
                             reader.nextNull();
                             break;
                         case NUMBER:
-                            //there are no doubles in the DB
                             values.put(fieldName, reader.nextLong());
                             break;
                         case STRING:
@@ -95,10 +94,7 @@ class Importer {
                 reader.endObject();
             }
             reader.endArray();
-
-
         }
-
         reader.endObject();
         db.setTransactionSuccessful();
         db.endTransaction();

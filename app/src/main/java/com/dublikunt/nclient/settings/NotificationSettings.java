@@ -3,6 +3,7 @@ package com.dublikunt.nclient.settings;
 import android.app.Notification;
 import android.content.Context;
 
+import androidx.annotation.NonNull;
 import androidx.core.app.NotificationManagerCompat;
 
 import com.dublikunt.nclient.R;
@@ -12,7 +13,6 @@ import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 public class NotificationSettings {
-
     private static final List<Integer> notificationArray = new CopyOnWriteArrayList<>();
     private static NotificationSettings notificationSettings;
     private static int notificationId = 999, maximumNotification;
@@ -26,7 +26,7 @@ public class NotificationSettings {
         return notificationId++;
     }
 
-    public static void initializeNotificationManager(Context context) {
+    public static void initializeNotificationManager(@NonNull Context context) {
         notificationSettings = new NotificationSettings(NotificationManagerCompat.from(context.getApplicationContext()));
         maximumNotification = context.getSharedPreferences("Settings", 0).getInt(context.getString(R.string.key_maximum_notification), 25);
         trimArray();

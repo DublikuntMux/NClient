@@ -2,7 +2,6 @@ package com.dublikunt.nclient.adapters;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.os.Build;
 import android.text.Layout;
 import android.util.SparseIntArray;
 import android.view.LayoutInflater;
@@ -36,6 +35,8 @@ import com.dublikunt.nclient.utility.ImageDownloadUtility;
 import com.dublikunt.nclient.utility.LogUtility;
 import com.dublikunt.nclient.utility.Utility;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+
+import org.jetbrains.annotations.Contract;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -102,7 +103,7 @@ public class LocalAdapter extends MultichoiceAdapter<Object, LocalAdapter.ViewHo
         }
 
         @Override
-        public void triggerEndDownload(GalleryDownloader downloader) {
+        public void triggerEndDownload(@NonNull GalleryDownloader downloader) {
             LocalGallery l = downloader.localGallery();
             galleryDownloaders.remove(downloader);
             if (l != null) {
@@ -126,7 +127,7 @@ public class LocalAdapter extends MultichoiceAdapter<Object, LocalAdapter.ViewHo
     };
     private int colCount;
 
-    public LocalAdapter(LocalActivity cont, ArrayList<LocalGallery> myDataset) {
+    public LocalAdapter(@NonNull LocalActivity cont, ArrayList<LocalGallery> myDataset) {
         this.context = cont;
         dataset = new CopyOnWriteArrayList<>(myDataset);
         colCount = cont.getColCount();
@@ -139,7 +140,7 @@ public class LocalAdapter extends MultichoiceAdapter<Object, LocalAdapter.ViewHo
         sortElements();
     }
 
-    static void startGallery(Activity context, File directory) {
+    static void startGallery(Activity context, @NonNull File directory) {
         if (!directory.isDirectory()) return;
         LocalGallery ent = new LocalGallery(directory);
         ent.calculateSizes();
@@ -152,7 +153,7 @@ public class LocalAdapter extends MultichoiceAdapter<Object, LocalAdapter.ViewHo
     }
 
     @Override
-    protected ViewGroup getMaster(ViewHolder holder) {
+    protected ViewGroup getMaster(@NonNull ViewHolder holder) {
         return holder.layout;
     }
 
@@ -161,7 +162,9 @@ public class LocalAdapter extends MultichoiceAdapter<Object, LocalAdapter.ViewHo
         return filter.get(position);
     }
 
-    private CopyOnWriteArrayList<Object> createHash(List<GalleryDownloader> galleryDownloaders, List<LocalGallery> dataset) {
+    @NonNull
+    @Contract("_, _ -> new")
+    private CopyOnWriteArrayList<Object> createHash(@NonNull List<GalleryDownloader> galleryDownloaders, @NonNull List<LocalGallery> dataset) {
         HashMap<String, Object> hashMap = new HashMap<>(dataset.size() + galleryDownloaders.size());
         for (LocalGallery gall : dataset) {
             if (gall != null && gall.getTitle().toLowerCase(Locale.US).contains(lastQuery))
@@ -193,7 +196,8 @@ public class LocalAdapter extends MultichoiceAdapter<Object, LocalAdapter.ViewHo
         }
     }
 
-    private Comparator<Object> getComparator(LocalSortType.Type type) {
+    @Contract(pure = true)
+    private Comparator<Object> getComparator(@NonNull LocalSortType.Type type) {
         switch (type) {
             case DATE:
                 return comparatorByDate;
@@ -201,7 +205,6 @@ public class LocalAdapter extends MultichoiceAdapter<Object, LocalAdapter.ViewHo
                 return comparatorByName;
             case PAGE_COUNT:
                 return comparatorByPageCount;
-            //case SIZE:return comparatorBySize;
         }
         return comparatorByName;
     }
@@ -244,18 +247,12 @@ public class LocalAdapter extends MultichoiceAdapter<Object, LocalAdapter.ViewHo
 
         holder.title.setOnClickListener(v -> {
             Layout layout = holder.title.getLayout();
-            if (Build.VERSION.SDK_INT > Build.VERSION_CODES.ICE_CREAM_SANDWICH_MR1) {
-                if (layout.getEllipsisCount(layout.getLineCount() - 1) > 0)
-                    holder.title.setMaxLines(7);
-                else if (holder.title.getMaxLines() == 7) holder.title.setMaxLines(3);
-                else holder.layout.performClick();
-            } else holder.layout.performClick();
+            if (layout.getEllipsisCount(layout.getLineCount() - 1) > 0)
+                holder.title.setMaxLines(7);
+            else if (holder.title.getMaxLines() == 7) holder.title.setMaxLines(3);
+            else holder.layout.performClick();
         });
 
-        /*holder.layout.setOnLongClickListener(v -> {
-            createContextualMenu(position);
-            return true;
-        });*/
         int statusColor = statuses.get(ent.getId(), 0);
         if (statusColor == 0) {
             statusColor = Queries.StatusMangaTable.getStatus(ent.getId()).color;
@@ -269,8 +266,7 @@ public class LocalAdapter extends MultichoiceAdapter<Object, LocalAdapter.ViewHo
         statuses.put(id, Queries.StatusMangaTable.getStatus(id).color);
         for (int i = 0; i < filter.size(); i++) {
             Object o = filter.get(i);
-            if (!(o instanceof LocalGallery)) continue;
-            LocalGallery lg = (LocalGallery) o;
+            if (!(o instanceof LocalGallery lg)) continue;
             if (lg.getId() == id) notifyItemChanged(i);
         }
     }
@@ -278,15 +274,13 @@ public class LocalAdapter extends MultichoiceAdapter<Object, LocalAdapter.ViewHo
     @Override
     protected void defaultMasterAction(int position) {
         if (position < 0 || filter.size() <= position) return;
-        if (!(filter.get(position) instanceof LocalGallery)) return;
-        LocalGallery lg = (LocalGallery) filter.get(position);
+        if (!(filter.get(position) instanceof LocalGallery lg)) return;
         startGallery(context, lg.getDirectory());
         context.setIdGalleryPosition(lg.getId());
     }
 
-    private void bindDownload(@NonNull final ViewHolder holder, int position, GalleryDownloader downloader) {
+    private void bindDownload(@NonNull final ViewHolder holder, int position, @NonNull GalleryDownloader downloader) {
         int percentage = downloader.getPercentage();
-        //if (!downloader.hasData())return;
         ImageDownloadUtility.loadImage(context, downloader.getThumbnail(), holder.imgView);
         holder.title.setText(downloader.getPathTitle());
         holder.cancelButton.setOnClickListener(v -> removeDownloader(downloader));
@@ -362,6 +356,7 @@ public class LocalAdapter extends MultichoiceAdapter<Object, LocalAdapter.ViewHo
         builder.show();
     }
 
+    @NonNull
     private String getAllGalleries() {
         StringBuilder builder = new StringBuilder();
         for (Object o : getSelected()) {
@@ -384,7 +379,6 @@ public class LocalAdapter extends MultichoiceAdapter<Object, LocalAdapter.ViewHo
         builder.show();
     }
 
-
     private void showDialogZip() {
         MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(context);
         builder.setTitle(R.string.create_zip).setMessage(getAllGalleries());
@@ -395,7 +389,6 @@ public class LocalAdapter extends MultichoiceAdapter<Object, LocalAdapter.ViewHo
             }
         }).setNegativeButton(R.string.no, null).setCancelable(true);
         builder.show();
-
     }
 
     public boolean hasSelectedClass(Class<?> c) {
@@ -448,8 +441,7 @@ public class LocalAdapter extends MultichoiceAdapter<Object, LocalAdapter.ViewHo
 
     public void startSelected() {
         for (Object o : getSelected()) {
-            if (!(o instanceof GalleryDownloader)) continue;
-            GalleryDownloader d = (GalleryDownloader) o;
+            if (!(o instanceof GalleryDownloader d)) continue;
             if (d.getStatus() == GalleryDownloader.Status.PAUSED)
                 d.setStatus(GalleryDownloader.Status.NOT_STARTED);
         }
@@ -458,8 +450,7 @@ public class LocalAdapter extends MultichoiceAdapter<Object, LocalAdapter.ViewHo
 
     public void pauseSelected() {
         for (Object o : getSelected()) {
-            if (!(o instanceof GalleryDownloader)) continue;
-            GalleryDownloader d = (GalleryDownloader) o;
+            if (!(o instanceof GalleryDownloader d)) continue;
             d.setStatus(GalleryDownloader.Status.PAUSED);
         }
         context.runOnUiThread(this::notifyDataSetChanged);
@@ -487,15 +478,15 @@ public class LocalAdapter extends MultichoiceAdapter<Object, LocalAdapter.ViewHo
 
         ViewHolder(View v) {
             super(v);
-            //Both
+
             imgView = v.findViewById(R.id.image);
             title = v.findViewById(R.id.title);
-            //Local
+
             pages = v.findViewById(R.id.pages);
             layout = v.findViewById(R.id.master_layout);
             flag = v.findViewById(R.id.flag);
             overlay = v.findViewById(R.id.overlay);
-            //Downloader
+
             progress = itemView.findViewById(R.id.progress);
             progressBar = itemView.findViewById(R.id.progressBar);
             playButton = itemView.findViewById(R.id.playButton);

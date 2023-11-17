@@ -1,7 +1,6 @@
 package com.dublikunt.nclient.adapters;
 
 import android.content.Intent;
-import android.os.Build;
 import android.text.Layout;
 import android.util.SparseIntArray;
 import android.view.LayoutInflater;
@@ -15,14 +14,14 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.dublikunt.nclient.GalleryActivity;
 import com.dublikunt.nclient.MainActivity;
 import com.dublikunt.nclient.R;
-import com.dublikunt.nclient.api.InspectorV3;
+import com.dublikunt.nclient.api.Inspector;
 import com.dublikunt.nclient.api.SimpleGallery;
 import com.dublikunt.nclient.api.components.GenericGallery;
 import com.dublikunt.nclient.api.enums.Language;
 import com.dublikunt.nclient.async.database.Queries;
 import com.dublikunt.nclient.components.activities.BaseActivity;
 import com.dublikunt.nclient.settings.Global;
-import com.dublikunt.nclient.settings.TagV2;
+import com.dublikunt.nclient.settings.Tag;
 import com.dublikunt.nclient.utility.ImageDownloadUtility;
 import com.dublikunt.nclient.utility.LogUtility;
 import com.google.android.material.snackbar.Snackbar;
@@ -36,23 +35,21 @@ public class ListAdapter extends RecyclerView.Adapter<GenericAdapter.ViewHolder>
     private final SparseIntArray statuses = new SparseIntArray();
     private final List<SimpleGallery> mDataset;
     private final BaseActivity context;
-    private final boolean storagePermission;
     private final String queryString;
 
     public ListAdapter(BaseActivity cont) {
         this.context = cont;
-        this.mDataset = new ArrayList<SimpleGallery>(){
+        this.mDataset = new ArrayList<SimpleGallery>() {
             @Override
             public SimpleGallery get(int index) {
                 try {
                     return super.get(index);
-                }catch (ArrayIndexOutOfBoundsException ignore){
+                } catch (ArrayIndexOutOfBoundsException ignore) {
                     return null;
                 }
             }
         };
-        storagePermission = Global.hasStoragePermission(context);
-        queryString = TagV2.getAvoidedTags();
+        queryString = Tag.getAvoidedTags();
     }
 
     @NonNull
@@ -101,17 +98,12 @@ public class ListAdapter extends RecyclerView.Adapter<GenericAdapter.ViewHolder>
         } else holder.flag.setVisibility(View.GONE);
         holder.title.setOnClickListener(v -> {
             Layout layout = holder.title.getLayout();
-            if (Build.VERSION.SDK_INT > Build.VERSION_CODES.ICE_CREAM_SANDWICH_MR1) {
-                if (layout.getEllipsisCount(layout.getLineCount() - 1) > 0)
-                    holder.title.setMaxLines(7);
-                else if (holder.title.getMaxLines() == 7) holder.title.setMaxLines(3);
-                else holder.layout.performClick();
-            } else holder.layout.performClick();
+            if (layout.getEllipsisCount(layout.getLineCount() - 1) > 0)
+                holder.title.setMaxLines(7);
+            else if (holder.title.getMaxLines() == 7) holder.title.setMaxLines(3);
+            else holder.layout.performClick();
         });
         holder.layout.setOnClickListener(v -> {
-              /*Intent intent = new Intent(context, GalleryActivity.class);
-              intent.putExtra(context.getPackageName() + ".ID", ent.getId());
-              context.startActivity(intent);*/
             if (context instanceof MainActivity)
                 ((MainActivity) context).setIdOpenedGallery(ent.getId());
             downloadGallery(ent);
@@ -137,7 +129,7 @@ public class ListAdapter extends RecyclerView.Adapter<GenericAdapter.ViewHolder>
         int position = -1;
         statuses.put(id, Queries.StatusMangaTable.getStatus(id).color);
         for (int i = 0; i < mDataset.size(); i++) {
-            SimpleGallery gallery= mDataset.get(i);
+            SimpleGallery gallery = mDataset.get(i);
             if (gallery != null && gallery.getId() == id) {
                 position = id;
                 break;
@@ -146,8 +138,8 @@ public class ListAdapter extends RecyclerView.Adapter<GenericAdapter.ViewHolder>
         if (position >= 0) notifyItemChanged(position);
     }
 
-    private void downloadGallery(final SimpleGallery ent) {
-        InspectorV3.galleryInspector(context, ent.getId(), new InspectorV3.DefaultInspectorResponse() {
+    private void downloadGallery(@NonNull final SimpleGallery ent) {
+        Inspector.galleryInspector(context, ent.getId(), new Inspector.DefaultInspectorResponse() {
             @Override
             public void onFailure(Exception e) {
                 super.onFailure(e);
@@ -188,7 +180,7 @@ public class ListAdapter extends RecyclerView.Adapter<GenericAdapter.ViewHolder>
         return mDataset == null ? 0 : mDataset.size();
     }
 
-    public void addGalleries(List<GenericGallery> galleries) {
+    public void addGalleries(@NonNull List<GenericGallery> galleries) {
         int c = mDataset.size();
         for (GenericGallery g : galleries) {
             mDataset.add((SimpleGallery) g);
@@ -199,21 +191,13 @@ public class ListAdapter extends RecyclerView.Adapter<GenericAdapter.ViewHolder>
         context.runOnUiThread(() -> notifyItemRangeInserted(c, galleries.size()));
     }
 
-    public void restartDataset(List<GenericGallery> galleries) {
-        /*int c=mDataset.size();
-        if(c>0) {
-            mDataset.clear();
-            context.runOnUiThread(() -> notifyItemRangeRemoved(0, c));
-        }
-        mDataset.addAll(galleries);
-        context.runOnUiThread(()->notifyItemRangeInserted(0,galleries.size()));*/
+    public void restartDataset(@NonNull List<GenericGallery> galleries) {
         mDataset.clear();
         for (GenericGallery g : galleries)
             if (g instanceof SimpleGallery)
                 mDataset.add((SimpleGallery) g);
         context.runOnUiThread(this::notifyDataSetChanged);
     }
-
 
     public void resetStatuses() {
         statuses.clear();

@@ -10,25 +10,26 @@ import android.database.sqlite.SQLiteDatabase;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.dublikunt.nclient.api.InspectorV3;
+import com.dublikunt.nclient.api.Inspector;
 import com.dublikunt.nclient.api.SimpleGallery;
 import com.dublikunt.nclient.api.components.Gallery;
 import com.dublikunt.nclient.api.components.GalleryData;
 import com.dublikunt.nclient.api.components.GenericGallery;
-import com.dublikunt.nclient.api.components.Tag;
 import com.dublikunt.nclient.api.components.TagList;
 import com.dublikunt.nclient.api.enums.ApiRequestType;
 import com.dublikunt.nclient.api.enums.TagStatus;
 import com.dublikunt.nclient.api.enums.TagType;
 import com.dublikunt.nclient.api.enums.TitleType;
-import com.dublikunt.nclient.async.downloader.GalleryDownloaderManager;
 import com.dublikunt.nclient.async.downloader.GalleryDownloader;
+import com.dublikunt.nclient.async.downloader.GalleryDownloaderManager;
 import com.dublikunt.nclient.components.classes.Bookmark;
 import com.dublikunt.nclient.components.status.Status;
 import com.dublikunt.nclient.components.status.StatusManager;
 import com.dublikunt.nclient.settings.Global;
-import com.dublikunt.nclient.settings.TagV2;
+import com.dublikunt.nclient.settings.Tag;
 import com.dublikunt.nclient.utility.LogUtility;
+
+import org.jetbrains.annotations.Contract;
 
 import java.io.FileWriter;
 import java.io.IOException;
@@ -39,19 +40,18 @@ import java.util.Locale;
 
 @SuppressLint("Range")
 public class Queries {
-
     static SQLiteDatabase db;
 
     public static void setDb(SQLiteDatabase database) {
         db = database;
     }
 
-    public static int getColumnFromName(Cursor cursor, String name) {
+    public static int getColumnFromName(@NonNull Cursor cursor, String name) {
         return cursor.getColumnIndex(name);
     }
 
     public static class DebugDatabase {
-        private static void dumpTable(String name, FileWriter sb) throws IOException {
+        private static void dumpTable(String name, @NonNull FileWriter sb) throws IOException {
 
             String query = "SELECT * FROM " + name;
             Cursor c = db.rawQuery(query, null);
@@ -70,9 +70,6 @@ public class Queries {
         }
     }
 
-    /**
-     * Table with information about the galleries
-     */
     public static class GalleryTable {
         public static final String TABLE_NAME = "Gallery";
         public static final String DROP_TABLE = "DROP TABLE IF EXISTS " + TABLE_NAME;
@@ -106,32 +103,27 @@ public class Queries {
 
         static void clearGalleries() {
             db.delete(GalleryTable.TABLE_NAME, String.format(Locale.US,
-                "%s NOT IN (SELECT %s FROM %s) AND " +
                     "%s NOT IN (SELECT %s FROM %s) AND " +
-                    "%s NOT IN (SELECT %s FROM %s)",
-                GalleryTable.IDGALLERY, DownloadTable.ID_GALLERY, DownloadTable.TABLE_NAME,
-                GalleryTable.IDGALLERY, FavoriteTable.ID_GALLERY, FavoriteTable.TABLE_NAME,
-                GalleryTable.IDGALLERY, StatusMangaTable.GALLERY, StatusMangaTable.TABLE_NAME)
+                        "%s NOT IN (SELECT %s FROM %s) AND " +
+                        "%s NOT IN (SELECT %s FROM %s)",
+                    GalleryTable.IDGALLERY, DownloadTable.ID_GALLERY, DownloadTable.TABLE_NAME,
+                    GalleryTable.IDGALLERY, FavoriteTable.ID_GALLERY, FavoriteTable.TABLE_NAME,
+                    GalleryTable.IDGALLERY, StatusMangaTable.GALLERY, StatusMangaTable.TABLE_NAME)
                 , null);
             db.delete(GalleryBridgeTable.TABLE_NAME, String.format(Locale.US,
-                "%s NOT IN (SELECT %s FROM %s)",
-                GalleryBridgeTable.ID_GALLERY, GalleryTable.IDGALLERY, GalleryTable.TABLE_NAME)
+                    "%s NOT IN (SELECT %s FROM %s)",
+                    GalleryBridgeTable.ID_GALLERY, GalleryTable.IDGALLERY, GalleryTable.TABLE_NAME)
                 , null);
             db.delete(FavoriteTable.TABLE_NAME, String.format(Locale.US,
-                "%s NOT IN (SELECT %s FROM %s)",
-                FavoriteTable.ID_GALLERY, GalleryTable.IDGALLERY, GalleryTable.TABLE_NAME)
+                    "%s NOT IN (SELECT %s FROM %s)",
+                    FavoriteTable.ID_GALLERY, GalleryTable.IDGALLERY, GalleryTable.TABLE_NAME)
                 , null);
             db.delete(DownloadTable.TABLE_NAME, String.format(Locale.US,
-                "%s NOT IN (SELECT %s FROM %s)",
-                DownloadTable.ID_GALLERY, GalleryTable.IDGALLERY, GalleryTable.TABLE_NAME)
+                    "%s NOT IN (SELECT %s FROM %s)",
+                    DownloadTable.ID_GALLERY, GalleryTable.IDGALLERY, GalleryTable.TABLE_NAME)
                 , null);
         }
 
-        /**
-         * Retrieve gallery using the id
-         *
-         * @param id id of the gallery to retrieve
-         */
         public static Gallery galleryFromId(int id) throws IOException {
             Cursor cursor = db.query(true, TABLE_NAME, null, IDGALLERY + "=?", new String[]{"" + id}, null, null, null, null);
             Gallery g = null;
@@ -146,7 +138,7 @@ public class Queries {
         @NonNull
         public static Cursor getAllFavoriteCursorDeprecated(CharSequence query, boolean online) {
             LogUtility.i("FILTER IN: " + query + ";;" + online);
-            Cursor cursor;//=db.rawQuery(sql,new String[]{url,url,url,""+(online?2:1)});
+            Cursor cursor;
             String sql = "SELECT * FROM " + TABLE_NAME + " WHERE (" +
                 FAVORITE + " =? OR " + FAVORITE + "=3)";
             if (query != null && query.length() > 0) {
@@ -162,9 +154,7 @@ public class Queries {
             return cursor;
         }
 
-        /**
-         * Retrieve all galleries inside the DB
-         */
+        @NonNull
         public static List<Gallery> getAllGalleries() throws IOException {
             String query = "SELECT * FROM " + TABLE_NAME;
             Cursor cursor = db.rawQuery(query, null);
@@ -178,7 +168,7 @@ public class Queries {
             return galleries;
         }
 
-        public static void insert(GenericGallery gallery) {
+        public static void insert(@NonNull GenericGallery gallery) {
             ContentValues values = new ContentValues(12);
             GalleryData data = gallery.getGalleryData();
             values.put(IDGALLERY, gallery.getId());
@@ -193,18 +183,13 @@ public class Queries {
             values.put(MAX_HEIGHT, gallery.getMaxSize().getHeight());
             values.put(MIN_WIDTH, gallery.getMinSize().getWidth());
             values.put(MIN_HEIGHT, gallery.getMinSize().getHeight());
-            //Insert gallery
+
             db.insertWithOnConflict(TABLE_NAME, null, values, gallery instanceof Gallery ? SQLiteDatabase.CONFLICT_REPLACE : SQLiteDatabase.CONFLICT_IGNORE);
             TagTable.insertTagsForGallery(data);
         }
 
-        /**
-         * Convert a cursor pointing to galleries to a list of galleries, cursor not closed
-         *
-         * @param cursor Cursor to scroll
-         * @return ArrayList of galleries
-         */
-        static List<Gallery> cursorToList(Cursor cursor) throws IOException {
+        @NonNull
+        static List<Gallery> cursorToList(@NonNull Cursor cursor) throws IOException {
             List<Gallery> galleries = new ArrayList<>(cursor.getCount());
             if (cursor.moveToFirst()) {
                 do {
@@ -220,17 +205,12 @@ public class Queries {
             GalleryBridgeTable.deleteGallery(id);
         }
 
-
-        /**
-         * Convert a row of a cursor to a {@link Gallery}
-         */
+        @NonNull
+        @Contract("_ -> new")
         public static Gallery cursorToGallery(Cursor cursor) throws IOException {
             return new Gallery(cursor, GalleryBridgeTable.getTagsForGallery(cursor.getInt(getColumnFromName(cursor, IDGALLERY))));
         }
 
-        /**
-         * Insert max and min size of a certain {@link Gallery}
-         */
         public static void updateSizes(@Nullable Gallery gallery) {
             if (gallery == null) return;
             ContentValues values = new ContentValues(4);
@@ -262,11 +242,10 @@ public class Queries {
         static final String STATUS = "status";
         static final String ONLINE = "online";
 
-        /**
-         * Convert a {@link Cursor} row to a {@link Tag}
-         */
-        public static Tag cursorToTag(Cursor cursor) {
-            return new Tag(
+        @NonNull
+        @Contract("_ -> new")
+        public static com.dublikunt.nclient.api.components.Tag cursorToTag(@NonNull Cursor cursor) {
+            return new com.dublikunt.nclient.api.components.Tag(
                 cursor.getString(cursor.getColumnIndex(NAME)),
                 cursor.getInt(cursor.getColumnIndex(COUNT)),
                 cursor.getInt(cursor.getColumnIndex(IDTAG)),
@@ -275,12 +254,9 @@ public class Queries {
             );
         }
 
-        /**
-         * Fetch all rows inside a {@link Cursor} and convert them into a {@link Tag}
-         * The {@link Cursor} passed as parameter is closed
-         */
-        private static List<Tag> getTagsFromCursor(Cursor cursor) {
-            List<Tag> tags = new ArrayList<>(cursor.getCount());
+        @NonNull
+        private static List<com.dublikunt.nclient.api.components.Tag> getTagsFromCursor(@NonNull Cursor cursor) {
+            List<com.dublikunt.nclient.api.components.Tag> tags = new ArrayList<>(cursor.getCount());
             int i = 0;
             if (cursor.moveToFirst()) {
                 do {
@@ -291,101 +267,70 @@ public class Queries {
             return tags;
         }
 
-        /**
-         * Return a cursor which points to a list of {@link Tag} which have certain properties
-         *
-         * @param query      Retrieve only tags which contains a certain string
-         * @param type       If not null only tags which are of a specific {@link TagType}
-         * @param online     Retrieve only tags which have been blacklisted from the main site
-         * @param sortByName sort by name or by count
-         */
         public static Cursor getFilterCursor(@NonNull String query, TagType type, boolean online, boolean sortByName) {
-            //create query
             StringBuilder sql = new StringBuilder("SELECT * FROM ").append(TABLE_NAME);
             sql.append(" WHERE ");
-            sql.append(COUNT).append(">=? ");                                        //min tag count
+            sql.append(COUNT).append(">=? ");
             if (query.length() > 0)
-                sql.append("AND ").append(NAME).append(" LIKE ?");  //query if is used
+                sql.append("AND ").append(NAME).append(" LIKE ?");
             if (type != null)
-                sql.append("AND ").append(TYPE).append("=? ");            //type if is used
+                sql.append("AND ").append(TYPE).append("=? ");
             if (online)
-                sql.append("AND ").append(ONLINE).append("=1 ");              //retrieve only online tags
+                sql.append("AND ").append(ONLINE).append("=1 ");
             if (!online && type == null)
-                sql.append("AND ").append(STATUS).append("!=0 ");//retrieve only used tags
+                sql.append("AND ").append(STATUS).append("!=0 ");
 
-            sql.append("ORDER BY ");                                                 //sort first by name if provided, the for count
+            sql.append("ORDER BY ");
             if (!sortByName) sql.append(COUNT).append(" DESC,");
             sql.append(NAME).append(" ASC");
 
-            //create parameter list
             ArrayList<String> list = new ArrayList<>();
-            list.add("" + TagV2.getMinCount());               //minium tags (always provided)
-            if (query.length() > 0) list.add('%' + query + '%');    //query
-            if (type != null) list.add("" + type.getId());      //type of the tag
+            list.add("" + Tag.getMinCount());
+            if (query.length() > 0) list.add('%' + query + '%');
+            if (type != null) list.add("" + type.getId());
             LogUtility.d("FILTER URL: " + sql + ", ARGS: " + list);
             return db.rawQuery(sql.toString(), list.toArray(new String[0]));
         }
 
-        /**
-         * Returns a List of all tags of a specific type and which have a min count
-         *
-         * @param type The type to fetch
-         */
-        public static List<Tag> getAllTagOfType(TagType type) {
+        @NonNull
+        public static List<com.dublikunt.nclient.api.components.Tag> getAllTagOfType(@NonNull TagType type) {
             String query = "SELECT * FROM " + TABLE_NAME + " WHERE " + TYPE + " = ? AND " + COUNT + " >= ?";
-            return getTagsFromCursor(db.rawQuery(query, new String[]{"" + type.getId(), "" + TagV2.getMinCount()}));
+            return getTagsFromCursor(db.rawQuery(query, new String[]{"" + type.getId(), "" + Tag.getMinCount()}));
         }
 
-        /**
-         * Returns a List of all tags of a specific type
-         *
-         * @param type The type to fetch
-         */
-        public static List<Tag> getTrueAllType(TagType type) {
+        @NonNull
+        public static List<com.dublikunt.nclient.api.components.Tag> getTrueAllType(@NonNull TagType type) {
             String query = "SELECT * FROM " + TABLE_NAME + " WHERE " + TYPE + " = ?";
             return getTagsFromCursor(db.rawQuery(query, new String[]{"" + type.getId()}));
         }
 
-        /**
-         * Returns a List of all tags of a specific status
-         *
-         * @param status The status to fetch
-         */
-        public static List<Tag> getAllStatus(TagStatus status) {
+        @NonNull
+        public static List<com.dublikunt.nclient.api.components.Tag> getAllStatus(@NonNull TagStatus status) {
             String query = "SELECT * FROM " + TABLE_NAME + " WHERE " + STATUS + " = ?";
             return getTagsFromCursor(db.rawQuery(query, new String[]{"" + status.ordinal()}));
         }
 
-        /**
-         * Returns a List of all tags which are AVOIDED or ACCEPTED
-         */
-        public static List<Tag> getAllFiltered() {
+        @NonNull
+        public static List<com.dublikunt.nclient.api.components.Tag> getAllFiltered() {
             String query = "SELECT * FROM " + TABLE_NAME + " WHERE " + STATUS + " != ?";
             return getTagsFromCursor(db.rawQuery(query, new String[]{"" + TagStatus.DEFAULT.ordinal()}));
         }
 
-        /**
-         * Returns a List of all tags which are AVOIDED or ACCEPTED of a specific type
-         */
-        public static List<Tag> getAllFilteredByType(TagType type) {
+        @NonNull
+        public static List<com.dublikunt.nclient.api.components.Tag> getAllFilteredByType(TagType type) {
             String query = "SELECT * FROM " + TABLE_NAME + " WHERE " + STATUS + " != ?";
             return getTagsFromCursor(db.rawQuery(query, new String[]{"" + TagStatus.DEFAULT.ordinal()}));
         }
 
-        /**
-         * Returns a List of all tags which have been blacklisted from the site
-         */
-        public static List<Tag> getAllOnlineBlacklisted() {
+        @NonNull
+        public static List<com.dublikunt.nclient.api.components.Tag> getAllOnlineBlacklisted() {
             String query = "SELECT * FROM " + TABLE_NAME + " WHERE " + ONLINE + " = 1";
-            List<Tag> t = getTagsFromCursor(db.rawQuery(query, null));
-            for (Tag t1 : t) t1.setStatus(TagStatus.AVOIDED);
+            List<com.dublikunt.nclient.api.components.Tag> t = getTagsFromCursor(db.rawQuery(query, null));
+            for (com.dublikunt.nclient.api.components.Tag t1 : t) t1.setStatus(TagStatus.AVOIDED);
             return t;
         }
 
-        /**
-         * Returns true if the tag has been blacklisted form the main site
-         */
-        public static boolean isBlackListed(Tag tag) {
+        public static boolean isBlackListed(@NonNull com.dublikunt.nclient.api.components.Tag tag) {
             String query = "SELECT " + IDTAG + " FROM " + TABLE_NAME + " WHERE " + IDTAG + "=? AND " + ONLINE + "=1";
             Cursor c = db.rawQuery(query, new String[]{"" + tag.getId()});
             boolean x = c.moveToFirst();
@@ -393,29 +338,23 @@ public class Queries {
             return x;
         }
 
-        /**
-         * Returns the tag which has a specific if, null if it does not exists
-         */
         @Nullable
-        public static Tag getTagById(int id) {
+        public static com.dublikunt.nclient.api.components.Tag getTagById(int id) {
             String query = "SELECT * FROM " + TABLE_NAME + " WHERE " + IDTAG + " = ?";
             Cursor c = db.rawQuery(query, new String[]{"" + id});
-            Tag t = null;
+            com.dublikunt.nclient.api.components.Tag t = null;
             if (c.moveToFirst()) t = cursorToTag(c);
             c.close();
             return t;
         }
 
-        public static int updateStatus(int id, TagStatus status) {
+        public static int updateStatus(int id, @NonNull TagStatus status) {
             ContentValues values = new ContentValues(1);
             values.put(STATUS, status.ordinal());
             return db.updateWithOnConflict(TABLE_NAME, values, IDTAG + "=?", new String[]{"" + id}, SQLiteDatabase.CONFLICT_IGNORE);
         }
 
-        /**
-         * Update status and count of a specific tag
-         */
-        public static int updateTag(Tag tag) {
+        public static int updateTag(com.dublikunt.nclient.api.components.Tag tag) {
             insert(tag);
             ContentValues values = new ContentValues(2);
             values.put(STATUS, tag.getStatus().ordinal());
@@ -423,7 +362,7 @@ public class Queries {
             return db.updateWithOnConflict(TABLE_NAME, values, IDTAG + "=?", new String[]{"" + tag.getId()}, SQLiteDatabase.CONFLICT_IGNORE);
         }
 
-        public static void insert(Tag tag, boolean replace) {
+        public static void insert(@NonNull com.dublikunt.nclient.api.components.Tag tag, boolean replace) {
             ContentValues values = new ContentValues(5);
             values.put(IDTAG, tag.getId());
             values.put(NAME, tag.getName());
@@ -434,11 +373,11 @@ public class Queries {
             db.insertWithOnConflict(TABLE_NAME, null, values, replace ? SQLiteDatabase.CONFLICT_REPLACE : SQLiteDatabase.CONFLICT_IGNORE);
         }
 
-        public static void insert(Tag tag) {
+        public static void insert(com.dublikunt.nclient.api.components.Tag tag) {
             insert(tag, false);
         }
 
-        public static void updateBlacklistedTag(Tag tag, boolean online) {
+        public static void updateBlacklistedTag(@NonNull com.dublikunt.nclient.api.components.Tag tag, boolean online) {
             ContentValues values = new ContentValues(1);
             values.put(ONLINE, online ? 1 : 0);
             db.updateWithOnConflict(TABLE_NAME, values, IDTAG + "=?", new String[]{"" + tag.getId()}, SQLiteDatabase.CONFLICT_IGNORE);
@@ -456,22 +395,15 @@ public class Queries {
             db.updateWithOnConflict(TABLE_NAME, values, null, null, SQLiteDatabase.CONFLICT_IGNORE);
         }
 
-        /**
-         * Get the first <code>count</code> tags of <code>type</code>, ordered by tag count
-         */
-        public static List<Tag> getTopTags(TagType type, int count) {
+        @NonNull
+        public static List<com.dublikunt.nclient.api.components.Tag> getTopTags(@NonNull TagType type, int count) {
             String query = "SELECT * FROM " + TABLE_NAME + " WHERE " + TYPE + "=? ORDER BY " + COUNT + " DESC LIMIT ?;";
             Cursor cursor = db.rawQuery(query, new String[]{"" + type.getId(), "" + count});
             return TagTable.getTagsFromCursor(cursor);
         }
 
-        /**
-         * Retrieve the status of a tag from the DB and set it
-         *
-         * @return the status if the tag exists, null otherwise
-         */
         @Nullable
-        public static TagStatus getStatus(Tag tag) {
+        public static TagStatus getStatus(@NonNull com.dublikunt.nclient.api.components.Tag tag) {
             String query = "SELECT " + STATUS + " FROM " + TABLE_NAME +
                 " WHERE " + IDTAG + " =?";
             Cursor c = db.rawQuery(query, new String[]{"" + tag.getId()});
@@ -484,18 +416,15 @@ public class Queries {
             return status;
         }
 
-        public static Tag getTagFromTagName(String name) {
-            Tag tag = null;
+        public static com.dublikunt.nclient.api.components.Tag getTagFromTagName(String name) {
+            com.dublikunt.nclient.api.components.Tag tag = null;
             Cursor cursor = db.query(TABLE_NAME, null, NAME + "=?", new String[]{name}, null, null, null);
             if (cursor.moveToFirst()) tag = cursorToTag(cursor);
             cursor.close();
             return tag;
         }
 
-        /**
-         * @param tagString a comma-separated list of integers (maybe vulnerable)
-         * @return the tags with id contained inside the list
-         */
+        @NonNull
         public static TagList getTagsFromListOfInt(String tagString) {
             TagList tags = new TagList();
             String query = "SELECT * FROM " + TABLE_NAME + " WHERE " + IDTAG + " IN (" + tagString + ")";
@@ -508,23 +437,16 @@ public class Queries {
             return tags;
         }
 
-        /**
-         * Return a list of tags which contain name and are of a certain type
-         */
-        public static List<Tag> search(String name, TagType type) {
+        @NonNull
+        public static List<com.dublikunt.nclient.api.components.Tag> search(String name, @NonNull TagType type) {
             String query = "SELECT * FROM " + TABLE_NAME + " WHERE " + NAME + " LIKE ? AND " + TYPE + "=?";
             LogUtility.d(query);
             Cursor c = db.rawQuery(query, new String[]{'%' + name + '%', "" + type.getId()});
             return getTagsFromCursor(c);
         }
 
-        /**
-         * Search a tag by name and type
-         *
-         * @return The Tag if found, null otehrwise
-         */
-        public static Tag searchTag(String name, TagType type) {
-            Tag tag = null;
+        public static com.dublikunt.nclient.api.components.Tag searchTag(String name, @NonNull TagType type) {
+            com.dublikunt.nclient.api.components.Tag tag = null;
             String query = "SELECT * FROM " + TABLE_NAME + " WHERE " + NAME + " = ? AND " + TYPE + "=?";
             LogUtility.d(query);
             Cursor c = db.rawQuery(query, new String[]{name, "" + type.getId()});
@@ -533,25 +455,21 @@ public class Queries {
             return tag;
         }
 
-        /**
-         * Insert all tags owned by a gallery and link it using {@link GalleryBridgeTable}
-         */
-        public static void insertTagsForGallery(GalleryData gallery) {
+        public static void insertTagsForGallery(@NonNull GalleryData gallery) {
             TagList tags = gallery.getTags();
             int len;
-            Tag tag;
+            com.dublikunt.nclient.api.components.Tag tag;
             for (TagType t : TagType.values) {
                 len = tags.getCount(t);
                 for (int i = 0; i < len; i++) {
                     tag = tags.getTag(t, i);
-                    TagTable.insert(tag);//Insert tag
-                    GalleryBridgeTable.insert(gallery.getId(), tag.getId());//Insert link
+                    TagTable.insert(tag);
+                    GalleryBridgeTable.insert(gallery.getId(), tag.getId());
                 }
             }
         }
 
-        /*To avoid conflict between the import process and the ScrapeTags*/
-        public static void insertScrape(Tag tag, boolean b) {
+        public static void insertScrape(com.dublikunt.nclient.api.components.Tag tag, boolean b) {
             if (db.isOpen()) insert(tag, b);
         }
     }
@@ -569,7 +487,7 @@ public class Queries {
             "FOREIGN KEY(`id_gallery`) REFERENCES `Gallery`(`idGallery`) ON UPDATE CASCADE ON DELETE CASCADE" +
             "); ";
 
-        public static void addGallery(GalleryDownloader downloader) {
+        public static void addGallery(@NonNull GalleryDownloader downloader) {
             Gallery gallery = downloader.getGallery();
             Queries.GalleryTable.insert(gallery);
             ContentValues values = new ContentValues(3);
@@ -585,6 +503,7 @@ public class Queries {
             db.delete(TABLE_NAME, ID_GALLERY + "=?", new String[]{"" + id});
         }
 
+        @NonNull
         public static List<GalleryDownloaderManager> getAllDownloads(Context context) throws IOException {
             String q = "SELECT * FROM %s INNER JOIN %s ON %s=%s";
             String query = String.format(Locale.US, q, GalleryTable.TABLE_NAME, DownloadTable.TABLE_NAME, GalleryTable.IDGALLERY, DownloadTable.ID_GALLERY);
@@ -621,7 +540,7 @@ public class Queries {
             "`time` INT NOT NULL" +
             ");";
 
-        public static void addGallery(SimpleGallery gallery) {
+        public static void addGallery(@NonNull SimpleGallery gallery) {
             if (gallery.getId() <= 0) return;
             ContentValues values = new ContentValues(5);
             values.put(ID, gallery.getId());
@@ -633,6 +552,7 @@ public class Queries {
             cleanHistory();
         }
 
+        @NonNull
         public static List<SimpleGallery> getHistory() {
             ArrayList<SimpleGallery> galleries = new ArrayList<>();
             Cursor c = db.query(TABLE_NAME, null, null, null, null, null, TIME + " DESC", "" + Global.getMaxHistory());
@@ -673,8 +593,8 @@ public class Queries {
             LogUtility.d("Deleted: " + db.delete(TABLE_NAME, URL + "=?", new String[]{url}));
         }
 
-        public static void addBookmark(InspectorV3 inspector) {
-            Tag tag = inspector.getTag();
+        public static void addBookmark(@NonNull Inspector inspector) {
+            com.dublikunt.nclient.api.components.Tag tag = inspector.getTag();
             ContentValues values = new ContentValues(4);
             values.put(URL, inspector.getUrl());
             values.put(PAGE, inspector.getPage());
@@ -684,6 +604,7 @@ public class Queries {
             db.insertWithOnConflict(TABLE_NAME, null, values, SQLiteDatabase.CONFLICT_IGNORE);
         }
 
+        @NonNull
         public static List<Bookmark> getBookmarks() {
             String query = "SELECT * FROM " + TABLE_NAME;
             Cursor cursor = db.rawQuery(query, null);
@@ -742,10 +663,11 @@ public class Queries {
             return db.rawQuery(query, null);
         }
 
+        @NonNull
         public static TagList getTagsForGallery(int id) {
             Cursor c = getTagCursorForGallery(id);
             TagList tagList = new TagList();
-            List<Tag> tags = TagTable.getTagsFromCursor(c);
+            List<com.dublikunt.nclient.api.components.Tag> tags = TagTable.getTagsFromCursor(c);
             tagList.addTags(tags);
             return tagList;
         }
@@ -780,8 +702,7 @@ public class Queries {
             FavoriteTable.insert(gallery.getId());
         }
 
-
-        static String titleTypeToColumn(TitleType type) {
+        static String titleTypeToColumn(@NonNull TitleType type) {
             switch (type) {
                 case PRETTY:
                     return GalleryTable.TITLE_PRETTY;
@@ -793,12 +714,6 @@ public class Queries {
             return "";
         }
 
-        /**
-         * Get all favorites galleries which title contains <code>query</code>
-         *
-         * @param orderByTitle true if order by title, false order by latest
-         * @return cursor which points to the galleries
-         */
         public static Cursor getAllFavoriteGalleriesCursor(CharSequence query, boolean orderByTitle, int limit, int offset) {
             String order = orderByTitle ? titleTypeToColumn(Global.getTitleType()) : FavoriteTable.TIME + " DESC";
             String param = "%" + query + "%";
@@ -806,11 +721,6 @@ public class Queries {
             return db.query(FAVORITE_JOIN_GALLERY, null, TITLE_CLAUSE, new String[]{param, param, param}, null, null, order, limitString);
         }
 
-        /**
-         * Get all favorites galleries
-         *
-         * @return cursor which points to the galleries
-         */
         public static Cursor getAllFavoriteGalleriesCursor() {
             String query = String.format(Locale.US, "SELECT * FROM %s WHERE %s IN (SELECT %s FROM %s)",
                 GalleryTable.TABLE_NAME,
@@ -821,9 +731,7 @@ public class Queries {
             return db.rawQuery(query, null);
         }
 
-        /**
-         * Retrieve all favorite galleries
-         */
+        @NonNull
         static List<Gallery> getAllFavoriteGalleries() throws IOException {
             Cursor c = getAllFavoriteGalleriesCursor();
             List<Gallery> galleries = GalleryTable.cursorToList(c);
@@ -957,7 +865,7 @@ public class Queries {
             insert(gallery, StatusManager.getByName(s));
         }
 
-        public static void update(Status oldStatus, Status newStatus) {
+        public static void update(@NonNull Status oldStatus, @NonNull Status newStatus) {
             ContentValues values = new ContentValues(1);
             values.put(NAME, newStatus.name);
             values.put(TIME, new Date().getTime());
@@ -1006,7 +914,7 @@ public class Queries {
         static final String NAME = "name";
         static final String COLOR = "color";
 
-        public static void insert(Status status) {
+        public static void insert(@NonNull Status status) {
             ContentValues values = new ContentValues(2);
             values.put(NAME, status.name);
             values.put(COLOR, status.color);
@@ -1031,7 +939,7 @@ public class Queries {
             cursor.close();
         }
 
-        public static void update(Status oldStatus, Status newStatus) {
+        public static void update(@NonNull Status oldStatus, @NonNull Status newStatus) {
             ContentValues values = new ContentValues(2);
             values.put(NAME, newStatus.name);
             values.put(COLOR, newStatus.color);

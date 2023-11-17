@@ -16,15 +16,13 @@ import com.dublikunt.nclient.adapters.StatusViewerAdapter;
 import com.dublikunt.nclient.components.widgets.CustomGridLayoutManager;
 import com.dublikunt.nclient.settings.Global;
 
-/**
- * A placeholder fragment containing a simple view.
- */
 public class PlaceholderFragment extends Fragment {
 
     private StatusViewerAdapter adapter = null;
     private RecyclerView recycler;
     private SwipeRefreshLayout refresher;
 
+    @NonNull
     public static PlaceholderFragment newInstance(String statusName) {
         PlaceholderFragment fragment = new PlaceholderFragment();
         Bundle bundle = new Bundle();

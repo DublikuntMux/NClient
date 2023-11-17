@@ -2,6 +2,7 @@ package com.dublikunt.nclient.loginapi;
 
 import android.util.JsonReader;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.dublikunt.nclient.adapters.TagsAdapter;
@@ -31,20 +32,21 @@ public class LoadTags extends Thread {
         this.adapter = adapter;
     }
 
+    @NonNull
     private Elements getScripts(String url) throws IOException {
-
         Response response = Global.getClient().newCall(new Request.Builder().url(url).build()).execute();
         Elements x = Jsoup.parse(response.body().byteStream(), null, Utility.getBaseUrl()).getElementsByTag("script");
         response.close();
         return x;
     }
 
-    private String extractArray(Element e) throws StringIndexOutOfBoundsException {
+    @NonNull
+    private String extractArray(@NonNull Element e) throws StringIndexOutOfBoundsException {
         String t = e.toString();
         return t.substring(t.indexOf('['), t.indexOf(';'));
     }
 
-    private void readTags(JsonReader reader) throws IOException {
+    private void readTags(@NonNull JsonReader reader) throws IOException {
         reader.beginArray();
         while (reader.hasNext()) {
             Tag tt = new Tag(reader);
@@ -72,7 +74,7 @@ public class LoadTags extends Thread {
 
     }
 
-    private void analyzeScripts(Elements scripts) throws IOException, StringIndexOutOfBoundsException {
+    private void analyzeScripts(@NonNull Elements scripts) throws IOException, StringIndexOutOfBoundsException {
         if (scripts.size() > 0) {
             Login.clearOnlineTags();
             String array = Utility.unescapeUnicodeString(extractArray(scripts.last()));

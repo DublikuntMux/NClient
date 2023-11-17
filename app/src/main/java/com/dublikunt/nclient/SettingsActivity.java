@@ -33,6 +33,7 @@ public class SettingsActivity extends GeneralActivity {
     private ActivityResultLauncher<String> IMPORT_ZIP;
     private ActivityResultLauncher<String> SAVE_SETTINGS;
     private ActivityResultLauncher<Object> REQUEST_STORAGE_MANAGER;
+    private int selectedItem;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,13 +47,12 @@ public class SettingsActivity extends GeneralActivity {
         getSupportActionBar().setTitle(R.string.settings);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowTitleEnabled(true);
+
         fragment = (GeneralPreferenceFragment) getSupportFragmentManager().findFragmentById(R.id.fragment);
         fragment.setAct(this);
         fragment.setType(SettingsActivity.Type.values()[getIntent().getIntExtra(getPackageName() + ".TYPE", SettingsActivity.Type.MAIN.ordinal())]);
 
     }
-
-    private int selectedItem;
 
     private void registerActivities() {
         IMPORT_ZIP = registerForActivityResult(new ActivityResultContracts.GetContent(), selectedFile -> {
@@ -169,5 +169,4 @@ public class SettingsActivity extends GeneralActivity {
     }
 
     public enum Type {MAIN, COLUMN, DATA}
-
 }

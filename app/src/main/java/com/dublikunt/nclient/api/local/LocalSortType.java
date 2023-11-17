@@ -3,8 +3,8 @@ package com.dublikunt.nclient.api.local;
 import androidx.annotation.NonNull;
 
 public class LocalSortType {
-    public static final byte MASK_DESCENDING = (byte) (1 << 7);         //10000000
-    private static final byte MASK_TYPE = (byte) (MASK_DESCENDING - 1);  //01111111
+    public static final byte MASK_DESCENDING = (byte) (1 << 7);
+    private static final byte MASK_TYPE = (byte) (MASK_DESCENDING - 1);
     @NonNull
     public final Type type;
     public final boolean descending;

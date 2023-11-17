@@ -65,7 +65,7 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.ViewHold
     private Policy policy;
     private int colCount;
 
-    public GalleryAdapter(GalleryActivity cont, GenericGallery gallery, int colCount) {
+    public GalleryAdapter(GalleryActivity cont, @NonNull GenericGallery gallery, int colCount) {
         this.context = cont;
         this.gallery = gallery;
         maxSize = gallery.getMaxSize();
@@ -74,7 +74,7 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.ViewHold
         try {
             if (gallery instanceof LocalGallery) {
                 directory = gallery.getGalleryFolder();
-            } else if (Global.hasStoragePermission(cont)) {
+            } else {
                 if (gallery.getId() != -1) {
                     File f = Global.findGalleryFolder(context, gallery.getId());
                     if (f != null) directory = new GalleryFolder(f);
@@ -154,7 +154,7 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.ViewHold
         }
     }
 
-    private void loadRelatedLayout(ViewHolder holder) {
+    private void loadRelatedLayout(@NonNull ViewHolder holder) {
         LogUtility.d("Called RElated");
         final RecyclerView recyclerView = holder.master.findViewById(R.id.recycler);
         if (gallery.isLocal()) {
@@ -174,7 +174,7 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.ViewHold
         }
     }
 
-    private void loadTagLayout(ViewHolder holder) {
+    private void loadTagLayout(@NonNull ViewHolder holder) {
         final ViewGroup vg = holder.master.findViewById(R.id.tag_master);
         final TextView idContainer = holder.master.findViewById(R.id.id_num);
         initializeIdContainer(idContainer);
@@ -235,7 +235,7 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.ViewHold
         });
     }
 
-    private void addInfoLayout(ViewHolder holder, GalleryData gallery) {
+    private void addInfoLayout(@NonNull ViewHolder holder, @NonNull GalleryData gallery) {
         TextView text = holder.master.findViewById(R.id.page_count);
         text.setText(context.getString(R.string.page_count_format, gallery.getPageCount()));
         text = holder.master.findViewById(R.id.upload_date);
@@ -254,7 +254,7 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.ViewHold
         context.runOnUiThread(() -> notifyItemRangeChanged(0, getItemCount()));
     }
 
-    private void loadPageLayout(ViewHolder holder) {
+    private void loadPageLayout(@NonNull ViewHolder holder) {
         final int pos = holder.getBindingAdapterPosition();
         final ImageView imgView = holder.master.findViewById(R.id.image);
 
@@ -265,11 +265,10 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.ViewHold
 
         holder.pageNumber.setText(String.format(Locale.US, "%d", pos));
 
-
         if (policy == Policy.MAX)
-            holder.itemView.post(() -> {//find the max size and apply proportion
+            holder.itemView.post(() -> {
                 if (maxImageSize != null) return;
-                int cellWidth = holder.itemView.getWidth();// this will give you cell width dynamically
+                int cellWidth = holder.itemView.getWidth();
                 LogUtility.d(String.format(Locale.US, "Setting: %d,%s", cellWidth, maxSize.toString()));
                 if (maxSize.getWidth() > 10 && maxSize.getHeight() > 10) {
                     int hei = (maxSize.getHeight() * cellWidth) / maxSize.getWidth();
@@ -311,8 +310,7 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.ViewHold
         adapter.add(context.getString(R.string.share));
         adapter.add(context.getString(R.string.rotate_image));
         adapter.add(context.getString(R.string.bookmark_here));
-        if (Global.hasStoragePermission(context))
-            adapter.add(context.getString(R.string.save_page));
+        adapter.add(context.getString(R.string.save_page));
         MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(context);
         builder.setTitle(R.string.settings).setIcon(R.drawable.ic_share);
         builder.setAdapter(adapter, (dialog, which) -> {
@@ -343,7 +341,7 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.ViewHold
             .show();
     }
 
-    private void sendImage(ImageView img, int pos, boolean text) {
+    private void sendImage(@NonNull ImageView img, int pos, boolean text) {
         Utility.sendImage(context, img.getDrawable(), text ? gallery.sharePageUrl(pos - 1) : null);
     }
 
@@ -387,7 +385,6 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.ViewHold
         }
     }
 
-
     private boolean hasTags() {
         return gallery.hasGalleryData();
     }
@@ -418,5 +415,4 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.ViewHold
             if (type == Type.RELATED) Global.applyFastScroller(master.findViewById(R.id.recycler));
         }
     }
-
 }

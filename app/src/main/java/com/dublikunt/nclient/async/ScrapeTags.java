@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.util.JsonReader;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.JobIntentService;
 
@@ -14,6 +15,8 @@ import com.dublikunt.nclient.api.enums.TagType;
 import com.dublikunt.nclient.async.database.Queries;
 import com.dublikunt.nclient.settings.Global;
 import com.dublikunt.nclient.utility.LogUtility;
+
+import org.jetbrains.annotations.Contract;
 
 import java.io.IOException;
 import java.util.Calendar;
@@ -26,7 +29,7 @@ import okhttp3.ResponseBody;
 
 public class ScrapeTags extends JobIntentService {
     private static final int DAYS_UNTIL_SCRAPE = 7;
-    private static final String DATA_FOLDER = "https://raw.githubusercontent.com/Dar9586/NClientV2/master/data/";
+    private static final String DATA_FOLDER = "https://raw.githubusercontent.com/DublikuntMux/NClient/main/data/";
     private static final String TAGS = DATA_FOLDER + "tags.json";
     private static final String VERSION = DATA_FOLDER + "tagsVersion";
 
@@ -83,10 +86,6 @@ public class ScrapeTags extends JobIntentService {
     private void fetchTags() throws IOException {
         Response x = Global.getClient(this).newCall(new Request.Builder().url(TAGS).build()).execute();
         ResponseBody body = x.body();
-        if (body == null) {
-            x.close();
-            return;
-        }
         JsonReader reader = new JsonReader(body.charStream());
         reader.beginArray();
         while (reader.hasNext()) {
@@ -97,7 +96,9 @@ public class ScrapeTags extends JobIntentService {
         x.close();
     }
 
-    private Tag readTag(JsonReader reader) throws IOException {
+    @NonNull
+    @Contract("_ -> new")
+    private Tag readTag(@NonNull JsonReader reader) throws IOException {
         reader.beginArray();
         int id = reader.nextInt();
         String name = reader.nextString();
@@ -107,8 +108,7 @@ public class ScrapeTags extends JobIntentService {
         return new Tag(name, count, id, type, TagStatus.DEFAULT);
     }
 
-    private boolean enoughDayPassed(Date nowTime, Date lastTime) {
-        //first start or never completed
+    private boolean enoughDayPassed(@NonNull Date nowTime, @NonNull Date lastTime) {
         if (nowTime.getTime() == lastTime.getTime()) return true;
         int daysBetween = 0;
         Calendar now = Calendar.getInstance(), last = Calendar.getInstance();

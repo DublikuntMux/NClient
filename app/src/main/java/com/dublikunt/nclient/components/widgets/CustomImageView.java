@@ -9,7 +9,6 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.widget.AppCompatImageView;
 
 public class CustomImageView extends AppCompatImageView {
-
     public CustomImageView(Context context) {
         super(context);
     }
@@ -27,7 +26,6 @@ public class CustomImageView extends AppCompatImageView {
         super.setImageDrawable(drawable);
         invalidate();
     }
-
 
     @Override
     protected boolean setFrame(int l, int t, int r, int b) {

@@ -18,14 +18,15 @@ public class CustomCookieJar implements ClearableCookieJar {
     private final CookieCache cache;
     private final CookiePersistor persistor;
 
-    public CustomCookieJar(CookieCache cache, CookiePersistor persistor) {
+    public CustomCookieJar(CookieCache cache, @NonNull CookiePersistor persistor) {
         this.cache = cache;
         this.persistor = persistor;
 
         this.cache.addAll(persistor.loadAll());
     }
 
-    private static List<Cookie> filterPersistentCookies(List<Cookie> cookies) {
+    @NonNull
+    private static List<Cookie> filterPersistentCookies(@NonNull List<Cookie> cookies) {
         List<Cookie> persistentCookies = new ArrayList<>();
 
         for (Cookie cookie : cookies) {
@@ -36,7 +37,7 @@ public class CustomCookieJar implements ClearableCookieJar {
         return persistentCookies;
     }
 
-    private static boolean isCookieExpired(Cookie cookie) {
+    private static boolean isCookieExpired(@NonNull Cookie cookie) {
         return cookie.expiresAt() < System.currentTimeMillis();
     }
 

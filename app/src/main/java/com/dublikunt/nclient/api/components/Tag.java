@@ -7,21 +7,28 @@ import android.util.JsonReader;
 import android.util.JsonToken;
 import android.util.JsonWriter;
 
+import androidx.annotation.NonNull;
+
 import com.dublikunt.nclient.api.enums.TagStatus;
 import com.dublikunt.nclient.api.enums.TagType;
 import com.dublikunt.nclient.utility.LogUtility;
 
+import org.jetbrains.annotations.Contract;
+
 import java.io.IOException;
 import java.util.Locale;
 
-@SuppressWarnings("unused")
 public class Tag implements Parcelable {
     public static final Creator<Tag> CREATOR = new Creator<Tag>() {
+        @NonNull
+        @Contract("_ -> new")
         @Override
         public Tag createFromParcel(Parcel in) {
             return new Tag(in);
         }
 
+        @NonNull
+        @Contract(value = "_ -> new", pure = true)
         @Override
         public Tag[] newArray(int size) {
             return new Tag[size];
@@ -32,7 +39,7 @@ public class Tag implements Parcelable {
     private TagType type;
     private TagStatus status = TagStatus.DEFAULT;
 
-    public Tag(String text) {
+    public Tag(@NonNull String text) {
         this.count = Integer.parseInt(text.substring(0, text.indexOf(',')));
         text = text.substring(text.indexOf(',') + 1);
         this.id = Integer.parseInt(text.substring(0, text.indexOf(',')));
@@ -49,7 +56,7 @@ public class Tag implements Parcelable {
         this.status = status;
     }
 
-    public Tag(JsonReader jr) throws IOException {
+    public Tag(@NonNull JsonReader jr) throws IOException {
         jr.beginObject();
         while (jr.peek() != JsonToken.END_OBJECT) {
             switch (jr.nextName()) {
@@ -76,7 +83,7 @@ public class Tag implements Parcelable {
         jr.endObject();
     }
 
-    private Tag(Parcel in) {
+    private Tag(@NonNull Parcel in) {
         name = in.readString();
         count = in.readInt();
         id = in.readInt();
@@ -133,7 +140,7 @@ public class Tag implements Parcelable {
         return null;
     }
 
-    void writeJson(JsonWriter writer) throws IOException {
+    void writeJson(@NonNull JsonWriter writer) throws IOException {
         writer.beginObject();
         writer.name("count").value(count);
         writer.name("type").value(getTypeSingleName());
@@ -187,7 +194,7 @@ public class Tag implements Parcelable {
     }
 
     @Override
-    public void writeToParcel(Parcel parcel, int flags) {
+    public void writeToParcel(@NonNull Parcel parcel, int flags) {
         parcel.writeString(name);
         parcel.writeInt(count);
         parcel.writeInt(id);

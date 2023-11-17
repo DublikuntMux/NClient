@@ -9,7 +9,7 @@ import com.dublikunt.nclient.async.database.DatabaseHelper;
 import com.dublikunt.nclient.async.downloader.DownloadGallery;
 import com.dublikunt.nclient.settings.Database;
 import com.dublikunt.nclient.settings.Global;
-import com.dublikunt.nclient.settings.TagV2;
+import com.dublikunt.nclient.settings.Tag;
 import com.dublikunt.nclient.utility.network.NetworkUtil;
 import com.google.android.material.color.DynamicColors;
 
@@ -27,8 +27,8 @@ public class MainApplication extends Application {
         Database.setDatabase(new DatabaseHelper(getApplicationContext()).getWritableDatabase());
         Global.initFromShared(this);
         NetworkUtil.initConnectivity(this);
-        TagV2.initMinCount(this);
-        TagV2.initSortByName(this);
+        Tag.initMinCount(this);
+        Tag.initSortByName(this);
         DownloadGallery.loadDownloads(this);
     }
 }

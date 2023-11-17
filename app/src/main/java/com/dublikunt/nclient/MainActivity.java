@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -16,6 +17,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
@@ -23,17 +25,17 @@ import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.widget.SearchView;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.content.ContextCompat;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.RequestManager;
 import com.dublikunt.nclient.adapters.ListAdapter;
-import com.dublikunt.nclient.api.InspectorV3;
+import com.dublikunt.nclient.api.Inspector;
 import com.dublikunt.nclient.api.components.Gallery;
 import com.dublikunt.nclient.api.components.GenericGallery;
 import com.dublikunt.nclient.api.components.Ranges;
-import com.dublikunt.nclient.api.components.Tag;
 import com.dublikunt.nclient.api.enums.ApiRequestType;
 import com.dublikunt.nclient.api.enums.Language;
 import com.dublikunt.nclient.api.enums.SortType;
@@ -49,7 +51,7 @@ import com.dublikunt.nclient.components.views.PageSwitcher;
 import com.dublikunt.nclient.components.widgets.CustomGridLayoutManager;
 import com.dublikunt.nclient.settings.Global;
 import com.dublikunt.nclient.settings.Login;
-import com.dublikunt.nclient.settings.TagV2;
+import com.dublikunt.nclient.settings.Tag;
 import com.dublikunt.nclient.utility.ImageDownloadUtility;
 import com.dublikunt.nclient.utility.LogUtility;
 import com.dublikunt.nclient.utility.Utility;
@@ -70,10 +72,9 @@ public class MainActivity extends BaseActivity
     implements NavigationView.OnNavigationItemSelectedListener {
 
     private static final int CHANGE_LANGUAGE_DELAY = 1000;
-    private static boolean firstTime = true;//true only when app starting
-    private final InspectorV3.InspectorResponse startGallery = new MainInspectorResponse() {
+    private final Inspector.InspectorResponse startGallery = new MainInspectorResponse() {
         @Override
-        public void onSuccess(List<GenericGallery> galleries) {
+        public void onSuccess(@NonNull List<GenericGallery> galleries) {
             Gallery g = galleries.size() == 1 ? (Gallery) galleries.get(0) : Gallery.emptyGallery();
             Intent intent = new Intent(MainActivity.this, GalleryActivity.class);
             LogUtility.d(g.toString());
@@ -85,11 +86,39 @@ public class MainActivity extends BaseActivity
             LogUtility.d("STARTED");
         }
     };
+    private final Handler changeLanguageTimeHandler = new Handler(Looper.myLooper());
+    public ListAdapter adapter;
+    private final Inspector.InspectorResponse addDataset = new MainInspectorResponse() {
+        @Override
+        public void onSuccess(List<GenericGallery> galleries) {
+            adapter.addGalleries(galleries);
+        }
+    };
+
+    public MenuItem loginItem, onlineFavoriteManager;
+    private Inspector inspector = null;
+    private NavigationView navigationView;
+    private ModeType modeType = ModeType.UNKNOWN;
+    private int idOpenedGallery = -1;
+    private boolean inspecting = false, filteringTag = false;
+    private SortType temporaryType;
+    private Snackbar snackbar = null;
+    private PageSwitcher pageSwitcher;
+    private final Inspector.InspectorResponse
+        resetDataset = new MainInspectorResponse() {
+        @Override
+        public void onSuccess(List<GenericGallery> galleries) {
+            super.onSuccess(galleries);
+            adapter.restartDataset(galleries);
+            showPageSwitcher(inspector.getPage(), inspector.getPageCount());
+            runOnUiThread(() -> recycler.smoothScrollToPosition(0));
+        }
+    };
     private final CookieInterceptor.Manager MANAGER = new CookieInterceptor.Manager() {
         boolean tokenFound = false;
 
         @Override
-        public void applyCookie(String key, String value) {
+        public void applyCookie(@NonNull String key, String value) {
             Cookie cookie = Cookie.parse(Login.BASE_HTTP_URL, key + "=" + value + "; Max-Age=31449600; Path=/; SameSite=Lax");
             Global.client.cookieJar().saveFromResponse(Login.BASE_HTTP_URL, Collections.singletonList(cookie));
             tokenFound |= key.equals("csrftoken");
@@ -109,34 +138,6 @@ public class MainActivity extends BaseActivity
             inspector.start();
         }
     };
-    private final Handler changeLanguageTimeHandler = new Handler(Looper.myLooper());
-    public ListAdapter adapter;
-    private final InspectorV3.InspectorResponse addDataset = new MainInspectorResponse() {
-        @Override
-        public void onSuccess(List<GenericGallery> galleries) {
-            adapter.addGalleries(galleries);
-        }
-    };
-    //views
-    public MenuItem loginItem, onlineFavoriteManager;
-    private InspectorV3 inspector = null;
-    private NavigationView navigationView;
-    private ModeType modeType = ModeType.UNKNOWN;
-    private int idOpenedGallery = -1;//Position in the recycler of the opened gallery
-    private boolean inspecting = false, filteringTag = false;
-    private SortType temporaryType;
-    private Snackbar snackbar = null;
-    private PageSwitcher pageSwitcher;
-    private final InspectorV3.InspectorResponse
-        resetDataset = new MainInspectorResponse() {
-        @Override
-        public void onSuccess(List<GenericGallery> galleries) {
-            super.onSuccess(galleries);
-            adapter.restartDataset(galleries);
-            showPageSwitcher(inspector.getPage(), inspector.getPageCount());
-            runOnUiThread(() -> recycler.smoothScrollToPosition(0));
-        }
-    };
     final Runnable changeLanguageRunnable = () -> {
         useNormalMode();
         inspector.start();
@@ -149,10 +150,49 @@ public class MainActivity extends BaseActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        //load inspector
+
         selectStartMode(getIntent(), getPackageName());
         LogUtility.d("Main started with mode " + modeType);
-        //init views and actions
+
+        if (ContextCompat.checkSelfPermission(
+            this,
+            Manifest.permission.WRITE_EXTERNAL_STORAGE
+        ) == PackageManager.PERMISSION_DENIED
+        ) {
+            switch (Build.VERSION.SDK_INT) {
+                case Build.VERSION_CODES.TIRAMISU -> requestPermissions(
+                    new String[]{
+                        Manifest.permission.INTERNET,
+                        Manifest.permission.WAKE_LOCK,
+                        Manifest.permission.ACCESS_NETWORK_STATE,
+                        Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                        Manifest.permission.READ_EXTERNAL_STORAGE,
+                        Manifest.permission.MANAGE_EXTERNAL_STORAGE,
+                        Manifest.permission.POST_NOTIFICATIONS,
+                    }, 101
+                );
+                case Build.VERSION_CODES.S -> requestPermissions(
+                    new String[]{
+                        Manifest.permission.INTERNET,
+                        Manifest.permission.WAKE_LOCK,
+                        Manifest.permission.ACCESS_NETWORK_STATE,
+                        Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                        Manifest.permission.READ_EXTERNAL_STORAGE,
+                        Manifest.permission.MANAGE_EXTERNAL_STORAGE
+                    }, 101
+                );
+                default -> requestPermissions(
+                    new String[]{
+                        Manifest.permission.INTERNET,
+                        Manifest.permission.WAKE_LOCK,
+                        Manifest.permission.ACCESS_NETWORK_STATE,
+                        Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                        Manifest.permission.READ_EXTERNAL_STORAGE,
+                    }, 101
+                );
+            }
+        }
+
         findUsefulViews();
         initializeToolbar();
         initializeNavigationView();
@@ -172,6 +212,16 @@ public class MainActivity extends BaseActivity
         } else {
             LogUtility.e(getIntent().getExtras());
         }
+
+        getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackPressed() {
+                if (drawerLayout.isDrawerOpen(GravityCompat.START))
+                    drawerLayout.closeDrawer(GravityCompat.START);
+                else
+                    finish();
+            }
+        });
     }
 
     private void manageDrawer() {
@@ -226,7 +276,6 @@ public class MainActivity extends BaseActivity
     private void initializeRecyclerView() {
         adapter = new ListAdapter(this);
         recycler.setAdapter(adapter);
-        //recycler.setHasFixedSize(true);
         recycler.setItemViewCacheSize(24);
         recycler.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
@@ -248,10 +297,7 @@ public class MainActivity extends BaseActivity
         changeLayout(getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE);
     }
 
-    /**
-     * Check if the last gallery has been shown
-     **/
-    private boolean lastGalleryReached(CustomGridLayoutManager manager) {
+    private boolean lastGalleryReached(@NonNull CustomGridLayoutManager manager) {
         return manager.findLastVisibleItemPosition() >= (recycler.getAdapter().getItemCount() - 1 - manager.getSpanCount());
     }
 
@@ -289,7 +335,6 @@ public class MainActivity extends BaseActivity
     }
 
     private void hideError() {
-        //errorText.setVisibility(View.GONE);
         runOnUiThread(() -> {
             if (snackbar != null && snackbar.isShown()) {
                 snackbar.dismiss();
@@ -316,7 +361,7 @@ public class MainActivity extends BaseActivity
         showError(getString(text), listener);
     }
 
-    private void selectStartMode(Intent intent, String packageName) {
+    private void selectStartMode(@NonNull Intent intent, String packageName) {
         Uri data = intent.getData();
         if (intent.getBooleanExtra(packageName + ".ISBYTAG", false))
             useTagMode(intent, packageName);
@@ -330,11 +375,11 @@ public class MainActivity extends BaseActivity
     }
 
     private void useNormalMode() {
-        inspector = InspectorV3.basicInspector(this, 1, resetDataset);
+        inspector = Inspector.basicInspector(this, 1, resetDataset);
         modeType = ModeType.NORMAL;
     }
 
-    private void useBookmarkMode(Intent intent, String packageName) {
+    private void useBookmarkMode(@NonNull Intent intent, String packageName) {
         inspector = intent.getParcelableExtra(packageName + ".INSPECTOR");
         assert inspector != null;
         inspector.initialize(this, resetDataset);
@@ -348,35 +393,34 @@ public class MainActivity extends BaseActivity
     }
 
     private void useFavoriteMode(int page) {
-        //instantiateWebView();
-        inspector = InspectorV3.favoriteInspector(this, null, page, resetDataset);
+        inspector = Inspector.favoriteInspector(this, null, page, resetDataset);
         modeType = ModeType.FAVORITE;
     }
 
-    private void useSearchMode(Intent intent, String packageName) {
+    private void useSearchMode(@NonNull Intent intent, String packageName) {
         String query = intent.getStringExtra(packageName + ".QUERY");
         boolean ok = tryOpenId(query);
         if (!ok) createSearchInspector(intent, packageName, query);
     }
 
-    private void createSearchInspector(Intent intent, String packageName, String query) {
+    private void createSearchInspector(@NonNull Intent intent, String packageName, String query) {
         boolean advanced = intent.getBooleanExtra(packageName + ".ADVANCED", false);
-        ArrayList<Tag> tagArrayList = intent.getParcelableArrayListExtra(packageName + ".TAGS");
+        ArrayList<com.dublikunt.nclient.api.components.Tag> tagArrayList = intent.getParcelableArrayListExtra(packageName + ".TAGS");
         Ranges ranges = intent.getParcelableExtra(getPackageName() + ".RANGES");
-        HashSet<Tag> tags = null;
+        HashSet<com.dublikunt.nclient.api.components.Tag> tags = null;
         query = query.trim();
         if (advanced) {
-            assert tagArrayList != null;//tags is always not null when advanced is set
+            assert tagArrayList != null;
             tags = new HashSet<>(tagArrayList);
         }
-        inspector = InspectorV3.searchInspector(this, query, tags, 1, Global.getSortType(), ranges, resetDataset);
+        inspector = Inspector.searchInspector(this, query, tags, 1, Global.getSortType(), ranges, resetDataset);
         modeType = ModeType.SEARCH;
     }
 
     private boolean tryOpenId(String query) {
         try {
             int id = Integer.parseInt(query);
-            inspector = InspectorV3.galleryInspector(this, id, startGallery);
+            inspector = Inspector.galleryInspector(this, id, startGallery);
             modeType = ModeType.ID;
             return true;
         } catch (NumberFormatException ignore) {
@@ -384,16 +428,13 @@ public class MainActivity extends BaseActivity
         return false;
     }
 
-    private void useTagMode(Intent intent, String packageName) {
-        Tag t = intent.getParcelableExtra(packageName + ".TAG");
-        inspector = InspectorV3.tagInspector(this, t, 1, Global.getSortType(), resetDataset);
+    private void useTagMode(@NonNull Intent intent, String packageName) {
+        com.dublikunt.nclient.api.components.Tag t = intent.getParcelableExtra(packageName + ".TAG");
+        inspector = Inspector.tagInspector(this, t, 1, Global.getSortType(), resetDataset);
         modeType = ModeType.TAG;
     }
 
-    /**
-     * Load inspector from an URL, it can be either a tag or a search
-     */
-    private void manageDataStart(Uri data) {
+    private void manageDataStart(@NonNull Uri data) {
         List<String> datas = data.getPathSegments();
         TagType dataType;
 
@@ -407,7 +448,7 @@ public class MainActivity extends BaseActivity
         else useDataSearchMode(data, datas);
     }
 
-    private void useDataSearchMode(Uri data, List<String> datas) {
+    private void useDataSearchMode(@NonNull Uri data, @NonNull List<String> datas) {
         String query = data.getQueryParameter("q");
         String pageParam = data.getQueryParameter("page");
         boolean favorite = "favorites".equals(datas.get(0));
@@ -426,28 +467,27 @@ public class MainActivity extends BaseActivity
             return;
         }
 
-        inspector = InspectorV3.searchInspector(this, query, null, page, type, null, resetDataset);
+        inspector = Inspector.searchInspector(this, query, null, page, type, null, resetDataset);
         modeType = ModeType.SEARCH;
     }
 
-    private void useDataTagMode(List<String> datas, TagType type) {
+    private void useDataTagMode(@NonNull List<String> datas, TagType type) {
         String query = datas.get(1);
-        Tag tag = Queries.TagTable.getTagFromTagName(query);
+        com.dublikunt.nclient.api.components.Tag tag = Queries.TagTable.getTagFromTagName(query);
         if (tag == null)
-            tag = new Tag(query, -1, SpecialTagIds.INVALID_ID, type, TagStatus.DEFAULT);
+            tag = new com.dublikunt.nclient.api.components.Tag(query, -1, SpecialTagIds.INVALID_ID, type, TagStatus.DEFAULT);
         SortType sortType = SortType.RECENT_ALL_TIME;
         if (datas.size() == 3) {
             sortType = SortType.findFromAddition(datas.get(2));
         }
-        inspector = InspectorV3.tagInspector(this, tag, 1, sortType, resetDataset);
+        inspector = Inspector.tagInspector(this, tag, 1, sortType, resetDataset);
         modeType = ModeType.TAG;
     }
 
-    private void changeNavigationImage(NavigationView navigationView) {
+    private void changeNavigationImage(@NonNull NavigationView navigationView) {
         boolean light = Global.getTheme() == Global.ThemeScheme.LIGHT;
         View view = navigationView.getHeaderView(0);
         ImageView imageView = view.findViewById(R.id.imageView);
-        View layoutHeader = view.findViewById(R.id.layout_header);
         ImageDownloadUtility.loadImage(light ? R.drawable.ic_logo_dark : R.drawable.ic_logo, imageView);
     }
 
@@ -466,17 +506,9 @@ public class MainActivity extends BaseActivity
                 Global.updateOnlyLanguage(this, Language.ENGLISH);
                 break;
         }
-        //wait 250ms to reduce the requests
+
         changeLanguageTimeHandler.removeCallbacks(changeLanguageRunnable);
         changeLanguageTimeHandler.postDelayed(changeLanguageRunnable, CHANGE_LANGUAGE_DELAY);
-
-    }
-
-    @Override
-    public void onBackPressed() {
-        if (drawerLayout.isDrawerOpen(GravityCompat.START))
-            drawerLayout.closeDrawer(GravityCompat.START);
-        else super.onBackPressed();
     }
 
     public void hidePageSwitcher() {
@@ -486,13 +518,10 @@ public class MainActivity extends BaseActivity
     public void showPageSwitcher(final int actualPage, final int totalPage) {
         pageSwitcher.setPages(totalPage, actualPage);
 
-
         if (Global.isInfiniteScrollMain()) {
             hidePageSwitcher();
         }
-
     }
-
 
     private void showLogoutForm() {
         MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(this);
@@ -515,21 +544,21 @@ public class MainActivity extends BaseActivity
         loadStringLogin();
         onlineFavoriteManager.setVisible(com.dublikunt.nclient.settings.Login.isLogged());
         if (setting != null) {
-            Global.initFromShared(this);//restart all settings
+            Global.initFromShared(this);
             inspector = inspector.cloneInspector(this, resetDataset);
-            inspector.start();//restart inspector
+            inspector.start();
             if (setting.theme != Global.getTheme() || !Objects.equals(setting.locale, Global.initLanguage(this))) {
                 RequestManager manager = GlideX.with(getApplicationContext());
                 if (manager != null) manager.pauseAllRequestsRecursive();
                 recreate();
             }
-            adapter.notifyDataSetChanged();//restart adapter
+            adapter.notifyDataSetChanged();
             adapter.resetStatuses();
-            showPageSwitcher(inspector.getPage(), inspector.getPageCount());//restart page switcher
+            showPageSwitcher(inspector.getPage(), inspector.getPageCount());
             changeLayout(getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE);
             setting = null;
         } else if (filteringTag) {
-            inspector = InspectorV3.basicInspector(this, 1, resetDataset);
+            inspector = Inspector.basicInspector(this, 1, resetDataset);
             inspector.start();
             filteringTag = false;
         }
@@ -571,7 +600,7 @@ public class MainActivity extends BaseActivity
             ((SearchView) item.getActionView()).setOnQueryTextListener(new SearchView.OnQueryTextListener() {
                 @Override
                 public boolean onQueryTextSubmit(String query) {
-                    inspector = InspectorV3.favoriteInspector(MainActivity.this, query, 1, resetDataset);
+                    inspector = Inspector.favoriteInspector(MainActivity.this, query, 1, resetDataset);
                     inspector.start();
                     getSupportActionBar().setTitle(query);
                     return true;
@@ -585,7 +614,7 @@ public class MainActivity extends BaseActivity
         }
     }
 
-    private void popularItemDispay(MenuItem item) {
+    private void popularItemDispay(@NonNull MenuItem item) {
         item.setTitle(getString(R.string.sort_type_title_format, getString(Global.getSortType().getNameId())));
         Global.setTint(item.getIcon());
     }
@@ -623,7 +652,7 @@ public class MainActivity extends BaseActivity
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         Intent i;
         LogUtility.d("Pressed item: " + item.getItemId());
         if (item.getItemId() == R.id.by_popular) {
@@ -632,7 +661,7 @@ public class MainActivity extends BaseActivity
             changeUsedLanguage(item);
             showLanguageIcon(item);
         } else if (item.getItemId() == R.id.search) {
-            if (modeType != ModeType.FAVORITE) {//show textbox or start search activity
+            if (modeType != ModeType.FAVORITE) {
                 i = new Intent(this, SearchActivity.class);
                 startActivity(i);
             }
@@ -642,7 +671,7 @@ public class MainActivity extends BaseActivity
                 startActivity(i);
             }
         } else if (item.getItemId() == R.id.random_favorite) {
-            inspector = InspectorV3.randomInspector(this, startGallery, true);
+            inspector = Inspector.randomInspector(this, startGallery, true);
             inspector.start();
         } else if (item.getItemId() == R.id.download_page) {
             if (inspector.getGalleries() != null)
@@ -650,7 +679,7 @@ public class MainActivity extends BaseActivity
         } else if (item.getItemId() == R.id.add_bookmark) {
             Queries.BookmarkTable.addBookmark(inspector);
         } else if (item.getItemId() == R.id.tag_manager) {
-            TagStatus ts = TagV2.updateStatus(inspector.getTag());
+            TagStatus ts = Tag.updateStatus(inspector.getTag());
             updateTagStatus(item, ts);
         } else if (item.getItemId() == android.R.id.home) {
             finish();
@@ -701,7 +730,7 @@ public class MainActivity extends BaseActivity
         builder.show();
     }
 
-    private void updateTagStatus(MenuItem item, TagStatus ts) {
+    private void updateTagStatus(MenuItem item, @NonNull TagStatus ts) {
         switch (ts) {
             case DEFAULT:
                 item.setIcon(R.drawable.ic_help);
@@ -720,8 +749,7 @@ public class MainActivity extends BaseActivity
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         Intent intent;
         if (item.getItemId() == R.id.downloaded) {
-            if (Global.hasStoragePermission(this)) startLocalActivity();
-            else requestStorage();
+            startLocalActivity();
         } else if (item.getItemId() == R.id.bookmarks) {
             intent = new Intent(this, BookmarkActivity.class);
             startActivity(intent);
@@ -758,7 +786,6 @@ public class MainActivity extends BaseActivity
             intent = new Intent(this, StatusViewerActivity.class);
             startActivity(intent);
         }
-        //drawerLayout.closeDrawer(GravityCompat.START);
         return true;
     }
 
@@ -790,7 +817,7 @@ public class MainActivity extends BaseActivity
      */
     private enum ModeType {UNKNOWN, NORMAL, TAG, FAVORITE, SEARCH, BOOKMARK, ID}
 
-    abstract class MainInspectorResponse extends InspectorV3.DefaultInspectorResponse {
+    abstract class MainInspectorResponse extends Inspector.DefaultInspectorResponse {
         @Override
         public void onSuccess(List<GenericGallery> galleries) {
             super.onSuccess(galleries);
@@ -818,13 +845,6 @@ public class MainActivity extends BaseActivity
                 inspector = inspector.cloneInspector(MainActivity.this, inspector.getResponse());
                 inspector.start();
             });
-        }
-
-        @Override
-        public boolean shouldStart(InspectorV3 inspector) {
-            return true;
-            //loadWebVewUrl(inspector.getUrl());
-            //return inspector.canParseDocument();
         }
     }
 

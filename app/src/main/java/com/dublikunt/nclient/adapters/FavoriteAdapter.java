@@ -1,8 +1,8 @@
 package com.dublikunt.nclient.adapters;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.database.Cursor;
-import android.os.Build;
 import android.text.Layout;
 import android.util.SparseIntArray;
 import android.view.LayoutInflater;
@@ -47,6 +47,7 @@ public class FavoriteAdapter extends RecyclerView.Adapter<GenericAdapter.ViewHol
         setHasStableIds(true);
     }
 
+    @SuppressLint("Range")
     @Override
     public long getItemId(int position) {
         cursor.moveToPosition(position);
@@ -83,15 +84,12 @@ public class FavoriteAdapter extends RecyclerView.Adapter<GenericAdapter.ViewHol
         holder.flag.setText(Global.getLanguageFlag(ent.getLanguage()));
         holder.title.setOnClickListener(v -> {
             Layout layout = holder.title.getLayout();
-            if (Build.VERSION.SDK_INT > Build.VERSION_CODES.ICE_CREAM_SANDWICH_MR1) {
-                if (layout.getEllipsisCount(layout.getLineCount() - 1) > 0)
-                    holder.title.setMaxLines(7);
-                else if (holder.title.getMaxLines() == 7) holder.title.setMaxLines(3);
-                else holder.layout.performClick();
-            } else holder.layout.performClick();
+            if (layout.getEllipsisCount(layout.getLineCount() - 1) > 0)
+                holder.title.setMaxLines(7);
+            else if (holder.title.getMaxLines() == 7) holder.title.setMaxLines(3);
+            else holder.layout.performClick();
         });
         holder.layout.setOnClickListener(v -> {
-            //Global.setLoadedGallery(ent);
             startGallery(ent);
         });
         holder.layout.setOnLongClickListener(v -> {
@@ -162,7 +160,6 @@ public class FavoriteAdapter extends RecyclerView.Adapter<GenericAdapter.ViewHol
                 LogUtility.d("After called2");
                 final int oldSize = getItemCount(), newSize = results.count;
                 updateCursor((Cursor) results.values);
-                //not in runOnUIThread because is always executed on UI
                 if (oldSize > newSize) notifyItemRangeRemoved(newSize, oldSize - newSize);
                 else notifyItemRangeInserted(oldSize, newSize - oldSize);
                 notifyItemRangeChanged(0, Math.min(newSize, oldSize));

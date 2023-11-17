@@ -3,6 +3,10 @@ package com.dublikunt.nclient.api.enums;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import androidx.annotation.NonNull;
+
+import org.jetbrains.annotations.Contract;
+
 public class TagType implements Parcelable {
     public static final TagType UNKNOWN = new TagType(0, "", null);
     public static final TagType PARODY = new TagType(1, "parody", "parodies");
@@ -14,11 +18,15 @@ public class TagType implements Parcelable {
     public static final TagType CATEGORY = new TagType(7, "category", null);
     public static final TagType[] values = new TagType[]{UNKNOWN, PARODY, CHARACTER, TAG, ARTIST, GROUP, LANGUAGE, CATEGORY};
     public static final Creator<TagType> CREATOR = new Creator<TagType>() {
+        @NonNull
+        @Contract("_ -> new")
         @Override
         public TagType createFromParcel(Parcel in) {
             return new TagType(in);
         }
 
+        @NonNull
+        @Contract(value = "_ -> new", pure = true)
         @Override
         public TagType[] newArray(int size) {
             return new TagType[size];
@@ -33,7 +41,7 @@ public class TagType implements Parcelable {
         this.plural = plural;
     }
 
-    protected TagType(Parcel in) {
+    protected TagType(@NonNull Parcel in) {
         id = in.readByte();
         single = in.readString();
         plural = in.readString();
@@ -76,7 +84,7 @@ public class TagType implements Parcelable {
     }
 
     @Override
-    public void writeToParcel(Parcel dest, int flags) {
+    public void writeToParcel(@NonNull Parcel dest, int flags) {
         dest.writeByte(id);
         dest.writeString(single);
         dest.writeString(plural);

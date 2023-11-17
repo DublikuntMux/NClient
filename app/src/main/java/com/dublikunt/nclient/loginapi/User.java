@@ -71,6 +71,4 @@ public class User {
     public interface CreateUser {
         void onCreateUser(User user);
     }
-
-
 }

@@ -3,11 +3,9 @@ package com.dublikunt.nclient;
 import android.Manifest;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
-import android.annotation.TargetApi;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
-import android.os.Build;
 import android.os.Bundle;
 import android.view.KeyEvent;
 import android.view.Menu;
@@ -67,11 +65,10 @@ public class ZoomActivity extends GeneralActivity {
         side = preferences.getBoolean(VOLUME_SIDE_KEY, true);
         setContentView(R.layout.activity_zoom);
 
-        //read arguments
         gallery = getIntent().getParcelableExtra(getPackageName() + ".GALLERY");
         final int page = getIntent().getExtras().getInt(getPackageName() + ".PAGE", 1) - 1;
         directory = gallery.getGalleryFolder();
-        //toolbar setup
+
         toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -86,8 +83,6 @@ public class ZoomActivity extends GeneralActivity {
         if (Global.isLockScreen())
             getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
-
-        //find views
         SectionsPagerAdapter mSectionsPagerAdapter = new SectionsPagerAdapter(this);
         mViewPager = findViewById(R.id.container);
         mViewPager.setAdapter(mSectionsPagerAdapter);
@@ -99,7 +94,6 @@ public class ZoomActivity extends GeneralActivity {
         seekBar = findViewById(R.id.seekBar);
         view = findViewById(R.id.view);
 
-        //initial setup for views
         changeLayout(getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE);
         mViewPager.setKeepScreenOn(Global.isLockScreen());
         findViewById(R.id.prev).setOnClickListener(v -> changeClosePage(false));
@@ -110,7 +104,6 @@ public class ZoomActivity extends GeneralActivity {
             mViewPager.setLayoutDirection(ViewPager2.LAYOUT_DIRECTION_RTL);
         }
 
-        //Adding listeners
         mViewPager.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
             @Override
             public void onPageSelected(int newPage) {
@@ -227,7 +220,7 @@ public class ZoomActivity extends GeneralActivity {
         return ViewConfiguration.get(this).hasPermanentMenuKey();
     }
 
-    private void applyMargin(boolean landscape, View view) {
+    private void applyMargin(boolean landscape, @NonNull View view) {
         ConstraintLayout.LayoutParams lp = (ConstraintLayout.LayoutParams) view.getLayoutParams();
         lp.setMargins(0, 0, landscape && !hardwareKeys() ? Global.getNavigationBarHeight(this) : 0, 0);
         view.setLayoutParams(lp);
@@ -268,24 +261,18 @@ public class ZoomActivity extends GeneralActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_zoom, menu);
         Utility.tintMenu(menu);
         return true;
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         int id = item.getItemId();
         if (id == R.id.rotate) {
             getActualFragment().rotate();
         } else if (id == R.id.save_page) {
-            if (Global.hasStoragePermission(this)) {
-                downloadPage();
-            } else requestStorage();
+            downloadPage();
         } else if (id == R.id.share) {
             if (gallery.getId() <= 0) sendImage(false);
             else openSendImageDialog();
@@ -310,7 +297,6 @@ public class ZoomActivity extends GeneralActivity {
             .show();
     }
 
-    @TargetApi(Build.VERSION_CODES.M)
     private void requestStorage() {
         requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE}, 1);
     }
@@ -366,7 +352,6 @@ public class ZoomActivity extends GeneralActivity {
     }
 
     private void animateLayout() {
-
         AnimatorListenerAdapter adapter = new AnimatorListenerAdapter() {
             @Override
             public void onAnimationEnd(Animator animation) {
@@ -389,24 +374,15 @@ public class ZoomActivity extends GeneralActivity {
         toolbar.animate().alpha(isHidden ? 0f : 0.75f).setDuration(150).setListener(adapter).start();
     }
 
-    private void applyVisibilityFlag() {
-        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.ICE_CREAM_SANDWICH_MR1) {
-            getWindow().getDecorView().setSystemUiVisibility(isHidden ? hideFlags : showFlags);
-        } else {
-            getWindow().addFlags(isHidden ? WindowManager.LayoutParams.FLAG_FULLSCREEN : WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN);
-            getWindow().clearFlags(isHidden ? WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN : WindowManager.LayoutParams.FLAG_FULLSCREEN);
-        }
-    }
-
     private enum ScrollType {HORIZONTAL, VERTICAL}
 
     public class SectionsPagerAdapter extends FragmentStateAdapter {
-        public SectionsPagerAdapter(ZoomActivity activity) {
+        private boolean allowScroll = true;
+
+        public SectionsPagerAdapter(@NonNull ZoomActivity activity) {
             super(activity.getSupportFragmentManager(), activity.getLifecycle());
 
         }
-
-        private boolean allowScroll = true;
 
         @NonNull
         @Override
@@ -427,7 +403,7 @@ public class ZoomActivity extends GeneralActivity {
             f.setClickListener(v -> {
                 isHidden = !isHidden;
                 LogUtility.d("Clicked " + isHidden);
-                applyVisibilityFlag();
+                getWindow().getDecorView().setSystemUiVisibility(isHidden ? hideFlags : showFlags);
                 animateLayout();
             });
             return f;

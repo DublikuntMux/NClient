@@ -5,19 +5,28 @@ import android.os.Parcelable;
 import android.util.JsonReader;
 import android.util.JsonToken;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import com.dublikunt.nclient.api.enums.ImageExt;
 import com.dublikunt.nclient.api.enums.ImageType;
 import com.dublikunt.nclient.components.classes.Size;
+
+import org.jetbrains.annotations.Contract;
 
 import java.io.IOException;
 
 public class Page implements Parcelable {
     public static final Creator<Page> CREATOR = new Creator<Page>() {
+        @NonNull
+        @Contract("_ -> new")
         @Override
         public Page createFromParcel(Parcel in) {
             return new Page(in);
         }
 
+        @NonNull
+        @Contract(value = "_ -> new", pure = true)
         @Override
         public Page[] newArray(int size) {
             return new Page[size];
@@ -48,7 +57,7 @@ public class Page implements Parcelable {
         this.page = page;
     }
 
-    public Page(ImageType type, JsonReader reader, int page) throws IOException {
+    public Page(ImageType type, @NonNull JsonReader reader, int page) throws IOException {
         this.imageType = type;
         this.page = page;
         reader.beginObject();
@@ -71,18 +80,20 @@ public class Page implements Parcelable {
         reader.endObject();
     }
 
-    protected Page(Parcel in) {
+    protected Page(@NonNull Parcel in) {
         page = in.readInt();
         size = in.readParcelable(Size.class.getClassLoader());
         imageExt = ImageExt.values()[in.readByte()];
         imageType = ImageType.values()[in.readByte()];
     }
 
-    private static ImageExt stringToExt(String ext) {
+    private static ImageExt stringToExt(@NonNull String ext) {
         return charToExt(ext.charAt(0));
     }
 
-    public static String extToString(ImageExt ext) {
+    @Nullable
+    @Contract(pure = true)
+    public static String extToString(@NonNull ImageExt ext) {
         switch (ext) {
             case GIF:
                 return "gif";
@@ -94,7 +105,8 @@ public class Page implements Parcelable {
         return null;
     }
 
-    public static char extToChar(ImageExt imageExt) {
+    @Contract(pure = true)
+    public static char extToChar(@NonNull ImageExt imageExt) {
         switch (imageExt) {
             case GIF:
                 return 'g';
@@ -106,6 +118,8 @@ public class Page implements Parcelable {
         return '\0';
     }
 
+    @Nullable
+    @Contract(pure = true)
     public static ImageExt charToExt(int ext) {
         switch (ext) {
             case 'g':
@@ -128,7 +142,7 @@ public class Page implements Parcelable {
     }
 
     @Override
-    public void writeToParcel(Parcel dest, int flags) {
+    public void writeToParcel(@NonNull Parcel dest, int flags) {
         dest.writeInt(page);
         dest.writeParcelable(size, flags);
         dest.writeByte((byte) (imageExt == null ? ImageExt.JPG.ordinal() : imageExt.ordinal()));

@@ -5,7 +5,7 @@ import android.net.Uri;
 
 import androidx.annotation.NonNull;
 
-import com.dublikunt.nclient.api.InspectorV3;
+import com.dublikunt.nclient.api.Inspector;
 import com.dublikunt.nclient.api.components.Tag;
 import com.dublikunt.nclient.api.enums.ApiRequestType;
 import com.dublikunt.nclient.api.enums.SortType;
@@ -36,16 +36,16 @@ public class Bookmark {
         this.uri = Uri.parse(url);
     }
 
-    public InspectorV3 createInspector(Context context, InspectorV3.InspectorResponse response) {
+    public Inspector createInspector(Context context, Inspector.InspectorResponse response) {
         String query = uri.getQueryParameter("q");
         SortType popular = SortType.findFromAddition(uri.getQueryParameter("sort"));
         if (requestType == ApiRequestType.FAVORITE)
-            return InspectorV3.favoriteInspector(context, query, page, response);
+            return Inspector.favoriteInspector(context, query, page, response);
         if (requestType == ApiRequestType.BYSEARCH)
-            return InspectorV3.searchInspector(context, query, null, page, popular, null, response);
+            return Inspector.searchInspector(context, query, null, page, popular, null, response);
         if (requestType == ApiRequestType.BYALL)
-            return InspectorV3.searchInspector(context, "", null, page, SortType.RECENT_ALL_TIME, null, response);
-        if (requestType == ApiRequestType.BYTAG) return InspectorV3.searchInspector(context, "",
+            return Inspector.searchInspector(context, "", null, page, SortType.RECENT_ALL_TIME, null, response);
+        if (requestType == ApiRequestType.BYTAG) return Inspector.searchInspector(context, "",
             Collections.singleton(tagVal), page, SortType.findFromAddition(this.url), null, response);
         return null;
     }

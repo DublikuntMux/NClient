@@ -5,7 +5,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
-import android.os.Build;
 import android.os.Bundle;
 import android.util.JsonWriter;
 import android.util.Pair;
@@ -257,10 +256,6 @@ public class GeneralPreferenceFragment extends PreferenceFragmentCompat {
 
 
     private void initStoragePaths(ListPreference storagePreference) {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT || !Global.hasStoragePermission(act)) {
-            storagePreference.setVisible(false);
-            return;
-        }
         List<File> files = Global.getUsableFolders(act);
         List<CharSequence> strings = new ArrayList<>(files.size() + 1);
         for (File f : files) {

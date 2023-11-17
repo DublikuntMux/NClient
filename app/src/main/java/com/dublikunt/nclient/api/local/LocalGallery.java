@@ -15,6 +15,8 @@ import com.dublikunt.nclient.files.GalleryFolder;
 import com.dublikunt.nclient.files.PageFile;
 import com.dublikunt.nclient.utility.LogUtility;
 
+import org.jetbrains.annotations.Contract;
+
 import java.io.File;
 import java.io.FileReader;
 import java.util.Locale;
@@ -24,11 +26,15 @@ import java.util.regex.Pattern;
 
 public class LocalGallery extends GenericGallery {
     public static final Creator<LocalGallery> CREATOR = new Creator<LocalGallery>() {
+        @NonNull
+        @Contract("_ -> new")
         @Override
         public LocalGallery createFromParcel(Parcel in) {
             return new LocalGallery(in);
         }
 
+        @NonNull
+        @Contract(value = "_ -> new", pure = true)
         @Override
         public LocalGallery[] newArray(int size) {
             return new LocalGallery[size];
@@ -64,8 +70,7 @@ public class LocalGallery extends GenericGallery {
             if (galleryData.getId() == SpecialTagIds.INVALID_ID)
                 galleryData.setId(getId());
         }
-        //Start search pages
-        //Find page with max number
+
         if (folder != null)
             galleryData.setPageCount(folder.getMax());
         valid = folder != null && folder.getPageCount() > 0;
@@ -75,7 +80,7 @@ public class LocalGallery extends GenericGallery {
         this(file, false);
     }
 
-    private LocalGallery(Parcel in) {
+    private LocalGallery(@NonNull Parcel in) {
         galleryData = Objects.requireNonNull(in.readParcelable(GalleryData.class.getClassLoader()));
         maxSize = Objects.requireNonNull(in.readParcelable(Size.class.getClassLoader()));
         minSize = Objects.requireNonNull(in.readParcelable(Size.class.getClassLoader()));
@@ -86,12 +91,13 @@ public class LocalGallery extends GenericGallery {
         valid = true;
     }
 
-    private static int getPageFromFile(File f) {
+    private static int getPageFromFile(@NonNull File f) {
         String n = f.getName();
         return Integer.parseInt(n.substring(0, n.indexOf('.')));
     }
 
-    private static String createTitle(File file) {
+    @NonNull
+    private static String createTitle(@NonNull File file) {
         String name = file.getName();
         Matcher matcher = DUP_PATTERN.matcher(name);
         if (!matcher.matches()) return name;
@@ -99,9 +105,6 @@ public class LocalGallery extends GenericGallery {
         return title == null ? name : title;
     }
 
-    /**
-     * @return null if not found or the file if found
-     */
     public static File getPage(File dir, int page) {
         if (dir == null || !dir.exists()) return null;
         String pag = String.format(Locale.US, "%03d.", page);
@@ -137,7 +140,7 @@ public class LocalGallery extends GenericGallery {
             checkSize(f);
     }
 
-    private void checkSize(File f) {
+    private void checkSize(@NonNull File f) {
         LogUtility.d("Decoding: " + f);
         BitmapFactory.Options options = new BitmapFactory.Options();
         options.inJustDecodeBounds = true;
@@ -221,7 +224,7 @@ public class LocalGallery extends GenericGallery {
     }
 
     @Override
-    public void writeToParcel(Parcel dest, int flags) {
+    public void writeToParcel(@NonNull Parcel dest, int flags) {
         dest.writeParcelable(galleryData, flags);
         dest.writeParcelable(maxSize, flags);
         dest.writeParcelable(minSize, flags);

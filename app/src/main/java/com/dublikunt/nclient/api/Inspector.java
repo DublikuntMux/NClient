@@ -24,6 +24,7 @@ import com.dublikunt.nclient.settings.Global;
 import com.dublikunt.nclient.utility.LogUtility;
 import com.dublikunt.nclient.utility.Utility;
 
+import org.jetbrains.annotations.Contract;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -34,26 +35,32 @@ import java.io.UnsupportedEncodingException;
 import java.lang.ref.WeakReference;
 import java.net.HttpURLConnection;
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 import okhttp3.Request;
 import okhttp3.Response;
 
-public class InspectorV3 extends Thread implements Parcelable {
-    public static final Creator<InspectorV3> CREATOR = new Creator<InspectorV3>() {
+public class Inspector extends Thread implements Parcelable {
+    public static final Creator<Inspector> CREATOR = new Creator<Inspector>() {
+        @NonNull
+        @Contract("_ -> new")
         @Override
-        public InspectorV3 createFromParcel(Parcel in) {
-            return new InspectorV3(in);
+        public Inspector createFromParcel(Parcel in) {
+            return new Inspector(in);
         }
 
+        @NonNull
+        @Contract(value = "_ -> new", pure = true)
         @Override
-        public InspectorV3[] newArray(int size) {
-            return new InspectorV3[size];
+        public Inspector[] newArray(int size) {
+            return new Inspector[size];
         }
     };
     private SortType sortType;
@@ -68,7 +75,7 @@ public class InspectorV3 extends Thread implements Parcelable {
     private WeakReference<Context> context;
     private Document htmlDocument;
 
-    protected InspectorV3(Parcel in) {
+    protected Inspector(@NonNull Parcel in) {
         sortType = SortType.values()[in.readByte()];
         custom = in.readByte() != 0;
         page = in.readInt();
@@ -94,15 +101,13 @@ public class InspectorV3 extends Thread implements Parcelable {
         ranges = in.readParcelable(Ranges.class.getClassLoader());
     }
 
-    private InspectorV3(Context context, InspectorResponse response) {
+    private Inspector(Context context, InspectorResponse response) {
         initialize(context, response);
     }
 
-    /**
-     * This method will not run, but a WebView inside MainActivity will do it in its place
-     */
-    public static InspectorV3 favoriteInspector(Context context, String query, int page, InspectorResponse response) {
-        InspectorV3 inspector = new InspectorV3(context, response);
+    @NonNull
+    public static Inspector favoriteInspector(Context context, String query, int page, InspectorResponse response) {
+        Inspector inspector = new Inspector(context, response);
         inspector.page = page;
         inspector.pageCount = 0;
         inspector.query = query == null ? "" : query;
@@ -112,29 +117,30 @@ public class InspectorV3 extends Thread implements Parcelable {
         return inspector;
     }
 
-    /**
-     * @param favorite true if random online favorite, false for general random manga
-     */
-    public static InspectorV3 randomInspector(Context context, InspectorResponse response, boolean favorite) {
-        InspectorV3 inspector = new InspectorV3(context, response);
+    @NonNull
+    public static Inspector randomInspector(Context context, InspectorResponse response, boolean favorite) {
+        Inspector inspector = new Inspector(context, response);
         inspector.requestType = favorite ? ApiRequestType.RANDOM_FAVORITE : ApiRequestType.RANDOM;
         inspector.createUrl();
         return inspector;
     }
 
-    public static InspectorV3 galleryInspector(Context context, int id, InspectorResponse response) {
-        InspectorV3 inspector = new InspectorV3(context, response);
+    @NonNull
+    public static Inspector galleryInspector(Context context, int id, InspectorResponse response) {
+        Inspector inspector = new Inspector(context, response);
         inspector.id = id;
         inspector.requestType = ApiRequestType.BYSINGLE;
         inspector.createUrl();
         return inspector;
     }
 
-    public static InspectorV3 basicInspector(Context context, int page, InspectorResponse response) {
+    @NonNull
+    public static Inspector basicInspector(Context context, int page, InspectorResponse response) {
         return searchInspector(context, null, null, page, Global.getSortType(), null, response);
     }
 
-    public static InspectorV3 tagInspector(Context context, Tag tag, int page, SortType sortType, InspectorResponse response) {
+    @NonNull
+    public static Inspector tagInspector(Context context, Tag tag, int page, SortType sortType, InspectorResponse response) {
         Collection<Tag> tags;
         if (!Global.isOnlyTag()) {
             tags = getDefaultTags();
@@ -145,8 +151,9 @@ public class InspectorV3 extends Thread implements Parcelable {
         return searchInspector(context, null, tags, page, sortType, null, response);
     }
 
-    public static InspectorV3 searchInspector(Context context, String query, Collection<Tag> tags, int page, SortType sortType, @Nullable Ranges ranges, InspectorResponse response) {
-        InspectorV3 inspector = new InspectorV3(context, response);
+    @NonNull
+    public static Inspector searchInspector(Context context, String query, Collection<Tag> tags, int page, SortType sortType, @Nullable Ranges ranges, InspectorResponse response) {
+        Inspector inspector = new Inspector(context, response);
         inspector.custom = tags != null;
         inspector.tags = inspector.custom ? new HashSet<>(tags) : getDefaultTags();
         inspector.tags.addAll(getLanguageTags(Global.getOnlyLanguage()));
@@ -163,7 +170,6 @@ public class InspectorV3 extends Thread implements Parcelable {
                     break;
                 case 1:
                     inspector.requestType = ApiRequestType.BYTAG;
-                    //else by search for the negative tag
                     if (inspector.getTag().getStatus() != TagStatus.AVOIDED)
                         break;
                 default:
@@ -185,6 +191,7 @@ public class InspectorV3 extends Thread implements Parcelable {
         return tags;
     }
 
+    @NonNull
     private static Set<Tag> getLanguageTags(Language onlyLanguage) {
         Set<Tag> tags = new HashSet<>();
         if (onlyLanguage == null) return tags;
@@ -208,10 +215,8 @@ public class InspectorV3 extends Thread implements Parcelable {
     }
 
     @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        if (sortType != null)
-            dest.writeByte((byte) (sortType.ordinal()));
-        else dest.writeByte((byte) SortType.RECENT_ALL_TIME.ordinal());
+    public void writeToParcel(@NonNull Parcel dest, int flags) {
+        dest.writeByte((byte) (Objects.requireNonNullElse(sortType, SortType.RECENT_ALL_TIME).ordinal()));
         dest.writeByte((byte) (custom ? 1 : 0));
         dest.writeInt(page);
         dest.writeInt(pageCount);
@@ -228,7 +233,6 @@ public class InspectorV3 extends Thread implements Parcelable {
     }
 
     public String getSearchTitle() {
-        //triggered only when in searchMode
         if (query.length() > 0) return query;
         return url.replace(Utility.getBaseUrl() + "search/?q=", "").replace('+', ' ');
     }
@@ -242,8 +246,8 @@ public class InspectorV3 extends Thread implements Parcelable {
         return response;
     }
 
-    public InspectorV3 cloneInspector(Context context, InspectorResponse response) {
-        InspectorV3 inspectorV3 = new InspectorV3(context, response);
+    public Inspector cloneInspector(Context context, InspectorResponse response) {
+        Inspector inspectorV3 = new Inspector(context, response);
         inspectorV3.query = query;
         inspectorV3.url = url;
         inspectorV3.tags = tags;
@@ -266,11 +270,7 @@ public class InspectorV3 extends Thread implements Parcelable {
 
     private void createUrl() {
         String query;
-        try {
-            query = this.query == null ? null : URLEncoder.encode(this.query, "UTF-8");
-        } catch (UnsupportedEncodingException ignore) {
-            query = this.query;
-        }
+        query = this.query == null ? null : URLEncoder.encode(this.query, StandardCharsets.UTF_8);
         StringBuilder builder = new StringBuilder(Utility.getBaseUrl());
         if (requestType == ApiRequestType.BYALL) builder.append("?page=").append(page);
         else if (requestType == ApiRequestType.RANDOM) builder.append("random/");
@@ -334,8 +334,7 @@ public class InspectorV3 extends Thread implements Parcelable {
     @Override
     public synchronized void start() {
         if (getState() != State.NEW) return;
-        if (forceStart || response.shouldStart(this))
-            super.start();
+        super.start();
     }
 
     @Override
@@ -369,7 +368,7 @@ public class InspectorV3 extends Thread implements Parcelable {
         galleries.addAll(galleryTag);
     }
 
-    private void doSingle(Element document) throws IOException, InvalidResponseException {
+    private void doSingle(@NonNull Element document) throws IOException, InvalidResponseException {
         galleries = new ArrayList<>(1);
         Elements scripts = document.getElementsByTag("script");
         if (scripts.isEmpty())
@@ -394,7 +393,7 @@ public class InspectorV3 extends Thread implements Parcelable {
     }
 
     @Nullable
-    private String trimScriptTag(String scriptHtml) {
+    private String trimScriptTag(@NonNull String scriptHtml) {
         int s = scriptHtml.indexOf("parse");
         if (s < 0) return null;
         s += 7;
@@ -404,7 +403,7 @@ public class InspectorV3 extends Thread implements Parcelable {
         return scriptHtml;
     }
 
-    private void doSearch(Element document) throws InvalidResponseException {
+    private void doSearch(@NonNull Element document) throws InvalidResponseException {
         Elements gal = document.getElementsByClass("gallery");
         galleries = new ArrayList<>(gal.size());
         for (Element e : gal) galleries.add(new SimpleGallery(context.get(), e));
@@ -416,7 +415,7 @@ public class InspectorV3 extends Thread implements Parcelable {
             filterDocumentTags();
     }
 
-    private int findTotal(Element e) {
+    private int findTotal(@NonNull Element e) {
         String temp = e.attr("href");
 
         try {
@@ -475,14 +474,8 @@ public class InspectorV3 extends Thread implements Parcelable {
         return t;
     }
 
-    public static class InvalidResponseException extends Exception {
-        public InvalidResponseException() {
-            super();
-        }
-    }
-
     public interface InspectorResponse {
-        boolean shouldStart(InspectorV3 inspector);
+        boolean shouldStart(Inspector inspector);
 
         void onSuccess(List<GenericGallery> galleries);
 
@@ -493,9 +486,15 @@ public class InspectorV3 extends Thread implements Parcelable {
         void onEnd();
     }
 
+    public static class InvalidResponseException extends Exception {
+        public InvalidResponseException() {
+            super();
+        }
+    }
+
     public static abstract class DefaultInspectorResponse implements InspectorResponse {
         @Override
-        public boolean shouldStart(InspectorV3 inspector) {
+        public boolean shouldStart(Inspector inspector) {
             return true;
         }
 

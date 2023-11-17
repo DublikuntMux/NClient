@@ -57,9 +57,6 @@ public abstract class MultichoiceAdapter<D, T extends RecyclerView.ViewHolder> e
             listener.choiceChanged();
     }
 
-    /**
-     * Used only to do a put
-     */
     protected abstract D getItemAt(int position);
 
     protected abstract ViewGroup getMaster(T holder);
@@ -212,7 +209,7 @@ public abstract class MultichoiceAdapter<D, T extends RecyclerView.ViewHolder> e
         final ImageView checkmark;
         final ConstraintLayout multichoiceHolder;
 
-        public MultichoiceViewHolder(@NonNull ConstraintLayout multichoiceHolder, T holder) {
+        public MultichoiceViewHolder(@NonNull ConstraintLayout multichoiceHolder, @NonNull T holder) {
             super(holder.itemView);
             this.multichoiceHolder = multichoiceHolder;
             this.innerHolder = holder;
@@ -220,5 +217,4 @@ public abstract class MultichoiceAdapter<D, T extends RecyclerView.ViewHolder> e
             this.checkmark = multichoiceHolder.findViewById(R.id.checkmark);
         }
     }
-
 }

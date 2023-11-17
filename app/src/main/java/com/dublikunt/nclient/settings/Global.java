@@ -1,6 +1,5 @@
 package com.dublikunt.nclient.settings;
 
-import android.Manifest;
 import android.app.Activity;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
@@ -37,12 +36,13 @@ import com.dublikunt.nclient.api.enums.SortType;
 import com.dublikunt.nclient.api.enums.TitleType;
 import com.dublikunt.nclient.api.local.LocalSortType;
 import com.dublikunt.nclient.components.CustomCookieJar;
-import com.dublikunt.nclient.components.classes.CustomSSLSocketFactory;
 import com.dublikunt.nclient.utility.LogUtility;
 import com.dublikunt.nclient.utility.Utility;
 import com.dublikunt.nclient.utility.network.NetworkUtil;
 import com.franmontiel.persistentcookiejar.cache.SetCookieCache;
 import com.franmontiel.persistentcookiejar.persistence.SharedPrefsCookiePersistor;
+
+import org.jetbrains.annotations.Contract;
 
 import java.io.File;
 import java.io.IOException;
@@ -90,9 +90,9 @@ public class Global {
     private static boolean infiniteScrollMain, infiniteScrollFavorite, exactTagMatch;
     private static int defaultZoom, offscreenLimit;
     private static Point screenSize;
-    private static String userAgent = "Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N)";
+    private static final String userAgent = "Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N)";
 
-    public static long recursiveSize(File path) {
+    public static long recursiveSize(@NonNull File path) {
         if (path.isFile()) return path.length();
         long size = 0;
         File[] files = path.listFiles();
@@ -107,7 +107,7 @@ public class Global {
         return exactTagMatch;
     }
 
-    public static int getFavoriteLimit(Context context) {
+    public static int getFavoriteLimit(@NonNull Context context) {
         return context.getSharedPreferences("Settings", 0).getInt(context.getString(R.string.key_favorite_limit), 10);
     }
 
@@ -133,7 +133,7 @@ public class Global {
         return colPortStat;
     }
 
-    public static boolean isDestroyed(Activity activity) {
+    public static boolean isDestroyed(@NonNull Activity activity) {
         return activity.isDestroyed();
     }
 
@@ -143,6 +143,7 @@ public class Global {
         return agent.replace("\n", " ").trim();
     }
 
+    @NonNull
     public static String getDefaultFileParent(Context context) {
         File f;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
@@ -156,9 +157,8 @@ public class Global {
     private static void initFilesTree(Context context) {
         List<File> files = getUsableFolders(context);
         String path = context.getSharedPreferences("Settings", Context.MODE_PRIVATE).getString(context.getString(R.string.key_save_path), getDefaultFileParent(context));
-        assert path != null;
         File ROOTFOLDER = new File(path);
-        //in case the permission is removed
+
         if (!files.contains(ROOTFOLDER) && !isExternalStorageManager())
             ROOTFOLDER = new File(getDefaultFileParent(context));
         MAINFOLDER = new File(ROOTFOLDER, MAINFOLDER_NAME);
@@ -197,7 +197,7 @@ public class Global {
 
     private static void initGallerySize() {
         galleryHeight = screenSize.y / 2;
-        galleryWidth = (galleryHeight * 3) / 4;//the ratio is 3:4
+        galleryWidth = (galleryHeight * 3) / 4;
     }
 
     public static int getScreenHeight() {
@@ -227,7 +227,6 @@ public class Global {
 
     private static void initTitleType(@NonNull Context context) {
         String s = context.getSharedPreferences("Settings", 0).getString(context.getString(R.string.key_title_type), "pretty");
-        assert s != null;
         switch (s) {
             case "pretty":
                 titleType = TitleType.PRETTY;
@@ -321,7 +320,7 @@ public class Global {
         return localSortType;
     }
 
-    public static void setLocalSortType(Context context, LocalSortType localSortType) {
+    public static void setLocalSortType(@NonNull Context context, @NonNull LocalSortType localSortType) {
         context.getSharedPreferences("Settings", 0).edit().putInt(context.getString(R.string.key_local_sort), localSortType.hashCode()).apply();
         Global.localSortType = localSortType;
         LogUtility.d("Assegning: " + localSortType);
@@ -359,7 +358,6 @@ public class Global {
                     new SharedPrefsCookiePersistor(preferences)
                 )
             );
-        CustomSSLSocketFactory.enableTls12OnPreLollipop(builder);
         builder.addInterceptor(new CustomInterceptor(context.getApplicationContext(), true));
         client = builder.build();
         client.dispatcher().setMaxRequests(25);
@@ -375,25 +373,23 @@ public class Global {
         reloadHttpClient(context);
     }
 
-    public static Locale initLanguage(Context context) {
+    @NonNull
+    public static Locale initLanguage(@NonNull Context context) {
         Resources resources = context.getResources();
         Locale l = getLanguage(context);
         Configuration c = new Configuration(resources.getConfiguration());
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
-            c.setLocale(l);
-        } else {
-            c.locale = l;
-        }
+        c.setLocale(l);
+
         resources.updateConfiguration(c, resources.getDisplayMetrics());
         return l;
     }
 
-    public static Locale getLanguage(Context context) {
+    @NonNull
+    public static Locale getLanguage(@NonNull Context context) {
         SharedPreferences sharedPreferences = context.getSharedPreferences("Settings", 0);
         String prefLangKey = context.getString(R.string.key_language);
         String defaultValue = context.getString(R.string.key_default_value);
         String langCode = sharedPreferences.getString(prefLangKey, defaultValue);
-        assert langCode != null;
         if (langCode.equalsIgnoreCase(defaultValue)) {
             Locale defaultLocale = Locale.getDefault();
             return defaultLocale;
@@ -414,17 +410,17 @@ public class Global {
         return offscreenLimit;
     }
 
-    private static String getLocaleCode(Locale locale) {
+    @NonNull
+    private static String getLocaleCode(@NonNull Locale locale) {
         return String.format("%s-%s", locale.getLanguage(), locale.getCountry());
     }
 
-    private static ThemeScheme initTheme(Context context) {
+    private static ThemeScheme initTheme(@NonNull Context context) {
         String h = context.getSharedPreferences("Settings", 0).getString(context.getString(R.string.key_theme_select), "dark");
-        assert h != null;
         return theme = h.equals("light") ? ThemeScheme.LIGHT : ThemeScheme.DARK;
     }
 
-    public static boolean shouldCheckForUpdates(Context context) {
+    public static boolean shouldCheckForUpdates(@NonNull Context context) {
         return context.getSharedPreferences("Settings", 0).getBoolean(context.getString(R.string.key_check_update), true);
     }
 
@@ -515,7 +511,6 @@ public class Global {
     }
 
     public static void initStorage(Context context) {
-        if (!Global.hasStoragePermission(context)) return;
         Global.initFilesTree(context);
         boolean[] bools = new boolean[]{
             Global.MAINFOLDER.mkdirs(),
@@ -566,7 +561,7 @@ public class Global {
         maxId = id;
     }
 
-    public static int getStatusBarHeight(Context context) {
+    public static int getStatusBarHeight(@NonNull Context context) {
         Resources resources = context.getResources();
         int resourceId = resources.getIdentifier("status_bar_height", "dimen", "android");
         if (resourceId > 0) {
@@ -575,7 +570,7 @@ public class Global {
         return 0;
     }
 
-    public static int getNavigationBarHeight(Context context) {
+    public static int getNavigationBarHeight(@NonNull Context context) {
         Resources resources = context.getResources();
         int resourceId = resources.getIdentifier("navigation_bar_height", "dimen", "android");
         if (resourceId > 0) {
@@ -596,7 +591,7 @@ public class Global {
         context.startActivity(chooserIntent);
     }
 
-    public static void shareGallery(Context context, GenericGallery gallery) {
+    public static void shareGallery(Context context, @NonNull GenericGallery gallery) {
         shareURL(context, gallery.getTitle(), Utility.getBaseUrl() + "g/" + gallery.getId());
     }
 
@@ -622,21 +617,15 @@ public class Global {
         }
     }
 
+    @NonNull
     public static List<File> getUsableFolders(Context context) {
         List<File> strings = new ArrayList<>(3);
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R)
             strings.add(Environment.getExternalStorageDirectory());
 
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT)
-            return strings;
-
         File[] files = context.getExternalFilesDirs(null);
         strings.addAll(Arrays.asList(files));
         return strings;
-    }
-
-    public static boolean hasStoragePermission(Context context) {
-        return Build.VERSION.SDK_INT < Build.VERSION_CODES.M || ContextCompat.checkSelfPermission(context, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED;
     }
 
     public static boolean isJPEGCorrupted(String path) {
@@ -649,7 +638,7 @@ public class Global {
             fh.seek(length - 2);
             byte[] eoi = new byte[2];
             fh.read(eoi);
-            return eoi[0] != (byte) 0xFF || eoi[1] != (byte) 0xD9; // FF D9
+            return eoi[0] != (byte) 0xFF || eoi[1] != (byte) 0xD9;
         } catch (IOException e) {
             LogUtility.e(e.getMessage(), e);
         }
@@ -687,10 +676,10 @@ public class Global {
         return null;
     }
 
-    private static void updateConfigurationNightMode(AppCompatActivity activity, Configuration c) {
+    private static void updateConfigurationNightMode(AppCompatActivity activity, @NonNull Configuration c) {
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
-        c.uiMode &= (~Configuration.UI_MODE_NIGHT_MASK);//clear night mode bits
-        c.uiMode |= Configuration.UI_MODE_NIGHT_NO; //disable night mode
+        c.uiMode &= (~Configuration.UI_MODE_NIGHT_MASK);
+        c.uiMode |= Configuration.UI_MODE_NIGHT_NO;
     }
 
     private static void invertFix(AppCompatActivity context) {
@@ -728,7 +717,7 @@ public class Global {
     }
 
     @NonNull
-    public static String getVersionName(Context context) {
+    public static String getVersionName(@NonNull Context context) {
         try {
             PackageInfo pInfo = context.getPackageManager().getPackageInfo(context.getPackageName(), 0);
             return pInfo.versionName;
@@ -744,14 +733,14 @@ public class Global {
 
     public static void applyFastScroller(RecyclerView recycler) {
         if (recycler == null) return;
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) return;
         Drawable drawable = ContextCompat.getDrawable(recycler.getContext(), R.drawable.thumb);
         if (drawable == null) return;
         new FastScrollerBuilder(recycler).setThumbDrawable(drawable).build();
     }
 
+    @Contract(pure = true)
     @NonNull
-    public static String getLanguageFlag(Language language) {
+    public static String getLanguageFlag(@NonNull Language language) {
         switch (language) {
             case CHINESE:
                 return "\uD83C\uDDE8\uD83C\uDDF3";
@@ -768,6 +757,4 @@ public class Global {
     public enum ThemeScheme {LIGHT, DARK}
 
     public enum DataUsageType {NONE, THUMBNAIL, FULL}
-
-
 }

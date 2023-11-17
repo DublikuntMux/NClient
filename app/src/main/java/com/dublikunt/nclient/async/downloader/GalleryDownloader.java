@@ -9,7 +9,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.dublikunt.nclient.R;
-import com.dublikunt.nclient.api.InspectorV3;
+import com.dublikunt.nclient.api.Inspector;
 import com.dublikunt.nclient.api.components.Gallery;
 import com.dublikunt.nclient.api.local.LocalGallery;
 import com.dublikunt.nclient.async.database.Queries;
@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.regex.Pattern;
 
@@ -44,14 +45,14 @@ public class GalleryDownloader {
     private File folder;
     private boolean initialized = false;
 
-    public GalleryDownloader(Context context, @Nullable String title, @Nullable Uri thumbnail, int id) {
+    public GalleryDownloader(@NonNull Context context, @Nullable String title, @Nullable Uri thumbnail, int id) {
         this.context = context;
         this.id = id;
         this.thumbnail = thumbnail;
         this.title = Gallery.getPathTitle(title, context.getString(R.string.download_gallery));
     }
 
-    public GalleryDownloader(Context context, Gallery gallery, int start, int end) {
+    public GalleryDownloader(Context context, @NonNull Gallery gallery, int start, int end) {
         this(context, gallery.getTitle(), gallery.getCover(), gallery.getId());
         this.start = start;
         this.end = end;
@@ -68,12 +69,12 @@ public class GalleryDownloader {
         return folder;
     }
 
-    private static boolean usableFolder(File file, int id) {
-        if (!file.exists()) return true;//folder not exists
-        if (new File(file, "." + id).exists()) return true;//same id
+    private static boolean usableFolder(@NonNull File file, int id) {
+        if (!file.exists()) return true;
+        if (new File(file, "." + id).exists()) return true;
         File[] files = file.listFiles((dir, name) -> ID_FILE.matcher(name).matches());
-        if (files != null && files.length > 0) return false;//has id but not equal
-        LocalGallery localGallery = new LocalGallery(file);//read id from metadata
+        if (files != null && files.length > 0) return false;
+        LocalGallery localGallery = new LocalGallery(file);
         return localGallery.getId() == id;
     }
 
@@ -93,7 +94,7 @@ public class GalleryDownloader {
         return gallery;
     }
 
-    private void setGallery(Gallery gallery) {
+    private void setGallery(@NonNull Gallery gallery) {
         this.gallery = gallery;
         title = gallery.getPathTitle();
         thumbnail = gallery.getThumbnail();
@@ -174,12 +175,9 @@ public class GalleryDownloader {
         return title;
     }
 
-    /**
-     * @return true if the download has been completed, false otherwise
-     */
     public boolean downloadGalleryData() {
         if (this.gallery != null) return true;
-        InspectorV3 inspector = InspectorV3.galleryInspector(context, id, null);
+        Inspector inspector = Inspector.galleryInspector(context, id, null);
         try {
             if (!inspector.createDocument()) return false;
             inspector.parseDocument();
@@ -243,7 +241,7 @@ public class GalleryDownloader {
         }
     }
 
-    private boolean isCorrupted(File file) {
+    private boolean isCorrupted(@NonNull File file) {
         String path = file.getAbsolutePath();
         if (path.endsWith(".jpg") || path.endsWith(".jpeg")) {
             return Global.isJPEGCorrupted(path);
@@ -268,7 +266,6 @@ public class GalleryDownloader {
                 r.close();
                 return false;
             }
-            assert r.body() != null;
             long expectedSize = Integer.parseInt(r.header("Content-Length", "-1"));
             long len = r.body().contentLength();
             if (len < 0 || expectedSize != len) {
@@ -288,7 +285,6 @@ public class GalleryDownloader {
         return false;
     }
 
-
     public void initDownload() {
         if (initialized) return;
         initialized = true;
@@ -300,7 +296,7 @@ public class GalleryDownloader {
     private void checkPages() {
         File filePath;
         for (int i = 0; i < urls.size(); i++) {
-            if(urls.get(i)==null){
+            if (urls.get(i) == null) {
                 urls.remove(i--);
                 continue;
             }
@@ -347,7 +343,7 @@ public class GalleryDownloader {
         GalleryDownloader that = (GalleryDownloader) o;
 
         if (id != that.id) return false;
-        return folder != null ? folder.equals(that.folder) : that.folder == null;
+        return Objects.equals(folder, that.folder);
     }
 
     @Override
@@ -359,16 +355,8 @@ public class GalleryDownloader {
 
     public enum Status {NOT_STARTED, DOWNLOADING, PAUSED, FINISHED, CANCELED}
 
-    public static class PageContainer {
-        public final int page;
-        public final String url, ext;
-
-        public PageContainer(int page, String url, String ext) {
-            this.page = page;
-            this.url = url;
-            this.ext = ext;
-        }
-
+    public record PageContainer(int page, String url, String ext) {
+        @NonNull
         public String getPageName() {
             return String.format(Locale.US, "%03d.%s", page, ext);
         }

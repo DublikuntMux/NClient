@@ -12,6 +12,7 @@ import android.graphics.pdf.PdfDocument;
 import android.net.Uri;
 import android.os.Build;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.JobIntentService;
 import androidx.core.app.NotificationCompat;
@@ -37,7 +38,7 @@ public class CreatePDF extends JobIntentService {
     public CreatePDF() {
     }
 
-    public static void startWork(Context context, LocalGallery gallery) {
+    public static void startWork(@NonNull Context context, LocalGallery gallery) {
         Intent i = new Intent();
         i.putExtra(context.getPackageName() + ".GALLERY", gallery);
         enqueueWork(context, CreatePDF.class, 444, i);
@@ -109,8 +110,6 @@ public class CreatePDF extends JobIntentService {
         } finally {
             document.close();
         }
-
-
     }
 
     private void createIntentOpen(File finalPath) {
@@ -133,12 +132,12 @@ public class CreatePDF extends JobIntentService {
                 notification.setContentIntent(PendingIntent.getActivity(getApplicationContext(), 0, i, PendingIntent.FLAG_IMMUTABLE));
             }
             LogUtility.d(apkURI.toString());
-        } catch (IllegalArgumentException ignore) {//sometimes the uri isn't available
+        } catch (IllegalArgumentException ignore) {
 
         }
     }
 
-    private void preExecute(File file) {
+    private void preExecute(@NonNull File file) {
         notification = new NotificationCompat.Builder(getApplicationContext(), Global.CHANNEL_ID2);
         notification.setSmallIcon(R.drawable.ic_picture_as_pdf)
             .setOnlyAlertOnce(true)
@@ -150,5 +149,4 @@ public class CreatePDF extends JobIntentService {
             .setCategory(NotificationCompat.CATEGORY_STATUS);
         NotificationSettings.notify(getString(R.string.channel2_name), notId, notification.build());
     }
-
 }

@@ -1,5 +1,7 @@
 package com.dublikunt.nclient.api.local;
 
+import androidx.annotation.NonNull;
+
 import com.dublikunt.nclient.LocalActivity;
 import com.dublikunt.nclient.adapters.LocalAdapter;
 import com.dublikunt.nclient.components.ThreadAsyncTask;
@@ -35,12 +37,12 @@ public class FakeInspector extends ThreadAsyncTask<LocalActivity, LocalActivity,
     }
 
     @Override
-    protected void onProgressUpdate(LocalActivity... values) {
+    protected void onProgressUpdate(@NonNull LocalActivity... values) {
         values[0].getRefresher().setRefreshing(true);
     }
 
     @Override
-    protected void onPostExecute(LocalActivity aVoid) {
+    protected void onPostExecute(@NonNull LocalActivity aVoid) {
         aVoid.getRefresher().setRefreshing(false);
         aVoid.setAdapter(new LocalAdapter(aVoid, galleries));
     }
