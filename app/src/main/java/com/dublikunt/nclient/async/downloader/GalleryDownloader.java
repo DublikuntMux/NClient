@@ -285,7 +285,6 @@ public class GalleryDownloader {
         return false;
     }
 
-
     public void initDownload() {
         if (initialized) return;
         initialized = true;
@@ -356,16 +355,8 @@ public class GalleryDownloader {
 
     public enum Status {NOT_STARTED, DOWNLOADING, PAUSED, FINISHED, CANCELED}
 
-    public static class PageContainer {
-        public final int page;
-        public final String url, ext;
-
-        public PageContainer(int page, String url, String ext) {
-            this.page = page;
-            this.url = url;
-            this.ext = ext;
-        }
-
+    public record PageContainer(int page, String url, String ext) {
+        @NonNull
         public String getPageName() {
             return String.format(Locale.US, "%03d.%s", page, ext);
         }

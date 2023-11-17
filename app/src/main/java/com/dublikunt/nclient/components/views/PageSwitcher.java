@@ -32,7 +32,6 @@ public class PageSwitcher extends CardView {
         init(context);
     }
 
-
     public PageSwitcher(@NonNull Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
         init(context);
@@ -119,7 +118,6 @@ public class PageSwitcher extends CardView {
                 })
         );
     }
-
 
     public interface PageChanger {
         void pageChanged(PageSwitcher switcher, int page);

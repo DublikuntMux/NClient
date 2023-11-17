@@ -30,6 +30,7 @@ import com.dublikunt.nclient.api.enums.SpecialTagIds;
 import com.dublikunt.nclient.api.enums.TagStatus;
 import com.dublikunt.nclient.api.enums.TagType;
 import com.dublikunt.nclient.async.database.Queries;
+import com.dublikunt.nclient.components.activities.GeneralActivity;
 import com.dublikunt.nclient.components.widgets.ChipTag;
 import com.dublikunt.nclient.components.widgets.CustomLinearLayoutManager;
 import com.dublikunt.nclient.settings.DefaultDialogs;
@@ -70,6 +71,7 @@ public class SearchActivity extends GeneralActivity {
         super.onCreate(savedInstanceState);
         //Global.initActivity(this);
         setContentView(R.layout.activity_search);
+
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         assert getSupportActionBar() != null;
@@ -106,6 +108,7 @@ public class SearchActivity extends GeneralActivity {
         recyclerView.setLayoutManager(new CustomLinearLayoutManager(this));
         recyclerView.setAdapter(adapter);
         recyclerView.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL));
+
 
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
@@ -261,9 +264,12 @@ public class SearchActivity extends GeneralActivity {
             for (Tag t : Queries.TagTable.getTopTags(type, Global.getFavoriteLimit(this)))
                 addChipTag(t, true, true);
         }
+
         for (Tag t : Queries.TagTable.getAllFiltered())
             if (!tagAlreadyExist(t)) addChipTag(t, true, true);
+
         for (Tag t : Queries.TagTable.getTrueAllType(TagType.CATEGORY)) addChipTag(t, false, false);
+
         for (Tag t : Queries.TagTable.getTrueAllType(TagType.LANGUAGE)) {
             if (t.getId() == SpecialTagIds.LANGUAGE_ENGLISH && Global.getOnlyLanguage() == Language.ENGLISH)
                 t.setStatus(TagStatus.ACCEPTED);
@@ -273,9 +279,11 @@ public class SearchActivity extends GeneralActivity {
                 t.setStatus(TagStatus.ACCEPTED);
             addChipTag(t, false, false);
         }
+
         if (Login.useAccountTag()) for (Tag t : Queries.TagTable.getAllOnlineBlacklisted())
             if (!tagAlreadyExist(t))
                 addChipTag(t, true, true);
+
         for (TagType type : TagType.values) {
             if (type == TagType.UNKNOWN || type == TagType.LANGUAGE || type == TagType.CATEGORY) {
                 addChip[type.getId()] = null;
@@ -352,7 +360,7 @@ public class SearchActivity extends GeneralActivity {
         builder.setTitle(R.string.insert_tag_name);
         try {
             alertDialog = builder.show();
-        } catch (IllegalStateException e) {//the autoComplete is still attached to another View
+        } catch (IllegalStateException e) {
             ((ViewGroup) autoComplete.getParent()).removeView(autoComplete);
             alertDialog = builder.show();
         }
@@ -365,6 +373,7 @@ public class SearchActivity extends GeneralActivity {
         if (tag == null) tag = new Tag(name, 0, customId++, loadedTag, TagStatus.ACCEPTED);
         LogUtility.d("CREATED WITH ID: " + tag.getId());
         if (tagAlreadyExist(tag)) return;
+
         if (getGroup(loadedTag) != null) getGroup(loadedTag).removeView(addChip[loadedTag.getId()]);
         addChipTag(tag, true, true);
         getGroup(loadedTag).addView(addChip[loadedTag.getId()]);
@@ -398,6 +407,4 @@ public class SearchActivity extends GeneralActivity {
         }
         return super.onOptionsItemSelected(item);
     }
-
-
 }

@@ -25,7 +25,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class LocalGallery extends GenericGallery {
-    public static final Creator<LocalGallery> CREATOR = new Creator<>() {
+    public static final Creator<LocalGallery> CREATOR = new Creator<LocalGallery>() {
         @NonNull
         @Contract("_ -> new")
         @Override
@@ -70,6 +70,7 @@ public class LocalGallery extends GenericGallery {
             if (galleryData.getId() == SpecialTagIds.INVALID_ID)
                 galleryData.setId(getId());
         }
+
         if (folder != null)
             galleryData.setPageCount(folder.getMax());
         valid = folder != null && folder.getPageCount() > 0;
@@ -96,7 +97,7 @@ public class LocalGallery extends GenericGallery {
     }
 
     @NonNull
-    private static String createTitle(File file) {
+    private static String createTitle(@NonNull File file) {
         String name = file.getName();
         Matcher matcher = DUP_PATTERN.matcher(name);
         if (!matcher.matches()) return name;

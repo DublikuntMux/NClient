@@ -22,8 +22,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class GalleryFolder implements Parcelable, Iterable<PageFile> {
-
-    public static final Creator<GalleryFolder> CREATOR = new Creator<>() {
+    public static final Creator<GalleryFolder> CREATOR = new Creator<GalleryFolder>() {
         @NonNull
         @Contract("_ -> new")
         @Override
@@ -49,7 +48,7 @@ public class GalleryFolder implements Parcelable, Iterable<PageFile> {
     private File nomedia;
 
     public GalleryFolder(@NonNull String child) {
-        this(Global.DownloadFolder, child);
+        this(Global.DOWNLOADFOLDER, child);
     }
 
     public GalleryFolder(@Nullable File parent, @NonNull String child) {

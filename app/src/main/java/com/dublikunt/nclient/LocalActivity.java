@@ -9,6 +9,7 @@ import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.LinearLayout;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.appcompat.widget.Toolbar;
 
@@ -18,6 +19,7 @@ import com.dublikunt.nclient.api.local.LocalGallery;
 import com.dublikunt.nclient.api.local.LocalSortType;
 import com.dublikunt.nclient.async.converters.CreatePDF;
 import com.dublikunt.nclient.async.downloader.GalleryDownloader;
+import com.dublikunt.nclient.components.activities.BaseActivity;
 import com.dublikunt.nclient.components.classes.MultichoiceAdapter;
 import com.dublikunt.nclient.settings.Global;
 import com.dublikunt.nclient.utility.Utility;
@@ -41,7 +43,7 @@ public class LocalActivity extends BaseActivity {
     private Toolbar toolbar;
     private int colCount;
     private int idGalleryPosition = -1;
-    private File folder = Global.MainFolder;
+    private File folder = Global.MAINFOLDER;
     private androidx.appcompat.widget.SearchView searchView;
 
     @Override
@@ -60,6 +62,16 @@ public class LocalActivity extends BaseActivity {
         refresher.setOnRefreshListener(() -> new FakeInspector(this, folder).execute(this));
         changeLayout(getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE);
         new FakeInspector(this, folder).execute(this);
+
+        getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackPressed() {
+                if (adapter != null && adapter.getMode() == MultichoiceAdapter.Mode.SELECTING)
+                    adapter.deselectAll();
+                else
+                    finish();
+            }
+        });
     }
 
     public void setAdapter(LocalAdapter adapter) {
@@ -171,14 +183,6 @@ public class LocalActivity extends BaseActivity {
             dialogSortType();
         }
         return super.onOptionsItemSelected(item);
-    }
-
-    @Override
-    public void onBackPressed() {
-        if (adapter != null && adapter.getMode() == MultichoiceAdapter.Mode.SELECTING)
-            adapter.deselectAll();
-        else
-            super.onBackPressed();
     }
 
     private void showDialogFolderChoose() {

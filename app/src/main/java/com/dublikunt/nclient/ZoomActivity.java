@@ -1,8 +1,10 @@
 package com.dublikunt.nclient;
 
+import android.Manifest;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.view.KeyEvent;
@@ -25,6 +27,7 @@ import androidx.viewpager2.widget.ViewPager2;
 import com.bumptech.glide.Priority;
 import com.dublikunt.nclient.api.components.GenericGallery;
 import com.dublikunt.nclient.async.database.Queries;
+import com.dublikunt.nclient.components.activities.GeneralActivity;
 import com.dublikunt.nclient.components.views.ZoomFragment;
 import com.dublikunt.nclient.files.GalleryFolder;
 import com.dublikunt.nclient.settings.DefaultDialogs;
@@ -65,6 +68,7 @@ public class ZoomActivity extends GeneralActivity {
         gallery = getIntent().getParcelableExtra(getPackageName() + ".GALLERY");
         final int page = getIntent().getExtras().getInt(getPackageName() + ".PAGE", 1) - 1;
         directory = gallery.getGalleryFolder();
+
         toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -293,6 +297,19 @@ public class ZoomActivity extends GeneralActivity {
             .show();
     }
 
+    private void requestStorage() {
+        requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE}, 1);
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        Global.initStorage(this);
+        if (requestCode == 1 && grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED)
+            downloadPage();
+
+    }
+
     private ZoomFragment getActualFragment() {
         return getActualFragment(mViewPager.getCurrentItem());
     }
@@ -330,12 +347,11 @@ public class ZoomActivity extends GeneralActivity {
     }
 
     private void downloadPage() {
-        final File output = new File(Global.ScreenFolder, gallery.getId() + "-" + (mViewPager.getCurrentItem() + 1) + ".jpg");
+        final File output = new File(Global.SCREENFOLDER, gallery.getId() + "-" + (mViewPager.getCurrentItem() + 1) + ".jpg");
         Utility.saveImage(getActualFragment().getDrawable(), output);
     }
 
     private void animateLayout() {
-
         AnimatorListenerAdapter adapter = new AnimatorListenerAdapter() {
             @Override
             public void onAnimationEnd(Animator animation) {
@@ -356,10 +372,6 @@ public class ZoomActivity extends GeneralActivity {
         pageSwitcher.animate().alpha(isHidden ? 0f : 0.75f).setDuration(150).setListener(adapter).start();
         view.animate().alpha(isHidden ? 0f : 0.75f).setDuration(150).setListener(adapter).start();
         toolbar.animate().alpha(isHidden ? 0f : 0.75f).setDuration(150).setListener(adapter).start();
-    }
-
-    private void applyVisibilityFlag() {
-        getWindow().getDecorView().setSystemUiVisibility(isHidden ? hideFlags : showFlags);
     }
 
     private enum ScrollType {HORIZONTAL, VERTICAL}
@@ -391,7 +403,7 @@ public class ZoomActivity extends GeneralActivity {
             f.setClickListener(v -> {
                 isHidden = !isHidden;
                 LogUtility.d("Clicked " + isHidden);
-                applyVisibilityFlag();
+                getWindow().getDecorView().setSystemUiVisibility(isHidden ? hideFlags : showFlags);
                 animateLayout();
             });
             return f;

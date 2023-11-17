@@ -70,7 +70,6 @@ public class TagTypePage extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-
         activity = (TagFilterActivity) getActivity();
         type = TagType.values[getArguments().getInt("TAGTYPE")];
         View rootView = inflater.inflate(R.layout.fragment_tag_filter, container, false);

@@ -3,6 +3,7 @@ package com.dublikunt.nclient.settings;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.webkit.CookieManager;
+import android.webkit.WebView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -48,6 +49,17 @@ public class Login {
         cookieJar.removeCookie(cookieName);
     }
 
+
+    public static void removeCloudflareCookies() {
+        CustomCookieJar cookieJar = (CustomCookieJar) Global.client.cookieJar();
+        List<Cookie> cookies = cookieJar.loadForRequest(BASE_HTTP_URL);
+        for (Cookie cookie : cookies) {
+            if (cookie.name().equals(LOGIN_COOKIE)) {
+                continue;
+            }
+            cookieJar.removeCookie(cookie.name());
+        }
+    }
 
     public static void logout(Context context) {
         CustomCookieJar cookieJar = (CustomCookieJar) Global.client.cookieJar();
@@ -129,5 +141,8 @@ public class Login {
 
     public static boolean isOnlineTags(Tag tag) {
         return Queries.TagTable.isBlackListed(tag);
+    }
+
+    public static void hasLogged(WebView webView) {
     }
 }

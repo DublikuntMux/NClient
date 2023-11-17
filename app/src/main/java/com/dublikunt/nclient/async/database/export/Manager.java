@@ -24,7 +24,6 @@ public class Manager extends Thread {
         this.end = end;
     }
 
-
     @Override
     public void run() {
         try {

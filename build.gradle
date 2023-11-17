@@ -1,6 +1,5 @@
 plugins {
     id 'com.android.application' version '8.1.4' apply false
-    id 'org.jetbrains.kotlin.android' version '1.9.20' apply false
 
     id 'com.google.gms.google-services' version '4.3.15' apply false
     id 'com.google.firebase.crashlytics' version '2.9.8' apply false
@@ -14,10 +13,8 @@ allprojects {
         maven { url "https://jitpack.io" }
     }
     gradle.projectsEvaluated {
-        tasks.withType(JavaCompile).tap {
-            configureEach {
-                options.compilerArgs << "-Xlint:deprecation"
-            }
+        tasks.withType(JavaCompile) {
+            options.compilerArgs << "-Xlint:deprecation"
         }
     }
 }

@@ -34,7 +34,6 @@ public class LoadTags extends Thread {
 
     @NonNull
     private Elements getScripts(String url) throws IOException {
-
         Response response = Global.getClient().newCall(new Request.Builder().url(url).build()).execute();
         Elements x = Jsoup.parse(response.body().byteStream(), null, Utility.getBaseUrl()).getElementsByTag("script");
         response.close();

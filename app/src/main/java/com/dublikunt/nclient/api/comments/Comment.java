@@ -14,7 +14,7 @@ import java.io.IOException;
 import java.util.Date;
 
 public class Comment implements Parcelable {
-    public static final Creator<Comment> CREATOR = new Creator<>() {
+    public static final Creator<Comment> CREATOR = new Creator<Comment>() {
         @NonNull
         @Contract("_ -> new")
         @Override

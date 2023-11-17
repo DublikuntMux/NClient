@@ -207,15 +207,14 @@ public abstract class MultichoiceAdapter<D, T extends RecyclerView.ViewHolder> e
         final T innerHolder;
         final View censor;
         final ImageView checkmark;
-        final ConstraintLayout multiChoiceHolder;
+        final ConstraintLayout multichoiceHolder;
 
-        public MultichoiceViewHolder(@NonNull ConstraintLayout multiChoiceHolder, @NonNull T holder) {
+        public MultichoiceViewHolder(@NonNull ConstraintLayout multichoiceHolder, @NonNull T holder) {
             super(holder.itemView);
-            this.multiChoiceHolder = multiChoiceHolder;
+            this.multichoiceHolder = multichoiceHolder;
             this.innerHolder = holder;
-            this.censor = multiChoiceHolder.findViewById(R.id.censor);
-            this.checkmark = multiChoiceHolder.findViewById(R.id.checkmark);
+            this.censor = multichoiceHolder.findViewById(R.id.censor);
+            this.checkmark = multichoiceHolder.findViewById(R.id.checkmark);
         }
     }
-
 }

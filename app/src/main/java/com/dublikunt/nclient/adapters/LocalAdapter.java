@@ -205,7 +205,6 @@ public class LocalAdapter extends MultichoiceAdapter<Object, LocalAdapter.ViewHo
                 return comparatorByName;
             case PAGE_COUNT:
                 return comparatorByPageCount;
-            //case SIZE:return comparatorBySize;
         }
         return comparatorByName;
     }
@@ -267,8 +266,7 @@ public class LocalAdapter extends MultichoiceAdapter<Object, LocalAdapter.ViewHo
         statuses.put(id, Queries.StatusMangaTable.getStatus(id).color);
         for (int i = 0; i < filter.size(); i++) {
             Object o = filter.get(i);
-            if (!(o instanceof LocalGallery)) continue;
-            LocalGallery lg = (LocalGallery) o;
+            if (!(o instanceof LocalGallery lg)) continue;
             if (lg.getId() == id) notifyItemChanged(i);
         }
     }
@@ -276,8 +274,7 @@ public class LocalAdapter extends MultichoiceAdapter<Object, LocalAdapter.ViewHo
     @Override
     protected void defaultMasterAction(int position) {
         if (position < 0 || filter.size() <= position) return;
-        if (!(filter.get(position) instanceof LocalGallery)) return;
-        LocalGallery lg = (LocalGallery) filter.get(position);
+        if (!(filter.get(position) instanceof LocalGallery lg)) return;
         startGallery(context, lg.getDirectory());
         context.setIdGalleryPosition(lg.getId());
     }
@@ -382,7 +379,6 @@ public class LocalAdapter extends MultichoiceAdapter<Object, LocalAdapter.ViewHo
         builder.show();
     }
 
-
     private void showDialogZip() {
         MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(context);
         builder.setTitle(R.string.create_zip).setMessage(getAllGalleries());
@@ -393,7 +389,6 @@ public class LocalAdapter extends MultichoiceAdapter<Object, LocalAdapter.ViewHo
             }
         }).setNegativeButton(R.string.no, null).setCancelable(true);
         builder.show();
-
     }
 
     public boolean hasSelectedClass(Class<?> c) {
@@ -446,8 +441,7 @@ public class LocalAdapter extends MultichoiceAdapter<Object, LocalAdapter.ViewHo
 
     public void startSelected() {
         for (Object o : getSelected()) {
-            if (!(o instanceof GalleryDownloader)) continue;
-            GalleryDownloader d = (GalleryDownloader) o;
+            if (!(o instanceof GalleryDownloader d)) continue;
             if (d.getStatus() == GalleryDownloader.Status.PAUSED)
                 d.setStatus(GalleryDownloader.Status.NOT_STARTED);
         }
@@ -456,8 +450,7 @@ public class LocalAdapter extends MultichoiceAdapter<Object, LocalAdapter.ViewHo
 
     public void pauseSelected() {
         for (Object o : getSelected()) {
-            if (!(o instanceof GalleryDownloader)) continue;
-            GalleryDownloader d = (GalleryDownloader) o;
+            if (!(o instanceof GalleryDownloader d)) continue;
             d.setStatus(GalleryDownloader.Status.PAUSED);
         }
         context.runOnUiThread(this::notifyDataSetChanged);

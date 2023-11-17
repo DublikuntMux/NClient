@@ -77,5 +77,4 @@ public class CustomInterceptor implements Interceptor {
         }
         return response;
     }
-
 }

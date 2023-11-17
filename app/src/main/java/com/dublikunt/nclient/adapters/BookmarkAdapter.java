@@ -31,13 +31,11 @@ public class BookmarkAdapter extends RecyclerView.Adapter<BookmarkAdapter.ViewHo
         this.bookmarks = Queries.BookmarkTable.getBookmarks();
     }
 
-
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         return new ViewHolder(LayoutInflater.from(parent.getContext()).inflate(LAYOUT, parent, false));
     }
-
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int pos) {

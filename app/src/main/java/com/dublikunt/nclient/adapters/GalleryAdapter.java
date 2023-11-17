@@ -265,11 +265,10 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.ViewHold
 
         holder.pageNumber.setText(String.format(Locale.US, "%d", pos));
 
-
         if (policy == Policy.MAX)
-            holder.itemView.post(() -> {//find the max size and apply proportion
+            holder.itemView.post(() -> {
                 if (maxImageSize != null) return;
-                int cellWidth = holder.itemView.getWidth();// this will give you cell width dynamically
+                int cellWidth = holder.itemView.getWidth();
                 LogUtility.d(String.format(Locale.US, "Setting: %d,%s", cellWidth, maxSize.toString()));
                 if (maxSize.getWidth() > 10 && maxSize.getHeight() > 10) {
                     int hei = (maxSize.getHeight() * cellWidth) / maxSize.getWidth();
@@ -382,7 +381,6 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.ViewHold
             } else ImageDownloadUtility.loadImage(R.mipmap.ic_launcher, imgView);
         }
     }
-
 
     private boolean hasTags() {
         return gallery.hasGalleryData();

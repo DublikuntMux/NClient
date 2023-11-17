@@ -70,7 +70,6 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.ViewHold
             new AuthRequest(refererUrl, submitUrl, new Callback() {
                 @Override
                 public void onFailure(@NonNull Call call, @NonNull IOException e) {
-
                 }
 
                 @Override

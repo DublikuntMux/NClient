@@ -17,6 +17,7 @@ import androidx.viewpager2.adapter.FragmentStateAdapter;
 import androidx.viewpager2.widget.ViewPager2;
 
 import com.dublikunt.nclient.adapters.TagsAdapter;
+import com.dublikunt.nclient.components.activities.GeneralActivity;
 import com.dublikunt.nclient.components.widgets.CustomGridLayoutManager;
 import com.dublikunt.nclient.components.widgets.TagTypePage;
 import com.dublikunt.nclient.settings.DefaultDialogs;
@@ -54,7 +55,6 @@ public class TagFilterActivity extends GeneralActivity {
         mViewPager.setOffscreenPageLimit(1);
 
         TabLayout tabLayout = findViewById(R.id.tabs);
-
 
         LogUtility.d("ISNULL?" + (tabLayout == null));
         mViewPager.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
@@ -208,7 +208,6 @@ public class TagFilterActivity extends GeneralActivity {
         DefaultDialogs.pageChangerDialog(builder);
     }
 
-
     @Override
     public void onConfigurationChanged(@NonNull Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
@@ -233,9 +232,7 @@ public class TagFilterActivity extends GeneralActivity {
         }
     }
 
-
     static class TagTypePageAdapter extends FragmentStateAdapter {
-
         TagTypePageAdapter(@NonNull TagFilterActivity activity) {
             super(activity.getSupportFragmentManager(), activity.getLifecycle());
         }

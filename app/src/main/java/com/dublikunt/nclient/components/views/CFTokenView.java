@@ -1,6 +1,5 @@
 package com.dublikunt.nclient.components.views;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.util.AttributeSet;
 import android.view.ViewGroup;
@@ -19,7 +18,6 @@ import com.dublikunt.nclient.components.CookieInterceptor;
 import com.dublikunt.nclient.settings.Global;
 
 public class CFTokenView {
-
     private final ViewGroup masterLayout;
     private final CFTokenWebView webView;
     private final Button button;
@@ -47,7 +45,6 @@ public class CFTokenView {
         masterLayout.post(o);
     }
 
-
     public static class CFTokenWebView extends WebView {
         public CFTokenWebView(@NonNull Context context) {
             super(context);
@@ -74,7 +71,6 @@ public class CFTokenView {
             CookieManager.getInstance().setAcceptThirdPartyCookies(this, true);
         }
 
-        @SuppressLint("SetJavaScriptEnabled")
         private void applyWebViewSettings() {
             setWebChromeClient(new WebChromeClient());
             setWebViewClient(new WebViewClient());
@@ -91,7 +87,5 @@ public class CFTokenView {
             webSettings.setUserAgentString(Global.getUserAgent());
             webSettings.setAllowContentAccess(true);
         }
-
     }
-
 }

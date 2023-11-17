@@ -3,7 +3,6 @@ package com.dublikunt.nclient.components;
 import androidx.appcompat.app.AppCompatActivity;
 
 public abstract class ThreadAsyncTask<Params, Progress, Result> {
-
     private final AppCompatActivity activity;
     private Thread thread;
 
@@ -48,5 +47,4 @@ public abstract class ThreadAsyncTask<Params, Progress, Result> {
                 activity.runOnUiThread(() -> onPostExecute(result));
         }
     }
-
 }

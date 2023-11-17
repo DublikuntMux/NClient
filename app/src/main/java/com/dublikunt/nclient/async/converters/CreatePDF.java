@@ -86,7 +86,7 @@ public class CreatePDF extends JobIntentService {
         NotificationSettings.notify(getString(R.string.channel2_name), notId, notification.build());
         try {
 
-            File finalPath = Global.PDFFolder;
+            File finalPath = Global.PDFFOLDER;
             finalPath.mkdirs();
             finalPath = new File(finalPath, gallery.getTitle() + ".pdf");
             finalPath.createNewFile();
@@ -138,7 +138,7 @@ public class CreatePDF extends JobIntentService {
     }
 
     private void preExecute(@NonNull File file) {
-        notification = new NotificationCompat.Builder(getApplicationContext(), Global.channelID2);
+        notification = new NotificationCompat.Builder(getApplicationContext(), Global.CHANNEL_ID2);
         notification.setSmallIcon(R.drawable.ic_picture_as_pdf)
             .setOnlyAlertOnce(true)
             .setStyle(new NotificationCompat.BigTextStyle().bigText(file.getName()))

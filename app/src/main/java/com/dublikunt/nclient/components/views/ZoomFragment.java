@@ -33,7 +33,7 @@ import com.dublikunt.nclient.api.components.GenericGallery;
 import com.dublikunt.nclient.components.GlideX;
 import com.dublikunt.nclient.files.GalleryFolder;
 import com.dublikunt.nclient.files.PageFile;
-import com.dublikunt.nclient.photoview.PhotoView;
+import com.dublikunt.nclient.github.chrisbanes.photoview.PhotoView;
 import com.dublikunt.nclient.settings.Global;
 import com.dublikunt.nclient.utility.LogUtility;
 
@@ -95,8 +95,10 @@ public class ZoomFragment extends Fragment {
         ZoomActivity activity = (ZoomActivity) getActivity();
         assert getArguments() != null;
         assert activity != null;
+
         photoView = rootView.findViewById(R.id.image);
         retryButton = rootView.findViewById(R.id.imageView);
+
         String str = getArguments().getString("URL");
         url = str == null ? null : Uri.parse(str);
         pageFile = getArguments().getParcelable("FOLDER");

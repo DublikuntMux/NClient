@@ -26,5 +26,4 @@ public class Database {
     private static void setDBForTables(SQLiteDatabase database) {
         Queries.setDb(database);
     }
-
 }

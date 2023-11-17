@@ -166,12 +166,10 @@ public class GalleryDownloaderManager {
         notification.addAction(R.drawable.ic_close, context.getString(R.string.cancel), pStop);
     }
 
-
     private synchronized void notificationUpdate() {
         try {
             NotificationSettings.notify(context.getString(R.string.channel1_name), notificationId, notification.build());
         } catch (NullPointerException | ConcurrentModificationException ignore) {
         }
     }
-
 }

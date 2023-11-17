@@ -170,7 +170,6 @@ public class Inspector extends Thread implements Parcelable {
                     break;
                 case 1:
                     inspector.requestType = ApiRequestType.BYTAG;
-                    //else by search for the negative tag
                     if (inspector.getTag().getStatus() != TagStatus.AVOIDED)
                         break;
                 default:
@@ -216,10 +215,8 @@ public class Inspector extends Thread implements Parcelable {
     }
 
     @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        if (sortType != null)
-            dest.writeByte((byte) (sortType.ordinal()));
-        else dest.writeByte((byte) SortType.RECENT_ALL_TIME.ordinal());
+    public void writeToParcel(@NonNull Parcel dest, int flags) {
+        dest.writeByte((byte) (Objects.requireNonNullElse(sortType, SortType.RECENT_ALL_TIME).ordinal()));
         dest.writeByte((byte) (custom ? 1 : 0));
         dest.writeInt(page);
         dest.writeInt(pageCount);
@@ -236,7 +233,6 @@ public class Inspector extends Thread implements Parcelable {
     }
 
     public String getSearchTitle() {
-        //triggered only when in searchMode
         if (query.length() > 0) return query;
         return url.replace(Utility.getBaseUrl() + "search/?q=", "").replace('+', ' ');
     }
@@ -251,18 +247,18 @@ public class Inspector extends Thread implements Parcelable {
     }
 
     public Inspector cloneInspector(Context context, InspectorResponse response) {
-        Inspector Inspector = new Inspector(context, response);
-        Inspector.query = query;
-        Inspector.url = url;
-        Inspector.tags = tags;
-        Inspector.requestType = requestType;
-        Inspector.sortType = sortType;
-        Inspector.pageCount = pageCount;
-        Inspector.page = page;
-        Inspector.id = id;
-        Inspector.custom = custom;
-        Inspector.ranges = ranges;
-        return Inspector;
+        Inspector inspectorV3 = new Inspector(context, response);
+        inspectorV3.query = query;
+        inspectorV3.url = url;
+        inspectorV3.tags = tags;
+        inspectorV3.requestType = requestType;
+        inspectorV3.sortType = sortType;
+        inspectorV3.pageCount = pageCount;
+        inspectorV3.page = page;
+        inspectorV3.id = id;
+        inspectorV3.custom = custom;
+        inspectorV3.ranges = ranges;
+        return inspectorV3;
     }
 
     private void tryByAllPopular() {
@@ -274,11 +270,7 @@ public class Inspector extends Thread implements Parcelable {
 
     private void createUrl() {
         String query;
-        try {
-            query = this.query == null ? null : URLEncoder.encode(this.query, "UTF-8");
-        } catch (UnsupportedEncodingException ignore) {
-            query = this.query;
-        }
+        query = this.query == null ? null : URLEncoder.encode(this.query, StandardCharsets.UTF_8);
         StringBuilder builder = new StringBuilder(Utility.getBaseUrl());
         if (requestType == ApiRequestType.BYALL) builder.append("?page=").append(page);
         else if (requestType == ApiRequestType.RANDOM) builder.append("random/");
@@ -342,8 +334,7 @@ public class Inspector extends Thread implements Parcelable {
     @Override
     public synchronized void start() {
         if (getState() != State.NEW) return;
-        if (forceStart || response.shouldStart(this))
-            super.start();
+        super.start();
     }
 
     @Override
@@ -483,12 +474,6 @@ public class Inspector extends Thread implements Parcelable {
         return t;
     }
 
-    public static class InvalidResponseException extends Exception {
-        public InvalidResponseException() {
-            super();
-        }
-    }
-
     public interface InspectorResponse {
         boolean shouldStart(Inspector inspector);
 
@@ -499,6 +484,12 @@ public class Inspector extends Thread implements Parcelable {
         void onStart();
 
         void onEnd();
+    }
+
+    public static class InvalidResponseException extends Exception {
+        public InvalidResponseException() {
+            super();
+        }
     }
 
     public static abstract class DefaultInspectorResponse implements InspectorResponse {

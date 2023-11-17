@@ -9,12 +9,14 @@ import android.view.View;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.widget.ImageViewCompat;
 
 import com.dublikunt.nclient.api.RandomLoader;
 import com.dublikunt.nclient.api.components.Gallery;
+import com.dublikunt.nclient.components.activities.GeneralActivity;
 import com.dublikunt.nclient.settings.Favorites;
 import com.dublikunt.nclient.settings.Global;
 import com.dublikunt.nclient.utility.ImageDownloadUtility;
@@ -28,7 +30,7 @@ public class RandomActivity extends GeneralActivity {
     private TextView title;
     private TextView page;
     private View censor;
-    private RandomLoader loader;
+    private RandomLoader loader = null;
     private boolean isFavorite;
 
     @Override
@@ -37,6 +39,7 @@ public class RandomActivity extends GeneralActivity {
         //Global.initActivity(this);
         setContentView(R.layout.activity_random);
         loader = new RandomLoader(this);
+
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         FloatingActionButton shuffle = findViewById(R.id.shuffle);
@@ -88,6 +91,14 @@ public class RandomActivity extends GeneralActivity {
         Global.setTint(shuffle.getContentBackground());
         Global.setTint(share.getDrawable());
         Global.setTint(favorite.getDrawable());
+
+        getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackPressed() {
+                loadedGallery = null;
+                finish();
+            }
+        });
     }
 
     @Override
@@ -102,7 +113,7 @@ public class RandomActivity extends GeneralActivity {
 
     public void loadGallery(Gallery gallery) {
         loadedGallery = gallery;
-        if (this.isDestroyed()) return;
+        if (Global.isDestroyed(this)) return;
         ImageDownloadUtility.loadImage(this, gallery.getCover(), thumbnail);
         language.setText(Global.getLanguageFlag(gallery.getLanguage()));
         isFavorite = Favorites.isFavorite(loadedGallery);
@@ -117,11 +128,5 @@ public class RandomActivity extends GeneralActivity {
             ImageDownloadUtility.loadImage(isFavorite ? R.drawable.ic_favorite : R.drawable.ic_favorite_border, favorite);
             Global.setTint(favorite.getDrawable());
         });
-    }
-
-    @Override
-    public void onBackPressed() {
-        loadedGallery = null;
-        super.onBackPressed();
     }
 }

@@ -100,6 +100,5 @@ public class DownloadQueue {
 
     public static boolean isEmpty() {
         return downloadQueue.size() == 0;
-
     }
 }

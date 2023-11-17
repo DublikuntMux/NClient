@@ -84,6 +84,7 @@ public class ImageDownloadUtility {
         loadImage(activity, file == null ? null : Uri.fromFile(file), imageView);
     }
 
+
     public static void loadImage(@DrawableRes int resource, @NonNull ImageView imageView) {
         imageView.setImageResource(resource);
     }

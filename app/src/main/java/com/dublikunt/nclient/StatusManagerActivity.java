@@ -11,7 +11,6 @@ import com.dublikunt.nclient.adapters.StatusManagerAdapter;
 import com.dublikunt.nclient.components.widgets.CustomLinearLayoutManager;
 
 public class StatusManagerActivity extends GeneralActivity {
-
     StatusManagerAdapter adapter;
     RecyclerView recycler;
 
@@ -20,6 +19,7 @@ public class StatusManagerActivity extends GeneralActivity {
         super.onCreate(savedInstanceState);
         //Global.initActivity(this);
         setContentView(R.layout.activity_bookmark);
+
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);

@@ -18,6 +18,8 @@ import androidx.core.content.FileProvider;
 import com.dublikunt.nclient.R;
 import com.dublikunt.nclient.settings.Global;
 
+import org.jetbrains.annotations.Contract;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -31,15 +33,17 @@ import java.util.Random;
 
 public class Utility {
     public static final Random RANDOM = new Random(System.nanoTime());
+    public static final String ORIGINAL_URL = "nhentai.net";
 
     @NonNull
+    @Contract(pure = true)
     public static String getBaseUrl() {
         return "https://" + Utility.getHost() + "/";
     }
 
-    @NonNull
+
     public static String getHost() {
-        return "nhentai.net";
+        return Global.getMirror();
     }
 
     private static void parseEscapedCharacter(@NonNull Reader reader, Writer writer) throws IOException {

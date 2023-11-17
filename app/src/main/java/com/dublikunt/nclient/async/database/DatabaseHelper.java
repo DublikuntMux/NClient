@@ -118,6 +118,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.execSQL("ALTER TABLE Downloads ADD COLUMN `range_end`   INT NOT NULL DEFAULT -1");
     }
 
+
     @SuppressLint("Range")
     @NonNull
     private int[] getAllFavoriteIndex() {

@@ -17,6 +17,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
@@ -45,6 +46,7 @@ import com.dublikunt.nclient.async.database.Queries;
 import com.dublikunt.nclient.async.downloader.DownloadGallery;
 import com.dublikunt.nclient.components.CookieInterceptor;
 import com.dublikunt.nclient.components.GlideX;
+import com.dublikunt.nclient.components.activities.BaseActivity;
 import com.dublikunt.nclient.components.views.PageSwitcher;
 import com.dublikunt.nclient.components.widgets.CustomGridLayoutManager;
 import com.dublikunt.nclient.settings.Global;
@@ -210,6 +212,16 @@ public class MainActivity extends BaseActivity
         } else {
             LogUtility.e(getIntent().getExtras());
         }
+
+        getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackPressed() {
+                if (drawerLayout.isDrawerOpen(GravityCompat.START))
+                    drawerLayout.closeDrawer(GravityCompat.START);
+                else
+                    finish();
+            }
+        });
     }
 
     private void manageDrawer() {
@@ -224,11 +236,21 @@ public class MainActivity extends BaseActivity
 
     private void setActivityTitle() {
         switch (modeType) {
-            case FAVORITE -> getSupportActionBar().setTitle(R.string.favorite_online_manga);
-            case SEARCH -> getSupportActionBar().setTitle(inspector.getSearchTitle());
-            case TAG -> getSupportActionBar().setTitle(inspector.getTag().getName());
-            case NORMAL -> getSupportActionBar().setTitle(R.string.app_name);
-            default -> getSupportActionBar().setTitle("WTF");
+            case FAVORITE:
+                getSupportActionBar().setTitle(R.string.favorite_online_manga);
+                break;
+            case SEARCH:
+                getSupportActionBar().setTitle(inspector.getSearchTitle());
+                break;
+            case TAG:
+                getSupportActionBar().setTitle(inspector.getTag().getName());
+                break;
+            case NORMAL:
+                getSupportActionBar().setTitle(R.string.app_name);
+                break;
+            default:
+                getSupportActionBar().setTitle("WTF");
+                break;
         }
     }
 
@@ -412,7 +434,6 @@ public class MainActivity extends BaseActivity
         modeType = ModeType.TAG;
     }
 
-
     private void manageDataStart(@NonNull Uri data) {
         List<String> datas = data.getPathSegments();
         TagType dataType;
@@ -467,7 +488,6 @@ public class MainActivity extends BaseActivity
         boolean light = Global.getTheme() == Global.ThemeScheme.LIGHT;
         View view = navigationView.getHeaderView(0);
         ImageView imageView = view.findViewById(R.id.imageView);
-        View layoutHeader = view.findViewById(R.id.layout_header);
         ImageDownloadUtility.loadImage(light ? R.drawable.ic_logo_dark : R.drawable.ic_logo, imageView);
     }
 
@@ -489,14 +509,6 @@ public class MainActivity extends BaseActivity
 
         changeLanguageTimeHandler.removeCallbacks(changeLanguageRunnable);
         changeLanguageTimeHandler.postDelayed(changeLanguageRunnable, CHANGE_LANGUAGE_DELAY);
-
-    }
-
-    @Override
-    public void onBackPressed() {
-        if (drawerLayout.isDrawerOpen(GravityCompat.START))
-            drawerLayout.closeDrawer(GravityCompat.START);
-        else super.onBackPressed();
     }
 
     public void hidePageSwitcher() {
@@ -506,13 +518,10 @@ public class MainActivity extends BaseActivity
     public void showPageSwitcher(final int actualPage, final int totalPage) {
         pageSwitcher.setPages(totalPage, actualPage);
 
-
         if (Global.isInfiniteScrollMain()) {
             hidePageSwitcher();
         }
-
     }
-
 
     private void showLogoutForm() {
         MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(this);
@@ -740,8 +749,7 @@ public class MainActivity extends BaseActivity
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         Intent intent;
         if (item.getItemId() == R.id.downloaded) {
-            intent = new Intent(this, LocalActivity.class);
-            startActivity(intent);
+            startLocalActivity();
         } else if (item.getItemId() == R.id.bookmarks) {
             intent = new Intent(this, BookmarkActivity.class);
             startActivity(intent);
@@ -779,6 +787,23 @@ public class MainActivity extends BaseActivity
             startActivity(intent);
         }
         return true;
+    }
+
+    private void requestStorage() {
+        requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE}, 1);
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        Global.initStorage(this);
+        if (requestCode == 1 && grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED)
+            startLocalActivity();
+    }
+
+    private void startLocalActivity() {
+        Intent i = new Intent(this, LocalActivity.class);
+        startActivity(i);
     }
 
     /**
@@ -820,13 +845,6 @@ public class MainActivity extends BaseActivity
                 inspector = inspector.cloneInspector(MainActivity.this, inspector.getResponse());
                 inspector.start();
             });
-        }
-
-        @Override
-        public boolean shouldStart(Inspector inspector) {
-            return true;
-            //loadWebVewUrl(inspector.getUrl());
-            //return inspector.canParseDocument();
         }
     }
 

@@ -108,9 +108,7 @@ public class Exporter {
             exportSharedPreferences(context, shared, zip);
             zip.closeEntry();
         }
-
         zip.close();
-
     }
 
     private static void exportSharedPreferences(@NonNull Context context, String sharedName, OutputStream stream) throws IOException {

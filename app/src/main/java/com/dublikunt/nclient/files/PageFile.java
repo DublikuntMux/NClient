@@ -20,7 +20,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class PageFile extends File implements Parcelable {
-    public static final Creator<PageFile> CREATOR = new Creator<>() {
+    public static final Creator<PageFile> CREATOR = new Creator<PageFile>() {
         @NonNull
         @Contract("_ -> new")
         @Override

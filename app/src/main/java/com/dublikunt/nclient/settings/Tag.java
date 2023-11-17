@@ -8,11 +8,13 @@ import com.dublikunt.nclient.api.enums.TagStatus;
 import com.dublikunt.nclient.api.enums.TagType;
 import com.dublikunt.nclient.async.database.Queries;
 
+import org.jetbrains.annotations.Contract;
+
 import java.util.List;
 import java.util.Set;
 
 public class Tag {
-    public static final int MaxTags = 100;
+    public static final int MAXTAGS = 100;
     private static int minCount;
     private static boolean sortByName;
 
@@ -40,7 +42,6 @@ public class Tag {
     }
 
     public static TagStatus updateStatus(@NonNull com.dublikunt.nclient.api.components.Tag t) {
-        TagStatus old = t.getStatus();
         switch (t.getStatus()) {
             case ACCEPTED:
                 t.setStatus(TagStatus.AVOIDED);
@@ -61,7 +62,8 @@ public class Tag {
         Queries.TagTable.resetAllStatus();
     }
 
-    public static boolean containTag(@NonNull com.dublikunt.nclient.api.components.Tag[] tags, com.dublikunt.nclient.api.components.Tag t) {
+    @Contract(pure = true)
+    public static boolean containTag(com.dublikunt.nclient.api.components.Tag[] tags, com.dublikunt.nclient.api.components.Tag t) {
         for (com.dublikunt.nclient.api.components.Tag t1 : tags) if (t.equals(t1)) return true;
         return false;
     }
@@ -73,7 +75,7 @@ public class Tag {
 
 
     public static boolean maxTagReached() {
-        return getListPrefer(Global.removeAvoidedGalleries()).size() >= MaxTags;
+        return getListPrefer(Global.removeAvoidedGalleries()).size() >= MAXTAGS;
     }
 
     public static void updateMinCount(@NonNull Context context, int min) {

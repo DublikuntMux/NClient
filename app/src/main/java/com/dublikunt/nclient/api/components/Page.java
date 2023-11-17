@@ -105,6 +105,7 @@ public class Page implements Parcelable {
         return null;
     }
 
+    @Contract(pure = true)
     public static char extToChar(@NonNull ImageExt imageExt) {
         switch (imageExt) {
             case GIF:

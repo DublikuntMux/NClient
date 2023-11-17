@@ -183,7 +183,7 @@ public class Queries {
             values.put(MAX_HEIGHT, gallery.getMaxSize().getHeight());
             values.put(MIN_WIDTH, gallery.getMinSize().getWidth());
             values.put(MIN_HEIGHT, gallery.getMinSize().getHeight());
-            //Insert gallery
+
             db.insertWithOnConflict(TABLE_NAME, null, values, gallery instanceof Gallery ? SQLiteDatabase.CONFLICT_REPLACE : SQLiteDatabase.CONFLICT_IGNORE);
             TagTable.insertTagsForGallery(data);
         }
@@ -198,6 +198,7 @@ public class Queries {
             }
             return galleries;
         }
+
 
         public static void delete(int id) {
             db.delete(TABLE_NAME, IDGALLERY + "=?", new String[]{"" + id});
@@ -462,7 +463,7 @@ public class Queries {
                 len = tags.getCount(t);
                 for (int i = 0; i < len; i++) {
                     tag = tags.getTag(t, i);
-                    TagTable.insert(tag);//Insert tag
+                    TagTable.insert(tag);
                     GalleryBridgeTable.insert(gallery.getId(), tag.getId());
                 }
             }
@@ -701,8 +702,6 @@ public class Queries {
             FavoriteTable.insert(gallery.getId());
         }
 
-
-        @Contract(pure = true)
         static String titleTypeToColumn(@NonNull TitleType type) {
             switch (type) {
                 case PRETTY:

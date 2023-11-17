@@ -11,7 +11,6 @@ import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.dublikunt.nclient.BaseActivity;
 import com.dublikunt.nclient.GalleryActivity;
 import com.dublikunt.nclient.MainActivity;
 import com.dublikunt.nclient.R;
@@ -20,6 +19,7 @@ import com.dublikunt.nclient.api.SimpleGallery;
 import com.dublikunt.nclient.api.components.GenericGallery;
 import com.dublikunt.nclient.api.enums.Language;
 import com.dublikunt.nclient.async.database.Queries;
+import com.dublikunt.nclient.components.activities.BaseActivity;
 import com.dublikunt.nclient.settings.Global;
 import com.dublikunt.nclient.settings.Tag;
 import com.dublikunt.nclient.utility.ImageDownloadUtility;
@@ -39,7 +39,7 @@ public class ListAdapter extends RecyclerView.Adapter<GenericAdapter.ViewHolder>
 
     public ListAdapter(BaseActivity cont) {
         this.context = cont;
-        this.mDataset = new ArrayList<>() {
+        this.mDataset = new ArrayList<SimpleGallery>() {
             @Override
             public SimpleGallery get(int index) {
                 try {
@@ -61,7 +61,7 @@ public class ListAdapter extends RecyclerView.Adapter<GenericAdapter.ViewHolder>
     private void loadGallery(final GenericAdapter.ViewHolder holder, SimpleGallery ent) {
         if (context.isFinishing()) return;
         try {
-            if (context.isDestroyed()) return;
+            if (Global.isDestroyed(context)) return;
 
             ImageDownloadUtility.loadImage(context, ent.getThumbnail(), holder.imgView);
         } catch (VerifyError ignore) {
@@ -198,7 +198,6 @@ public class ListAdapter extends RecyclerView.Adapter<GenericAdapter.ViewHolder>
                 mDataset.add((SimpleGallery) g);
         context.runOnUiThread(this::notifyDataSetChanged);
     }
-
 
     public void resetStatuses() {
         statuses.clear();

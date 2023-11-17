@@ -94,10 +94,7 @@ class Importer {
                 reader.endObject();
             }
             reader.endArray();
-
-
         }
-
         reader.endObject();
         db.setTransactionSuccessful();
         db.endTransaction();

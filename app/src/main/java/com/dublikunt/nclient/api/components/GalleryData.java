@@ -316,7 +316,7 @@ public class GalleryData implements Parcelable {
         int absolutePage = 0;
         int actualChar;
         int pageOfType = 0;
-        boolean specialImages = true;//compability variable
+        boolean specialImages = true;
         while ((actualChar = reader.read()) != 'e') {
             switch (actualChar) {
                 case 'p':
@@ -327,11 +327,11 @@ public class GalleryData implements Parcelable {
                         thumbnail = new Page(ImageType.THUMBNAIL, Page.charToExt(actualChar));
                         specialImages = false;
                     } else {
-                        for (int j = 0; j < pageOfType; j++) {//add pageOfType time a page of actualChar
+                        for (int j = 0; j < pageOfType; j++) {
                             pages.add(new Page(ImageType.PAGE, Page.charToExt(actualChar), absolutePage++));
                         }
                     }
-                    pageOfType = 0;//reset digits
+                    pageOfType = 0;
                     break;
                 case '0':
                 case '1':
